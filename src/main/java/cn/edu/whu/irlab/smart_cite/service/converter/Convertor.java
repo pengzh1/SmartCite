@@ -6,4 +6,5 @@ package cn.edu.whu.irlab.smart_cite.service.converter;
  * @desc 转换器接口
  **/
 public interface Convertor {
+
 }
