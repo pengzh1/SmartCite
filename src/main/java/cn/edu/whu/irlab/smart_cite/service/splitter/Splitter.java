@@ -10,6 +10,7 @@ import java.util.List;
  * @desc 句子分割器 接口
  **/
 public interface Splitter {
+
     void splitSentence(Element paragraph);
 
     void selectParagraph(Element element);
