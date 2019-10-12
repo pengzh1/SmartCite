@@ -8,13 +8,11 @@ import com.aliasi.sentences.SentenceModel;
 import com.aliasi.tokenizer.IndoEuropeanTokenizerFactory;
 import com.aliasi.tokenizer.Tokenizer;
 import com.aliasi.tokenizer.TokenizerFactory;
-import org.jdom2.Content;
 import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -29,7 +27,6 @@ public class SplitterImpl implements Splitter {
 
     static final TokenizerFactory TOKENIZER_FACTORY = IndoEuropeanTokenizerFactory.INSTANCE;
     static final SentenceModel SENTENCE_MODEL  = new MedlineSentenceModel();
-
 
     @Override
     public Element splitSentence(Element paragraph) {
@@ -67,7 +64,7 @@ public class SplitterImpl implements Splitter {
 //            System.out.println(sentence);
             sentenceList.add(sentence);
         }
-        return formatSentences(sentenceList);
+        return sentences2paragraph(sentenceList);
     }
 
     @Override
@@ -92,46 +89,12 @@ public class SplitterImpl implements Splitter {
         return referenceVo;
     }
 
-
-
-    @Override
-    public List<Element> selectParagraph(Element element) {
-        if (element.getName().equals("p")){
-            fillteParagraph(element);
-            if (element.getChildren("xref")!=null)
-                paragraphs.add(element);
-        }else {
-            for (Element e:
-                    element.getChildren()) {
-                selectParagraph(e);
-            }
-        }
-        return paragraphs;
-    }
-
-    private void fillteParagraph(Element element){
-
-        List<Content> contents=element.getContent();
-        for (int i = 0; i <contents.size() ; i++) {
-            Content content=contents.get(i);
-            if (Content.CType.Element.equals(content.getCType())){
-                Element child=(Element)content;
-                if (child.getName()!="xref"){
-                    child.getText();
-                }
-            }
-        }
-
-        List<Integer> index=new ArrayList<>();
-        for (Content c:
-             element.getContent()) {
-            if (Content.CType.Element.equals(c.getCType())){
-                Element child=(Element)c;
-            }
-        }
-    }
-
-    private Element formatSentences(List<String> sentenceList){
+    /**
+     * 将分句结果组装成一个段落节点
+     * @param sentenceList 句子列表
+     * @return <p>节点
+     */
+    private Element sentences2paragraph(List<String> sentenceList){
         String prefix="<s>";
         String suffix="</s>";
         Element paragraph=new Element("p");

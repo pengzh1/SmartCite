@@ -21,10 +21,4 @@ public interface Splitter {
 
     List<ReferenceVo> selectReference(Element article);
 
-    /**
-     * 获取带引引文的段落
-     * @param element xml文档根节点
-     * @return 段落节点列表
-     */
-    List<Element> selectParagraph(Element element);
 }

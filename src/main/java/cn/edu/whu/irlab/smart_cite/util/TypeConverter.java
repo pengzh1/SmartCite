@@ -18,6 +18,7 @@ public class TypeConverter {
     public static Element str2xml(String string) {
         SAXBuilder saxBuilder = new SAXBuilder();
         Element root = null;
+
         try {
             Document doc = saxBuilder.build(new StringReader(string));
             root = doc.getRootElement();

@@ -33,6 +33,15 @@ public class ReadDoc {
         return docContent;
     }
 
+    public static void writeDoc(String docPath,String content){
+        File file =new File(docPath);
+        try {
+            FileUtils.writeStringToFile(file,content,"UTF-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 读xml文件
      * @param docPath 文件路径
