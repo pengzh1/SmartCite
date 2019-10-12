@@ -27,36 +27,39 @@ public class ExtractorImpl implements Extractor {
     @Resource(name = "splitter")
     private Splitter splitter;
 
+    @Override
     public Set<RecordVo> extract(Element article) {
         Set<RecordVo> result = new HashSet<>();
 
-        List<ReferenceVo> referenceVoList = selectReference(article);
-
         List<Element> paragraphs = extractParagraphs(article);
+        Map<String, ReferenceVo> referencesMap = extractReferences(article);
+        String articleId = extractArticleId(article);
 
-        for (Element p :
+        for (Element paragraph :
                 paragraphs) {
-
+            Element pAfterSplit = splitter.splitSentence(paragraph);
+            Element pAfterClean = cleanLabel(pAfterSplit);
+            result.addAll(extractRefContext(pAfterClean));
         }
 
+        result = matchRefTitle(result, referencesMap);
+        result = matchArticleId(result, articleId);
         return result;
     }
 
-
     @Override
-    public List<ReferenceVo> selectReference(Element article) {
-        List<ReferenceVo> referenceList = new ArrayList<>();
+    public Map<String, ReferenceVo> extractReferences(Element article) {
+        Map<String, ReferenceVo> referencesMap = new HashMap<>();
         Element ref_list = article.getChild("back").getChild("ref-list");
         for (Element ref :
                 ref_list.getChildren()) {
             if ("ref".equals(ref.getName())) {
                 ReferenceVo referenceVo = xml2pojo4Ref(ref);
-                referenceList.add(referenceVo);
+                referencesMap.put(referenceVo.getID(), referenceVo);
             }
         }
-        return referenceList;
+        return referencesMap;
     }
-
 
     @Override
     public List<Element> extractParagraphs(Element element) {
@@ -116,6 +119,7 @@ public class ExtractorImpl implements Extractor {
         List<Element> sentences = paragraphAfterClean.getChildren();
         Stack<String> stringStack = new Stack<>();
 
+        //正向遍历
         for (int i = 0; i < sentences.size(); i++) {
             List<Element> xrefElements = sentences.get(i).getChildren("xref");
             if (xrefElements.size() != 0) {
@@ -127,10 +131,12 @@ public class ExtractorImpl implements Extractor {
             }
         }
 
+        //反向遍历
+        stringStack.clear();
         for (int i = sentences.size() - 1; i >= 0; i--) {
             List<Element> xrefElements = sentences.get(i).getChildren("xref");
             if (xrefElements.size() != 0) {
-                if (!stringStack.empty()){
+                if (!stringStack.empty()) {
                     Set<RecordVo> recordVosHasLabel = handleSentenceHasLabel(sentences.get(i));
                     records.addAll(handleOtherSentences(recordVosHasLabel, stringStack, false));
                 }
@@ -139,6 +145,22 @@ public class ExtractorImpl implements Extractor {
             }
         }
         return records;
+    }
+
+    @Override
+    public Set<RecordVo> matchRefTitle(Set<RecordVo> recordVos, Map<String, ReferenceVo> referencesMap) {
+        for (RecordVo r :
+                recordVos) {
+            List<String> ref_rid = r.getRef_rid();
+            List<String> titles = new ArrayList<>();
+            for (String s :
+                    ref_rid) {
+                ReferenceVo ref = referencesMap.get(s);
+                titles.add(ref.getTitle());
+            }
+            r.setRef_title(titles);
+        }
+        return recordVos;
     }
 
     /**
@@ -159,7 +181,7 @@ public class ExtractorImpl implements Extractor {
                 //记录位置
                 startIndex = i;
                 endIndex = i;
-                while (contents.get(endIndex+1).getValue().equals(";")) {
+                while (contents.get(endIndex + 1).getValue().equals("; ")) {
                     if (endIndex + 2 >= contents.size()) {
                         break;
                     } else {
@@ -170,7 +192,7 @@ public class ExtractorImpl implements Extractor {
                 List<Content> before = contents.subList(0, startIndex);
                 List<Content> after = contents.subList(endIndex + 1, contents.size());
 
-                List<Content> cite = contents.subList(startIndex, endIndex+1);
+                List<Content> cite = contents.subList(startIndex, endIndex + 1);
                 List<String> ref_rid = new ArrayList<>();
                 for (Content ci :
                         cite) {
@@ -218,29 +240,34 @@ public class ExtractorImpl implements Extractor {
         return records;
     }
 
-    public Set<RecordVo> matchRefTitle(Set<RecordVo> recordVos, List<ReferenceVo> referenceList) {
-        for (ReferenceVo ref :
-                referenceList) {
-            for (RecordVo r :
-                    recordVos) {
-                List<String> titles = new ArrayList<>();
-                for (String s :
-                        r.getRef_title()) {
-                    if (ref.getID().equals(s)) {
-                        titles.add(ref.getTitle());
-                    }
-                }
-                r.setRef_title(titles);
-            }
-        }
-        return recordVos;
-    }
-
     private ReferenceVo xml2pojo4Ref(Element ref) {
         ReferenceVo referenceVo = new ReferenceVo();
         Element nlm_citation = ref.getChild("nlm-citation");
         referenceVo.setID(ref.getAttributeValue("id"));
         referenceVo.setTitle(nlm_citation.getChild("article-title").getText());
         return referenceVo;
+    }
+
+    /**
+     * 抽取文档Id
+     * @param article 文档节点
+     * @return 文档Id
+     */
+    private String extractArticleId(Element article) {
+        return article.getChild("front").getChild("article-meta").getChild("article-id").getValue();
+    }
+
+    /**
+     * 为抽取结果匹配文档Id
+     * @param recordVos 未匹配文档Id的抽取结果
+     * @param articleId 文档Id
+     * @return 匹配文档Id后的抽取结果
+     */
+    private Set<RecordVo> matchArticleId(Set<RecordVo> recordVos, String articleId) {
+        for (RecordVo r :
+                recordVos) {
+            r.setArticle_id(articleId);
+        }
+        return recordVos;
     }
 }

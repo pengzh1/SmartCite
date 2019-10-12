@@ -23,8 +23,6 @@ import java.util.List;
 @Service("splitter")
 public class SplitterImpl implements Splitter {
 
-    private List<Element> paragraphs = new ArrayList<>();
-
     static final TokenizerFactory TOKENIZER_FACTORY = IndoEuropeanTokenizerFactory.INSTANCE;
     static final SentenceModel SENTENCE_MODEL  = new MedlineSentenceModel();
 
@@ -65,28 +63,6 @@ public class SplitterImpl implements Splitter {
             sentenceList.add(sentence);
         }
         return sentences2paragraph(sentenceList);
-    }
-
-    @Override
-    public List<ReferenceVo> selectReference(Element article){
-        List<ReferenceVo> referenceList=new ArrayList<>();
-        Element ref_list=article.getChild("back").getChild("ref-list");
-        for (Element ref:
-             ref_list.getChildren()) {
-            if ("ref".equals(ref.getName())){
-                ReferenceVo referenceVo=xml2pojo4Ref(ref);
-                referenceList.add(referenceVo);
-            }
-        }
-        return referenceList;
-    }
-
-    private ReferenceVo xml2pojo4Ref(Element ref){
-        ReferenceVo referenceVo=new ReferenceVo();
-        Element nlm_citation=ref.getChild("nlm-citation");
-        referenceVo.setID(ref.getAttributeValue("id"));
-        referenceVo.setTitle(nlm_citation.getChild("article-title").getText());
-        return referenceVo;
     }
 
     /**

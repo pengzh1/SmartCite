@@ -19,6 +19,4 @@ public interface Splitter {
      */
     Element splitSentence(Element paragraph);
 
-    List<ReferenceVo> selectReference(Element article);
-
 }

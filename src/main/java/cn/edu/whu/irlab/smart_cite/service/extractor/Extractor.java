@@ -6,6 +6,7 @@ import cn.edu.whu.irlab.smart_cite.vo.ReferenceVo;
 import org.jdom2.Element;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -15,7 +16,19 @@ import java.util.Set;
  **/
 public interface Extractor {
 
-    List<ReferenceVo> selectReference(Element article);
+    /**
+     * 抽取引文上下文
+     * @param article 文档节点
+     * @return 抽取结果
+     */
+    Set<RecordVo> extract(Element article);
+
+    /**
+     * 抽取参考文献列表信息
+     * @param article 文档节点
+     * @return 参考文献列表
+     */
+    Map<String,ReferenceVo> extractReferences(Element article);
 
     /**
      * 抽取含有引文label的段落
@@ -38,4 +51,5 @@ public interface Extractor {
      */
     Set<RecordVo> extractRefContext(Element paragraphAfterClean);
 
+    Set<RecordVo> matchRefTitle(Set<RecordVo> recordVos, Map<String, ReferenceVo> referencesMap);
 }

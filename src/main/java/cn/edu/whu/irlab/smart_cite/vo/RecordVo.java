@@ -9,8 +9,7 @@ import java.util.List;
  **/
 public class RecordVo {
 
-    private int no;
-    private String doc_id;
+    private String article_id;
     private List<String> ref_rid;
     private List<String> ref_title;
     private String sentence;
@@ -23,20 +22,12 @@ public class RecordVo {
         this.position = position;
     }
 
-    public int getNo() {
-        return no;
+    public String getArticle_id() {
+        return article_id;
     }
 
-    public void setNo(int no) {
-        this.no = no;
-    }
-
-    public String getDoc_id() {
-        return doc_id;
-    }
-
-    public void setDoc_id(String doc_id) {
-        this.doc_id = doc_id;
+    public void setArticle_id(String article_id) {
+        this.article_id = article_id;
     }
 
     public List<String> getRef_rid() {
@@ -82,8 +73,7 @@ public class RecordVo {
     @Override
     public String toString() {
         return "RecordVo{" +
-                "no=" + no +
-                ", doc_id='" + doc_id + '\'' +
+                "article_id='" + article_id + '\'' +
                 ", ref_rid=" + ref_rid +
                 ", ref_title=" + ref_title +
                 ", sentence='" + sentence + '\'' +
