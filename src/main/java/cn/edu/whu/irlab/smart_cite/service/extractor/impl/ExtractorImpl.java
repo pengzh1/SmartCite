@@ -1,5 +1,6 @@
 package cn.edu.whu.irlab.smart_cite.service.extractor.impl;
 
+import cn.edu.whu.irlab.smart_cite.enums.FileTypeEnum;
 import cn.edu.whu.irlab.smart_cite.service.extractor.Extractor;
 import cn.edu.whu.irlab.smart_cite.service.splitter.Splitter;
 import cn.edu.whu.irlab.smart_cite.util.TypeConverter;
@@ -7,11 +8,13 @@ import cn.edu.whu.irlab.smart_cite.vo.RecordVo;
 import cn.edu.whu.irlab.smart_cite.vo.ReferenceVo;
 import org.jdom2.Content;
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import org.jdom2.Text;
 import org.jdom2.output.XMLOutputter;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -24,11 +27,29 @@ public class ExtractorImpl implements Extractor {
 
     private List<Element> paragraphs = new ArrayList<>();
 
+    private String back;
+    private String ref_list;
+    private String ref_lable;
+    private String ref_type_attr;
+    private String ref_id_attr;
+
     @Resource(name = "splitter")
     private Splitter splitter;
 
     @Override
+    public void init(){
+        paragraphs.clear();
+    }
+
+    @Override
+    public void init(String back){
+        this.back=back;
+        paragraphs.clear();
+    }
+
+    @Override
     public Set<RecordVo> extract(Element article) {
+        paragraphs.clear();
         Set<RecordVo> result = new HashSet<>();
 
         List<Element> paragraphs = extractParagraphs(article);
@@ -89,7 +110,7 @@ public class ExtractorImpl implements Extractor {
             List<Content> contents = sentence.getContent();
             for (int i = 0; i < contents.size(); i++) {
                 Content c = contents.get(i);
-                if (c.getCType().equals(Content.CType.Element)) {
+                if (c.getCType()==Content.CType.Element) {
                     Element e = (Element) c;
                     if ("xref".equals(e.getName())) {
                         if (!"bibr".equals(e.getAttribute("ref-type").getValue())) {
@@ -107,7 +128,14 @@ public class ExtractorImpl implements Extractor {
         //合并Text节点
         XMLOutputter xmlOutputter = new XMLOutputter();
         String text = "<p>" + xmlOutputter.outputElementContentString(paragraph) + "</p>";
-        Element paragraphAfterClean = TypeConverter.str2xml(text);
+        Element paragraphAfterClean = null;
+        try {
+            paragraphAfterClean = TypeConverter.str2xml(text);
+        } catch (JDOMException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return paragraphAfterClean;
     }
@@ -270,4 +298,6 @@ public class ExtractorImpl implements Extractor {
         }
         return recordVos;
     }
+
+
 }

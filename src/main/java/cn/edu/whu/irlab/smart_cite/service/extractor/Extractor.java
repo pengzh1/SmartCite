@@ -16,6 +16,11 @@ import java.util.Set;
  **/
 public interface Extractor {
 
+
+    void init();
+
+    void init(String back);
+
     /**
      * 抽取引文上下文
      * @param article 文档节点
@@ -51,5 +56,11 @@ public interface Extractor {
      */
     Set<RecordVo> extractRefContext(Element paragraphAfterClean);
 
+    /**
+     *
+     * @param recordVos
+     * @param referencesMap
+     * @return
+     */
     Set<RecordVo> matchRefTitle(Set<RecordVo> recordVos, Map<String, ReferenceVo> referencesMap);
 }

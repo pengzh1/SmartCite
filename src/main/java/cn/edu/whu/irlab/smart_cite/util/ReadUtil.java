@@ -15,14 +15,14 @@ import java.io.IOException;
  * @date 2018-09-08 0:27
  * @desc 读文件的工具类
  **/
-public class ReadDoc {
+public class ReadUtil {
 
     /**
      * 读文件
      * @param docPath 文件路径
      * @return 文件内容
      */
-    public static String readDoc(String docPath) {
+    public static String read2Str(String docPath) {
         File file = FileUtils.getFile(docPath);
         String docContent= null;
         try {
@@ -31,15 +31,6 @@ public class ReadDoc {
             e.printStackTrace();
         }
         return docContent;
-    }
-
-    public static void writeDoc(String docPath,String content){
-        File file =new File(docPath);
-        try {
-            FileUtils.writeStringToFile(file,content,"UTF-8");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     /**

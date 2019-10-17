@@ -83,8 +83,23 @@
             <artifactId>commons-collections4</artifactId>
             <version>4.3</version>
         </dependency>
-
         <!--commons end-->
+
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>1.20</version>
+        </dependency>
+
+        <!--csv工具 start-->
+        <dependency>
+            <groupId>net.sourceforge.javacsv</groupId>
+            <artifactId>javacsv</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <!--csv工具 end-->
+
+
 
     </dependencies>
 

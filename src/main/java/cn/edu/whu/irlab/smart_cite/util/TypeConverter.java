@@ -15,18 +15,11 @@ import java.io.StringReader;
  **/
 public class TypeConverter {
 
-    public static Element str2xml(String string) {
+    public static Element str2xml(String string) throws JDOMException, IOException {
         SAXBuilder saxBuilder = new SAXBuilder();
         Element root = null;
-
-        try {
-            Document doc = saxBuilder.build(new StringReader(string));
-            root = doc.getRootElement();
-        } catch (JDOMException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Document doc = saxBuilder.build(new StringReader(string));
+        root = doc.getRootElement();
         return root;
     }
 }
