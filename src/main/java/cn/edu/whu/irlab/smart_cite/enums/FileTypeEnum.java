@@ -3,7 +3,7 @@ package cn.edu.whu.irlab.smart_cite.enums;
 public enum FileTypeEnum {
 
     PDF(1,"PDF"),
-    STANDARD_XML(2,"STANDARD_XML");
+    XML(2,"XML");
 
     private Integer code;
 

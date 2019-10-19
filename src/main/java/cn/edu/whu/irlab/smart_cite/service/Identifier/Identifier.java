@@ -1,7 +1,12 @@
 package cn.edu.whu.irlab.smart_cite.service.Identifier;
 
 
+import cn.edu.whu.irlab.smart_cite.enums.XMLTypeEnum;
+import cn.edu.whu.irlab.smart_cite.exception.FileTypeException;
+import org.jdom2.Element;
+
 import java.io.File;
+import java.io.IOException;
 
 /**
  * @author gcr19
@@ -10,5 +15,7 @@ import java.io.File;
  **/
 public interface Identifier {
 
-    String getMimeType(File file);
+    String identifyMimeType(File file) throws IOException, Exception;
+
+    XMLTypeEnum identifyXMLType(Element firstNode, String filePath) throws FileTypeException;
 }

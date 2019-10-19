@@ -43,10 +43,21 @@ public class ReadUtil {
         saxBuilder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         Document doc;
         Element root = null;
-            doc = saxBuilder.build(FileUtils.getFile(docPath));
-            root = doc.getRootElement();
+        doc = saxBuilder.build(FileUtils.getFile(docPath));
+        root = doc.getRootElement();
         return root;
     }
+
+    public static Element read2xml(File file) throws IOException,JDOMException{
+        SAXBuilder saxBuilder = new SAXBuilder();
+        saxBuilder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        Document doc;
+        Element root = null;
+        doc = saxBuilder.build(file);
+        root = doc.getRootElement();
+        return root;
+    }
+
 
 
 }
