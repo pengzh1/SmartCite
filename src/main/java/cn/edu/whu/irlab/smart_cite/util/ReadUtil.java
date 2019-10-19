@@ -38,19 +38,13 @@ public class ReadUtil {
      * @param docPath 文件路径
      * @return jdom element 对象
      */
-    public static Element read2xml(String docPath){
+    public static Element read2xml(String docPath) throws IOException,JDOMException{
         SAXBuilder saxBuilder = new SAXBuilder();
         saxBuilder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         Document doc;
         Element root = null;
-        try {
             doc = saxBuilder.build(FileUtils.getFile(docPath));
             root = doc.getRootElement();
-        } catch (JDOMException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         return root;
     }
 

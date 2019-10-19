@@ -13,14 +13,19 @@ import java.util.List;
 @Service("dataPreprocessor")
 public class DataPreprocessor {
 
-    public boolean filitSubject(Element article, String subject){
-        Element article_categories=article.getChild("article-meta").getChild("article-categories");
-        List<Element> subject_group=article_categories.getChildren("subject-group");
-        for (Element element:
-                subject_group) {
-            String value= element.getValue();
-            boolean a= value.toLowerCase().contains(subject.toLowerCase());
-            return a;
+
+    public boolean containsTheSubject(Element article, String string){
+        Element article_categories=article.getChild("front").getChild("article-meta").getChild("article-categories");
+        List<Element> subject_groups=article_categories.getChildren("subj-group");
+        for (Element subj_group:
+                subject_groups) {
+            List<Element> subjects=subj_group.getChildren("subject");
+            for (Element subject :
+                    subjects) {
+                if (subject.getValue().toLowerCase().contains(string.toLowerCase())){
+                    return true;
+                }
+           }
         }
         return false;
     }
