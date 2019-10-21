@@ -1,5 +1,6 @@
 package cn.edu.whu.irlab.smart_cite.service.extractor;
 
+import cn.edu.whu.irlab.smart_cite.enums.XMLTypeEnum;
 import cn.edu.whu.irlab.smart_cite.vo.ExtractSourceVo;
 import cn.edu.whu.irlab.smart_cite.vo.RecordVo;
 import cn.edu.whu.irlab.smart_cite.vo.ReferenceVo;
@@ -16,10 +17,9 @@ import java.util.Set;
  **/
 public interface Extractor {
 
-
     void init();
 
-    void init(String back);
+    void init(XMLTypeEnum xmlTypeEnum);
 
     /**
      * 抽取引文上下文

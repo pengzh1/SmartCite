@@ -1,9 +1,11 @@
 package cn.edu.whu.irlab.smart_cite.service.actuator.Impl;
 
+import cn.edu.whu.irlab.smart_cite.enums.CiteMarkEnum;
 import cn.edu.whu.irlab.smart_cite.enums.FileTypeEnum;
 import cn.edu.whu.irlab.smart_cite.enums.XMLTypeEnum;
 import cn.edu.whu.irlab.smart_cite.service.Identifier.Identifier;
 import cn.edu.whu.irlab.smart_cite.service.actuator.Actuator;
+import cn.edu.whu.irlab.smart_cite.service.extractor.Extractor;
 import cn.edu.whu.irlab.smart_cite.util.ReadUtil;
 import org.jdom2.Element;
 import org.springframework.stereotype.Service;
@@ -23,12 +25,16 @@ public class ActuatorImpl implements Actuator {
     @Resource(name = "identifier")
     public Identifier identifier;
 
+    @Resource(name = "extractor")
+    public Extractor extractor;
 
-    public void AnalyzeCitionContext(File file) {
+
+    public void AnalyzeCitionContext(File file) throws Exception{
         String filePath=file.getPath();
         String mimeType = identifier.identifyMimeType(file);
         XMLTypeEnum xmlTypeEnum;
-        Element article;
+        CiteMarkEnum citeMarkEnum;
+        Element article=null;
         switch (mimeType) {
             case "application/xml":
                 article = ReadUtil.read2xml(file);
@@ -39,6 +45,7 @@ public class ActuatorImpl implements Actuator {
             default:
                 throw new IOException("文件类型不合法：" + mimeType);
         }
+        extractor.extract(article);
     }
 }
 

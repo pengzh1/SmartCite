@@ -38,7 +38,7 @@ public class IdentifierImpl implements Identifier {
     @Override
     public String identifyMimeType(File file) throws Exception {
         if (file.isDirectory()) {
-            throw new FileTypeException(ExceptionEnum.Not_File," 路径："+file.getPath());
+            throw new FileTypeException(ExceptionEnum.Not_File, " 路径：" + file.getPath());
         }
         AutoDetectParser parser = new AutoDetectParser();
         parser.setParsers(new HashMap<MediaType, Parser>());
@@ -53,17 +53,13 @@ public class IdentifierImpl implements Identifier {
     }
 
     @Override
-    public XMLTypeEnum identifyXMLType(Element firstNode, String filePath) throws FileTypeException {
-        String nameOfFirstNode = firstNode.getName();
+    public XMLTypeEnum identifyXMLType(Element article, String filePath) throws FileTypeException {
+        String nameOfFirstNode = article.getName();
         if (nameOfFirstNode.equals("article")) {
             return XMLTypeEnum.Plos;
         } else if (nameOfFirstNode.equals("TEI")) {
             return XMLTypeEnum.Grobid;
         }
-        throw new FileTypeException(ExceptionEnum.IllegalXml," 路径："+filePath);
-    }
-
-    public CiteMarkEnum identifyCiteMark(){
-
+        throw new FileTypeException(ExceptionEnum.IllegalXml, " 路径：" + filePath);
     }
 }

@@ -1,7 +1,6 @@
 package cn.edu.whu.irlab.smart_cite.service.extractor.impl;
 
-import cn.edu.whu.irlab.smart_cite.enums.FileTypeEnum;
-import cn.edu.whu.irlab.smart_cite.service.extractor.Extractor;
+import cn.edu.whu.irlab.smart_cite.enums.CiteMarkEnum;
 import cn.edu.whu.irlab.smart_cite.service.splitter.Splitter;
 import cn.edu.whu.irlab.smart_cite.util.TypeConverter;
 import cn.edu.whu.irlab.smart_cite.vo.RecordVo;
@@ -11,7 +10,6 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Text;
 import org.jdom2.output.XMLOutputter;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -22,45 +20,34 @@ import java.util.*;
  * @date 2019-08-16 19:08
  * @desc 抽取器实现类
  **/
-@Service("extractor")
-public class ExtractorImpl implements Extractor {
+public abstract class ExtractorImpl {
 
-    private List<Element> paragraphs = new ArrayList<>();
-
-    private String back;
-    private String ref_list;
-    private String ref_lable;
-    private String ref_type_attr;
-    private String ref_id_attr;
+    protected Element article;
+    protected List<Element> paragraphs = new ArrayList<>();
+    protected Map<String, ReferenceVo> referencesMap;
 
     @Resource(name = "splitter")
     private Splitter splitter;
 
-    @Override
-    public void init(){
+    public void init(Element article) {
         paragraphs.clear();
+        this.article = article;
+        this.referencesMap = extractReferences();
     }
 
-    @Override
-    public void init(String back){
-        this.back=back;
-        paragraphs.clear();
-    }
-
-    @Override
-    public Set<RecordVo> extract(Element article) {
+    public Set<RecordVo> extract() {
         paragraphs.clear();
         Set<RecordVo> result = new HashSet<>();
 
         List<Element> paragraphs = extractParagraphs(article);
-        Map<String, ReferenceVo> referencesMap = extractReferences(article);
-        String articleId = extractArticleId(article);
+        CiteMarkEnum citeMarkEnum = identifyCiteMark(paragraphs.get(0));
+        String articleId = extractArticleId();
 
         for (Element paragraph :
                 paragraphs) {
             Element pAfterSplit = splitter.splitSentence(paragraph);
             Element pAfterClean = cleanLabel(pAfterSplit);
-            result.addAll(extractRefContext(pAfterClean));
+            result.addAll(extractRefContext(pAfterClean,citeMarkEnum));
         }
 
         result = matchRefTitle(result, referencesMap);
@@ -68,52 +55,42 @@ public class ExtractorImpl implements Extractor {
         return result;
     }
 
-    @Override
-    public Map<String, ReferenceVo> extractReferences(Element article) {
-        Map<String, ReferenceVo> referencesMap = new HashMap<>();
-        Element ref_list = article.getChild("back").getChild("ref-list");
-        for (Element ref :
-                ref_list.getChildren()) {
-            if ("ref".equals(ref.getName())) {
-                ReferenceVo referenceVo = xml2pojo4Ref(ref);
-                referencesMap.put(referenceVo.getID(), referenceVo);
-            }
-        }
-        return referencesMap;
-    }
+    public abstract Map<String, ReferenceVo> extractReferences();
 
-    @Override
-    public List<Element> extractParagraphs(Element element) {
-        if (element.getName().equals("p")) {
+    public abstract List<Element> extractParagraphs(Element article);
+
+    public List<Element> extractParagraphs(Element article, String RefLabelName, String RefTypeLabelName) {
+        if (article.getName().equals("p")) {
             boolean hasXref = false;
             for (Element e :
-                    element.getChildren()) {
-                if ("xref".equals(e.getName()) && "bibr".equals(e.getAttributeValue("ref-type"))) {
+                    article.getChildren()) {
+                if (RefLabelName.equals(e.getName()) && "bibr".equals(e.getAttributeValue(RefTypeLabelName))) {
                     hasXref = true;
                 }
             }
             if (hasXref)
-                paragraphs.add(element);
+                paragraphs.add(article);
         } else {
             for (Element e :
-                    element.getChildren()) {
-                extractParagraphs(e);
+                    article.getChildren()) {
+                extractParagraphs(e, RefLabelName, RefTypeLabelName);
             }
         }
         return paragraphs;
     }
 
-    @Override
-    public Element cleanLabel(Element paragraph) {
+    public abstract Element cleanLabel(Element paragraph);
+
+    public Element cleanLabel(Element paragraph, String RefLabelName, String RefTypeLabelName) {
         for (Element sentence :
                 paragraph.getChildren()) {
             List<Content> contents = sentence.getContent();
             for (int i = 0; i < contents.size(); i++) {
                 Content c = contents.get(i);
-                if (c.getCType()==Content.CType.Element) {
+                if (c.getCType() == Content.CType.Element) {
                     Element e = (Element) c;
-                    if ("xref".equals(e.getName())) {
-                        if (!"bibr".equals(e.getAttribute("ref-type").getValue())) {
+                    if (RefLabelName.equals(e.getName())) {
+                        if (!"bibr".equals(e.getAttribute(RefTypeLabelName).getValue())) {
                             Text text = new Text(e.getValue());
                             sentence.setContent(i, text);
                         }
@@ -124,7 +101,6 @@ public class ExtractorImpl implements Extractor {
                 }
             }
         }
-
         //合并Text节点
         XMLOutputter xmlOutputter = new XMLOutputter();
         String text = "<p>" + xmlOutputter.outputElementContentString(paragraph) + "</p>";
@@ -136,12 +112,13 @@ public class ExtractorImpl implements Extractor {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return paragraphAfterClean;
     }
 
-    @Override
-    public Set<RecordVo> extractRefContext(Element paragraphAfterClean) {
+
+    public abstract Set<RecordVo> extractRefContext(Element paragraphAfterClean, CiteMarkEnum citeMarkEnum);
+
+    public Set<RecordVo> extractRefContext(Element paragraphAfterClean, CiteMarkEnum citeMarkEnum,String RefLabelName) {
 
         Set<RecordVo> records = new HashSet<>();
         List<Element> sentences = paragraphAfterClean.getChildren();
@@ -149,9 +126,14 @@ public class ExtractorImpl implements Extractor {
 
         //正向遍历
         for (int i = 0; i < sentences.size(); i++) {
-            List<Element> xrefElements = sentences.get(i).getChildren("xref");
+            List<Element> xrefElements = sentences.get(i).getChildren(RefLabelName);
             if (xrefElements.size() != 0) {
-                Set<RecordVo> recordVosHasLabel = handleSentenceHasLabel(sentences.get(i));
+                Set<RecordVo> recordVosHasLabel=null;
+                if (citeMarkEnum.equals(CiteMarkEnum.notNUM)){
+                    recordVosHasLabel = handleSentenceHasNotNumLabel(sentences.get(i));
+                } else if (citeMarkEnum.equals(CiteMarkEnum.NUM)){
+                    recordVosHasLabel=handleSentenceHasNumLabel(sentences.get(i));
+                }
                 records.addAll(recordVosHasLabel);//正向遍历时保存，反向不保存
                 records.addAll(handleOtherSentences(recordVosHasLabel, stringStack, true));
             } else {
@@ -162,10 +144,15 @@ public class ExtractorImpl implements Extractor {
         //反向遍历
         stringStack.clear();
         for (int i = sentences.size() - 1; i >= 0; i--) {
-            List<Element> xrefElements = sentences.get(i).getChildren("xref");
+            List<Element> xrefElements = sentences.get(i).getChildren(RefLabelName);
             if (xrefElements.size() != 0) {
                 if (!stringStack.empty()) {
-                    Set<RecordVo> recordVosHasLabel = handleSentenceHasLabel(sentences.get(i));
+                    Set<RecordVo> recordVosHasLabel=null;
+                    if (citeMarkEnum.equals(CiteMarkEnum.notNUM)){
+                        recordVosHasLabel = handleSentenceHasNotNumLabel(sentences.get(i));
+                    } else if (citeMarkEnum.equals(CiteMarkEnum.NUM)){
+                        recordVosHasLabel=handleSentenceHasNumLabel(sentences.get(i));
+                    }
                     records.addAll(handleOtherSentences(recordVosHasLabel, stringStack, false));
                 }
             } else {
@@ -175,7 +162,6 @@ public class ExtractorImpl implements Extractor {
         return records;
     }
 
-    @Override
     public Set<RecordVo> matchRefTitle(Set<RecordVo> recordVos, Map<String, ReferenceVo> referencesMap) {
         for (RecordVo r :
                 recordVos) {
@@ -191,54 +177,13 @@ public class ExtractorImpl implements Extractor {
         return recordVos;
     }
 
-    /**
-     * 处理含有引文标识的句子
-     * @param s 含有引文标识的句子节点
-     * @return 含有引文标识的记录集合
-     */
-    private Set<RecordVo> handleSentenceHasLabel(Element s) {
-        List<Content> contents = s.getContent();
+    protected abstract ReferenceVo xml2pojo4Ref(Element ref);
 
-        int startIndex;
-        int endIndex;
-        Set<RecordVo> recordVosHasLabel = new HashSet<>();
+    protected abstract Set<RecordVo> handleSentenceHasNotNumLabel(Element s);
 
-        for (int i = 0; i < contents.size(); i++) {
-            Content c = contents.get(i);
-            if (c.getCType().equals(Content.CType.Element)) {
-                //记录位置
-                startIndex = i;
-                endIndex = i;
-                while (contents.get(endIndex + 1).getValue().equals("; ")) {
-                    if (endIndex + 2 >= contents.size()) {
-                        break;
-                    } else {
-                        endIndex += 2;
-                    }
-                }
+    protected abstract Set<RecordVo> handleSentenceHasNumLabel(Element s);
 
-                List<Content> before = contents.subList(0, startIndex);
-                List<Content> after = contents.subList(endIndex + 1, contents.size());
-
-                List<Content> cite = contents.subList(startIndex, endIndex + 1);
-                List<String> ref_rid = new ArrayList<>();
-                for (Content ci :
-                        cite) {
-                    if (ci.getCType().equals(Content.CType.Element)) {
-                        Element element = (Element) ci;
-                        ref_rid.add(element.getAttributeValue("rid"));
-                    }
-                }
-                String sentence = content2string(before) + "[#]" + content2string(after);
-                RecordVo recordVo = new RecordVo(ref_rid, sentence, 0);
-                recordVosHasLabel.add(recordVo);
-                i = endIndex;
-            }
-        }
-        return recordVosHasLabel;
-    }
-
-    private String content2string(List<Content> contents) {
+    protected String content2string(List<Content> contents) {
         String output = "";
         for (Content c :
                 contents) {
@@ -246,7 +191,6 @@ public class ExtractorImpl implements Extractor {
         }
         return output;
     }
-
 
     private Set<RecordVo> handleOtherSentences(Set<RecordVo> recordVosHasLabel, Stack<String> stringStack, boolean forward) {
         Set<RecordVo> records = new HashSet<>();
@@ -268,25 +212,18 @@ public class ExtractorImpl implements Extractor {
         return records;
     }
 
-    private ReferenceVo xml2pojo4Ref(Element ref) {
-        ReferenceVo referenceVo = new ReferenceVo();
-        Element nlm_citation = ref.getChild("nlm-citation");
-        referenceVo.setID(ref.getAttributeValue("id"));
-        referenceVo.setTitle(nlm_citation.getChild("article-title").getText());
-        return referenceVo;
-    }
-
     /**
      * 抽取文档Id
-     * @param article 文档节点
+     *
      * @return 文档Id
      */
-    private String extractArticleId(Element article) {
+    private String extractArticleId() {
         return article.getChild("front").getChild("article-meta").getChild("article-id").getValue();
     }
 
     /**
      * 为抽取结果匹配文档Id
+     *
      * @param recordVos 未匹配文档Id的抽取结果
      * @param articleId 文档Id
      * @return 匹配文档Id后的抽取结果
@@ -299,5 +236,33 @@ public class ExtractorImpl implements Extractor {
         return recordVos;
     }
 
+    protected abstract CiteMarkEnum identifyCiteMark(Element paragraph);
 
+    protected CiteMarkEnum identifyCiteMark(Element paragraph, String RefLabelName) {
+        Element xref = paragraph.getChild(RefLabelName);
+        String valueOfXref = xref.getValue();
+        if (valueOfXref.length() < 6) {
+            return CiteMarkEnum.NUM;
+        } else {
+            return CiteMarkEnum.notNUM;
+        }
+    }
+
+    protected List<String> extractRidBetween2Elements(Element pre, Element next, String RefLabelRidAttrName) {
+        List<String> ref_rid = new ArrayList<>();
+        String preRid = pre.getAttributeValue(RefLabelRidAttrName);
+        String nextRid = next.getAttributeValue(RefLabelRidAttrName);
+
+        int preLabel = Integer.valueOf(referencesMap.get(preRid).getLabel());
+        int nextLabel =Integer.valueOf(referencesMap.get(nextRid).getLabel());
+
+        for (Map.Entry<String, ReferenceVo> entry :
+                referencesMap.entrySet()) {
+            int label = Integer.valueOf(entry.getValue().getLabel());
+            if (label>=preLabel||label<=nextLabel){
+                ref_rid.add(entry.getValue().getID());
+            }
+        }
+        return ref_rid;
+    }
 }

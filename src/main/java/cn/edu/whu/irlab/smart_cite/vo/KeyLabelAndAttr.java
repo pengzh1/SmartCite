@@ -5,6 +5,6 @@ package cn.edu.whu.irlab.smart_cite.vo;
  * @date 2019-10-14 15:04
  * @desc 关键标签和属性
  **/
-public class KeyLabelOrAttr {
+public class KeyLabelAndAttr {
 
 }
