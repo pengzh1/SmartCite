@@ -1,6 +1,8 @@
 package cn.edu.whu.irlab.smart_cite.service.extractor.impl;
 
 import cn.edu.whu.irlab.smart_cite.enums.CiteMarkEnum;
+import cn.edu.whu.irlab.smart_cite.service.extractor.ExtractorOfGrobid;
+import cn.edu.whu.irlab.smart_cite.service.extractor.ExtractorOfPlos;
 import cn.edu.whu.irlab.smart_cite.vo.RecordVo;
 import cn.edu.whu.irlab.smart_cite.vo.ReferenceVo;
 import org.jdom2.Content;
@@ -14,14 +16,14 @@ import java.util.*;
  * @date 2019-10-20 15:17
  * @desc
  **/
-@Service("extractorOFGrobid")
-public class ExtractorOfGrobid extends ExtractorImpl {
+@Service("extractorOfGrobid")
+public class ExtractorOfGrobidImpl extends ExtractorImpl implements ExtractorOfGrobid {
 
     private final String RefLabelName = "ref";
     private final String RefTypeLabelName = "type";
     private final String RefLabelRidAttrName = "target";
 
-    public Map<String, ReferenceVo> extractReferences() {
+    public void extractReferences() {
         Element back = super.article.getChild("text").getChild("back");
         Element ref_list = null;
         for (Element e :
@@ -30,19 +32,18 @@ public class ExtractorOfGrobid extends ExtractorImpl {
                 ref_list = e.getChild("listBibl");
             }
         }
-        Map<String, ReferenceVo> referencesMap = new HashMap<>();
         for (Element ref :
                 ref_list.getChildren()) {
             if ("biblStruct".equals(ref.getName())) {
                 ReferenceVo referenceVo = xml2pojo4Ref(ref);
-                referencesMap.put(referenceVo.getID(), referenceVo);
+                super.referencesMap.put(referenceVo.getID(), referenceVo);
             }
         }
-        return referencesMap;
+//        return referencesMap;
     }
 
-    public List<Element> extractParagraphs(Element article) {
-        return super.extractParagraphs(article, RefLabelName, RefTypeLabelName);
+    public void extractParagraphs(Element article) {
+        super.extractParagraphs(article, RefLabelName, RefTypeLabelName);
     }
 
     @Override
@@ -111,4 +112,5 @@ public class ExtractorOfGrobid extends ExtractorImpl {
         referenceVo.setTitle(nlm_citation.getChild("title").getText());
         return referenceVo;
     }
+
 }

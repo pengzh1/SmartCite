@@ -1,6 +1,7 @@
 package cn.edu.whu.irlab.smart_cite.service.extractor.impl;
 
 import cn.edu.whu.irlab.smart_cite.enums.CiteMarkEnum;
+import cn.edu.whu.irlab.smart_cite.service.extractor.ExtractorOfPlos;
 import cn.edu.whu.irlab.smart_cite.vo.RecordVo;
 import cn.edu.whu.irlab.smart_cite.vo.ReferenceVo;
 import org.jdom2.Content;
@@ -14,28 +15,27 @@ import java.util.*;
  * @date 2019-10-20 15:21
  * @desc
  **/
-@Service("ExtractorOfPlos")
-public class ExtractorOfPlos extends ExtractorImpl {
+@Service("extractorOfPlos")
+public class ExtractorOfPlosImpl extends ExtractorImpl implements ExtractorOfPlos {
 
     private final String RefLabelName = "xref";
     private final String RefTypeLabelName = "ref-type";
     private final String RefLabelRidAttrName = "rid";
 
-    public Map<String, ReferenceVo> extractReferences() {
+    public void extractReferences() {
         Element ref_list = super.article.getChild("back").getChild("ref-list");
-        Map<String, ReferenceVo> referencesMap = new HashMap<>();
         for (Element ref :
                 ref_list.getChildren()) {
             if ("ref".equals(ref.getName())) {
                 ReferenceVo referenceVo = xml2pojo4Ref(ref);
-                referencesMap.put(referenceVo.getID(), referenceVo);
+                super.referencesMap.put(referenceVo.getID(), referenceVo);
             }
         }
-        return referencesMap;
+//        return referencesMap;
     }
 
-    public List<Element> extractParagraphs(Element article) {
-        return super.extractParagraphs(article, RefLabelName, RefTypeLabelName);
+    public void extractParagraphs(Element article) {
+        super.extractParagraphs(article, RefLabelName, RefTypeLabelName);
     }
 
     public Element cleanLabel(Element paragraph) {
