@@ -52,12 +52,12 @@ public class ExtractorOfGrobidImpl extends ExtractorImpl implements ExtractorOfG
     }
 
     @Override
-    public Set<RecordVo> extractRefContext(Element paragraphAfterClean, CiteMarkEnum citeMarkEnum) {
+    public List<RecordVo> extractRefContext(Element paragraphAfterClean, CiteMarkEnum citeMarkEnum) {
         return super.extractRefContext(paragraphAfterClean, citeMarkEnum, RefLabelName);
     }
 
     @Override
-    protected Set<RecordVo> handleSentenceHasNumLabel(Element s) {
+    protected List<RecordVo> handleSentenceHasNumLabel(Element s) {
         return null;
     }
 
@@ -66,11 +66,11 @@ public class ExtractorOfGrobidImpl extends ExtractorImpl implements ExtractorOfG
         return identifyCiteMark(paragraph, RefLabelName);
     }
 
-    protected Set<RecordVo> handleSentenceHasNotNumLabel(Element s) {
+    protected List<RecordVo> handleSentenceHasNotNumLabel(Element s) {
         List<Content> contents = s.getContent();
         int startIndex;
         int endIndex;
-        Set<RecordVo> recordVosHasLabel = new HashSet<>();
+        List<RecordVo> recordVosHasLabel = new ArrayList<>();
 
         for (int i = 0; i < contents.size(); i++) {
             Content c = contents.get(i);

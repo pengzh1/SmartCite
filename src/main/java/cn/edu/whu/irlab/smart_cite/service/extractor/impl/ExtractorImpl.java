@@ -1,11 +1,13 @@
 package cn.edu.whu.irlab.smart_cite.service.extractor.impl;
 
 import cn.edu.whu.irlab.smart_cite.enums.CiteMarkEnum;
+import cn.edu.whu.irlab.smart_cite.exception.ExtractException;
 import cn.edu.whu.irlab.smart_cite.service.extractor.Extractor;
 import cn.edu.whu.irlab.smart_cite.service.splitter.Splitter;
 import cn.edu.whu.irlab.smart_cite.util.TypeConverter;
 import cn.edu.whu.irlab.smart_cite.vo.RecordVo;
 import cn.edu.whu.irlab.smart_cite.vo.ReferenceVo;
+import org.apache.commons.collections4.CollectionUtils;
 import org.jdom2.Content;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -32,16 +34,16 @@ public abstract class ExtractorImpl implements Extractor {
 
     @Override
     public void init(Element article) {
-        paragraphs=new ArrayList<>();
-        referencesMap=new HashMap<>();
+        paragraphs = new ArrayList<>();
+        referencesMap = new HashMap<>();
         this.article = article;
         extractReferences();
         extractParagraphs(article);
     }
 
     @Override
-    public Set<RecordVo> extract() {
-        Set<RecordVo> result = new HashSet<>();
+    public List<RecordVo> extract() {
+        List<RecordVo> result = new ArrayList<>();
         CiteMarkEnum citeMarkEnum = identifyCiteMark(paragraphs.get(0));
         String articleId = extractArticleId();
 
@@ -49,7 +51,7 @@ public abstract class ExtractorImpl implements Extractor {
                 paragraphs) {
             Element pAfterSplit = splitter.splitSentence(paragraph);
             Element pAfterClean = cleanLabel(pAfterSplit);
-            result.addAll(extractRefContext(pAfterClean,citeMarkEnum));
+            result.addAll(extractRefContext(pAfterClean, citeMarkEnum));
         }
 
         result = matchRefTitle(result, referencesMap);
@@ -79,7 +81,6 @@ public abstract class ExtractorImpl implements Extractor {
                 extractParagraphs(e);
             }
         }
-//        return paragraphs;
     }
 
     protected abstract Element cleanLabel(Element paragraph);
@@ -118,26 +119,42 @@ public abstract class ExtractorImpl implements Extractor {
         return paragraphAfterClean;
     }
 
-    public abstract Set<RecordVo> extractRefContext(Element paragraphAfterClean, CiteMarkEnum citeMarkEnum);
+    public abstract List<RecordVo> extractRefContext(Element paragraphAfterClean, CiteMarkEnum citeMarkEnum);
 
-    public Set<RecordVo> extractRefContext(Element paragraphAfterClean, CiteMarkEnum citeMarkEnum,String RefLabelName) {
+    public List<RecordVo> extractRefContext(Element paragraphAfterClean, CiteMarkEnum citeMarkEnum, String RefLabelName) {
 
-        Set<RecordVo> records = new HashSet<>();
+        List<RecordVo> records = new ArrayList<>();
         List<Element> sentences = paragraphAfterClean.getChildren();
         Stack<String> stringStack = new Stack<>();
 
+        Map<String, List<RecordVo>> recordMap = new HashMap<>();
         //正向遍历
         for (int i = 0; i < sentences.size(); i++) {
             List<Element> xrefElements = sentences.get(i).getChildren(RefLabelName);
             if (xrefElements.size() != 0) {
-                Set<RecordVo> recordVosHasLabel=null;
-                if (citeMarkEnum.equals(CiteMarkEnum.notNUM)){
+                List<RecordVo> recordVosHasLabel = null;
+                if (citeMarkEnum.equals(CiteMarkEnum.notNUM)) {
                     recordVosHasLabel = handleSentenceHasNotNumLabel(sentences.get(i));
-                } else if (citeMarkEnum.equals(CiteMarkEnum.NUM)){
-                    recordVosHasLabel=handleSentenceHasNumLabel(sentences.get(i));
+                } else if (citeMarkEnum.equals(CiteMarkEnum.NUM)) {
+                    recordVosHasLabel = handleSentenceHasNumLabel(sentences.get(i));
                 }
-                records.addAll(recordVosHasLabel);//正向遍历时保存，反向不保存
-                records.addAll(handleOtherSentences(recordVosHasLabel, stringStack, true));
+
+                List<String> strings = new ArrayList<>(stringStack);
+                Collections.reverse(strings);
+                for (RecordVo r :
+                        recordVosHasLabel) {
+                    String key = r.getRef_rid().toString() + r.getSentence().length();
+                    List<RecordVo> recordsForward = new ArrayList<>();
+                    int num = 0;
+                    for (String s :
+                            strings) {
+                        num--;
+                        recordsForward.add(new RecordVo(r.getRef_rid(), s, num));
+                    }
+                    Collections.reverse(recordsForward);
+                    recordsForward.add(r);
+                    recordMap.put(key, recordsForward);
+                }
             } else {
                 stringStack.push(sentences.get(i).getValue());
             }
@@ -149,22 +166,46 @@ public abstract class ExtractorImpl implements Extractor {
             List<Element> xrefElements = sentences.get(i).getChildren(RefLabelName);
             if (xrefElements.size() != 0) {
                 if (!stringStack.empty()) {
-                    Set<RecordVo> recordVosHasLabel=null;
-                    if (citeMarkEnum.equals(CiteMarkEnum.notNUM)){
+                    List<RecordVo> recordVosHasLabel = null;
+                    if (citeMarkEnum.equals(CiteMarkEnum.notNUM)) {
                         recordVosHasLabel = handleSentenceHasNotNumLabel(sentences.get(i));
-                    } else if (citeMarkEnum.equals(CiteMarkEnum.NUM)){
-                        recordVosHasLabel=handleSentenceHasNumLabel(sentences.get(i));
+                    } else if (citeMarkEnum.equals(CiteMarkEnum.NUM)) {
+                        recordVosHasLabel = handleSentenceHasNumLabel(sentences.get(i));
                     }
-                    records.addAll(handleOtherSentences(recordVosHasLabel, stringStack, false));
+                    List<String> strings = new ArrayList<>(stringStack);
+                    Collections.reverse(strings);
+                    for (RecordVo r :
+                            recordVosHasLabel) {
+                        String key = r.getRef_rid().toString() + r.getSentence().length();
+                        List<RecordVo> recordsBackward = new ArrayList<>();
+//                        recordsBackward.add(r);
+                        int num = 0;
+                        for (String s :
+                                strings) {
+                            num++;
+                            recordsBackward.add(new RecordVo(r.getRef_rid(), s, num));
+                        }
+                        if (recordMap.containsKey(key)) {
+                            recordMap.get(key).addAll(recordsBackward);
+                        } else {
+                            recordMap.put(key, recordsBackward);
+                        }
+                    }
                 }
             } else {
                 stringStack.push(sentences.get(i).getValue());
             }
         }
+
+        for (Map.Entry<String, List<RecordVo>> entry :
+                recordMap.entrySet()) {
+            records.addAll(entry.getValue());
+        }
+
         return records;
     }
 
-    public Set<RecordVo> matchRefTitle(Set<RecordVo> recordVos, Map<String, ReferenceVo> referencesMap) {
+    public List<RecordVo> matchRefTitle(List<RecordVo> recordVos, Map<String, ReferenceVo> referencesMap) {
         for (RecordVo r :
                 recordVos) {
             List<String> ref_rid = r.getRef_rid();
@@ -179,11 +220,11 @@ public abstract class ExtractorImpl implements Extractor {
         return recordVos;
     }
 
-    protected abstract ReferenceVo xml2pojo4Ref(Element ref);
+    protected abstract ReferenceVo xml2pojo4Ref(Element ref) throws ExtractException;
 
-    protected abstract Set<RecordVo> handleSentenceHasNotNumLabel(Element s);
+    protected abstract List<RecordVo> handleSentenceHasNotNumLabel(Element s);
 
-    protected abstract Set<RecordVo> handleSentenceHasNumLabel(Element s);
+    protected abstract List<RecordVo> handleSentenceHasNumLabel(Element s);
 
     protected String content2string(List<Content> contents) {
         String output = "";
@@ -212,40 +253,21 @@ public abstract class ExtractorImpl implements Extractor {
         String nextRid = next.getAttributeValue(RefLabelRidAttrName);
 
         int preLabel = Integer.valueOf(referencesMap.get(preRid).getLabel());
-        int nextLabel =Integer.valueOf(referencesMap.get(nextRid).getLabel());
+        int nextLabel = Integer.valueOf(referencesMap.get(nextRid).getLabel());
 
         for (Map.Entry<String, ReferenceVo> entry :
                 referencesMap.entrySet()) {
             int label = Integer.valueOf(entry.getValue().getLabel());
-            if (label>=preLabel||label<=nextLabel){
+            if (label >= preLabel || label <= nextLabel) {
                 ref_rid.add(entry.getValue().getID());
             }
         }
         return ref_rid;
     }
 
-    private Set<RecordVo> handleOtherSentences(Set<RecordVo> recordVosHasLabel, Stack<String> stringStack, boolean forward) {
-        Set<RecordVo> records = new HashSet<>();
-        int num = 0;
-        //封装引文对象
-        while (!stringStack.empty()) {
-            if (forward) {
-                num--;
-            } else {
-                num++;
-            }
-            String sentence = stringStack.pop();
-            for (RecordVo r :
-                    recordVosHasLabel) {
-                RecordVo recordVo = new RecordVo(r.getRef_rid(), sentence, num);
-                records.add(recordVo);
-            }
-        }
-        return records;
-    }
-
     /**
      * 抽取文档Id
+     *
      * @return 文档Id
      */
     private String extractArticleId() {
@@ -254,11 +276,12 @@ public abstract class ExtractorImpl implements Extractor {
 
     /**
      * 为抽取结果匹配文档Id
+     *
      * @param recordVos 未匹配文档Id的抽取结果
      * @param articleId 文档Id
      * @return 匹配文档Id后的抽取结果
      */
-    private Set<RecordVo> matchArticleId(Set<RecordVo> recordVos, String articleId) {
+    private List<RecordVo> matchArticleId(List<RecordVo> recordVos, String articleId) {
         for (RecordVo r :
                 recordVos) {
             r.setArticle_id(articleId);

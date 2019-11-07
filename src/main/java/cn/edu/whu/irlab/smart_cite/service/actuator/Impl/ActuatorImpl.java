@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -51,7 +52,7 @@ public class ActuatorImpl implements Actuator {
             default:
                 throw new IOException("文件类型不合法：" + mimeType);
         }
-        Set<RecordVo> recordVos = null;
+        List<RecordVo> recordVos = null;
         if (xmlTypeEnum.equals(XMLTypeEnum.Grobid)) {
             extractorOfGrobid.init(article);
             recordVos = extractorOfGrobid.extract();

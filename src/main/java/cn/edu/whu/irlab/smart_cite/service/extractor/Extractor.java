@@ -1,8 +1,10 @@
 package cn.edu.whu.irlab.smart_cite.service.extractor;
 
+import cn.edu.whu.irlab.smart_cite.exception.ExtractException;
 import cn.edu.whu.irlab.smart_cite.vo.RecordVo;
 import org.jdom2.Element;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -17,13 +19,13 @@ public interface Extractor {
      * 初始化抽取器
      * @param article 文档首节点
      */
-    void init(Element article);
+    void init(Element article) throws ExtractException;
 
     /**
      * 抽取引文上下文
      * @return 抽取结果
      */
-    Set<RecordVo> extract();
+    List<RecordVo> extract();
 
 //    /**
 //     * 抽取参考文献列表信息

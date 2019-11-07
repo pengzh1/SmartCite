@@ -3,7 +3,8 @@ package cn.edu.whu.irlab.smart_cite.enums;
 public enum ExceptionEnum {
 
     Not_File(1,"目标路径不是文件"),
-    IllegalXml(2,"不可识别的XML类型");
+    IllegalXml(2,"不可识别的XML类型"),
+    LabelNotFound(3,"标签不存在");
 
     private Integer code;
 

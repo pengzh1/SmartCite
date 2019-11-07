@@ -7,6 +7,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,7 +26,7 @@ public class WriteUtil {
         }
     }
 
-    public static void writeRecord2csv(String path, Set<RecordVo> recordVos){
+    public static void writeRecord2csv(String path, List<RecordVo> recordVos){
         CsvWriter csvWriter=new CsvWriter(path,',', Charset.forName("UTF-8"));
         String[] header={"article_id","ref_rid","ref_title","sentence","position","is_similar"};
 

@@ -87,10 +87,10 @@ public class SplitterImpl implements Splitter {
             try {
                 sentence = TypeConverter.str2xml(s);
             } catch (JDOMException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
                 continue;
             } catch (IOException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
                 continue;
             }
             paragraph.addContent(sentence.clone());

@@ -43,8 +43,8 @@ public class ExtractorOfPlosImpl extends ExtractorImpl implements ExtractorOfPlo
     }
 
     @Override
-    public Set<RecordVo> extractRefContext(Element paragraphAfterClean,CiteMarkEnum citeMarkEnum) {
-        return super.extractRefContext(paragraphAfterClean, citeMarkEnum,RefLabelName);
+    public List<RecordVo> extractRefContext(Element paragraphAfterClean, CiteMarkEnum citeMarkEnum) {
+        return super.extractRefContext(paragraphAfterClean, citeMarkEnum, RefLabelName);
     }
 
     @Override
@@ -58,11 +58,11 @@ public class ExtractorOfPlosImpl extends ExtractorImpl implements ExtractorOfPlo
      * @param s 含有引文标识的句子节点
      * @return 含有引文标识的记录集合
      */
-    protected Set<RecordVo> handleSentenceHasNotNumLabel(Element s) {
+    protected List<RecordVo> handleSentenceHasNotNumLabel(Element s) {
         List<Content> contents = s.getContent();
         int startIndex;
         int endIndex;
-        Set<RecordVo> recordVosHasLabel = new HashSet<>();
+        List<RecordVo> recordVosHasLabel = new ArrayList<>();
 
         for (int i = 0; i < contents.size(); i++) {
             Content c = contents.get(i);
@@ -70,13 +70,16 @@ public class ExtractorOfPlosImpl extends ExtractorImpl implements ExtractorOfPlo
                 //记录位置
                 startIndex = i;
                 endIndex = i;
-                while (contents.get(endIndex + 1).getValue().length() < 3) {
-                    if (endIndex + 2 >= contents.size()) {
-                        break;
-                    } else {
+
+                while (endIndex + 1 < contents.size()) {
+                    if (contents.get(endIndex + 1).getValue().length() < 3 &&
+                            endIndex + 2 < contents.size()) {
                         endIndex += 2;
+                    } else {
+                        break;
                     }
                 }
+
                 List<Content> before = contents.subList(0, startIndex);
                 List<Content> after = contents.subList(endIndex + 1, contents.size());
                 List<Content> cite = contents.subList(startIndex, endIndex + 1);
@@ -98,11 +101,11 @@ public class ExtractorOfPlosImpl extends ExtractorImpl implements ExtractorOfPlo
     }
 
     @Override
-    protected Set<RecordVo> handleSentenceHasNumLabel(Element s) {
+    protected List<RecordVo> handleSentenceHasNumLabel(Element s) {
         List<Content> contents = s.getContent();
         int startIndex;
         int endIndex;
-        Set<RecordVo> recordVosHasLabel = new HashSet<>();
+        List<RecordVo> recordVosHasLabel = new ArrayList<>();
 
         for (int i = 0; i < contents.size(); i++) {
             Content c = contents.get(i);
@@ -110,13 +113,16 @@ public class ExtractorOfPlosImpl extends ExtractorImpl implements ExtractorOfPlo
                 //记录位置
                 startIndex = i;
                 endIndex = i;
-                while (contents.get(endIndex + 1).getValue().length() < 3) {
-                    if (endIndex + 2 >= contents.size()) {
-                        break;
-                    } else {
+
+                while (endIndex + 1 < contents.size()) {
+                    if (contents.get(endIndex + 1).getValue().length() < 3 &&
+                            endIndex + 2 < contents.size()) {
                         endIndex += 2;
+                    } else {
+                        break;
                     }
                 }
+
                 List<Content> before = contents.subList(0, startIndex);
                 List<Content> after = contents.subList(endIndex + 1, contents.size());
                 List<Content> cite = contents.subList(startIndex, endIndex + 1);
@@ -131,7 +137,7 @@ public class ExtractorOfPlosImpl extends ExtractorImpl implements ExtractorOfPlo
                         if (operator.equals("-")) {
                             Element pre = (Element) cite.get(j - 2);
                             ref_rid.addAll(extractRidBetween2Elements(pre, element, RefLabelRidAttrName));
-                        }else {
+                        } else {
                             ref_rid.add(element.getAttributeValue(RefLabelRidAttrName));
                         }
                     } else {
@@ -152,10 +158,18 @@ public class ExtractorOfPlosImpl extends ExtractorImpl implements ExtractorOfPlo
         Element nlm_citation = ref.getChild("nlm-citation");
         if (nlm_citation == null) {
             nlm_citation = ref.getChild("element-citation");
+            if (nlm_citation == null) {
+                nlm_citation = ref.getChild("mixed-citation");
+            }
         }
         referenceVo.setID(ref.getAttributeValue("id"));
         referenceVo.setLabel(ref.getChild("label").getValue());
-        referenceVo.setTitle(nlm_citation.getChild("article-title").getText());
+        String title = "";
+        Element article_title = nlm_citation.getChild("article-title");
+        if (article_title != null) {
+            title = article_title.getText();
+        }
+        referenceVo.setTitle(title);
         return referenceVo;
     }
 
