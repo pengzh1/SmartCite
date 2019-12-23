@@ -3,8 +3,14 @@ package cn.edu.whu.irlab.smart_cite.util;
 import cn.edu.whu.irlab.smart_cite.vo.RecordVo;
 import com.csvreader.CsvWriter;
 import org.apache.commons.io.FileUtils;
+import org.jdom2.Element;
+import org.jdom2.output.XMLOutputter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
@@ -17,21 +23,29 @@ import java.util.Set;
  **/
 public class WriteUtil {
 
-    public static void writeStr(String docPath, String content){
-        File file =new File(docPath);
+    private final static Logger logger = LoggerFactory.getLogger(WriteUtil.class);
+
+    public static void writeXml(Element element,String outputPath) throws IOException {
+        XMLOutputter outputter=new XMLOutputter();
+        outputter.setFormat(outputter.getFormat().setEncoding("UTF-8"));
+        outputter.output(element,new FileOutputStream(outputPath));
+    }
+
+    public static void writeStr(String docPath, String content) {
+        File file = new File(docPath);
         try {
-            FileUtils.writeStringToFile(file,content,"UTF-8");
+            FileUtils.writeStringToFile(file, content, "UTF-8");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void writeRecord2csv(String path, List<RecordVo> recordVos){
-        CsvWriter csvWriter=new CsvWriter(path,',', Charset.forName("UTF-8"));
-        String[] header={"article_id","ref_rid","ref_title","sentence","position","is_similar"};
+    public static void writeRecord2csv(String path, List<RecordVo> recordVos) {
+        CsvWriter csvWriter = new CsvWriter(path, ',', Charset.forName("UTF-8"));
+        String[] header = {"article_id", "ref_rid", "ref_title", "sentence", "position", "is_similar"};
 
         try {
-            csvWriter.writeRecord(header,false);
+            csvWriter.writeRecord(header, false);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -45,13 +59,14 @@ public class WriteUtil {
                 record[2] = r.getRef_title().toString();
                 record[3] = r.getSentence();
                 record[4] = String.valueOf(r.getPosition());
-                csvWriter.writeRecord(record,false);
+                csvWriter.writeRecord(record, false);
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
         csvWriter.close();
     }
+
 
 }

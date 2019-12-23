@@ -4,6 +4,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.XMLOutputter;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -21,5 +22,11 @@ public class TypeConverter {
         Document doc = saxBuilder.build(new StringReader(string));
         root = doc.getRootElement();
         return root;
+    }
+
+
+    public static String element2string(Element element){
+        XMLOutputter outputter=new XMLOutputter();
+        return outputter.outputElementContentString(element);
     }
 }

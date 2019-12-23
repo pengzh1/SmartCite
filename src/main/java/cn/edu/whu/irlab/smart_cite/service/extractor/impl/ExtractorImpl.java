@@ -59,6 +59,8 @@ public abstract class ExtractorImpl implements Extractor {
         return result;
     }
 
+
+
     protected abstract void extractReferences();
 
     protected abstract void extractParagraphs(Element article);
