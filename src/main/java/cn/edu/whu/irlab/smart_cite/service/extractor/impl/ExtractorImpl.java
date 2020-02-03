@@ -61,6 +61,7 @@ public abstract class ExtractorImpl implements Extractor {
 
 
 
+
     protected abstract void extractReferences();
 
     protected abstract void extractParagraphs(Element article);

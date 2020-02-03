@@ -9,7 +9,7 @@ package cn.edu.whu.irlab.smart_cite.enums;
 public enum  SplitSentenceExceptionEnum {
 
     NoSentenceFound(1,"未在文本中发现句子边界: "),
-    IllegalElement(2,"非法的节点类型");
+    IllegalElement(2,"非法的节点类型 ");
 
     private Integer code;
 
