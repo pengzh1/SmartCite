@@ -38,7 +38,8 @@ public class IdentifierImpl implements Identifier {
     @Override
     public String identifyMimeType(File file) throws Exception {
         if (file.isDirectory()) {
-            throw new FileTypeException(ExceptionEnum.Not_File, " 路径：" + file.getPath());
+            throw new IllegalArgumentException("该路径为文件夹，不是文件。路径：" + file.getPath());
+            //            throw new FileTypeException(ExceptionEnum.Not_File, " 路径：" + file.getPath());
         }
         AutoDetectParser parser = new AutoDetectParser();
         parser.setParsers(new HashMap<MediaType, Parser>());

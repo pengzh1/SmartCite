@@ -16,6 +16,12 @@ import java.io.StringReader;
  **/
 public class TypeConverter {
 
+    /**
+     *@auther gcr19
+     *@desc str转element
+     *@param string 待转换的xml字符串
+     *@return 
+     **/
     public static Element str2xml(String string) throws JDOMException, IOException {
         SAXBuilder saxBuilder = new SAXBuilder();
         Element root = null;
