@@ -50,7 +50,7 @@ public class Extractor2 {
 
     public void extract() {
         //抽取段落
-        extractElements(article.getChild("body"),"p",paragraphs);
+        extractElements(article.getChild("body"),"p" ,paragraphs);
         //为段落编号
         numberElement(paragraphs);
         //为每一段分句

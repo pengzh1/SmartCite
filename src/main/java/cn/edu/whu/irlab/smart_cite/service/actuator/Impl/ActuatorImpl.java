@@ -8,9 +8,11 @@ import cn.edu.whu.irlab.smart_cite.service.actuator.Actuator;
 import cn.edu.whu.irlab.smart_cite.service.extractor.Extractor;
 import cn.edu.whu.irlab.smart_cite.service.extractor.ExtractorOfGrobid;
 import cn.edu.whu.irlab.smart_cite.service.extractor.ExtractorOfPlos;
+import cn.edu.whu.irlab.smart_cite.service.grobid.GrobidService;
 import cn.edu.whu.irlab.smart_cite.util.ReadUtil;
 import cn.edu.whu.irlab.smart_cite.vo.RecordVo;
 import org.jdom2.Element;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -36,29 +38,39 @@ public class ActuatorImpl implements Actuator {
     @Resource(name = "extractorOfPlos")
     public ExtractorOfPlos extractorOfPlos;
 
+    @Autowired
+    private GrobidService grobidService;
 
-    public void AnalyzeCitionContext(File file) throws Exception {
+
+    public void AnalyzeCitationContext(File file) throws Exception {
         String filePath = file.getPath();
-        String mimeType = identifier.identifyMimeType(file);
         XMLTypeEnum xmlTypeEnum = null;
+        //XML根节点
         Element article = null;
+
+        //识别文件类型
+        String mimeType = identifier.identifyMimeType(file);
+
+        //识别XML类型（PDF转换为XML）
         switch (mimeType) {
             case "application/xml":
                 article = ReadUtil.read2xml(file);
                 xmlTypeEnum = identifier.identifyXMLType(article, filePath);
                 break;
             case "application/pdf":
+                article = grobidService.processFulltextDocument(file);
+                xmlTypeEnum=XMLTypeEnum.Grobid;
                 break;
             default:
-                throw new IOException("文件类型不合法：" + mimeType);
+                throw new IllegalArgumentException("此文件类型为：" + mimeType+",不是合法的文件类型");
         }
-        List<RecordVo> recordVos = null;
-        if (xmlTypeEnum.equals(XMLTypeEnum.Grobid)) {
-            extractorOfGrobid.init(article);
-            recordVos = extractorOfGrobid.extract();
-        } else if (xmlTypeEnum.equals(XMLTypeEnum.Plos)) {
-            extractorOfPlos.init(article);
-            recordVos = extractorOfPlos.extract();
+
+        switch (xmlTypeEnum){
+            case Plos:
+
+            case Grobid:
+            case Lei:
+            default:
         }
     }
 }

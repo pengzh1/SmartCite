@@ -2,7 +2,7 @@ package cn.edu.whu.irlab.smart_cite.enums;
 
 public enum XMLTypeEnum {
 
-    Grobid(0), Plos(1);
+    Grobid(0), Plos(1),Lei(2);
 
     private Integer code;
 

@@ -43,6 +43,12 @@ public class GrobidService {
         return responseEntity.getBody();
     }
 
+    /**
+     *@auther gcr19
+     *@desc 将pdf文档转换为xml文档
+     *@param pdf 待转换的pdf文档
+     *@return 转换后的jdom节点
+     **/
     public Element processFulltextDocument(File pdf) throws JDOMException, IOException {
         String url = urlPrefix + "processFulltextDocument";
         HttpHeaders httpHeaders = new HttpHeaders();
