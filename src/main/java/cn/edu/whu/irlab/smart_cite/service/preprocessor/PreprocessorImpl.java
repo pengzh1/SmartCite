@@ -32,12 +32,11 @@ public abstract class PreprocessorImpl {
 
     private List<Element> xrefs = new ArrayList<>();
 
-    public static final String[] filterTag = {"footnote", "page", "doubt", "table", "tr", "td", "appendix", "figure", "frontmatter", "meta", "pdfmetadata", "ocrmetadata"};
-    public static final List<String> filterTagList = Arrays.asList(filterTag);
-
-
     //存放完成编号的XML文档
     private final static String NUMBERED = "temp/numbered/";
+
+    //存放完成过滤操作的XML文档
+    final static String FILTERED ="temp/filtered/";
 
     @Autowired
     private LingPipeSplitterImpl lingPipeSplitter;
@@ -78,15 +77,22 @@ public abstract class PreprocessorImpl {
             logger.error(e.getMessage());
         }
         //节点过滤
-
+        filterTags(root);
         //抽取有效信息
         //写出到新文件
+        try {
+            WriteUtil.writeXml(root, FILTERED + FilenameUtils.getBaseName(file.getName()) + ".xml");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
     }
 
-    private void filterTags(Element root) {
+    public abstract void filterTags(Element root);
+
+    public void filterTags(Element root, List<String> filterTagList) {
         ArrayList<Element> nodes = new ArrayList<>();
         selectNode(nodes, root);
-        filter(nodes);
+        filter(nodes, filterTagList);
     }
 
     private void selectNode(ArrayList<Element> nodes, Element node) {
@@ -99,10 +105,10 @@ public abstract class PreprocessorImpl {
         }
     }
 
-    private void filter(List<Element> nodes) {
+    private void filter(List<Element> nodes, List<String> filterTagList) {
         for (int i = 0; i < nodes.size(); i++) {
             if (filterTagList.contains(nodes.get(i).getName())) {    //删掉filter标签
-                //  nodes.get(i).getParent().remove(nodes.get(i));
+                nodes.get(i).getParentElement().removeContent(nodes.get(i));
             }
         }
     }
