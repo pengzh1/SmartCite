@@ -32,7 +32,7 @@ public class LeiPreprocessorImpl extends PreprocessorImpl {
     @Override
     public void parseXML(Element root, File file) {
         //过滤无内容的无关节点
-        filterTags(root,filterTagList);
+        filterTags(root, filterTagList);
         parseStep1(root);
         //todo 过滤含内容的无关节点
         //todo 识别引文标志
@@ -63,5 +63,25 @@ public class LeiPreprocessorImpl extends PreprocessorImpl {
 
     @Override
     public void extractXref(Element element) {
+    }
+
+    @Override
+    public void removeElementNotXref() {
+
+    }
+
+    @Override
+    void fillHeader(Element root, Element header) {
+
+    }
+
+    @Override
+    void fillBody(Element root, Element body) {
+
+    }
+
+    @Override
+    void fillBack(Element root, Element back) {
+
     }
 }
