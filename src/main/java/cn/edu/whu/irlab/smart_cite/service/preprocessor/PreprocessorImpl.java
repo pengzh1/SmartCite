@@ -4,10 +4,7 @@ import cn.edu.whu.irlab.smart_cite.exception.SplitSentenceException;
 import cn.edu.whu.irlab.smart_cite.service.splitter.LingPipeSplitterImpl;
 import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
 import org.apache.commons.io.FilenameUtils;
-import org.jdom2.Attribute;
-import org.jdom2.Content;
-import org.jdom2.Element;
-import org.jdom2.Text;
+import org.jdom2.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,7 +100,7 @@ public abstract class PreprocessorImpl {
     }
 
     /**
-     * @param root
+     * @param root 父节点
      * @return
      * @auther gcr19
      * @desc 过滤删除无关节点
@@ -168,13 +165,13 @@ public abstract class PreprocessorImpl {
 
     public abstract void extractXref(Element element);
 
-    public void extractXref(Element element, String xrefLabelName, String attributeName, String attributeValue) {
+    void extractXref(Element element, String xrefLabelName, String attributeName, String attributeValue) {
         if (element.getName().equals(xrefLabelName) && element.getAttributeValue(attributeName).equals(attributeValue)) {
             xrefs.add(element);
         } else {
             for (Element e :
                     element.getChildren()) {
-                extractXref(e);
+                extractXref(e, xrefLabelName, attributeName, attributeValue);
             }
         }
     }
@@ -200,7 +197,7 @@ public abstract class PreprocessorImpl {
         }
     }
 
-    private <T extends Element> void numberElement(List<T> elements) {
+    <T extends Element> void numberElement(List<T> elements) {
         for (int i = 0; i < elements.size(); i++) {
             elements.get(i).setAttribute("id", String.valueOf(i));
         }
@@ -263,18 +260,20 @@ public abstract class PreprocessorImpl {
     }
 
     /**
-     *@auther gcr19
-     *@desc 为属性重命名
-     *@param element 节点
-     *@param targetElementName 目标节点名称
-     *@param oldName 原属性名
-     *@param newName 现属性名
-     *@return
+     * @param element           节点
+     * @param targetElementName 目标节点名称
+     * @param oldName           原属性名
+     * @param newName           现属性名
+     * @return
+     * @auther gcr19
+     * @desc 为属性重命名
      **/
     void reNameAttribute(Element element, String targetElementName, String oldName, String newName) {
         if (element.getName().equals(targetElementName)) {
             Attribute attribute = element.getAttribute(oldName);
-            attribute.setName(newName);
+            if (attribute != null) {
+                attribute.setName(newName);
+            }
         } else {
             for (Element e :
                     element.getChildren()) {
@@ -283,4 +282,37 @@ public abstract class PreprocessorImpl {
         }
     }
 
+    /**
+     * @param root          父节点
+     * @param attributeName 属性名
+     * @return
+     * @auther gcr19
+     * @desc 删除该节点下所有节点的某属性
+     **/
+    void removeAttribute(Element root, String attributeName) {
+        root.removeAttribute(attributeName);
+        if (root.getChildren() != null) {
+            for (Element e :
+                    root.getChildren()) {
+                removeAttribute(e, attributeName);
+            }
+        }
+    }
+
+    /**
+     * @param root 父节点
+     * @return
+     * @auther gcr19
+     * @desc 删除该节点所有节点的命名空间
+     **/
+    void removeNameSpace(Element root) {
+        root.setNamespace(Namespace.NO_NAMESPACE);
+        if (root.getChildren() != null) {
+            for (Element e :
+                    root.getChildren()) {
+                removeNameSpace(e);
+            }
+        }
+
+    }
 }
