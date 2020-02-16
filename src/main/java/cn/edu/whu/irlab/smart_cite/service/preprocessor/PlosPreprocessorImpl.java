@@ -1,5 +1,6 @@
 package cn.edu.whu.irlab.smart_cite.service.preprocessor;
 
+import cn.edu.whu.irlab.smart_cite.util.ElementUtil;
 import org.jdom2.Content;
 import org.jdom2.Element;
 import org.jdom2.Text;
@@ -8,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,7 +25,7 @@ public class PlosPreprocessorImpl extends PreprocessorImpl {
     private static final Logger logger = LoggerFactory.getLogger(PlosPreprocessorImpl.class);
 
     //需要删除的节点名列表
-    private static final String[] filterTag = {"journal-meta", "article-categories", "contrib-group", "aff", "author-notes",
+    private static final String[] filterTag = {"journal-meta", "article-categories", "aff", "author-notes",
             "author-notes", "pub-date", "issue", "elocation-id", "history", "permissions", "funding-group", "counts", "fig",
             "supplementary-material", "ack"};
     private static final List<String> filterTagList = Arrays.asList(filterTag);
@@ -51,11 +53,21 @@ public class PlosPreprocessorImpl extends PreprocessorImpl {
     void fillHeader(Element root, Element header) {
         header.addContent(root.getChild("front").getChild("article-meta").getChild("title-group").detach());
         header.addContent(root.getChild("front").getChild("article-meta").getChild("abstract").detach());
+
+        //设置作者
+        List<Element> authors=new ArrayList<>();
+        ElementUtil.extractElements(root.getChild("front").getChild("article-meta"),"name",authors);
+        Element author_group=new Element("author-group");
+        for (Element e :
+                authors) {
+            author_group.addContent(e.detach());
+        }
+        header.addContent(author_group);
     }
 
     @Override
     void fillBody(Element root, Element body) {
-        body.addContent(root.getChild("body").detach());
+        body.addContent(root.getChild("body").removeContent());
     }
 
     @Override

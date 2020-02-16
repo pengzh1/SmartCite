@@ -1,5 +1,6 @@
 package cn.edu.whu.irlab.smart_cite.service.preprocessor;
 
+import cn.edu.whu.irlab.smart_cite.util.ElementUtil;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
@@ -24,7 +25,7 @@ public class GrobidPreprocessorImpl extends PreprocessorImpl {
     private static final String ATTRIBUTE_VALUE = "bibr";
 
     //需要删除的节点名列表
-    private static final String[] filterTag = {"publicationStmt", "sourceDesc", "encodingDesc", "formula", "figure", "note"};
+    private static final String[] filterTag = {"publicationStmt", "encodingDesc", "formula", "figure", "note"};
     private static final List<String> filterTagList = Arrays.asList(filterTag);
 
 
@@ -57,12 +58,29 @@ public class GrobidPreprocessorImpl extends PreprocessorImpl {
                 getChild("profileDesc", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).
                 getChild("abstract", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
         Element newAbstract = new Element("abstract");
+
         for (Element e :
                 abstract_.getChildren()) {
             //todo 需要测试有些特殊文章摘要中由title的情况
             newAbstract.addContent(e.setName("sec").detach());
         }
+        header.addContent(newAbstract);
 
+        //设置作者
+        List<Element> persNames = new ArrayList<>();
+        ElementUtil.extractElements(root.getChild("teiHeader", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")),
+                "persName", persNames);
+        Element author_group = new Element("author-group");
+        for (Element e :
+                persNames) {
+            Element name = new Element("name");
+            name.addContent(new Element("surname").addContent(e.getChild("surname",
+                    Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).getValue()));
+            name.addContent(new Element("given-names").addContent(e.getChild("forename",
+                    Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).getValue()));
+            author_group.addContent(name);
+        }
+        header.addContent(author_group);
     }
 
     @Override
@@ -79,16 +97,14 @@ public class GrobidPreprocessorImpl extends PreprocessorImpl {
         reNameAttribute(body, "xref", "target", "rid");
 
         newBody.addContent(body.removeContent());
-        //删除所有节点的命名空间
-        removeNameSpace(newBody);
 
         //为sec节点编号
-        List<Element> secs=new ArrayList<>();
-        extractElements(newBody,"sec",secs);
+        List<Element> secs = new ArrayList<>();
+        ElementUtil.extractElements(newBody, "sec", secs);
         numberElement(secs);
 
         //删除n属性
-        removeAttribute(newBody,"n");
+        removeAttribute(newBody, "n");
     }
 
     @Override
@@ -131,13 +147,13 @@ public class GrobidPreprocessorImpl extends PreprocessorImpl {
 
     @Override
     void extractParagraphs(Element root) {
-        extractElements(root.getChild("text", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).
+        ElementUtil.extractElements(root.getChild("text", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).
                 getChild("body", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")), "p", paragraphs);
     }
 
     @Override
     void extractSentence(Element root) {
-        extractElements(root.getChild("text", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).
+        ElementUtil.extractElements(root.getChild("text", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).
                 getChild("body", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")), "s", sentences);
     }
 }

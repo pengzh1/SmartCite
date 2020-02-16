@@ -30,7 +30,7 @@ public class LeiPreprocessorImpl extends PreprocessorImpl {
 
 
     @Override
-    public void parseXML(Element root, File file) {
+    public Element parseXML(Element root, File file) {
         //过滤无内容的无关节点
         filterTags(root, filterTagList);
         parseStep1(root);
@@ -42,10 +42,9 @@ public class LeiPreprocessorImpl extends PreprocessorImpl {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
-
+        return null;
     }
 
-    @Override
     public void parseStep1(Element root) {
         //将reference节点下的p节点重命名为ref节点
         Element references = root.getChild("body").getChild("references");
@@ -53,7 +52,6 @@ public class LeiPreprocessorImpl extends PreprocessorImpl {
                 references.getChildren()) {
             ref.setName("ref");
         }
-        super.parseStep1(root);
     }
 
     @Override

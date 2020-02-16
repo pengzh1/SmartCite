@@ -2,6 +2,7 @@ package cn.edu.whu.irlab.smart_cite.service.preprocessor;
 
 import cn.edu.whu.irlab.smart_cite.exception.SplitSentenceException;
 import cn.edu.whu.irlab.smart_cite.service.splitter.LingPipeSplitterImpl;
+import cn.edu.whu.irlab.smart_cite.util.ElementUtil;
 import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.jdom2.*;
@@ -39,22 +40,11 @@ public abstract class PreprocessorImpl {
     //存放重新整理后的XML文档
     private final static String REFORMATTED = "temp/reformatted/";
 
+
     @Autowired
     private LingPipeSplitterImpl lingPipeSplitter;
 
-    public void parseXML(Element root, File file) {
-        parseStep1(root);
-        parseStep2(root);
-        parseStep3(root, file);
-    }
-
-    /**
-     * @param root xml根节点
-     * @return
-     * @auther gcr19
-     * @desc 预处理第一步：完成分割句子，段落，句子，引文标志编号。
-     **/
-    public void parseStep1(Element root) {
+    public Element parseXML(Element root, File file) {
         //段落抽取
         extractParagraphs(root);
         //给段落编号
@@ -65,38 +55,21 @@ public abstract class PreprocessorImpl {
         extractSentence(root);
         //给句子编号
         numberElement(sentences);
-    }
-
-    void parseStep2(Element root) {
         //抽取引文标志节点
         extractXref(root);
         //引文标志编号
         numberElement(xrefs);
-    }
-
-    void parseStep3(Element root, File file) {
         //写出到新文件
-        try {
-            WriteUtil.writeXml(root, NUMBERED + FilenameUtils.getBaseName(file.getName()) + ".xml");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
+        writeFile(root, NUMBERED, file);
         //节点过滤
         filterTags(root);
         removeElementNotXref();
         //写出到新文件
-        try {
-            WriteUtil.writeXml(root, FILTERED + FilenameUtils.getBaseName(file.getName()) + ".xml");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
+        writeFile(root, FILTERED, file);
         //整理有效信息
-        Element newRoot = reformat(root);
-        try {
-            WriteUtil.writeXml(newRoot, REFORMATTED + FilenameUtils.getBaseName(file.getName()) + ".xml");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
+        Element newRoot=reformat(root);
+        writeFile(newRoot, REFORMATTED, file);
+        return newRoot;
     }
 
     /**
@@ -125,6 +98,10 @@ public abstract class PreprocessorImpl {
         fillHeader(root, newRoot.getChild("header"));
         fillBody(root, newRoot.getChild("body"));
         fillBack(root, newRoot.getChild("back"));
+
+        //删除所有节点的命名空间
+        removeNameSpace(newRoot);
+
         return newRoot;
     }
 
@@ -152,17 +129,6 @@ public abstract class PreprocessorImpl {
         }
     }
 
-    void extractElements(Element element, String elementName, List<Element> elements) {
-        if (element.getName().equals(elementName)) {
-            elements.add(element);
-        } else {
-            for (Element e :
-                    element.getChildren()) {
-                extractElements(e, elementName, elements);
-            }
-        }
-    }
-
     public abstract void extractXref(Element element);
 
     void extractXref(Element element, String xrefLabelName, String attributeName, String attributeValue) {
@@ -177,11 +143,11 @@ public abstract class PreprocessorImpl {
     }
 
     void extractParagraphs(Element root) {
-        extractElements(root.getChild("body"), "p", paragraphs);
+        ElementUtil.extractElements(root.getChild("body"), "p", paragraphs);
     }
 
     void extractSentence(Element root) {
-        extractElements(root.getChild("body"), "s", sentences);
+        ElementUtil.extractElements(root.getChild("body"), "s", sentences);
     }
 
     private void splitSentences() {
@@ -199,7 +165,7 @@ public abstract class PreprocessorImpl {
 
     <T extends Element> void numberElement(List<T> elements) {
         for (int i = 0; i < elements.size(); i++) {
-            elements.get(i).setAttribute("id", String.valueOf(i));
+            elements.get(i).setAttribute("id", String.valueOf(i + 1));
         }
     }
 
@@ -312,6 +278,14 @@ public abstract class PreprocessorImpl {
                     root.getChildren()) {
                 removeNameSpace(e);
             }
+        }
+    }
+
+    private void writeFile(Element root, String folderPath, File file) {
+        try {
+            WriteUtil.writeXml(root, folderPath + FilenameUtils.getBaseName(file.getName()) + ".xml");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
         }
 
     }

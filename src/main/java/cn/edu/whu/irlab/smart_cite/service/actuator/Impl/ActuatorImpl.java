@@ -32,12 +32,6 @@ public class ActuatorImpl implements Actuator {
     @Resource(name = "identifier")
     public Identifier identifier;
 
-    @Resource(name = "extractorOfGrobid")
-    public ExtractorOfGrobid extractorOfGrobid;
-
-    @Resource(name = "extractorOfPlos")
-    public ExtractorOfPlos extractorOfPlos;
-
     @Autowired
     private GrobidService grobidService;
 

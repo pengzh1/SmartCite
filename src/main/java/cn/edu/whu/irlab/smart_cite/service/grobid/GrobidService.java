@@ -45,7 +45,7 @@ public class GrobidService {
 
     /**
      *@auther gcr19
-     *@desc 将pdf文档转换为xml文档
+     *@desc 将pdf文档转换为xml文档 todo 转换还存在很多问题，并不是非常完美
      *@param pdf 待转换的pdf文档
      *@return 转换后的jdom节点
      **/
@@ -61,6 +61,7 @@ public class GrobidService {
         valueMap.add("input", fileSystemResource);
         HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(valueMap, httpHeaders);
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, request, String.class);
+        System.out.println(responseEntity.getStatusCodeValue());
         return TypeConverter.str2xml(responseEntity.getBody());
     }
 
