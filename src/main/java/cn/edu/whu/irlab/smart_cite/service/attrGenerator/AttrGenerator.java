@@ -31,14 +31,21 @@ public class AttrGenerator {
 
     private List<Element> sentences = new ArrayList<>();
 
-    public void generateAttr(Element root,File file) {
-        Element body=root.getChild("body");
+    public void generateAttr(Element root, File file) {
+        Element body = root.getChild("body");
         ElementUtil.extractElements(body, "s", sentences);
         reNumberSec(body);
+        addSecAttr();
         addLevelAndPAttr();
-        writeFile(root,ADDED,file);
+        writeFile(root, ADDED, file);
     }
 
+    /**
+     * @param body body节点
+     * @return
+     * @auther gcr19
+     * @desc 为sec节点重新排序
+     **/
     private void reNumberSec(Element body) {
         List<Element> children = body.getChildren("sec");
         if (children != null) {
@@ -48,7 +55,7 @@ public class AttrGenerator {
                 String parentId = sec.getParentElement().getAttributeValue("id");
                 if (parentId != null) {
                     sec.setAttribute("id", parentId + "." + i++);
-                }else {
+                } else {
                     sec.setAttribute("id", String.valueOf(i++));
                 }
                 reNumberSec(sec);
@@ -81,7 +88,13 @@ public class AttrGenerator {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
 
+    private void addSecAttr(){
+        for (Element s :
+                sentences) {
+            s.setAttribute("sec", s.getParentElement().getParentElement().getAttributeValue("id"));
+        }
     }
 
 }
