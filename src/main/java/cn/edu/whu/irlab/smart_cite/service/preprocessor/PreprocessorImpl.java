@@ -38,7 +38,7 @@ public abstract class PreprocessorImpl {
     final static String FILTERED = "temp/filtered/";
 
     //存放重新整理后的XML文档
-    private final static String REFORMATTED = "temp/reformatted/";
+    final static String REFORMATTED = "temp/reformatted/";
 
 
     @Autowired
@@ -88,7 +88,7 @@ public abstract class PreprocessorImpl {
         filter(nodes, filterTagList);
     }
 
-    private Element reformat(Element root) {
+    Element reformat(Element root) {
 
         Element newRoot = new Element("article");
         newRoot.addContent(new Element("header"));
@@ -226,19 +226,26 @@ public abstract class PreprocessorImpl {
     }
 
     /**
-     * @param element           节点
+     * @param element           父节点
      * @param targetElementName 目标节点名称
      * @param oldName           原属性名
      * @param newName           现属性名
      * @return
      * @auther gcr19
-     * @desc 为属性重命名
+     * @desc 为父节点下所有目标节点的属性重命名
      **/
     void reNameAttribute(Element element, String targetElementName, String oldName, String newName) {
         if (element.getName().equals(targetElementName)) {
             Attribute attribute = element.getAttribute(oldName);
             if (attribute != null) {
                 attribute.setName(newName);
+            }
+            List<Element> children=element.getChildren();
+            if (children!=null){
+                for (Element e :
+                        children) {
+                    reNameAttribute(e, targetElementName, oldName, newName);
+                }
             }
         } else {
             for (Element e :
@@ -281,7 +288,7 @@ public abstract class PreprocessorImpl {
         }
     }
 
-    private void writeFile(Element root, String folderPath, File file) {
+    void writeFile(Element root, String folderPath, File file) {
         try {
             WriteUtil.writeXml(root, folderPath + FilenameUtils.getBaseName(file.getName()) + ".xml");
         } catch (IOException e) {

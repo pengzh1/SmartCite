@@ -1,7 +1,6 @@
 package cn.edu.whu.irlab.smart_cite.service.splitter;
 
 import cn.edu.whu.irlab.smart_cite.exception.SplitSentenceException;
-import cn.edu.whu.irlab.smart_cite.vo.ReferenceVo;
 import org.jdom2.Element;
 
 import java.util.List;

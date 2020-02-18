@@ -109,6 +109,12 @@
             <version>3.9.2</version>
             <classifier>models</classifier>
         </dependency>
+        <dependency>
+            <groupId>edu.stanford.nlp</groupId>
+            <artifactId>stanford-parser</artifactId>
+            <version>3.9.2</version>
+        </dependency>
+
         <!--Stanford CoreNLP end-->
 
         <dependency>
@@ -116,6 +122,13 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+        <!--雷声伟设计的工具 start-->
+        <dependency>
+            <groupId>com.leishengwei</groupId>
+            <artifactId>jutils</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+        <!--雷声伟设计的工具 end-->
 
     </dependencies>
 
