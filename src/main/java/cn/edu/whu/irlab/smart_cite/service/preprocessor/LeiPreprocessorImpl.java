@@ -75,12 +75,12 @@ public class LeiPreprocessorImpl extends PreprocessorImpl {
             String[] nameString = s.split(" ");
             Element name = new Element("name");
             name.addContent(new Element("surname").addContent(nameString[0]));
-            name.addContent(new Element("given-name").addContent(nameString[1]));
+            name.addContent(new Element("given-names").addContent(nameString[1]));
             author_group.addContent(name);
         }
         header.addContent(author_group);
         //设置abstract
-        header.addContent(new Element("abstract").addContent(header.getChildText("abstract")));
+        header.addContent(new Element("abstract").addContent(root.getChild("header").getChildText("abstract")));
     }
 
     @Override

@@ -122,7 +122,6 @@ public class GrobidPreprocessorImpl extends PreprocessorImpl {
             ref.setAttribute("id", biblStruct.getAttributeValue("id",
                     Namespace.getNamespace("xml", "http://www.w3.org/XML/1998/namespace")));
 
-
             //设置标题
             Element analytic = biblStruct.getChild("analytic", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
             if (analytic != null) {

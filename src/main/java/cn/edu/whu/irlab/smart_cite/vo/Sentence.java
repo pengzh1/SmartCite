@@ -5,6 +5,8 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.leishengwei.jutils.Collections.isEmpty;
+
 /**
  * @author gcr19
  * @version 1.0
@@ -91,7 +93,7 @@ public class Sentence {
      * @return
      */
     public String toText() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("s" + "\t" + id + "\t" + cType + "\t" + pNum + "\t" + level + "\t" + sect + "\t" + index + "\t" + pIndex + "\t" + sectionIndex + "\t");
         for (WordItem item : wordList) {
             if (item.getType() == WordItem.WordType.Word) { //W:单词:词性标记
@@ -117,6 +119,22 @@ public class Sentence {
             buf.append("\t");
         }
         return buf.toString();
+    }
+
+    @Override
+    public String toString() {
+        return "Sentence{}";
+    }
+
+    public String plain() {
+        return text(wordList);
+    }
+
+    public static String text(List<WordItem> list) {
+        if (isEmpty(list)) {
+            return "";
+        }
+        return list.stream().reduce("", (r, v) -> r + " " + v.getWord(), (r1, r2) -> r1).trim();
     }
 
 }

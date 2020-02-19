@@ -4,10 +4,7 @@ import lombok.Data;
 
 import javax.xml.bind.Element;
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @author gcr19
@@ -70,4 +67,24 @@ public class Article {
     public void putRef(Integer number, Reference ref) {
         references.putIfAbsent(number, ref);
     }
+
+    public void put(Sentence sentence) {
+        sentenceTreeMap.put(sentence.getId(), sentence);
+    }
+
+
+    List<String> sections = new ArrayList<>();
+
+    /**
+     * 因为要统计当前section在整个article的位置，因此要统计section列表
+     */
+    public void loadSects() {
+        sentenceTreeMap.forEach((k, v) -> {
+            if (!sections.contains(v.getSect())) {
+                sections.add(v.getSect());
+            }
+        });
+        System.out.println();
+    }
+
 }

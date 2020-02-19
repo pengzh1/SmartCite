@@ -79,5 +79,8 @@ public class WordItem {
 
     }
 
-
+    @Override
+    public String toString() {
+        return "WordItem{}";
+    }
 }

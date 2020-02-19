@@ -33,7 +33,7 @@ import static com.leishengwei.jutils.Collections.toStr;
 public class PaperXmlReader {
     private static final Logger logger = LoggerFactory.getLogger(PaperXmlReader.class);
 
-
+    private static final String ART = "temp/art/";
 
     public Article processFile(File file, Element root) {
         Element header = root.getChild("header");
@@ -56,12 +56,11 @@ public class PaperXmlReader {
         Sentence sentence;
         for (Element e :
                 sentenceElements) {
-            sentence = new Sentence(Integer.parseInt(e.getAttributeValue("id")), e.getText(), article);
-            logger.info("sentence:an%s:sn%s", sentence.getArticle().getName(), sentence.getId());
-//            s.setcType(cType(e)); lei备注没多大用
-
+            sentence = new Sentence(Integer.parseInt(e.getAttributeValue("id").split(",")[0]), e.getText(), article);
+            logger.info("sentence:an" + sentence.getArticle().getName() + ":sn" + sentence.getId());
+            sentence.setCType(e.getAttributeValue("c_type")); //lei备注没多大用
             setSecInfo(e, sentence);
-            sentence.setPIndex(Integer.parseInt(e.getAttributeValue("p")));
+            sentence.setPNum(Integer.parseInt(e.getAttributeValue("p")));
             wordItem(e, sentence);
             article.append(sentence);   //append中设置一些索引位置信息
 //            logs.info(s.toText());
@@ -74,7 +73,7 @@ public class PaperXmlReader {
                 article.putRef(Integer.parseInt(ref.getAttributeValue("id")), parseReference(ref));// lei保存的是string
             }
         }
-
+        writeFile(article, new File(ART + FilenameUtils.getBaseName(file.getName()) + ".art"));
         return article;
     }
 
@@ -165,12 +164,12 @@ public class PaperXmlReader {
 
     private void writeFile(Article ar, File out) {
 
-        FileWriter fw = null;
+        FileWriter fw;
         try {
             fw = new FileWriter(out);
             BufferedWriter bw = new BufferedWriter(fw);
             bw.append("i\t");
-            bw.append(ar.getTitle() + "\t"  + ar.getAuthors() + "\n"); // 这里没有pubInfo。lei有
+            bw.append(ar.getTitle() + "\t" + ar.getAuthors() + "\n"); // 这里没有pubInfo。lei有
             bw.append("i\t");
             bw.append(ar.getAbsText().replaceAll("\\s+", " ")).append("\n");
             ar.getSentenceTreeMap().forEach((k, v) -> {
