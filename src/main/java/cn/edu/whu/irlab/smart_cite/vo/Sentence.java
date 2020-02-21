@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.leishengwei.jutils.Collections.isEmpty;
 
@@ -14,17 +15,24 @@ import static com.leishengwei.jutils.Collections.isEmpty;
  * @desc 句子实体
  **/
 @Data
-public class Sentence {
+public class Sentence implements ISentence {
+
     private int id;   //句子编号，从1开始(lei:number)
     private String text;    //句子内容
-    private Article article; //对应文章ID
-    private List<WordItem> wordList = new ArrayList<>();    //词项列表，不对外开放结构，否则可能会出错
+    private Article article; //所在文章对象
+
+    /**
+     * 引文信息
+     */
+    private String cType;  //句子类型 c:引文上下文 r:含有引文标记 n:普通
+    private List<RefTag> refList = new ArrayList<>(8);    //引文标记列表
 
     /**
      * 结构信息
      */
-    private int pNum;   //段落编号
-    private int level;    //1,2,3，对应section的类型
+    private int pNum;   //段落Id
+    private int level;    //1,2,3，对应section的层次级别
+    private List<WordItem> wordList = new ArrayList<>();    //词项列表，不对外开放结构，否则可能会出错
     private String section;    //一级章节编号
     private String subSection;  //二级章节编号
     private String subSubSection;   //三级章节编号
@@ -32,11 +40,6 @@ public class Sentence {
     private int index = 0;    //句子索引，从1开始连续编号
     private int pIndex; //当前段落的句子索引，从1开始，值由Article代理
     private int sectionIndex;   //当前章节的索引，从1开始，值由Article代理
-    /**
-     * 引文信息
-     */
-    private String cType;  //句子类型,c,n,r
-    private List<RefTag> refList = new ArrayList<>(8);    //引文标记列表
 
     public Sentence(int id, String text, Article article) {
         this.id = id;
@@ -52,11 +55,11 @@ public class Sentence {
         if (wordList == null) {
             return;
         }
-        for (int i = 0; i < wordList.size(); i++) {
-            WordItem e = wordList.get(i);
+        for (WordItem e : wordList) {
             addWord(e);
         }
     }
+
     /**
      * 添加单词
      *
@@ -90,6 +93,7 @@ public class Sentence {
     /**
      * 将句子的所有信息格式化成文本，前9个Tab分割主要信息，第10块内容是句子分词信息，也是通过Tab分割，每一项对应WordItem对象，第一块是固定的字符"s"代表是句子
      * todo art文件关键方法 重点阅读
+     *
      * @return
      */
     public String toText() {
@@ -135,6 +139,54 @@ public class Sentence {
             return "";
         }
         return list.stream().reduce("", (r, v) -> r + " " + v.getWord(), (r1, r2) -> r1).trim();
+    }
+
+    /**
+     * 和另外一个句子的距离,在前面则大于0,在后面则小于0
+     *
+     * @param other
+     * @return
+     */
+    @Override
+    public int distance(Sentence other) {
+        Optional<Integer> distance = article.distance(id, other.id);
+        return distance.orElse(10000); //假设10000为最远距离
+    }
+
+    /**
+     * 和另外一个句子是不是属于同一个最接近的section
+     *
+     * @param other
+     * @return
+     */
+    public boolean sameSection(Sentence other) {
+        if (other == null) {
+            return false;
+        }
+        if (other.level != level) {
+            return false;
+        }
+        return other.getSect().equals(sect);
+    }
+
+    @Override
+    public Optional<Sentence> next(int distance) {
+        return article.below(id, distance);
+    }
+
+    @Override
+    public Optional<Sentence> next() {
+        return article.next(id);
+    }
+
+    @Override
+    public Optional<Sentence> previous(int distance) {
+        return article.top(id, distance);
+    }
+
+    @Override
+    public Optional<Sentence> previous() {
+        return article.previous(id);
     }
 
 }

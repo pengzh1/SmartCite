@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -38,33 +37,37 @@ public class PaperXmlReader {
     public Article processFile(File file, Element root) {
         Element header = root.getChild("header");
 
+
         Article article = new Article(FilenameUtils.getBaseName(file.getName()));
 
-        //初始化article
+        //初始化article 设置摘要
         article.setAbsText(header.getChild("abstract").getValue());//todo plos数据中有的摘要有多个段落
+
+        //设置作者列表
         List<Author> authors = new ArrayList<>();
         for (Element e :
                 header.getChild("author-group").getChildren()) {
             authors.add(new Author(e.getChildText("surname"), e.getChildText("given-names")));
         }
         article.setAuthors(authors);
+
+        //设置标题
         article.setTitle(new Title(header.getChild("title-group").getChildText("article-title"), header.
                 getChild("title-group").getChildText("alt-title")));
 
-        //解析所有句子
+        //设置并解析句子
         List<Element> sentenceElements = ElementUtil.extractElements(root, "s");
         Sentence sentence;
         for (Element e :
                 sentenceElements) {
-            sentence = new Sentence(Integer.parseInt(e.getAttributeValue("id").split(",")[0]), e.getText(), article);
-            logger.info("sentence:an" + sentence.getArticle().getName() + ":sn" + sentence.getId());
-            sentence.setCType(e.getAttributeValue("c_type")); //lei备注没多大用
+            sentence = new Sentence(Integer.parseInt(e.getAttributeValue("id").split(",")[0]),
+                    e.getText(), article);//todo lei的数据个别句子存在一个句子含2各以上id的情况
+            logger.info("sentence:in article " + sentence.getArticle().getName() + ":sentence id is " + sentence.getId());
             setSecInfo(e, sentence);
-            sentence.setPNum(Integer.parseInt(e.getAttributeValue("p")));
-            wordItem(e, sentence);
             article.append(sentence);   //append中设置一些索引位置信息
 //            logs.info(s.toText());
         }
+
         //references
         Element ref_list = root.getChild("back").getChild("ref-list");
         if (ref_list != null) {
@@ -101,9 +104,25 @@ public class PaperXmlReader {
         return reference;
     }
 
+    /**
+     * @param e        句子节点
+     * @param sentence 句子对象
+     * @return
+     * @auther gcr19
+     * @desc 设置句子相关信息
+     **/
     private void setSecInfo(Element e, Sentence sentence) {
+
+        //设置cType
+        sentence.setCType(e.getAttributeValue("c_type")); //lei备注没多大用
+
+        //设置pNum
+        sentence.setPNum(Integer.parseInt(e.getAttributeValue("p")));
+
+        //设置level
         int level = Integer.parseInt(e.getAttributeValue("level"));
         sentence.setLevel(level);
+
         String sec = e.getAttributeValue("sec");
 //        sentence.setSect(e.getAttributeValue("sec")); todo gcr的想法
         switch (level) {
@@ -117,8 +136,16 @@ public class PaperXmlReader {
                 sentence.setSect(level + ":" + sec.substring(0, 1) + ":" + sec.substring(0, 3) + ":" + sec);
                 break;
         }
+        wordItem(e, sentence);
     }
 
+    /**
+     * @param e        句子节点
+     * @param sentence 句子对象
+     * @return
+     * @auther gcr19
+     * @desc 设置word相关信息
+     **/
     private void wordItem(Element e, Sentence sentence) {
         Iterator iterator = e.getDescendants();
         List<WordItem> wordItemList = new ArrayList<>();
@@ -135,6 +162,11 @@ public class PaperXmlReader {
         //分词
         sentence.setWordList(wordItemList);
         WordSegment.wordSegment(sentence);
+        wordItemList.forEach(wordItem -> {
+            if (wordItem.getType() != WordItem.WordType.Word) {
+                wordItem.getRef().setWordItem(wordItem);
+            }
+        });
         logger.debug(toStr(sentence.getWordList(), " "));
     }
 
@@ -145,12 +177,13 @@ public class PaperXmlReader {
             wordList.addAll(WordItem.words(arr));
         } else if (content.getCType().equals(Content.CType.Element)) {
             if (!content.getParentElement().getAttributeValue("c_type").equals("r")) {
-                return;//todo 预处理中没有生成c_type属性
+                return;//todo 除了Lei的数据，预处理中没有生成c_type属性
             }
             Element element = (Element) content;
-            if (element.getName().equals("xref")) {   //应该都是ref
+            if (element.getName().equals("xref")) {   //应该都是xref
                 RefTag xref = new RefTag(sentence, element.getText().trim(), Integer.parseInt((element.getAttributeValue("id"))));
-                xref.setContexts(element.getAttributeValue("context"));//todo 预处理无法生成这个属性
+                String contexts = element.getAttributeValue("context");
+                xref.setContexts(contexts != null ? contexts : "");//todo 预处理无法生成这个属性
                 String refNum = element.getAttributeValue("rid");
                 if (refNum != null && !refNum.trim().equals("")) {  //指向的参考文献
                     xref.setRefNum(Integer.parseInt(refNum.trim()));

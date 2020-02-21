@@ -18,4 +18,13 @@ public class Title {
         this.title = title;
         this.altTitle = altTitle;
     }
+
+    @Override
+    public String toString() {
+        if (altTitle!=null){
+            return title.trim()+"  "+altTitle.trim();
+        }else {
+            return title.trim();
+        }
+    }
 }

@@ -18,4 +18,9 @@ public class Author {
         this.surName = surName;
         this.givenName = givenName;
     }
+
+    @Override
+    public String toString() {
+        return surName+"  "+givenName+";";
+    }
 }

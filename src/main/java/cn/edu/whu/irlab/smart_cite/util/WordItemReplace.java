@@ -52,8 +52,8 @@ public class WordItemReplace {
             WordItem item = wordList.get(i);
             if (item.getType() == WordItem.WordType.Ref) {  //R
                 int index = 0;
-                while (i < wordList.size() - 2 && wordList.get(i + 1).getWord().equals(";") && wordList.get(i + 2).getType() == WordItem.WordType.Ref) { //;R
-                    if (index == 0) {
+                while (i < wordList.size() - 2 && wordList.get(i + 1).getWord().equals(";") && wordList.get(i + 2).getType() == WordItem.WordType.Ref) { //todo 判定条件可能不通用
+                    if (index  ==0) {
                         RefTag ref = item.getRef();
                         item = new WordItem(WordItem.WordType.G_REF, WordItem.G_REF);
                         item.addRef(ref);
@@ -94,6 +94,9 @@ public class WordItemReplace {
                 if (i > 0 && in(Words.PREP, wordList.get(i - 1).getWord().toLowerCase())) {   //前一个字符是in,of,by etc
                     continue;
                 }
+                /*
+                 * 将citation拼到前一个词上（citation_word），并删除该citation标记 todo为啥要做这步
+                 */
                 wordList.get(i - 1).setType(item.getType() == WordItem.WordType.G_REF ? WordItem.WordType.Word_G_Ref : WordItem.WordType.WordRef);
                 wordList.get(i - 1).setRefs(item.getRefs());
                 wordList.remove(i);
