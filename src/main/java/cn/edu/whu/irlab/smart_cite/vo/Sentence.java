@@ -110,14 +110,14 @@ public class Sentence implements ISentence {
                 buf.append(item.getRef().getText().replace(":", "\\$") + ":" + item.getTag());
                 buf.append(":" + item.getRef().getId());
                 buf.append(":" + item.getRef().getContexts());
-                buf.append(":" + item.getRef().getRefNum());
+                buf.append(":" + item.getRef().getRid());
                 buf.append(":" + item.getRef().getLeft());
                 buf.append(":" + item.getRef().getRight());
             } else {//G_REF|Word_G_Ref
                 //[GW|G]:文本内容:词性标记[|引文标记内容:编号:上下文:对应参考文献编号:左侧:右侧]
                 //TODO 这里有改动，分别设置了GW和G
                 buf.append(item.getRefs().stream().reduce((item.getType() == WordItem.WordType.G_REF ? "G:" : "GW:") + item.getWord() + ":" + item.getTag(),
-                        (r, i) -> r + "|" + i.getText().replace(":", "\\$") + ":" + i.getId() + ":" + i.getContexts() + ":" + i.getRefNum() + ":" + i.getLeft() + ":" + i.getRight(),
+                        (r, i) -> r + "|" + i.getText().replace(":", "\\$") + ":" + i.getId() + ":" + i.getContexts() + ":" + i.getRid() + ":" + i.getLeft() + ":" + i.getRight(),
                         (r1, r2) -> r1));
             }
             buf.append("\t");

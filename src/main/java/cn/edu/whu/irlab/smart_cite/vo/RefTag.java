@@ -27,7 +27,7 @@ public class RefTag {
 
     private int id;    //引文编号
     private String text;    //引文标记内容
-    private int refNum; //指向的参考文献编号
+    private String rid; //指向的参考文献的Id
     private String left;    //左侧字符 <xref/>节点中不含“(”时回被初始化
     private String right;   //右侧字符 <xref/>节点中不含“)”时回被初始化
 

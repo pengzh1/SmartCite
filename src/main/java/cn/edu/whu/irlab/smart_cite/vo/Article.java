@@ -33,7 +33,7 @@ public class Article {
     private Title title;
     //引文句子编号是顺序的，所以这里用TreeMap保证句子的排序
     private TreeMap<Integer, Sentence> sentenceTreeMap = new TreeMap<>();
-    private Map<Integer, Reference> references = new HashMap<>();  //参考文献列表
+    private Map<String, Reference> references = new HashMap<>();  //参考文献列表
 
     private Map<String, Integer> lexicalHookMap = null;
     private List<Map.Entry<String, Integer>> lexicalHooks = null;
@@ -80,8 +80,8 @@ public class Article {
         last = s;
     }
 
-    public void putRef(Integer number, Reference ref) {
-        references.putIfAbsent(number, ref);
+    public void putRef(String rid, Reference ref) {
+        references.putIfAbsent(rid, ref);
     }
 
     public void put(Sentence sentence) {

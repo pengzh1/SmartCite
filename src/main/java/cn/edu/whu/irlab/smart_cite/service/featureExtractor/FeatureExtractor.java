@@ -165,9 +165,9 @@ public class FeatureExtractor {
         statisticVisitor.visitRefCount(r);
         statisticVisitor.visitRefDistanceCount(r);
         statisticVisitor.visitRefNonContext(r);
-        if (r.getContexts().trim().equals("")) {    //TEST，没有正例则不进行抽取
-            return;
-        }
+//        if (r.getContexts().trim().equals("")) {    //TEST，没有正例则不进行抽取
+//            return;
+//        }
         //计算特征
         @SuppressWarnings("unchecked")
         List<String> result = candidate(r).stream() //遍历每个引文的候选上下文句

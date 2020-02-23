@@ -148,7 +148,7 @@ public class ArtFileReader {
                     RefTag ref = new RefTag(s, infos[0].trim().replaceAll("$", ":"), Integer.parseInt(infos[1]));
                     ref.setContexts(infos[2].trim());
                     if (infos[3] != null && !infos[3].trim().equals("")) {
-                        ref.setRefNum(Integer.parseInt(infos[3]));
+                        ref.setRid(infos[3]);
                     }
                     ref.setLeft(infos[4]);
                     ref.setRight(infos[5]);
@@ -174,7 +174,7 @@ public class ArtFileReader {
         //[RW|R]:文本内容:引文标记内容:词性标记:引文编号:上下文:对应参考文献编号:左侧:右侧
         RefTag r = new RefTag(s, wordInfo[2].replace("$", ":"), toInt(wordInfo[4]));
         if (!wordInfo[6].trim().equals("")) {
-            r.setRefNum(toInt(wordInfo[6]));
+            r.setRid(wordInfo[6]);
         }
         r.setLeft(wordInfo[7]);
         r.setRight(wordInfo[8]);

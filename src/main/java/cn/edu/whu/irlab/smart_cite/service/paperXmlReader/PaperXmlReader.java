@@ -73,7 +73,7 @@ public class PaperXmlReader {
         if (ref_list != null) {
             List<Element> refs = ref_list.getChildren("ref");
             for (Element ref : refs) {
-                article.putRef(Integer.parseInt(ref.getAttributeValue("id")), parseReference(ref));// lei保存的是string
+                article.putRef(ref.getAttributeValue("id"), parseReference(ref));// lei保存的是string
             }
         }
         writeFile(article, new File(ART + FilenameUtils.getBaseName(file.getName()) + ".art"));
@@ -186,7 +186,7 @@ public class PaperXmlReader {
                 xref.setContexts(contexts != null ? contexts : "");//todo 预处理无法生成这个属性
                 String refNum = element.getAttributeValue("rid");
                 if (refNum != null && !refNum.trim().equals("")) {  //指向的参考文献
-                    xref.setRefNum(Integer.parseInt(refNum.trim()));
+                    xref.setRid(refNum.trim());
                 }
                 sentence.addRef(xref);  //给句子加引文引用
                 //引文替换工作

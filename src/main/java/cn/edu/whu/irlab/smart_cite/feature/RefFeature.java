@@ -47,12 +47,15 @@ public class RefFeature extends SVFeature<Integer> {
      * @return
      */
     private boolean contain(Sentence sent, RefTag ref) {
-        if (sent.getRefList().size() == 0) {
+        if (sent.getRefList().size() == 0||ref.getRid()==null) {
             return false;
         }
 
         for (RefTag r : sent.getRefList()) {
-            if (r.getRefNum() > 0 && ref.getRefNum() > 0 && r.getRefNum() == ref.getRefNum()) { //指向引文一致
+            if (r.getRid()==null){
+                 return false;
+            }
+            if (r.getRid().equals(ref.getRid())) { //指向引文一致
                 return true;
             }
             if (r.getText().equals(ref.getText())) {  //标记内容一致

@@ -19,7 +19,7 @@ import java.util.List;
  * @author gcr19
  * @version 1.0
  * @date 2020/2/6 10:43
- * @desc TODO
+ * @desc 预处理器抽象类
  **/
 public abstract class PreprocessorImpl {
 
@@ -69,7 +69,7 @@ public abstract class PreprocessorImpl {
         //整理有效信息
         Element newRoot=reformat(root);
         writeFile(newRoot, REFORMATTED, file);
-        return newRoot;
+        return newRoot.setAttribute("status","preprocessed");
     }
 
     /**

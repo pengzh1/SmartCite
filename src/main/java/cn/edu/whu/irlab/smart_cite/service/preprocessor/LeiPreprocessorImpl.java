@@ -31,11 +31,12 @@ public class LeiPreprocessorImpl extends PreprocessorImpl {
 
     private static final Logger logger = LoggerFactory.getLogger(LeiPreprocessorImpl.class);
 
-
     //需要删除的节点名列表
     private static final String[] filterTag = {"footnote", "page", "doubt", "table", "tr", "td", "appendix", "figure",
             "frontmatter", "meta", "pdfmetadata", "ocrmetadata"};
+
     private static final List<String> filterTagList = Arrays.asList(filterTag);
+
     @Autowired
     private GrobidService grobidService;
 

@@ -31,13 +31,15 @@ public class AttrGenerator {
 
     private List<Element> sentences = new ArrayList<>();
 
-    public void generateAttr(Element root, File file) {
+    public Element generateAttr(Element root, File file) {
         Element body = root.getChild("body");
         ElementUtil.extractElements(body, "s", sentences);
         reNumberSec(body);
         addSecAttr();
         addLevelAndPAttr();
+        addCTypeAttr();
         writeFile(root, ADDED, file);
+        return root.setAttribute("status","attrAdded");
     }
 
     /**
@@ -90,11 +92,23 @@ public class AttrGenerator {
         }
     }
 
-    private void addSecAttr(){
+    private void addSecAttr() {
         for (Element s :
                 sentences) {
             s.setAttribute("sec", s.getParentElement().getParentElement().getAttributeValue("id"));
         }
     }
 
+    /**
+     *@auther gcr19
+     *@desc 仅为含有引文标记的sentence添加属性c_type="r"
+     *@return
+     **/
+    private void addCTypeAttr() {
+        for (Element s :
+                sentences) {
+            if (s.getChildren("xref") != null)
+                s.setAttribute("c_type","r");
+        }
+    }
 }
