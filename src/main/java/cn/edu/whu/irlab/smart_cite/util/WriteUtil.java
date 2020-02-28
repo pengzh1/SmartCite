@@ -40,6 +40,15 @@ public class WriteUtil {
         }
     }
 
+    public static void writeList(String docPath,List list){
+        File file = new File(docPath);
+        try {
+            FileUtils.writeLines(file,list,"\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void writeRecord2csv(String path, List<RecordVo> recordVos) {
         CsvWriter csvWriter = new CsvWriter(path, ',', Charset.forName("UTF-8"));
         String[] header = {"article_id", "ref_rid", "ref_title", "sentence", "position", "is_similar"};

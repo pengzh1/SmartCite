@@ -3,6 +3,7 @@ package cn.edu.whu.irlab.smart_cite.service.featureExtractor;
 import cn.edu.whu.irlab.smart_cite.feature.*;
 import cn.edu.whu.irlab.smart_cite.service.artFileReader.ArtFileReader;
 import cn.edu.whu.irlab.smart_cite.service.statisticVisitor.StatisticVisitor;
+import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
 import cn.edu.whu.irlab.smart_cite.vo.Article;
 import cn.edu.whu.irlab.smart_cite.vo.RefTag;
 import cn.edu.whu.irlab.smart_cite.vo.Sentence;
@@ -37,8 +38,10 @@ public class FeatureExtractor {
     public static String TRAIN_DIR;
     public static final String FEATURE_FILE = "temp/feature_files/";
 
+
     private static List<Article> trainArticles; //训练数据
 
+    private static List<String> location = new ArrayList<>();
 
     @SuppressWarnings("rawtypes")
     private List<IFeature> features = new ArrayList<>();    //特征列表
@@ -49,7 +52,7 @@ public class FeatureExtractor {
     private StatisticVisitor statisticVisitor;   //统计分析
 
     public void extract(Article article, File file) {
-        featureWriter = Files.open(FEATURE_FILE + FilenameUtils.getBaseName(file.getName()) + "_features.txt");
+        featureWriter = Files.open(FEATURE_FILE + FilenameUtils.getBaseName(file.getName()) + "_features.libsvm");
         features.clear();
         loadFeatures();
         extractArticle(article);
@@ -58,6 +61,8 @@ public class FeatureExtractor {
         statisticVisitor.save();
         //关闭特征文件流
         featureWriter.close();
+        //保存位置信息
+        WriteUtil.writeList("temp/location/"+FilenameUtils.getBaseName(file.getName()) + "_location.txt",location);
     }
 
     /**
@@ -158,7 +163,7 @@ public class FeatureExtractor {
     /**
      * 每个引文标记进行特征抽取
      *
-     * @param r
+     * @param r 引文标记
      */
     private void featuresRef(RefTag r) {
         //统计距离
@@ -202,15 +207,16 @@ public class FeatureExtractor {
     /**
      * 类别标记
      *
-     * @param r
-     * @param s
+     * @param r 引文标记
+     * @param s 句子
      * @return
      */
     public static String label(RefTag r, Sentence s) {
+        location.add(s.getArticle().getNum() + ":" + r.getSentence().getId() + ":" + r.getId() + ":" + s.getId());
         //类别值:文章编号:引文句编号:引文编号:候选上下文编号 todo important
-        return (contain(r.getContexts().split(","), s.getId() + "") ? "1" : "0") + ":" + s.getArticle().getNum() +
-                ":" + r.getSentence().getId() + ":" + r.getId() + ":" + s.getId();
-//        return (contain(r.getContexts().split(","), s.getId() + "") ? "1" : "0"+ r.getSentence().getId());
+//        return (contain(r.getContexts().split(","), s.getId() + "") ? "1" : "0") + ":" + s.getArticle().getNum() +
+//                ":" + r.getSentence().getId() + ":" + r.getId() + ":" + s.getId();
+        return (contain(r.getContexts().split(","), s.getId() + "") ? "1" : "0");
     }
 
 

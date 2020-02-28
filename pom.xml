@@ -122,6 +122,7 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+
         <!--雷声伟设计的工具 start-->
         <dependency>
             <groupId>com.leishengwei</groupId>
@@ -129,6 +130,21 @@
             <version>0.0.1</version>
         </dependency>
         <!--雷声伟设计的工具 end-->
+
+        <!--weka start-->
+        <dependency>
+            <groupId>nz.ac.waikato.cms.weka</groupId>
+            <artifactId>weka-dev</artifactId>
+            <version>3.9.4</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/nz.ac.waikato.cms.weka/LibSVM -->
+        <dependency>
+            <groupId>nz.ac.waikato.cms.weka</groupId>
+            <artifactId>LibSVM</artifactId>
+            <version>1.0.10</version>
+        </dependency>
+        <!--weka end-->
 
     </dependencies>
 

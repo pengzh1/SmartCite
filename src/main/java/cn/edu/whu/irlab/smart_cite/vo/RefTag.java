@@ -19,6 +19,7 @@ import static com.leishengwei.jutils.Strings.startCapital;
  **/
 @Data
 public class RefTag {
+
     public RefTag(Sentence sentence, String text, int id) {
         this.sentence = sentence;
         this.text = text;
