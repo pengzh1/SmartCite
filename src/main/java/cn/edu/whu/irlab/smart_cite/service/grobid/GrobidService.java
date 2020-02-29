@@ -3,6 +3,8 @@ package cn.edu.whu.irlab.smart_cite.service.grobid;
 import cn.edu.whu.irlab.smart_cite.util.TypeConverter;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
@@ -25,6 +27,8 @@ import java.io.IOException;
  **/
 @Service
 public class GrobidService {
+
+    private static final Logger logger = LoggerFactory.getLogger(GrobidService.class);
 
     private static final String urlPrefix = "http://localhost:8070/api/";
 
@@ -49,7 +53,7 @@ public class GrobidService {
      *@param pdf 待转换的pdf文档
      *@return 转换后的jdom节点
      **/
-    public Element processFulltextDocument(File pdf) throws JDOMException, IOException {
+    public Element processFulltextDocument(File pdf)  {
         String url = urlPrefix + "processFulltextDocument";
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -61,8 +65,16 @@ public class GrobidService {
         valueMap.add("input", fileSystemResource);
         HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(valueMap, httpHeaders);
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, request, String.class);
+
         System.out.println(responseEntity.getStatusCodeValue());
-        return TypeConverter.str2xml(responseEntity.getBody());
+
+        Element element= null;
+        try {
+            element = TypeConverter.str2xml(responseEntity.getBody());
+        } catch (JDOMException | IOException e) {
+            logger.error(e.getMessage());//todo 异常待自定义
+        }
+        return element;
     }
 
 

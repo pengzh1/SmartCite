@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.*;
+
 /**
  * @author gcr19
  * @version 1.0
@@ -30,16 +32,6 @@ public abstract class PreprocessorImpl {
     List<Element> sentences = new ArrayList<>();
 
     List<Element> xrefs = new ArrayList<>();
-
-    //存放完成编号的XML文档
-    private final static String NUMBERED = "temp/numbered/";
-
-    //存放完成过滤操作的XML文档
-    final static String FILTERED = "temp/filtered/";
-
-    //存放重新整理后的XML文档
-    final static String REFORMATTED = "temp/reformatted/";
-
 
     @Autowired
     private LingPipeSplitterImpl lingPipeSplitter;

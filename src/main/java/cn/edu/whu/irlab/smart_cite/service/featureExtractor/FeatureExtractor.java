@@ -1,13 +1,10 @@
 package cn.edu.whu.irlab.smart_cite.service.featureExtractor;
 
 import cn.edu.whu.irlab.smart_cite.feature.*;
-import cn.edu.whu.irlab.smart_cite.service.artFileReader.ArtFileReader;
+//import cn.edu.whu.irlab.smart_cite.service.artFileReader.ArtFileReader;
 import cn.edu.whu.irlab.smart_cite.service.statisticVisitor.StatisticVisitor;
 import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
-import cn.edu.whu.irlab.smart_cite.vo.Article;
-import cn.edu.whu.irlab.smart_cite.vo.RefTag;
-import cn.edu.whu.irlab.smart_cite.vo.Sentence;
-import cn.edu.whu.irlab.smart_cite.vo.WordItem;
+import cn.edu.whu.irlab.smart_cite.vo.*;
 import com.leishengwei.jutils.Files;
 import com.leishengwei.jutils.Maps;
 import org.apache.commons.io.FilenameUtils;
@@ -20,6 +17,7 @@ import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.FEATURE_FILE;
 import static com.leishengwei.jutils.Collections.toStr;
 import static com.leishengwei.jutils.Strings.contain;
 
@@ -36,12 +34,10 @@ public class FeatureExtractor {
 
     //输入输出
     public static String TRAIN_DIR;
-    public static final String FEATURE_FILE = "temp/feature_files/";
-
 
     private static List<Article> trainArticles; //训练数据
 
-    private static List<String> location = new ArrayList<>();
+    private static List<Result> location = new ArrayList<>();
 
     @SuppressWarnings("rawtypes")
     private List<IFeature> features = new ArrayList<>();    //特征列表
@@ -51,7 +47,7 @@ public class FeatureExtractor {
     @Autowired
     private StatisticVisitor statisticVisitor;   //统计分析
 
-    public void extract(Article article, File file) {
+    public List<Result> extract(Article article, File file) {
         featureWriter = Files.open(FEATURE_FILE + FilenameUtils.getBaseName(file.getName()) + "_features.libsvm");
         features.clear();
         loadFeatures();
@@ -63,6 +59,7 @@ public class FeatureExtractor {
         featureWriter.close();
         //保存位置信息
         WriteUtil.writeList("temp/location/"+FilenameUtils.getBaseName(file.getName()) + "_location.txt",location);
+        return location;
     }
 
     /**
@@ -97,13 +94,13 @@ public class FeatureExtractor {
 
     public static List<Article> loadTrainArticles() {
         logger.info("--------------加载所有训练集---------------");
-        ArtFileReader afr = new ArtFileReader();
+//        ArtFileReader afr = new ArtFileReader();
         if (trainArticles == null) {
             trainArticles = new ArrayList<>();
             File[] files = new File(TRAIN_DIR).listFiles(v -> v.getName().endsWith(".art"));
             Arrays.asList(files).stream().forEach(f -> {
                 logger.info("读取文件 " + f.getName());
-                trainArticles.add(afr.load(f));
+//                trainArticles.add(afr.load(f));
             });
         }
         return trainArticles;
@@ -200,8 +197,7 @@ public class FeatureExtractor {
         NavigableMap<Integer, Sentence> map = Article.sectionSentences(ref);
         int index = ref.getSentence().getIndex(); //当前句的索引
         //去掉引文句
-        List<Sentence> collect = map.values().stream().filter(v -> v.getIndex() >= index - 4 && v.getIndex() <= index + 4 && v.getIndex() != ref.getSentence().getIndex()).collect(Collectors.toList());
-        return collect;
+        return map.values().stream().filter(v -> v.getIndex() >= index - 4 && v.getIndex() <= index + 4 && v.getIndex() != ref.getSentence().getIndex()).collect(Collectors.toList());
     }
 
     /**
@@ -212,7 +208,7 @@ public class FeatureExtractor {
      * @return
      */
     public static String label(RefTag r, Sentence s) {
-        location.add(s.getArticle().getNum() + ":" + r.getSentence().getId() + ":" + r.getId() + ":" + s.getId());
+        location.add(new Result(s.getArticle().getName(),s.getId(),r.getId(),r.getSentence().getId(),r.getRid()));
         //类别值:文章编号:引文句编号:引文编号:候选上下文编号 todo important
 //        return (contain(r.getContexts().split(","), s.getId() + "") ? "1" : "0") + ":" + s.getArticle().getNum() +
 //                ":" + r.getSentence().getId() + ":" + r.getId() + ":" + s.getId();
@@ -257,16 +253,16 @@ public class FeatureExtractor {
             for (int j = 1; j < fvs.length; j++) {
                 if (fvs[j].startsWith("[")) {   //列表
                     List<String> items = com.leishengwei.jutils.Arrays.list(fvs[j].substring(0, fvs[j].length() - 1).split(","));
-                    for (int i = 0; i < items.size(); i++) {
+                    for (String item : items) {
                         idIndex++;  //ID index始终+1
-                        if (!items.get(i).trim().equals("0")) {
-                            builder.append(" ").append(idIndex).append(":").append(items.get(i));
+                        if (!item.trim().equals("0")) {
+                            builder.append(" ").append(idIndex).append(":").append(item);
                         }
                     }
                 } else if (fvs[j].startsWith("{")) {    //集合
                     List<String> list = com.leishengwei.jutils.Arrays.list(fvs[j].substring(0, fvs[j].length() - 1).split(","));
-                    for (int i = 0; i < list.size(); i++) {
-                        builder.append(" ").append(list.get(i));
+                    for (String s : list) {
+                        builder.append(" ").append(s);
                     }
                 } else {    //普通
                     idIndex++;  //ID index始终+1

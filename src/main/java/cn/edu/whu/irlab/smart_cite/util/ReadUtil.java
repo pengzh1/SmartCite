@@ -5,6 +5,8 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +18,8 @@ import java.io.IOException;
  * @desc 读文件的工具类
  **/
 public class ReadUtil {
+
+    private static final Logger logger = LoggerFactory.getLogger(ReadUtil.class);
 
     /**
      * 读文件
@@ -48,13 +52,17 @@ public class ReadUtil {
         return root;
     }
 
-    public static Element read2xml(File file) throws IOException,JDOMException{
+    public static Element read2xml(File file) {
         SAXBuilder saxBuilder = new SAXBuilder();
         saxBuilder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         Document doc;
         Element root = null;
-        doc = saxBuilder.build(file);
-        root = doc.getRootElement();
+        try {
+            doc = saxBuilder.build(file);
+            root = doc.getRootElement();
+        } catch (JDOMException | IOException e) {
+            logger.error(e.getMessage());//todo 异常待自定义
+        }
         return root;
     }
 

@@ -15,7 +15,7 @@ import java.io.IOException;
  **/
 public interface Identifier {
 
-    String identifyMimeType(File file) throws IOException, Exception;
+    String identifyMimeType(File file) ;
 
-    XMLTypeEnum identifyXMLType(Element firstNode, String filePath) throws FileTypeException;
+    XMLTypeEnum identifyXMLType(Element firstNode, File file);
 }

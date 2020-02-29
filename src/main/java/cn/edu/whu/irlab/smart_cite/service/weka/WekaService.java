@@ -5,12 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import weka.classifiers.functions.LibSVM;
-import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.converters.AbstractFileSaver;
 import weka.core.converters.ConverterUtils;
-import weka.core.converters.LibSVMLoader;
 import weka.filters.unsupervised.attribute.NumericToNominal;
 
 import java.io.*;
@@ -26,7 +23,7 @@ public class WekaService {
 
     private static final Logger logger = LoggerFactory.getLogger(WekaService.class);
 
-    private static final String ModelPath = "result/model/libsvm.model";
+    private static final String MODEL_PATH = "result/model/libsvm.model";
 
     public Instances classify(String instancesPath) {
         Instances instances = loadInstances(instancesPath);
@@ -108,7 +105,7 @@ public class WekaService {
     public void persistModel(LibSVM svm) {
         ObjectOutputStream objectOutputStream;
         try {
-            objectOutputStream = new ObjectOutputStream(new FileOutputStream(ModelPath));
+            objectOutputStream = new ObjectOutputStream(new FileOutputStream(MODEL_PATH));
             objectOutputStream.writeObject(svm);
             objectOutputStream.flush();
             objectOutputStream.close();
@@ -120,7 +117,7 @@ public class WekaService {
     public LibSVM reloadPersistModel() {
         ObjectInputStream objectInputStream;
         try {
-            objectInputStream = new ObjectInputStream(new FileInputStream(ModelPath));
+            objectInputStream = new ObjectInputStream(new FileInputStream(MODEL_PATH));
             return (LibSVM) objectInputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
