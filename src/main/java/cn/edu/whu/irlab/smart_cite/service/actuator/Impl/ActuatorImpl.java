@@ -1,7 +1,5 @@
 package cn.edu.whu.irlab.smart_cite.service.actuator.Impl;
 
-import cn.edu.whu.irlab.smart_cite.enums.CiteMarkEnum;
-import cn.edu.whu.irlab.smart_cite.enums.FileTypeEnum;
 import cn.edu.whu.irlab.smart_cite.enums.XMLTypeEnum;
 import cn.edu.whu.irlab.smart_cite.service.Identifier.Identifier;
 import cn.edu.whu.irlab.smart_cite.service.actuator.Actuator;
@@ -14,10 +12,9 @@ import cn.edu.whu.irlab.smart_cite.service.preprocessor.LeiPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.PlosPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.weka.WekaService;
 import cn.edu.whu.irlab.smart_cite.util.ReadUtil;
+import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
 import cn.edu.whu.irlab.smart_cite.vo.Article;
-import cn.edu.whu.irlab.smart_cite.vo.RecordVo;
 import cn.edu.whu.irlab.smart_cite.vo.Result;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.jdom2.Element;
 import org.slf4j.Logger;
@@ -33,6 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.FEATURE_FILE;
+import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.OUTPUT;
 
 /**
  * @author gcr19
@@ -43,7 +41,6 @@ import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.FEATURE_FILE;
 public class ActuatorImpl implements Actuator {
 
     private static final Logger logger = LoggerFactory.getLogger(ActuatorImpl.class);
-
 
     @Resource(name = "identifier")
     public Identifier identifier;
@@ -75,10 +72,13 @@ public class ActuatorImpl implements Actuator {
 
     public void AnalyzeCitationContext(File file) {
 
+        if (!file.exists()) {
+            throw new IllegalArgumentException("文件不存在");
+        }
+
         XMLTypeEnum xmlTypeEnum = null;
         //XML根节点
         Element root = null;
-
         //识别文件类型
         String mimeType = identifier.identifyMimeType(file);
 
@@ -101,12 +101,16 @@ public class ActuatorImpl implements Actuator {
             case Plos:
                 root = plosPreprocessor.parseXML(root, file);
                 root = attrGenerator.generateAttr(root, file);
+                break;
             case Grobid:
                 root = grobidPreprocessor.parseXML(root, file);
                 root = attrGenerator.generateAttr(root, file);
+                break;
             case Lei:
                 root = leiPreprocessor.parseXML(root, file);
+                break;
             default:
+                break;
         }
 
         //解析XML文件
@@ -115,16 +119,16 @@ public class ActuatorImpl implements Actuator {
         //抽取特征
         List<Result> results = featureExtractor.extract(article, file);
 
-        Instances instances= wekaService.classify(FEATURE_FILE+ FilenameUtils.getBaseName(file.getName()) + "_features.libsvm");
+        Instances instances = wekaService.classify(FEATURE_FILE + FilenameUtils.getBaseName(file.getName()) + "_features.libsvm");
 
         for (int i = 0; i < results.size(); i++) {
-            if (instances.get(i).classValue()==0){
+            if (instances.get(i).classValue() == 0) {
                 results.get(i).setContext(false);
-            }else {
+            } else {
                 results.get(i).setContext(true);
             }
         }
-
+        WriteUtil.writeList(OUTPUT+FilenameUtils.getBaseName(file.getName())+".txt",results);
         System.out.println(results);
     }
 }

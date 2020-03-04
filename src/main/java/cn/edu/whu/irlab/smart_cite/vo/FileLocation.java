@@ -20,4 +20,6 @@ public class FileLocation {
     //存放重新整理后的XML文档
     public final static String REFORMATTED = "temp/reformatted/";
 
+    public final static String OUTPUT="output/";
+
 }

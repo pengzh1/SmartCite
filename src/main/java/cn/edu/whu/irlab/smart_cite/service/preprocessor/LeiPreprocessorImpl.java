@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.REFORMATTED;
+
 /**
  * @author gcr19
  * @version 1.0
