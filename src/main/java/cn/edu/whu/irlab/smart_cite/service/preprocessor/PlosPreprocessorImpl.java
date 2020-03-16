@@ -68,6 +68,7 @@ public class PlosPreprocessorImpl extends PreprocessorImpl {
     @Override
     void fillBody(Element root, Element body) {
         body.addContent(root.getChild("body").removeContent());
+        reNumberSec(body);
     }
 
     @Override

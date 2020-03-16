@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.ADDED;
+
 
 /**
  * @author gcr19
@@ -25,8 +27,6 @@ public class AttrGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(AttrGenerator.class);
 
-    //存放完成编号的XML文档
-    private final static String ADDED = "temp/addedAttr/";
 
 
     private List<Element> sentences = new ArrayList<>();
@@ -34,7 +34,6 @@ public class AttrGenerator {
     public Element generateAttr(Element root, File file) {
         Element body = root.getChild("body");
         ElementUtil.extractElements(body, "s", sentences);
-        reNumberSec(body);
         addSecAttr();
         addLevelAndPAttr();
         addCTypeAttr();
@@ -42,28 +41,7 @@ public class AttrGenerator {
         return root.setAttribute("status","attrAdded");
     }
 
-    /**
-     * @param body body节点
-     * @return
-     * @auther gcr19
-     * @desc 为sec节点重新排序
-     **/
-    private void reNumberSec(Element body) {
-        List<Element> children = body.getChildren("sec");
-        if (children != null) {
-            int i = 1;
-            for (Element sec :
-                    children) {
-                String parentId = sec.getParentElement().getAttributeValue("id");
-                if (parentId != null) {
-                    sec.setAttribute("id", parentId + "." + i++);
-                } else {
-                    sec.setAttribute("id", String.valueOf(i++));
-                }
-                reNumberSec(sec);
-            }
-        }
-    }
+
 
     private void addLevelAndPAttr() {
         for (Element sElement :

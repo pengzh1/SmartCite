@@ -33,6 +33,9 @@ public abstract class PreprocessorImpl {
 
     List<Element> xrefs = new ArrayList<>();
 
+    File file;
+    Element root;
+
     @Autowired
     private LingPipeSplitterImpl lingPipeSplitter;
 
@@ -287,5 +290,28 @@ public abstract class PreprocessorImpl {
             logger.error(e.getMessage());
         }
 
+    }
+
+    /**
+     * @param body body节点
+     * @return
+     * @auther gcr19
+     * @desc 为sec节点重新排序
+     **/
+    void reNumberSec(Element body) {
+        List<Element> children = body.getChildren("sec");
+        if (children != null) {
+            int i = 1;
+            for (Element sec :
+                    children) {
+                String parentId = sec.getParentElement().getAttributeValue("id");
+                if (parentId != null) {
+                    sec.setAttribute("id", parentId + "." + i++);
+                } else {
+                    sec.setAttribute("id", String.valueOf(i++));
+                }
+                reNumberSec(sec);
+            }
+        }
     }
 }

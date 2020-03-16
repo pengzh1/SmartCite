@@ -2,7 +2,7 @@ package cn.edu.whu.irlab.smart_cite.service.actuator.Impl;
 
 import cn.edu.whu.irlab.smart_cite.enums.XMLTypeEnum;
 import cn.edu.whu.irlab.smart_cite.service.Identifier.Identifier;
-import cn.edu.whu.irlab.smart_cite.service.actuator.Actuator;
+import cn.edu.whu.irlab.smart_cite.service.actuator.Extractor;
 import cn.edu.whu.irlab.smart_cite.service.attrGenerator.AttrGenerator;
 import cn.edu.whu.irlab.smart_cite.service.featureExtractor.FeatureExtractor;
 import cn.edu.whu.irlab.smart_cite.service.grobid.GrobidService;
@@ -25,9 +25,7 @@ import weka.core.Instances;
 
 import javax.annotation.Resource;
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.FEATURE_FILE;
 import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.OUTPUT;
@@ -37,10 +35,10 @@ import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.OUTPUT;
  * @date 2019-10-19 11:27
  * @desc 任务执行器 实现类
  **/
-@Service("actuator")
-public class ActuatorImpl implements Actuator {
+@Service("extractor")
+public class ExtractorImpl implements Extractor {
 
-    private static final Logger logger = LoggerFactory.getLogger(ActuatorImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExtractorImpl.class);
 
     @Resource(name = "identifier")
     public Identifier identifier;
@@ -96,7 +94,7 @@ public class ActuatorImpl implements Actuator {
                 throw new IllegalArgumentException("此文件类型为：" + mimeType + ",不是合法的文件类型");
         }
 
-        //根据不同XML文件类型进行预处理
+        //根据不同XML文件类型进行预处理 处理后重要的文件numbered,addedAttr
         switch (xmlTypeEnum) {
             case Plos:
                 root = plosPreprocessor.parseXML(root, file);
@@ -119,8 +117,8 @@ public class ActuatorImpl implements Actuator {
         //抽取特征
         List<Result> results = featureExtractor.extract(article, file);
 
+        //分类
         Instances instances = wekaService.classify(FEATURE_FILE + FilenameUtils.getBaseName(file.getName()) + "_features.libsvm");
-
         for (int i = 0; i < results.size(); i++) {
             if (instances.get(i).classValue() == 0) {
                 results.get(i).setContext(false);
@@ -128,6 +126,7 @@ public class ActuatorImpl implements Actuator {
                 results.get(i).setContext(true);
             }
         }
+
         WriteUtil.writeList(OUTPUT+FilenameUtils.getBaseName(file.getName())+".txt",results);
         System.out.println(results);
     }
