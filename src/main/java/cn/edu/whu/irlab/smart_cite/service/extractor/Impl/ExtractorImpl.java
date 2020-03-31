@@ -1,8 +1,8 @@
-package cn.edu.whu.irlab.smart_cite.service.actuator.Impl;
+package cn.edu.whu.irlab.smart_cite.service.extractor.Impl;
 
 import cn.edu.whu.irlab.smart_cite.enums.XMLTypeEnum;
 import cn.edu.whu.irlab.smart_cite.service.Identifier.Identifier;
-import cn.edu.whu.irlab.smart_cite.service.actuator.Extractor;
+import cn.edu.whu.irlab.smart_cite.service.extractor.Extractor;
 import cn.edu.whu.irlab.smart_cite.service.attrGenerator.AttrGenerator;
 import cn.edu.whu.irlab.smart_cite.service.featureExtractor.FeatureExtractor;
 import cn.edu.whu.irlab.smart_cite.service.grobid.GrobidService;
@@ -20,6 +20,7 @@ import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import weka.core.Instances;
 
@@ -127,8 +128,8 @@ public class ExtractorImpl implements Extractor {
             }
         }
 
-        WriteUtil.writeList(OUTPUT+FilenameUtils.getBaseName(file.getName())+".txt",results);
-        System.out.println(results);
+        WriteUtil.writeList(OUTPUT + FilenameUtils.getBaseName(file.getName()) + ".txt", results);//todo 配置多样的输出
+//        System.out.println(results);
     }
 }
 

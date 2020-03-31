@@ -228,7 +228,7 @@ public class StatisticVisitor {
      * @param sent
      */
     public void contextSCount(Sentence sent) {
-        if (sent.getCType().equals("c")) {
+        if (sent.getCType() != null && sent.getCType().equals("c")) {
             cCount++;
         }
     }

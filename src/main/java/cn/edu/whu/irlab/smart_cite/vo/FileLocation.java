@@ -23,6 +23,9 @@ public class FileLocation {
     //存放完成编号的XML文档
     public final static String ADDED = "temp/addedAttr/";
 
-    public final static String OUTPUT="output/";
+    //存放art文件
+    public final static String ART = "temp/art/";
+
+    public final static String OUTPUT = "output/";
 
 }

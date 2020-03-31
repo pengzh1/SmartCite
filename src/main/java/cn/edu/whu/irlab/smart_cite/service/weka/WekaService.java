@@ -25,9 +25,13 @@ public class WekaService {
 
     private static final String MODEL_PATH = "result/model/libsvm.model";
 
+    private LibSVM svm;
+
     public Instances classify(String instancesPath) {
         Instances instances = loadInstances(instancesPath);
-        LibSVM svm = reloadPersistModel();
+        if (svm==null){
+            svm = reloadPersistModel();
+        }
         return classify(svm, instances);
     }
 

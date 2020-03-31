@@ -37,7 +37,9 @@ public class RefPositionFeature extends SVFeature<Integer> {
         }
         if (ts.isPresent()) {
             b1 = ts.get().getId() != target.getSentence().getId();
-            b2 = ts.get().getCType().trim().equals("r");
+            if (ts.get().getCType()!=null){
+                b2 = ts.get().getCType().trim().equals("r");
+            }
         }
         if (!b1) { //前面或者后面的句子 是 目标引文句
             return -1;

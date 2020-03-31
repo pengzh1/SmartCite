@@ -1,4 +1,4 @@
-package cn.edu.whu.irlab.smart_cite.service.actuator;
+package cn.edu.whu.irlab.smart_cite.service.extractor;
 
 /**
  * @author gcr19

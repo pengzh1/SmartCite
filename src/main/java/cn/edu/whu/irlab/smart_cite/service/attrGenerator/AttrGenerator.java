@@ -28,19 +28,18 @@ public class AttrGenerator {
     private static final Logger logger = LoggerFactory.getLogger(AttrGenerator.class);
 
 
-
     private List<Element> sentences = new ArrayList<>();
 
     public Element generateAttr(Element root, File file) {
+        sentences.clear();
         Element body = root.getChild("body");
         ElementUtil.extractElements(body, "s", sentences);
         addSecAttr();
         addLevelAndPAttr();
         addCTypeAttr();
         writeFile(root, ADDED, file);
-        return root.setAttribute("status","attrAdded");
+        return root.setAttribute("status", "attrAdded");
     }
-
 
 
     private void addLevelAndPAttr() {
@@ -78,15 +77,16 @@ public class AttrGenerator {
     }
 
     /**
-     *@auther gcr19
-     *@desc 仅为含有引文标记的sentence添加属性c_type="r"
-     *@return
+     * @return
+     * @auther gcr19
+     * @desc 仅为含有引文标记的sentence添加属性c_type="r"
      **/
     private void addCTypeAttr() {
         for (Element s :
                 sentences) {
-            if (s.getChildren("xref") != null)
-                s.setAttribute("c_type","r");
+            if (s.getChildren("xref").size() != 0) {
+                s.setAttribute("c_type", "r");
+            }
         }
     }
 }

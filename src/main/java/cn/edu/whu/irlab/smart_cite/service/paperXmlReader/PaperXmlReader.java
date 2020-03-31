@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.ART;
 import static com.leishengwei.jutils.Collections.toStr;
 
 /**
@@ -30,13 +32,11 @@ import static com.leishengwei.jutils.Collections.toStr;
  **/
 @Service
 public class PaperXmlReader {
-    private static final Logger logger = LoggerFactory.getLogger(PaperXmlReader.class);
 
-    private static final String ART = "temp/art/";
+    private static final Logger logger = LoggerFactory.getLogger(PaperXmlReader.class);
 
     public Article processFile(File file, Element root) {
         Element header = root.getChild("header");
-
 
         Article article = new Article(FilenameUtils.getBaseName(file.getName()));
 
@@ -76,7 +76,7 @@ public class PaperXmlReader {
                 article.putRef(ref.getAttributeValue("id"), parseReference(ref));// lei保存的是string
             }
         }
-        writeFile(article, new File(ART + FilenameUtils.getBaseName(file.getName()) + ".art"));
+//        writeFile(article, new File(ART + FilenameUtils.getBaseName(file.getName()) + ".art"));
         return article;
     }
 
@@ -114,7 +114,7 @@ public class PaperXmlReader {
     private void setSecInfo(Element e, Sentence sentence) {
 
         //设置cType
-        sentence.setCType(e.getAttributeValue("c_type")); //lei备注没多大用
+        sentence.setCType(e.getAttributeValue("c_type"));
 
         //设置pNum
         sentence.setPNum(Integer.parseInt(e.getAttributeValue("p")));

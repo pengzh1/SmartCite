@@ -1,9 +1,7 @@
 package cn.edu.whu.irlab.smart_cite.controller;
 
-import cn.edu.whu.irlab.smart_cite.service.actuator.Impl.ExtractorImpl;
+import cn.edu.whu.irlab.smart_cite.service.extractor.Impl.ExtractorImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
