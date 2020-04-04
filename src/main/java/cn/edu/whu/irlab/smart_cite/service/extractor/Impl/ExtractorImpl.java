@@ -120,6 +120,8 @@ public class ExtractorImpl implements Extractor {
 
         //分类
         Instances instances = wekaService.classify(FEATURE_FILE + FilenameUtils.getBaseName(file.getName()) + "_features.libsvm");
+
+
         for (int i = 0; i < results.size(); i++) {
             if (instances.get(i).classValue() == 0) {
                 results.get(i).setContext(false);

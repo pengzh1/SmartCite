@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Async;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.*;
@@ -41,8 +42,15 @@ public abstract class PreprocessorImpl {
     private LingPipeSplitterImpl lingPipeSplitter;
 
     public Element parseXML(Element root, File file) {
+        //节点过滤
+        filterTags(root);
         //段落抽取
         extractParagraphs(root);
+        removeElementNotXref();
+        //写出到新文件
+        writeFile(root, FILTERED, file);
+
+
         //给段落编号
         numberElement(paragraphs);
         //分句
@@ -57,15 +65,11 @@ public abstract class PreprocessorImpl {
         numberElement(xrefs);
         //写出到新文件
         writeFile(root, NUMBERED, file);
-        //节点过滤
-        filterTags(root);
-        removeElementNotXref();
-        //写出到新文件
-        writeFile(root, FILTERED, file);
+
         //整理有效信息
-        Element newRoot=reformat(root);
+        Element newRoot = reformat(root);
         writeFile(newRoot, REFORMATTED, file);
-        return newRoot.setAttribute("status","preprocessed");
+        return newRoot.setAttribute("status", "preprocessed");
     }
 
     /**
@@ -166,23 +170,29 @@ public abstract class PreprocessorImpl {
     }
 
     void removeElementNotXref(String xrefLabelName, String attributeName, String attributeValue) {
-        for (Element sentence :
-                sentences) {
-            if (sentence.getChildren() != null) {
+        for (Element paragraph :
+                paragraphs) {
+            if (paragraph.getChildren() != null) {
                 List<Element> needDeleted = new ArrayList<>();
-                for (Element child :
-                        sentence.getChildren()) {
-                    if (!child.getName().equals(xrefLabelName)) {
-                        putValue2before(sentence, child, needDeleted);
-                    } else {
-                        if (!child.getAttributeValue(attributeName).equals(attributeValue)) {
-                            putValue2before(sentence, child, needDeleted);
+                List<Element> children = paragraph.getChildren();
+
+                for (int i = children.size() - 1; i >= 0; i--) {
+                    Element child = children.get(i);
+
+                    if (!child.getName().equals(xrefLabelName) || !child.getAttributeValue(attributeName).equals(attributeValue)) {
+
+                        if (paragraph.indexOf(child) == 0) {
+                            paragraph.setContent(0, new Text(child.getValue()));
+                        } else {
+                            putValue2before(paragraph, child);
                         }
+                        needDeleted.add(child);
                     }
                 }
+
                 for (Element element :
                         needDeleted) {
-                    sentence.removeContent(element);
+                    paragraph.removeContent(element);
                 }
             }
         }
@@ -193,13 +203,18 @@ public abstract class PreprocessorImpl {
      * @param child    下个节点
      * @return
      * @auther gcr19
-     * @desc 取得下个节点的值合并到上个节点，并删除下个节点
+     * @desc 取得下个节点的值合并到上个节点
      **/
-    private void putValue2before(Element sentence, Element child, List<Element> needDeleted) {
-        Text text = new Text(sentence.getContent(sentence.indexOf(child) - 1).getValue()
-                + child.getValue());
-        sentence.setContent(sentence.indexOf(child) - 1, text);
-        needDeleted.add(child);
+    private void putValue2before(Element sentence, Element child) {
+        if (sentence.getContent(sentence.indexOf(child) - 1).getCType().equals(Content.CType.Text)) {
+            Text text = new Text(sentence.getContent(sentence.indexOf(child) - 1).getValue()
+                    + child.getValue());
+            sentence.setContent(sentence.indexOf(child) - 1, text);
+        } else {
+            Element before = (Element) sentence.getContent(sentence.indexOf(child) - 1);
+            Text text = new Text(before.getValue() + child.getValue());
+            before.setContent(text);
+        }
     }
 
     /**
@@ -236,8 +251,8 @@ public abstract class PreprocessorImpl {
             if (attribute != null) {
                 attribute.setName(newName);
             }
-            List<Element> children=element.getChildren();
-            if (children!=null){
+            List<Element> children = element.getChildren();
+            if (children != null) {
                 for (Element e :
                         children) {
                     reNameAttribute(e, targetElementName, oldName, newName);

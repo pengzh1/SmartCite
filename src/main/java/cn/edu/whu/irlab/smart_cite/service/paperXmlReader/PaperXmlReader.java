@@ -6,6 +6,7 @@ import cn.edu.whu.irlab.smart_cite.util.WordSegment;
 import cn.edu.whu.irlab.smart_cite.util.WordTokenizer;
 import cn.edu.whu.irlab.smart_cite.vo.*;
 import org.apache.commons.io.FilenameUtils;
+import org.jdom2.Attribute;
 import org.jdom2.Content;
 import org.jdom2.Element;
 import org.slf4j.Logger;
@@ -176,11 +177,20 @@ public class PaperXmlReader {
             String[] arr = WordTokenizer.split(text);
             wordList.addAll(WordItem.words(arr));
         } else if (content.getCType().equals(Content.CType.Element)) {
-            if (!content.getParentElement().getAttributeValue("c_type").equals("r")) {
+            Attribute c_type = content.getParentElement().getAttribute("c_type");
+            if (c_type != null && !c_type.getValue().equals("r")) {
                 return;//todo 除了Lei的数据，预处理中没有生成c_type属性
             }
             Element element = (Element) content;
             if (element.getName().equals("xref")) {   //应该都是xref
+                try{
+                    Integer.parseInt((element.getAttributeValue("id")));
+                }catch (Exception e){
+                    logger.error(e.getMessage());
+                    System.out.println(element.getAttributeValue("id"));
+                    System.out.println();
+                }
+
                 RefTag xref = new RefTag(sentence, element.getText().trim(), Integer.parseInt((element.getAttributeValue("id"))));
                 String contexts = element.getAttributeValue("context");
                 xref.setContexts(contexts != null ? contexts : "");//todo 预处理无法生成这个属性

@@ -50,6 +50,7 @@ public class FeatureExtractor {
     public List<Result> extract(Article article, File file) {
         featureWriter = Files.open(FEATURE_FILE + FilenameUtils.getBaseName(file.getName()) + "_features.libsvm");
         features.clear();
+        location.clear();
         loadFeatures();
         extractArticle(article);
 

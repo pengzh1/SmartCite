@@ -72,7 +72,12 @@ public class AttrGenerator {
     private void addSecAttr() {
         for (Element s :
                 sentences) {
-            s.setAttribute("sec", s.getParentElement().getParentElement().getAttributeValue("id"));
+            Element sec=s.getParentElement().getParentElement();
+            if (sec.getName().equals("sec")){
+                s.setAttribute("sec",sec.getAttributeValue("id") );
+            }else {
+                throw new IllegalArgumentException("this element name is " + sec.getName()+". please input sec element");
+            }
         }
     }
 
