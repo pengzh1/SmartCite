@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,6 +44,8 @@ public class LeiPreprocessorImpl extends PreprocessorImpl {
 
     @Override
     public Element parseXML(Element root, File file) {
+        this.file = file;
+        this.root = root;
         Element newRoot = reformat(root);
         newRoot.setAttribute("status", root.getAttributeValue("status"));
         writeFile(newRoot, REFORMATTED, file);
@@ -97,19 +98,26 @@ public class LeiPreprocessorImpl extends PreprocessorImpl {
         reNameElement(newBody, "subsection", "sec");
         reNameElement(newBody, "subsubsection", "sec");
         reNameElement(newBody, "ref", "xref");
+
         reNameAttribute(newBody, "sec", "number", "id");
         reNameAttribute(newBody, "p", "number", "id");
         reNameAttribute(newBody, "xref", "number", "id");
         reNameAttribute(newBody, "s", "number", "id");
         reNameAttribute(newBody, "xref", "ref_num", "rid");
         List<Element> sentences = ElementUtil.extractElements(newBody, "s");
+        reNumberSec(newBody);
+
         for (Element s :
                 sentences) {
             s.removeAttribute("section");
             s.removeAttribute("subsection");
             s.removeAttribute("subsubsection");
-
-            s.setAttribute("sec", s.getParentElement().getParentElement().getAttributeValue("id"));
+            try {
+                String secId = s.getParentElement().getParentElement().getAttributeValue("id");
+                s.setAttribute("sec", secId);
+            } catch (NullPointerException e) {
+                System.out.println(file.getName() + " " + s.getValue());
+            }
         }
 
         List<Element> secs = ElementUtil.extractElements(newBody, "sec");
@@ -125,9 +133,11 @@ public class LeiPreprocessorImpl extends PreprocessorImpl {
     void fillBack(Element root, Element back) {
         Element references = root.getChild("body").getChild("references");
         Element ref_list = new Element("ref-list");
-        for (Element ref :
-                references.getChildren()) {
-            ref_list.addContent(parseCitation(ref));
+        if (references != null) {//todo Lei数据中存在无ref-list的情况
+            for (Element ref :
+                    references.getChildren()) {
+                ref_list.addContent(parseCitation(ref));
+            }
         }
         back.addContent(ref_list);
     }

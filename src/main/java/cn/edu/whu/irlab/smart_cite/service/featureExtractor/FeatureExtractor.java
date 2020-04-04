@@ -50,6 +50,7 @@ public class FeatureExtractor {
     public List<Result> extract(Article article, File file) {
         featureWriter = Files.open(FEATURE_FILE + FilenameUtils.getBaseName(file.getName()) + "_features.libsvm");
         features.clear();
+        location.clear();
         loadFeatures();
         extractArticle(article);
 
@@ -58,7 +59,7 @@ public class FeatureExtractor {
         //关闭特征文件流
         featureWriter.close();
         //保存位置信息
-        WriteUtil.writeList("temp/location/"+FilenameUtils.getBaseName(file.getName()) + "_location.txt",location);
+        WriteUtil.writeList("temp/location/" + FilenameUtils.getBaseName(file.getName()) + "_location.txt", location);
         return location;
     }
 
@@ -138,7 +139,7 @@ public class FeatureExtractor {
         ar.getSentenceTreeMap().forEach((k, sent) -> {  //遍历每个句子
             //	System.out.println("abc");
             logger.debug("article:[" + sent.getArticle().getNum() + "].sentence<" + sent.getId() + ">");
-            if (sent.getCType().equals("r")) { //只在r中找
+            if (sent.getCType() != null && sent.getCType().equals("r")) { //只在r中找
 
                 statisticVisitor.visitRSentence(sent);
                 statisticVisitor.visitRefListSentence(sent);
@@ -183,7 +184,7 @@ public class FeatureExtractor {
         result = toSVMFormat(result);
         //       result = toCRFFormat(result);
         featureWriter.appendLn(toStr(result, "\n"));
-        System.out.println(toStr(result, "\n"));
+//        System.out.println(toStr(result, "\n"));
     }
 
     /**
@@ -208,7 +209,7 @@ public class FeatureExtractor {
      * @return
      */
     public static String label(RefTag r, Sentence s) {
-        location.add(new Result(s.getArticle().getName(),s.getId(),r.getId(),r.getSentence().getId(),r.getRid()));
+        location.add(new Result(s.getArticle().getName(), s.getId(), r.getId(), r.getSentence().getId(), r.getRid()));
         //类别值:文章编号:引文句编号:引文编号:候选上下文编号 todo important
 //        return (contain(r.getContexts().split(","), s.getId() + "") ? "1" : "0") + ":" + s.getArticle().getNum() +
 //                ":" + r.getSentence().getId() + ":" + r.getId() + ":" + s.getId();

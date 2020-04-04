@@ -27,7 +27,7 @@ public class PlosPreprocessorImpl extends PreprocessorImpl {
     //需要删除的节点名列表
     private static final String[] filterTag = {"journal-meta", "article-categories", "aff", "author-notes",
             "author-notes", "pub-date", "issue", "elocation-id", "history", "permissions", "funding-group", "counts", "fig",
-            "supplementary-material", "ack"};
+            "supplementary-material", "ack","table-wrap","disp-quote","list"};
     private static final List<String> filterTagList = Arrays.asList(filterTag);
 
     private static final String XREF_LABEL_NAME = "xref";
@@ -68,6 +68,7 @@ public class PlosPreprocessorImpl extends PreprocessorImpl {
     @Override
     void fillBody(Element root, Element body) {
         body.addContent(root.getChild("body").removeContent());
+        reNumberSec(body);
     }
 
     @Override

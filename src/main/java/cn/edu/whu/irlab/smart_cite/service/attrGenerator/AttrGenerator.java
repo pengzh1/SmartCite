@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.ADDED;
+
 
 /**
  * @author gcr19
@@ -25,45 +27,20 @@ public class AttrGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(AttrGenerator.class);
 
-    //存放完成编号的XML文档
-    private final static String ADDED = "temp/addedAttr/";
-
 
     private List<Element> sentences = new ArrayList<>();
 
     public Element generateAttr(Element root, File file) {
+        sentences.clear();
         Element body = root.getChild("body");
         ElementUtil.extractElements(body, "s", sentences);
-        reNumberSec(body);
         addSecAttr();
         addLevelAndPAttr();
         addCTypeAttr();
         writeFile(root, ADDED, file);
-        return root.setAttribute("status","attrAdded");
+        return root.setAttribute("status", "attrAdded");
     }
 
-    /**
-     * @param body body节点
-     * @return
-     * @auther gcr19
-     * @desc 为sec节点重新排序
-     **/
-    private void reNumberSec(Element body) {
-        List<Element> children = body.getChildren("sec");
-        if (children != null) {
-            int i = 1;
-            for (Element sec :
-                    children) {
-                String parentId = sec.getParentElement().getAttributeValue("id");
-                if (parentId != null) {
-                    sec.setAttribute("id", parentId + "." + i++);
-                } else {
-                    sec.setAttribute("id", String.valueOf(i++));
-                }
-                reNumberSec(sec);
-            }
-        }
-    }
 
     private void addLevelAndPAttr() {
         for (Element sElement :
@@ -95,20 +72,26 @@ public class AttrGenerator {
     private void addSecAttr() {
         for (Element s :
                 sentences) {
-            s.setAttribute("sec", s.getParentElement().getParentElement().getAttributeValue("id"));
+            Element sec=s.getParentElement().getParentElement();
+            if (sec.getName().equals("sec")){
+                s.setAttribute("sec",sec.getAttributeValue("id") );
+            }else {
+                throw new IllegalArgumentException("this element name is " + sec.getName()+". please input sec element");
+            }
         }
     }
 
     /**
-     *@auther gcr19
-     *@desc 仅为含有引文标记的sentence添加属性c_type="r"
-     *@return
+     * @return
+     * @auther gcr19
+     * @desc 仅为含有引文标记的sentence添加属性c_type="r"
      **/
     private void addCTypeAttr() {
         for (Element s :
                 sentences) {
-            if (s.getChildren("xref") != null)
-                s.setAttribute("c_type","r");
+            if (s.getChildren("xref").size() != 0) {
+                s.setAttribute("c_type", "r");
+            }
         }
     }
 }

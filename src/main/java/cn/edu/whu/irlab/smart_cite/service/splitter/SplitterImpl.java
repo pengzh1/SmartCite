@@ -85,10 +85,10 @@ public abstract class SplitterImpl {
             String contentValue = c.getValue();
             if (c.getCType().equals(Content.CType.Element)) {
                 Element e = (Element) c;
-                e.setAttribute("coordinate", String.valueOf(coordinatePoint));
-                e.setAttribute("localizer", prefix + contentValue);
-                coordinatePoint += contentValue.length();
-                elements.add(e);
+                    e.setAttribute("localizer", prefix + contentValue);
+                    e.setAttribute("coordinate", String.valueOf(coordinatePoint));
+                    coordinatePoint += contentValue.length();
+                    elements.add(e);
             } else {
                 coordinatePoint += contentValue.length();
             }

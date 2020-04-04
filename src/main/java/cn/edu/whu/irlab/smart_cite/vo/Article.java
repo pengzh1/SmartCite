@@ -39,7 +39,6 @@ public class Article {
     private List<Map.Entry<String, Integer>> lexicalHooks = null;
 
 
-
     List<String> sections = new ArrayList<>();
 
     private static List<String> lexicalHookStopword = Files.lines("data/corpus/lexicalhook_stopword.data");
@@ -71,6 +70,10 @@ public class Article {
         if (last != null && last.getPNum() != s.getPNum()) {
             paraIndex = 0;
         }
+
+        if (last != null && last.getSect() == null) {
+            System.out.println("[article]" + last.getArticle().getName() + "[sentence]" + last.getId());
+        }//todo 这里可能有错误
         if (last != null && !last.getSect().equals(s.getSect())) {
             sectionIndex = 0;
         }
