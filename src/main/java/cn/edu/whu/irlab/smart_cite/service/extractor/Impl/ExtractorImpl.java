@@ -69,6 +69,7 @@ public class ExtractorImpl implements Extractor {
     private WekaService wekaService;
 
 
+    @Async
     public void AnalyzeCitationContext(File file) {
 
         if (!file.exists()) {
