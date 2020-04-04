@@ -147,12 +147,12 @@ public class GrobidPreprocessorImpl extends PreprocessorImpl {
     @Override
     void extractParagraphs(Element root) {
         ElementUtil.extractElements(root.getChild("text", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).
-                getChild("body", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")), "p", paragraphs);
+                getChild("body", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")), "p", paragraphs.get());
     }
 
     @Override
     void extractSentence(Element root) {
         ElementUtil.extractElements(root.getChild("text", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).
-                getChild("body", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")), "s", sentences);
+                getChild("body", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")), "s", sentences.get());
     }
 }

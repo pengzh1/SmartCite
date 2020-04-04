@@ -26,15 +26,21 @@ import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.ADDED;
 public class AttrGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(AttrGenerator.class);
-    private List<Element> sentences = new ArrayList<>();
+
+    ThreadLocal<List<Element>> sentences = new ThreadLocal<List<Element>>(){
+        @Override
+        protected List<Element> initialValue() {
+            return new ArrayList<>();
+        }
+    };
 
     private File file;
 
     public Element generateAttr(Element root, File file) {
         this.file=file;
-        sentences.clear();
+        sentences.get().clear();
         Element body = root.getChild("body");
-        ElementUtil.extractElements(body, "s", sentences);
+        ElementUtil.extractElements(body, "s", sentences.get());
         addSecAttr();
         addLevelAndPAttr();
         addCTypeAttr();
@@ -45,7 +51,7 @@ public class AttrGenerator {
 
     private void addLevelAndPAttr() {
         for (Element sElement :
-                sentences) {
+                sentences.get()) {
 
             org.jdom2.Element parent = sElement.getParentElement();
             //addPAttr 添加p属性
@@ -72,7 +78,7 @@ public class AttrGenerator {
 
     private void addSecAttr() {
         for (Element s :
-                sentences) {
+                sentences.get()) {
             Element sec = s.getParentElement().getParentElement();
             if (sec.getName().equals("sec")) {
                 s.setAttribute("sec", sec.getAttributeValue("id"));
@@ -90,7 +96,7 @@ public class AttrGenerator {
      **/
     private void addCTypeAttr() {
         for (Element s :
-                sentences) {
+                sentences.get()) {
             if (s.getChildren("xref").size() != 0) {
                 s.setAttribute("c_type", "r");
             }
