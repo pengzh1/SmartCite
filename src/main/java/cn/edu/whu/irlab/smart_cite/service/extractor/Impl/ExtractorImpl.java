@@ -131,6 +131,7 @@ public class ExtractorImpl implements Extractor {
         }
 
         WriteUtil.writeList(OUTPUT + FilenameUtils.getBaseName(file.getName()) + ".txt", results);//todo 配置多样的输出
+        logger.info("extract context of article "+file.getName()+" successfully");
 //        System.out.println(results);
     }
 }

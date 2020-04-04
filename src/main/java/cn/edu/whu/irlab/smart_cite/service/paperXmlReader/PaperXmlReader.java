@@ -63,7 +63,7 @@ public class PaperXmlReader {
                 sentenceElements) {
             sentence = new Sentence(Integer.parseInt(e.getAttributeValue("id").split(",")[0]),
                     e.getText(), article);//todo lei的数据个别句子存在一个句子含2各以上id的情况
-            logger.info("sentence:in article " + sentence.getArticle().getName() + ":sentence id is " + sentence.getId());
+            logger.info("analyze [article] " + sentence.getArticle().getName() + " [sentence] " + sentence.getId());
             setSecInfo(e, sentence);
             article.append(sentence);   //append中设置一些索引位置信息
 //            logs.info(s.toText());
@@ -125,18 +125,18 @@ public class PaperXmlReader {
         sentence.setLevel(level);
 
         String sec = e.getAttributeValue("sec");
-//        sentence.setSect(e.getAttributeValue("sec")); todo gcr的想法
-        switch (level) {
-            case 1:
-                sentence.setSect(level + ":" + sec);
-                break;
-            case 2:
-                sentence.setSect(level + ":" + sec.substring(0, 1) + ":" + sec);
-                break;
-            case 3:
-                sentence.setSect(level + ":" + sec.substring(0, 1) + ":" + sec.substring(0, 3) + ":" + sec);
-                break;
-        }
+        sentence.setSect(e.getAttributeValue("sec")); //todo gcr的想法
+//        switch (level) {
+//            case 1:
+//                sentence.setSect(level + ":" + sec);
+//                break;
+//            case 2:
+//                sentence.setSect(level + ":" + sec.substring(0, 1) + ":" + sec);
+//                break;
+//            case 3:
+//                sentence.setSect(level + ":" + sec.substring(0, 1) + ":" + sec.substring(0, 3) + ":" + sec);
+//                break;
+//        }
         wordItem(e, sentence);
     }
 

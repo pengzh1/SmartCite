@@ -42,6 +42,10 @@ public abstract class PreprocessorImpl {
     private LingPipeSplitterImpl lingPipeSplitter;
 
     public Element parseXML(Element root, File file) {
+        paragraphs.clear();
+        sentences.clear();
+        xrefs.clear();
+
         //节点过滤
         filterTags(root);
         //段落抽取

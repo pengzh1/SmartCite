@@ -26,11 +26,12 @@ import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.ADDED;
 public class AttrGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(AttrGenerator.class);
-
-
     private List<Element> sentences = new ArrayList<>();
 
+    private File file;
+
     public Element generateAttr(Element root, File file) {
+        this.file=file;
         sentences.clear();
         Element body = root.getChild("body");
         ElementUtil.extractElements(body, "s", sentences);
@@ -72,11 +73,12 @@ public class AttrGenerator {
     private void addSecAttr() {
         for (Element s :
                 sentences) {
-            Element sec=s.getParentElement().getParentElement();
-            if (sec.getName().equals("sec")){
-                s.setAttribute("sec",sec.getAttributeValue("id") );
-            }else {
-                throw new IllegalArgumentException("this element name is " + sec.getName()+". please input sec element");
+            Element sec = s.getParentElement().getParentElement();
+            if (sec.getName().equals("sec")) {
+                s.setAttribute("sec", sec.getAttributeValue("id"));
+            } else {
+                logger.error("error in article:" +file.getName());
+                throw new IllegalArgumentException("this element name is " + sec.getName() + ". please input sec element");
             }
         }
     }

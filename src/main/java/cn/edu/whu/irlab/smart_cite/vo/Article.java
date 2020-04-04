@@ -72,7 +72,8 @@ public class Article {
         }
 
         if (last != null && last.getSect() == null) {
-            System.out.println("[article]" + last.getArticle().getName() + "[sentence]" + last.getId());
+            System.out.println("last [article]" + last.getArticle().getName() + "[sentence]" + last.getId());
+            System.out.println("this [article]" + s.getArticle().getName() + "[sentence]" + s.getId());
         }//todo 这里可能有错误
         if (last != null && !last.getSect().equals(s.getSect())) {
             sectionIndex = 0;
