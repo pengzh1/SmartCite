@@ -1,6 +1,8 @@
 package cn.edu.whu.irlab.smart_cite.vo;
 
 import cn.edu.whu.irlab.smart_cite.util.WordTokenizer;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -31,6 +33,8 @@ public class RefTag {
     private String rid; //指向的参考文献的Id
     private String left;    //左侧字符 <xref/>节点中不含“(”时回被初始化
     private String right;   //右侧字符 <xref/>节点中不含“)”时回被初始化
+
+    private Reference reference;
 
     private String contexts;    //上下文句子编号
     private List<Sentence> contextList = new ArrayList<>(6); //上下文句子列表
@@ -120,8 +124,30 @@ public class RefTag {
 
     }
 
+    private JSONArray contextList2Json(){
+        JSONArray array=new JSONArray();
+        for (Sentence s :
+                contextList) {
+            array.add(JSON.parse(s.toString()));
+        }
+        return array;
+    }
+
+
     @Override
     public String toString() {
-        return "RefTag{}";
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":")
+                .append(id);
+        sb.append(",\"text\":\"")
+                .append(text).append('\"');
+        sb.append(",\"reference\":")
+                .append(reference);
+        sb.append(",\"contextList\":")
+                .append(contextList2Json().toJSONString());
+        sb.append(",\"sentence\":")
+                .append(sentence);
+        sb.append('}');
+        return sb.toString();
     }
 }

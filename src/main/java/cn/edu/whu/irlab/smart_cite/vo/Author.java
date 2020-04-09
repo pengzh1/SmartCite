@@ -21,6 +21,12 @@ public class Author {
 
     @Override
     public String toString() {
-        return surName+"  "+givenName+";";
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"surName\":\"")
+                .append(surName).append('\"');
+        sb.append(",\"givenName\":\"")
+                .append(givenName).append('\"');
+        sb.append('}');
+        return sb.toString();
     }
 }

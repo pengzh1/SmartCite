@@ -41,7 +41,11 @@ public class WordItem {
     }
 
     public RefTag getRef() {
-        return refs.get(0);
+        if (refs.size()!=0){
+            return refs.get(0);
+        }else {
+            return null;
+        }
     }
 
 
@@ -141,6 +145,9 @@ public class WordItem {
 
     @Override
     public String toString() {
-        return "WordItem{}";
+        return "WordItem{" +
+                "index=" + index +
+                ", word='" + word + '\'' +
+                '}';
     }
 }

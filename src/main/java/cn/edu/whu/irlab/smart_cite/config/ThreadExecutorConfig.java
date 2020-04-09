@@ -22,7 +22,7 @@ public class ThreadExecutorConfig {
     public Executor executor(){
         ThreadPoolTaskExecutor executor=new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(1);//线程池维护线程最少数量
-        executor.setMaxPoolSize(3);//线程池维护最大线程数量
+        executor.setMaxPoolSize(8);//线程池维护最大线程数量
         executor.setQueueCapacity(15);//缓存队列
         /**
          * 对拒绝task的处理策略

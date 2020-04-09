@@ -14,7 +14,11 @@ import cn.edu.whu.irlab.smart_cite.service.weka.WekaService;
 import cn.edu.whu.irlab.smart_cite.util.ReadUtil;
 import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
 import cn.edu.whu.irlab.smart_cite.vo.Article;
+import cn.edu.whu.irlab.smart_cite.vo.RefTag;
 import cn.edu.whu.irlab.smart_cite.vo.Result;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.FilenameUtils;
 import org.jdom2.Element;
 import org.slf4j.Logger;
@@ -26,7 +30,10 @@ import weka.core.Instances;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.FEATURE_FILE;
 import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.OUTPUT;
@@ -68,10 +75,7 @@ public class ExtractorImpl implements Extractor {
     @Autowired
     private WekaService wekaService;
 
-
-    @Async
-    public void AnalyzeCitationContext(File file) {
-
+    public JSONObject ExtractCitationContext(File file) {
         if (!file.exists()) {
             throw new IllegalArgumentException("文件不存在");
         }
@@ -122,7 +126,7 @@ public class ExtractorImpl implements Extractor {
         //分类
         Instances instances = wekaService.classify(FEATURE_FILE + FilenameUtils.getBaseName(file.getName()) + "_features.libsvm");
 
-
+        //匹配分类结果
         for (int i = 0; i < results.size(); i++) {
             if (instances.get(i).classValue() == 0) {
                 results.get(i).setContext(false);
@@ -131,9 +135,45 @@ public class ExtractorImpl implements Extractor {
             }
         }
 
-        WriteUtil.writeList(OUTPUT + FilenameUtils.getBaseName(file.getName()) + ".txt", results);//todo 配置多样的输出
-        logger.info("extract context of article "+file.getName()+" successfully");
-//        System.out.println(results);
+        JSONArray refTags = CombinedResult(results);
+
+        JSONObject result = new JSONObject();
+        result.put("fileName", file.getName());
+        result.put("refTags", refTags);
+
+//        WriteUtil.writeList(OUTPUT + FilenameUtils.getBaseName(file.getName()) + ".txt", refTags);//todo 配置多样的输出
+        WriteUtil.writeStr(OUTPUT + FilenameUtils.getBaseName(file.getName()) + ".txt", result.toJSONString());
+        logger.info("extract context of article " + file.getName() + " successfully");
+
+        return result;
+    }
+
+    @Async
+    public void AsyncExtract(File file) {
+        ExtractCitationContext(file);
+    }
+
+    //聚合分析结果
+    private JSONArray CombinedResult(List<Result> results) {
+        List<RefTag> refTags = new ArrayList<>();
+        for (Result r :
+                results) {
+            RefTag refTag = r.getRefTag();
+            if (r.isContext()) {
+                refTag.getContextList().add(r.getSentence());
+            }
+            if (!refTags.contains(refTag)) {
+                refTags.add(refTag);
+            }
+        }
+
+        JSONArray array=new JSONArray();
+        for (RefTag r :
+                refTags) {
+            JSONObject json = JSON.parseObject(r.toString());
+            array.add(json);
+        }
+        return array;
     }
 }
 

@@ -37,7 +37,7 @@ public class FeatureExtractor {
 
     private static List<Article> trainArticles; //训练数据
 
-    private static List<Result> location = new ArrayList<>();
+    private static List<Result> information = new ArrayList<>();
 
     @SuppressWarnings("rawtypes")
     private List<IFeature> features = new ArrayList<>();    //特征列表
@@ -50,7 +50,7 @@ public class FeatureExtractor {
     public List<Result> extract(Article article, File file) {
         featureWriter = Files.open(FEATURE_FILE + FilenameUtils.getBaseName(file.getName()) + "_features.libsvm");
         features.clear();
-        location.clear();
+        information.clear();
         loadFeatures();
         extractArticle(article);
 
@@ -59,8 +59,8 @@ public class FeatureExtractor {
         //关闭特征文件流
         featureWriter.close();
         //保存位置信息
-        WriteUtil.writeList("temp/location/" + FilenameUtils.getBaseName(file.getName()) + "_location.txt", location);
-        return location;
+        WriteUtil.writeList("temp/location/" + FilenameUtils.getBaseName(file.getName()) + "_location.txt", information);
+        return information;
     }
 
     /**
@@ -209,7 +209,7 @@ public class FeatureExtractor {
      * @return
      */
     public static String label(RefTag r, Sentence s) {
-        location.add(new Result(s.getArticle().getName(), s.getId(), r.getId(), r.getSentence().getId(), r.getRid()));
+        information.add(new Result(s,r));
         //类别值:文章编号:引文句编号:引文编号:候选上下文编号 todo important
 //        return (contain(r.getContexts().split(","), s.getId() + "") ? "1" : "0") + ":" + s.getArticle().getNum() +
 //                ":" + r.getSentence().getId() + ":" + r.getId() + ":" + s.getId();

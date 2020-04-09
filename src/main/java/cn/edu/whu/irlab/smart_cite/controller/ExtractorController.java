@@ -1,8 +1,11 @@
 package cn.edu.whu.irlab.smart_cite.controller;
 
 import cn.edu.whu.irlab.smart_cite.service.extractor.Impl.ExtractorImpl;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author gcr19
@@ -17,8 +20,9 @@ public class ExtractorController {
     @Autowired
     private ExtractorImpl extractor;
 
-    public void extractController(){
-
+    @PostMapping("/extract")
+    public JSONObject extractController(MultipartFile file) {
+        return null;
     }
 
 }

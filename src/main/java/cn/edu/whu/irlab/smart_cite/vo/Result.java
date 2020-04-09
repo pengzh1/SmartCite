@@ -11,24 +11,15 @@ import lombok.Data;
 @Data
 public class Result {
 
-    //文档名
-    private String articleName;
-    //句子Id
-    private int sentenceId;
-    //引文标记Id
-    private int refId;
-    //引文标记所在句子Id
-    private int refAtSentence;
-    //参考文献Id
-    private String rid;
+    //句子
+    private Sentence sentence;
+    //引文标记
+    private RefTag refTag;
     //是否为引文上下文
     private boolean context;
 
-    public Result(String articleName, int sentenceId, int refId, int refAtSentence,String rid) {
-        this.articleName = articleName;
-        this.sentenceId = sentenceId;
-        this.refId = refId;
-        this.refAtSentence = refAtSentence;
-        this.rid=rid;
+    public Result(Sentence sentence, RefTag refTag) {
+        this.sentence = sentence;
+        this.refTag = refTag;
     }
 }

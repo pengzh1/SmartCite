@@ -36,10 +36,12 @@ public class PaperXmlReader {
 
     private static final Logger logger = LoggerFactory.getLogger(PaperXmlReader.class);
 
+    private Article article;
+
     public Article processFile(File file, Element root) {
         Element header = root.getChild("header");
 
-        Article article = new Article(FilenameUtils.getBaseName(file.getName()));
+        article = new Article(FilenameUtils.getBaseName(file.getName()));
 
         //初始化article 设置摘要
         article.setAbsText(header.getChild("abstract").getValue());//todo plos数据中有的摘要有多个段落
@@ -56,6 +58,15 @@ public class PaperXmlReader {
         article.setTitle(new Title(header.getChild("title-group").getChildText("article-title"), header.
                 getChild("title-group").getChildText("alt-title")));
 
+        //references
+        Element ref_list = root.getChild("back").getChild("ref-list");
+        if (ref_list != null) {
+            List<Element> refs = ref_list.getChildren("ref");
+            for (Element ref : refs) {
+                article.putRef(ref.getAttributeValue("id"), parseReference(ref));// lei保存的是string
+            }
+        }
+
         //设置并解析句子
         List<Element> sentenceElements = ElementUtil.extractElements(root, "s");
         Sentence sentence;
@@ -69,14 +80,7 @@ public class PaperXmlReader {
 //            logs.info(s.toText());
         }
 
-        //references
-        Element ref_list = root.getChild("back").getChild("ref-list");
-        if (ref_list != null) {
-            List<Element> refs = ref_list.getChildren("ref");
-            for (Element ref : refs) {
-                article.putRef(ref.getAttributeValue("id"), parseReference(ref));// lei保存的是string
-            }
-        }
+
 //        writeFile(article, new File(ART + FilenameUtils.getBaseName(file.getName()) + ".art"));
         return article;
     }
@@ -171,7 +175,7 @@ public class PaperXmlReader {
         logger.debug(toStr(sentence.getWordList(), " "));
     }
 
-    private static void addWordItem(Sentence sentence, List<WordItem> wordList, Content content) {
+    private void addWordItem(Sentence sentence, List<WordItem> wordList, Content content) {
         if (content.getCType().equals(Content.CType.Text)) {
             String text = content.getValue();
             String[] arr = WordTokenizer.split(text);
@@ -197,6 +201,7 @@ public class PaperXmlReader {
                 String refNum = element.getAttributeValue("rid");
                 if (refNum != null && !refNum.trim().equals("")) {  //指向的参考文献
                     xref.setRid(refNum.trim());
+                    xref.setReference(article.getReferences().get(xref.getRid()));
                 }
                 sentence.addRef(xref);  //给句子加引文引用
                 //引文替换工作

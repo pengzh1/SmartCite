@@ -127,7 +127,13 @@ public class Sentence implements ISentence {
 
     @Override
     public String toString() {
-        return "Sentence{}";
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":")
+                .append(id);
+        sb.append(",\"text\":\"")
+                .append(text).append('\"');
+        sb.append('}');
+        return sb.toString();
     }
 
     public String plain() {
@@ -188,5 +194,7 @@ public class Sentence implements ISentence {
     public Optional<Sentence> previous() {
         return article.previous(id);
     }
+
+
 
 }
