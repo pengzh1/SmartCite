@@ -2,8 +2,6 @@ package cn.edu.whu.irlab.smart_cite.vo;
 
 import cn.edu.whu.irlab.smart_cite.util.TypeConverter;
 import cn.edu.whu.irlab.smart_cite.util.WordTokenizer;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import lombok.Data;
 
 import java.util.ArrayList;

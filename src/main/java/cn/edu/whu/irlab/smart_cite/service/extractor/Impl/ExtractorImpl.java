@@ -122,7 +122,7 @@ public class ExtractorImpl implements Extractor {
         Article article = paperXmlReader.processFile(file, root);
 
         //抽取特征
-        List<Result> results = featureExtractor.extract(article, file);
+        List<Result> results = featureExtractor.extract(article);
 
         //分类
         Instances instances = wekaService.classify(FEATURE_FILE + FilenameUtils.getBaseName(file.getName()) + "_features.libsvm");

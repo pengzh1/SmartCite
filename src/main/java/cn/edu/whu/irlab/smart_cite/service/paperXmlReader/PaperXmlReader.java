@@ -38,6 +38,13 @@ public class PaperXmlReader {
 
     private Article article;
 
+    /**
+     *@auther gcr19
+     *@desc 将预处理后的xml文档转换为Article对象
+     *@param file 文件
+     *@param  root 根节点
+     *@return Article对象
+     **/
     public Article processFile(File file, Element root) {
         Element header = root.getChild("header");
 
@@ -81,7 +88,6 @@ public class PaperXmlReader {
         }
 
 
-//        writeFile(article, new File(ART + FilenameUtils.getBaseName(file.getName()) + ".art"));
         return article;
     }
 
@@ -128,19 +134,7 @@ public class PaperXmlReader {
         int level = Integer.parseInt(e.getAttributeValue("level"));
         sentence.setLevel(level);
 
-        String sec = e.getAttributeValue("sec");
-        sentence.setSect(e.getAttributeValue("sec")); //todo gcr的想法
-//        switch (level) {
-//            case 1:
-//                sentence.setSect(level + ":" + sec);
-//                break;
-//            case 2:
-//                sentence.setSect(level + ":" + sec.substring(0, 1) + ":" + sec);
-//                break;
-//            case 3:
-//                sentence.setSect(level + ":" + sec.substring(0, 1) + ":" + sec.substring(0, 3) + ":" + sec);
-//                break;
-//        }
+        sentence.setSect(e.getAttributeValue("sec"));
         wordItem(e, sentence);
     }
 
@@ -207,38 +201,6 @@ public class PaperXmlReader {
                 //引文替换工作
                 wordList.add(WordItem.ref(WordItem.REF, xref));
             }
-        }
-    }
-
-    private void writeFile(Article ar, File out) {
-
-        FileWriter fw;
-        try {
-            fw = new FileWriter(out);
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.append("i\t");
-            bw.append(ar.getTitle() + "\t" + ar.getAuthors() + "\n"); // 这里没有pubInfo。lei有
-            bw.append("i\t");
-            bw.append(ar.getAbsText().replaceAll("\\s+", " ")).append("\n");
-            ar.getSentenceTreeMap().forEach((k, v) -> {
-                try {
-                    bw.append(v.toText() + "\n");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-
-            ar.getReferences().forEach((k, v) -> {
-                try {
-                    bw.append("r\t" + k + "\t" + v + "\n");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-            bw.close();
-            fw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }
