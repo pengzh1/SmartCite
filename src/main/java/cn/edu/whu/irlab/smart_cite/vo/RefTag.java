@@ -1,5 +1,6 @@
 package cn.edu.whu.irlab.smart_cite.vo;
 
+import cn.edu.whu.irlab.smart_cite.util.TypeConverter;
 import cn.edu.whu.irlab.smart_cite.util.WordTokenizer;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -47,6 +48,7 @@ public class RefTag {
     private List<String> authors = null;
     //引文标记有可能指代的那些词
     private List<String> refPhrases = null;
+
     public Integer getContextNum() {
         return com.leishengwei.jutils.Arrays.list(contexts.split(",")).size();
     }
@@ -84,6 +86,7 @@ public class RefTag {
         }
         return refPhrases;
     }
+
     /**
      * 收集引文指代数据
      * 在引文所在单词前面（包括引文当前词）的六个窗口返回为寻找缩略词（包括全大写和首字母大写缩略词）
@@ -124,29 +127,14 @@ public class RefTag {
 
     }
 
-    private JSONArray contextList2Json(){
-        JSONArray array=new JSONArray();
-        for (Sentence s :
-                contextList) {
-            array.add(JSON.parse(s.toString()));
-        }
-        return array;
-    }
-
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("{");
-        sb.append("\"id\":")
-                .append(id);
-        sb.append(",\"text\":\"")
-                .append(text).append('\"');
-        sb.append(",\"reference\":")
-                .append(reference);
-        sb.append(",\"contextList\":")
-                .append(contextList2Json().toJSONString());
-        sb.append(",\"sentence\":")
-                .append(sentence);
+        sb.append("\"id\":").append(id);
+        sb.append(",\"text\":\"").append(text).append('\"');
+        sb.append(",\"reference\":").append(reference);
+        sb.append(",\"contextList\":").append(TypeConverter.list2JsonArray(contextList));
+        sb.append(",\"sentence\":").append(sentence);
         sb.append('}');
         return sb.toString();
     }

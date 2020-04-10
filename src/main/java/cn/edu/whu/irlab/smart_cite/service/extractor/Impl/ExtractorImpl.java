@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.FEATURE_FILE;
 import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.OUTPUT;
@@ -149,8 +150,9 @@ public class ExtractorImpl implements Extractor {
     }
 
     @Async
-    public void AsyncExtract(File file) {
-        ExtractCitationContext(file);
+    public CompletableFuture<JSONObject> AsyncExtract(File file) {
+        JSONObject object = ExtractCitationContext(file);
+        return CompletableFuture.completedFuture(object);
     }
 
     //聚合分析结果
@@ -167,7 +169,7 @@ public class ExtractorImpl implements Extractor {
             }
         }
 
-        JSONArray array=new JSONArray();
+        JSONArray array = new JSONArray();
         for (RefTag r :
                 refTags) {
             JSONObject json = JSON.parseObject(r.toString());

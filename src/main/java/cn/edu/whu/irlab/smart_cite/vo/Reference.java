@@ -1,5 +1,6 @@
 package cn.edu.whu.irlab.smart_cite.vo;
 
+import cn.edu.whu.irlab.smart_cite.util.TypeConverter;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import lombok.Data;
@@ -31,15 +32,6 @@ public class Reference
 		authors.add(author);
 	}
 
-	private JSONArray authors2Json(){
-		JSONArray array = new JSONArray();
-		for (Author a :
-				authors) {
-			array.add(JSON.parse(a.toString()));
-		}
-		return array;
-	}
-
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("{");
@@ -48,7 +40,7 @@ public class Reference
 		sb.append(",\"label\":\"")
 				.append(label).append('\"');
 		sb.append(",\"authors\":")
-				.append(authors2Json());
+				.append(TypeConverter.list2JsonArray(authors));
 		sb.append(",\"year\":\"")
 				.append(year).append('\"');
 		sb.append(",\"article_title\":\"")
