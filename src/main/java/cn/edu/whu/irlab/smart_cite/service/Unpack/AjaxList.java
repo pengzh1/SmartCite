@@ -4,11 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * @Description: 返回值处理
- * @Date: 2019/1/22
- * @Auther:
- */
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

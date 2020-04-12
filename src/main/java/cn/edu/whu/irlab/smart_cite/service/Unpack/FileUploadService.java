@@ -12,11 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * @Description:
- * @Date: 2019/1/22
- * @Auther:
- */
+
 @Service
 @Slf4j
 public class FileUploadService  {

@@ -9,11 +9,7 @@ import net.lingala.zip4j.core.ZipFile;
 import java.io.File;
 import java.io.FileOutputStream;
 
-/**
- * @Description: 解压rar/zip工具类
- * @Date: 2019/1/22
- * @Auther:
- */
+
 @Slf4j
 public class UnPackeUtil {
 
