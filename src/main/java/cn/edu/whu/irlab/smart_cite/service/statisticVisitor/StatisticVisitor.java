@@ -251,50 +251,52 @@ public class StatisticVisitor {
         integers[0] = 0;    //前面的个数
         integers[1] = 0;    //后面的个数
         Arrays.asList(contexts).stream().filter(c -> Strings.isNotEmpty(c)).forEach(c -> {
-            Optional<Sentence> s = r.getSentence().getArticle().sentence(Integer.parseInt(c));
-            s.ifPresent(ss -> {
-                int distance = ss.getIndex() - r.getSentence().getIndex();
-                if (ss.getId() > r.getSentence().getId()) {//后面的
-                    //判断有没有跨引
-                    integers[1]++;
-                    if (ss.getIndex() - r.getSentence().getIndex() > integers[1]) {    //跨引了
-                        String as = ss.getArticle().getNum() + "." + ss.getId();
-                        String arf = as + ">" + r.getSentence().getId() + "." + r.getId();
-                        preCross.putIfAbsent(ss.getIndex() - r.getSentence().getIndex(), 1);
-                        preCross.computeIfPresent(ss.getIndex() - r.getSentence().getIndex(), (k, v) -> v + 1);
-                        crossSent.putIfAbsent(as, 1);
-                        crossSent.computeIfPresent(as, (k, v) -> v + 1);
-                        crossContext.putIfAbsent(arf, 1);
-                        crossContext.computeIfPresent(arf, (k, v) -> v + 1);
+            if(!c.contains("，")) {
+                Optional<Sentence> s = r.getSentence().getArticle().sentence(Integer.parseInt(c));
+                s.ifPresent(ss -> {
+                    int distance = ss.getIndex() - r.getSentence().getIndex();
+                    if (ss.getId() > r.getSentence().getId()) {//后面的
+                        //判断有没有跨引
+                        integers[1]++;
+                        if (ss.getIndex() - r.getSentence().getIndex() > integers[1]) {    //跨引了
+                            String as = ss.getArticle().getNum() + "." + ss.getId();
+                            String arf = as + ">" + r.getSentence().getId() + "." + r.getId();
+                            preCross.putIfAbsent(ss.getIndex() - r.getSentence().getIndex(), 1);
+                            preCross.computeIfPresent(ss.getIndex() - r.getSentence().getIndex(), (k, v) -> v + 1);
+                            crossSent.putIfAbsent(as, 1);
+                            crossSent.computeIfPresent(as, (k, v) -> v + 1);
+                            crossContext.putIfAbsent(arf, 1);
+                            crossContext.computeIfPresent(arf, (k, v) -> v + 1);
 
+                        }
+                    } else {//前面的
+                        integers[0]++;
+                        if (r.getSentence().getIndex() - ss.getIndex() > integers[0]) {    //跨引了
+                            String as = ss.getArticle().getNum() + "." + ss.getId();
+                            crossSent.putIfAbsent(as, 1);
+                            crossSent.computeIfPresent(as, (k, v) -> v + 1);
+                            nextCross.putIfAbsent(r.getSentence().getIndex() - ss.getIndex(), 1);
+                            nextCross.computeIfPresent(r.getSentence().getIndex() - ss.getIndex(), (k, v) -> v + 1);
+                            String arf = as + ">" + r.getSentence().getId() + "." + r.getId();
+                            crossContext.putIfAbsent(arf, 1);
+                            crossContext.computeIfPresent(arf, (k, v) -> v + 1);
+                        }
                     }
-                } else {//前面的
-                    integers[0]++;
-                    if (r.getSentence().getIndex() - ss.getIndex() > integers[0]) {    //跨引了
-                        String as = ss.getArticle().getNum() + "." + ss.getId();
-                        crossSent.putIfAbsent(as, 1);
-                        crossSent.computeIfPresent(as, (k, v) -> v + 1);
-                        nextCross.putIfAbsent(r.getSentence().getIndex() - ss.getIndex(), 1);
-                        nextCross.computeIfPresent(r.getSentence().getIndex() - ss.getIndex(), (k, v) -> v + 1);
-                        String arf = as + ">" + r.getSentence().getId() + "." + r.getId();
-                        crossContext.putIfAbsent(arf, 1);
-                        crossContext.computeIfPresent(arf, (k, v) -> v + 1);
+
+                    distanceCount.putIfAbsent(distance, 1);
+                    distanceCount.computeIfPresent(distance, (key, v) -> v + 1);
+
+                    if (distance > 4 || distance < -4) {
+                        warnList.add(Strings.s("distanceTooLong:%s:%s.%s.%s->%s.%s", distance, r.getSentence().
+                                getArticle().getNum(), r.getSentence().getId(), r.getId(), ss.getArticle().getNum(), ss.getId()));
                     }
-                }
-
-                distanceCount.putIfAbsent(distance, 1);
-                distanceCount.computeIfPresent(distance, (key, v) -> v + 1);
-
-                if (distance > 4 || distance < -4) {
-                    warnList.add(Strings.s("distanceTooLong:%s:%s.%s.%s->%s.%s", distance, r.getSentence().
-                            getArticle().getNum(), r.getSentence().getId(), r.getId(), ss.getArticle().getNum(), ss.getId()));
-                }
-                if (!ss.getSect().equals(r.getSentence().getSect())) {
-                    warnList.add(Strings.s("differentSection:%s:%s.%s.%s->%s.%s", distance, r.getSentence().
-                            getArticle().getNum(), r.getSentence().getId(), r.getId(), ss.getArticle().getNum(), ss.getId()));
-                    difSectionCount++;
-                }
-            });
+                    if (!ss.getSect().equals(r.getSentence().getSect())) {
+                        warnList.add(Strings.s("differentSection:%s:%s.%s.%s->%s.%s", distance, r.getSentence().
+                                getArticle().getNum(), r.getSentence().getId(), r.getId(), ss.getArticle().getNum(), ss.getId()));
+                        difSectionCount++;
+                    }
+                });
+            }
         });
 
         Map<Integer[], Integer> map = new HashMap<>();
