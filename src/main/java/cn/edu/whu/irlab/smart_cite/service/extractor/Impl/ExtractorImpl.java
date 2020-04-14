@@ -1,7 +1,8 @@
 package cn.edu.whu.irlab.smart_cite.service.extractor.Impl;
 
+import cn.edu.whu.irlab.smart_cite.enums.ResponseEnum;
 import cn.edu.whu.irlab.smart_cite.enums.XMLTypeEnum;
-import cn.edu.whu.irlab.smart_cite.service.extractor.Extractor;
+import cn.edu.whu.irlab.smart_cite.exception.FileTypeException;
 import cn.edu.whu.irlab.smart_cite.service.attrGenerator.AttrGenerator;
 import cn.edu.whu.irlab.smart_cite.service.featureExtractor.FeatureExtractor;
 import cn.edu.whu.irlab.smart_cite.service.grobid.GrobidService;
@@ -11,6 +12,7 @@ import cn.edu.whu.irlab.smart_cite.service.preprocessor.LeiPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.PlosPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.weka.WekaService;
 import cn.edu.whu.irlab.smart_cite.util.ReadUtil;
+import cn.edu.whu.irlab.smart_cite.util.ResponseUtil;
 import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
 import cn.edu.whu.irlab.smart_cite.vo.Article;
 import cn.edu.whu.irlab.smart_cite.vo.FileLocation;
@@ -37,7 +39,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.helpers.DefaultHandler;
 import weka.core.Instances;
 
-import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -45,7 +46,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.FEATURE_FILE;
@@ -85,7 +85,14 @@ public class ExtractorImpl {
     @Autowired
     private WekaService wekaService;
 
-    public JSONObject ExtractCitationContext(File file) {
+    public JSONObject Extract(MultipartFile file) throws IOException {
+        File upload = new File(FileLocation.UPLOAD_FILE + file.getOriginalFilename());
+        file.transferTo(upload);
+        return Extract(upload);
+    }
+
+
+    public JSONObject Extract(File file) {
         if (!file.exists()) {
             throw new IllegalArgumentException("文件不存在");
         }
@@ -107,7 +114,8 @@ public class ExtractorImpl {
                 xmlTypeEnum = XMLTypeEnum.Grobid;
                 break;
             default:
-                throw new IllegalArgumentException("此文件类型为：" + mimeType + ",不是合法的文件类型");
+                throw new FileTypeException("文件["+file.getName()+"]的类型为：" + mimeType + ",不是合法的文件类型");
+//                throw new IllegalArgumentException("此文件类型为：" + mimeType + ",不是合法的文件类型");
         }
 
         //根据不同XML文件类型进行预处理 处理后重要的文件numbered,addedAttr
@@ -160,7 +168,7 @@ public class ExtractorImpl {
 
     @Async
     public CompletableFuture<JSONObject> AsyncExtract(File file) {
-        JSONObject object = ExtractCitationContext(file);
+        JSONObject object = Extract(file);
         return CompletableFuture.completedFuture(object);
     }
 

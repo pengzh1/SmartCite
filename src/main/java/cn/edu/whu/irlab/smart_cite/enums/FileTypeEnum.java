@@ -7,11 +7,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public enum FileTypeEnum {
 
-    PDF(1,"PDF"),
-    XML(2,"XML");
+    PDF("application/pdf","PDF"),
+    XML("application/xml","XML");
 
+    private String mimeType;
 
-    private Integer code;
-
-    private String fileType;
+    private String suffix;
 }
