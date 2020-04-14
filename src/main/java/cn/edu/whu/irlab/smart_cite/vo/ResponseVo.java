@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 public class ResponseVo<T> {
 
-    //错误码
+    //状态码
     private Integer code;
 
     //提示信息

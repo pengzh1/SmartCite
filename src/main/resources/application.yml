@@ -7,3 +7,7 @@ spring:
 logging:
   path: log/springboot
   file: springboot.log
+server:
+  port: 8080
+  tomcat:
+    uri-encoding: utf-8

@@ -10,7 +10,7 @@ import cn.edu.whu.irlab.smart_cite.vo.ResponseVo;
  * @date 2019-07-23 17:07
  * @desc 异常处理结果返回工具类
  **/
-public class ResponseVoUtil {
+public class ResponseUtil {
 
     public static ResponseVo error(ResponseEnum responseEnum){
         ResponseVo responseVo = new ResponseVo();
@@ -29,7 +29,7 @@ public class ResponseVoUtil {
     public static ResponseVo success(Object object){
         ResponseVo responseVo = new ResponseVo();
         responseVo.setCode(0);
-        responseVo.setMsg("成功");
+        responseVo.setMsg("抽取成功");
         responseVo.setData(object);
         return responseVo;
     }

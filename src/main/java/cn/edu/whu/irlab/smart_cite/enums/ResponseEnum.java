@@ -20,7 +20,7 @@ public enum ResponseEnum {
     PHONE_SIGN_ERROR(106,"手机号已经注册过了"),
     EMAIL_SIGN_ERROR(107,"邮箱已经注册过了"),
     PHONE_EMAIL_ERROR(108,"手机号或者邮箱输入错误"),
-    SERVER_ERROR(500,"服务器错误"),
+    SERVER_ERROR1(500,"服务器错误，文档上传失败"),
     ;
 
     private Integer code;

@@ -7,6 +7,7 @@ import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,10 +26,10 @@ public class WriteUtil {
 
     private final static Logger logger = LoggerFactory.getLogger(WriteUtil.class);
 
-    public static void writeXml(Element element,String outputPath) throws IOException {
-        XMLOutputter outputter=new XMLOutputter();
+    public static void writeXml(Element element, String outputPath) throws IOException {
+        XMLOutputter outputter = new XMLOutputter();
         outputter.setFormat(outputter.getFormat().setEncoding("UTF-8"));
-        outputter.output(element,new FileOutputStream(outputPath));
+        outputter.output(element, new FileOutputStream(outputPath));
     }
 
     public static void writeStr(String docPath, String content) {
@@ -40,10 +41,10 @@ public class WriteUtil {
         }
     }
 
-    public static void writeList(String docPath,List list){
+    public static void writeList(String docPath, List list) {
         File file = new File(docPath);
         try {
-            FileUtils.writeLines(file,list,"\n");
+            FileUtils.writeLines(file, list, "\n");
         } catch (IOException e) {
             e.printStackTrace();
         }

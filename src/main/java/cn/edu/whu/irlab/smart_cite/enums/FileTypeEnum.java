@@ -14,12 +14,4 @@ public enum FileTypeEnum {
     private Integer code;
 
     private String fileType;
-
-    FileTypeEnum(Integer code, String fileType) {
-        this.code = code;
-        this.fileType = fileType;
-    }
-
-
-
 }

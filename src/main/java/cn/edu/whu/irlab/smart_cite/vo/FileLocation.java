@@ -8,6 +8,9 @@ package cn.edu.whu.irlab.smart_cite.vo;
  **/
 public class FileLocation {
 
+    //存放上传的文件
+    public final static String UPLOAD_FILE = System.getProperty("user.dir")+"/"+"temp/upload/";
+
     //存放Libsvm特征文件
     public final static String FEATURE_FILE = "temp/feature_files/";
 

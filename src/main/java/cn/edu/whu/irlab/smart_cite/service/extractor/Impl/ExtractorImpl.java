@@ -1,7 +1,6 @@
 package cn.edu.whu.irlab.smart_cite.service.extractor.Impl;
 
 import cn.edu.whu.irlab.smart_cite.enums.XMLTypeEnum;
-import cn.edu.whu.irlab.smart_cite.service.Identifier.Identifier;
 import cn.edu.whu.irlab.smart_cite.service.extractor.Extractor;
 import cn.edu.whu.irlab.smart_cite.service.attrGenerator.AttrGenerator;
 import cn.edu.whu.irlab.smart_cite.service.featureExtractor.FeatureExtractor;
@@ -14,22 +13,35 @@ import cn.edu.whu.irlab.smart_cite.service.weka.WekaService;
 import cn.edu.whu.irlab.smart_cite.util.ReadUtil;
 import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
 import cn.edu.whu.irlab.smart_cite.vo.Article;
+import cn.edu.whu.irlab.smart_cite.vo.FileLocation;
 import cn.edu.whu.irlab.smart_cite.vo.RefTag;
 import cn.edu.whu.irlab.smart_cite.vo.Result;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.tika.metadata.HttpHeaders;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaMetadataKeys;
+import org.apache.tika.mime.MediaType;
+import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.Parser;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.xml.sax.helpers.DefaultHandler;
 import weka.core.Instances;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,12 +57,9 @@ import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.OUTPUT;
  * @desc 任务执行器 实现类
  **/
 @Service("extractor")
-public class ExtractorImpl implements Extractor {
+public class ExtractorImpl {
 
     private static final Logger logger = LoggerFactory.getLogger(ExtractorImpl.class);
-
-    @Resource(name = "identifier")
-    public Identifier identifier;
 
     @Autowired
     private GrobidService grobidService;
@@ -85,13 +94,13 @@ public class ExtractorImpl implements Extractor {
         //XML根节点
         Element root = null;
         //识别文件类型
-        String mimeType = identifier.identifyMimeType(file);
+        String mimeType = identifyMimeType(file);
 
         //识别XML类型（PDF转换为XML）
         switch (mimeType) {
             case "application/xml":
                 root = ReadUtil.read2xml(file);
-                xmlTypeEnum = identifier.identifyXMLType(root, file);
+                xmlTypeEnum = identifyXMLType(root, file);
                 break;
             case "application/pdf":
                 root = grobidService.processFulltextDocument(file);
@@ -155,7 +164,12 @@ public class ExtractorImpl implements Extractor {
         return CompletableFuture.completedFuture(object);
     }
 
-    //聚合分析结果
+    /**
+     * @param results
+     * @return
+     * @auther gcr19
+     * @desc 聚合分析结果
+     **/
     private JSONArray CombinedResult(List<Result> results) {
         List<RefTag> refTags = new ArrayList<>();
         for (Result r :
@@ -176,6 +190,45 @@ public class ExtractorImpl implements Extractor {
             array.add(json);
         }
         return array;
+    }
+
+    /**
+     * 获取文件类型
+     *
+     * @param file 文件
+     * @return mimeType
+     */
+    public String identifyMimeType(File file) {
+        if (file.isDirectory()) {
+            throw new IllegalArgumentException("该路径为文件夹，不是文件。路径：" + file.getPath());
+        }
+        AutoDetectParser parser = new AutoDetectParser();
+        parser.setParsers(new HashMap<MediaType, Parser>());
+        Metadata metadata = new Metadata();
+        metadata.add(TikaMetadataKeys.RESOURCE_NAME_KEY, file.getName());
+        try (InputStream stream = new FileInputStream(file)) {
+            parser.parse(stream, new DefaultHandler(), metadata, new ParseContext());
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
+        return metadata.get(HttpHeaders.CONTENT_TYPE);
+    }
+
+    /**
+     * @param article
+     * @param file
+     * @return
+     * @auther gcr19
+     * @desc TODO
+     **/
+    public XMLTypeEnum identifyXMLType(Element article, File file) {
+        String nameOfFirstNode = article.getName();
+        if (nameOfFirstNode.equals("article")) {
+            return XMLTypeEnum.Plos;
+        } else if (nameOfFirstNode.equals("TEI")) {
+            return XMLTypeEnum.Grobid;
+        }
+        throw new IllegalArgumentException("非法的XML类型，文件名：" + file.getName());
     }
 }
 
