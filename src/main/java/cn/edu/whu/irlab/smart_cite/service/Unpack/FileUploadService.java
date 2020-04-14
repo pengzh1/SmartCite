@@ -6,6 +6,7 @@ import cn.edu.whu.irlab.smart_cite.enums.ZipFileTypeEnum;
 import cn.edu.whu.irlab.smart_cite.util.UnPackeUtil;
 import cn.edu.whu.irlab.smart_cite.vo.PackParam;
 import lombok.extern.slf4j.Slf4j;
+import net.lingala.zip4j.exception.ZipException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,7 +19,7 @@ import java.io.IOException;
 public class FileUploadService  {
 
 
-    public AjaxList<String> handlerUpload(MultipartFile zipFile, PackParam packParam) {
+    public AjaxList<String> handlerUpload(MultipartFile zipFile, PackParam packParam) throws ZipException {
 
         if (null == zipFile) {
             return AjaxList.createFail("请上传压缩文件!");
@@ -46,7 +47,7 @@ public class FileUploadService  {
         }
         if (isZipPack) {
             //zip压缩包
-            UnPackeUtil.unPackZip(file, packParam.getPassword(), packParam.getDestPath());
+            UnPackeUtil.unPackZip(file);
         } else {
             //rar压缩包
             UnPackeUtil.unPackRar(file, packParam.getDestPath());

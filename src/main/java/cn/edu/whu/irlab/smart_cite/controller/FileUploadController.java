@@ -5,6 +5,7 @@ import cn.edu.whu.irlab.smart_cite.service.Unpack.AjaxList;
 import cn.edu.whu.irlab.smart_cite.service.Unpack.FileUploadService;
 import cn.edu.whu.irlab.smart_cite.vo.PackParam;
 import lombok.extern.slf4j.Slf4j;
+import net.lingala.zip4j.exception.ZipException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ public class FileUploadController {
 
     @PostMapping("/upload/zip")
     @ResponseBody
-    public String uploadZip(MultipartFile zipFile, @RequestBody PackParam packParam) {
+    public String uploadZip(MultipartFile zipFile, @RequestBody PackParam packParam) throws ZipException {
         AjaxList<String> ajaxList = fileUploadService.handlerUpload(zipFile, packParam);
         return ajaxList.getData();
     }

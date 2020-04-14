@@ -13,6 +13,7 @@ import cn.edu.whu.irlab.smart_cite.service.preprocessor.PlosPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.weka.WekaService;
 import cn.edu.whu.irlab.smart_cite.util.ReadUtil;
 import cn.edu.whu.irlab.smart_cite.util.ResponseUtil;
+import cn.edu.whu.irlab.smart_cite.util.UnPackeUtil;
 import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
 import cn.edu.whu.irlab.smart_cite.vo.Article;
 import cn.edu.whu.irlab.smart_cite.vo.FileLocation;
@@ -21,6 +22,7 @@ import cn.edu.whu.irlab.smart_cite.vo.Result;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.metadata.HttpHeaders;
 import org.apache.tika.metadata.Metadata;
@@ -47,6 +49,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.FEATURE_FILE;
 import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.OUTPUT;
@@ -85,9 +88,9 @@ public class ExtractorImpl {
     @Autowired
     private WekaService wekaService;
 
+
     public JSONObject Extract(MultipartFile file) throws IOException {
-        File upload = new File(FileLocation.UPLOAD_FILE + file.getOriginalFilename());
-        file.transferTo(upload);
+        File upload = saveUploadedFile(file);
         return Extract(upload);
     }
 
@@ -114,8 +117,7 @@ public class ExtractorImpl {
                 xmlTypeEnum = XMLTypeEnum.Grobid;
                 break;
             default:
-                throw new FileTypeException("文件["+file.getName()+"]的类型为：" + mimeType + ",不是合法的文件类型");
-//                throw new IllegalArgumentException("此文件类型为：" + mimeType + ",不是合法的文件类型");
+                throw new FileTypeException("文件[" + file.getName() + "]的类型为：" + mimeType + ",不是合法的文件类型");
         }
 
         //根据不同XML文件类型进行预处理 处理后重要的文件numbered,addedAttr
@@ -167,7 +169,7 @@ public class ExtractorImpl {
     }
 
     @Async
-    public CompletableFuture<JSONObject> AsyncExtract(File file) {
+    public CompletableFuture<JSONObject> asyncExtract(File file) {
         JSONObject object = Extract(file);
         return CompletableFuture.completedFuture(object);
     }
@@ -237,6 +239,12 @@ public class ExtractorImpl {
             return XMLTypeEnum.Grobid;
         }
         throw new IllegalArgumentException("非法的XML类型，文件名：" + file.getName());
+    }
+
+    public File saveUploadedFile(MultipartFile file) throws IOException {
+        File upload = new File(FileLocation.UPLOAD_FILE + file.getOriginalFilename());
+        file.transferTo(upload);
+        return upload;
     }
 }
 

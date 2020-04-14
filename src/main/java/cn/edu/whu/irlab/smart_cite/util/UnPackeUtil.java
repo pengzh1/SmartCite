@@ -5,6 +5,8 @@ import com.github.junrar.VolumeManager;
 import com.github.junrar.rarfile.FileHeader;
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,26 +16,20 @@ import java.io.FileOutputStream;
 public class UnPackeUtil {
 
     /**
-     * zip文件解压
-     *
-     * @param destPath 解压文件路径
-     * @param zipFile  压缩文件
-     * @param password 解压密码(如果有)
-     */
-    public static void unPackZip(File zipFile, String password, String destPath) {
-        try {
-            ZipFile zip = new ZipFile(zipFile);
-            /*zip4j默认用GBK编码去解压,这里设置编码为GBK的*/
-            zip.setFileNameCharset("GBK");
-            log.info("begin unpack zip file....");
-            zip.extractAll(destPath);
-            // 如果解压需要密码
-            if (zip.isEncrypted()) {
-                zip.setPassword(password);
-            }
-        } catch (Exception e) {
-            log.error("unPack zip file to " + destPath + " fail ....", e.getMessage(), e);
-        }
+     *@auther gcr19
+     *@desc 解压zip文件
+     *@param zipFile zip文件
+     *@return 解压后的文件夹
+     **/
+    public static File unPackZip(File zipFile) throws ZipException {
+        File folder = new File(zipFile.getParentFile().getPath()+"/" + FilenameUtils.getBaseName(zipFile.getName()));
+        folder.mkdirs();
+        ZipFile zip = new ZipFile(zipFile);
+        /*zip4j默认用GBK编码去解压,这里设置编码为GBK的*/
+        zip.setFileNameCharset("GBK");
+        log.info("begin unpack zip file....");
+        zip.extractAll(folder.getPath());
+        return folder;
     }
 
     /**
