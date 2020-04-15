@@ -1,16 +1,16 @@
 package cn.edu.whu.irlab.smart_cite.enums;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+@AllArgsConstructor
+@NoArgsConstructor
 public enum FileTypeEnum {
 
-    PDF(1,"PDF"),
-    STANDARD_XML(2,"STANDARD_XML");
+    PDF("application/pdf","PDF"),
+    XML("application/xml","XML");
 
-    private Integer code;
+    private String mimeType;
 
-    private String fileType;
-
-    FileTypeEnum(Integer code, String fileType) {
-        this.code = code;
-        this.fileType = fileType;
-    }
+    private String suffix;
 }

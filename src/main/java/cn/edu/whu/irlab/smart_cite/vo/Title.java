@@ -1,0 +1,30 @@
+package cn.edu.whu.irlab.smart_cite.vo;
+
+import lombok.Data;
+
+/**
+ * @author gcr19
+ * @version 1.0
+ * @date 2020/2/14 10:44
+ * @desc 标题实体
+ **/
+@Data
+public class Title {
+
+    private String title;
+    private String altTitle;
+
+    public Title(String title, String altTitle) {
+        this.title = title;
+        this.altTitle = altTitle;
+    }
+
+    @Override
+    public String toString() {
+        if (altTitle!=null){
+            return title.trim()+"  "+altTitle.trim();
+        }else {
+            return title.trim();
+        }
+    }
+}

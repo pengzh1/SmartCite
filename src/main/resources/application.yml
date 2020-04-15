@@ -4,3 +4,14 @@ spring:
     url: jdbc:mysql://47.96.153.156:3306/irep?allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=UTC
     username: root
     password: irlab_2013
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+logging:
+  path: log/springboot
+  file: springboot.log
+server:
+  port: 8080
+  tomcat:
+    uri-encoding: utf-8
