@@ -37,7 +37,7 @@ public class ExtractorController {
 
         JSONObject object;
         try {
-            object = extractor.Extract(file);
+            object = extractor.extract(file);
         } catch (Exception e) {
             logger.error(e.getMessage());
             if (e instanceof FileTypeException) {

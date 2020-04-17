@@ -1,6 +1,5 @@
 package cn.edu.whu.irlab.smart_cite.service.extractor.Impl;
 
-import cn.edu.whu.irlab.smart_cite.enums.ResponseEnum;
 import cn.edu.whu.irlab.smart_cite.enums.XMLTypeEnum;
 import cn.edu.whu.irlab.smart_cite.exception.FileTypeException;
 import cn.edu.whu.irlab.smart_cite.service.attrGenerator.AttrGenerator;
@@ -12,8 +11,6 @@ import cn.edu.whu.irlab.smart_cite.service.preprocessor.LeiPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.PlosPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.weka.WekaService;
 import cn.edu.whu.irlab.smart_cite.util.ReadUtil;
-import cn.edu.whu.irlab.smart_cite.util.ResponseUtil;
-import cn.edu.whu.irlab.smart_cite.util.UnPackeUtil;
 import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
 import cn.edu.whu.irlab.smart_cite.vo.Article;
 import cn.edu.whu.irlab.smart_cite.vo.FileLocation;
@@ -22,7 +19,6 @@ import cn.edu.whu.irlab.smart_cite.vo.Result;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.metadata.HttpHeaders;
 import org.apache.tika.metadata.Metadata;
@@ -49,7 +45,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.FEATURE_FILE;
 import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.OUTPUT;
@@ -89,13 +84,13 @@ public class ExtractorImpl {
     private WekaService wekaService;
 
 
-    public JSONObject Extract(MultipartFile file) throws IOException {
+    public JSONObject extract(MultipartFile file) throws IOException {
         File upload = saveUploadedFile(file);
-        return Extract(upload);
+        return extract(upload);
     }
 
 
-    public JSONObject Extract(File file) {
+    public JSONObject extract(File file) {
         if (!file.exists()) {
             throw new IllegalArgumentException("文件不存在");
         }
@@ -170,7 +165,7 @@ public class ExtractorImpl {
 
     @Async
     public CompletableFuture<JSONObject> asyncExtract(File file) {
-        JSONObject object = Extract(file);
+        JSONObject object = extract(file);
         return CompletableFuture.completedFuture(object);
     }
 

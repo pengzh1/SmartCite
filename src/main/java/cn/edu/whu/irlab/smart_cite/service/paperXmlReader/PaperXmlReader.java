@@ -36,10 +36,6 @@ public class PaperXmlReader {
 
     private static final Logger logger = LoggerFactory.getLogger(PaperXmlReader.class);
 
-//    private Article article;
-    ThreadLocal<Article> article = null;
-
-
     /**
      *@auther gcr19
      *@desc 将预处理后的xml文档转换为Article对象
@@ -89,7 +85,6 @@ public class PaperXmlReader {
 //            logs.info(s.toText());
         }
 
-        this.article.set(article);
         return article;
     }
 
@@ -197,7 +192,7 @@ public class PaperXmlReader {
                 String refNum = element.getAttributeValue("rid");
                 if (refNum != null && !refNum.trim().equals("")) {  //指向的参考文献
                     xref.setRid(refNum.trim());
-                    xref.setReference(article.get().getReferences().get(xref.getRid()));
+                    xref.setReference(sentence.getArticle().getReferences().get(xref.getRid()));
                 }
                 sentence.addRef(xref);  //给句子加引文引用
                 //引文替换工作
