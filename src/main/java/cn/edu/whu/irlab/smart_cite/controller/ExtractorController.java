@@ -6,16 +6,21 @@ import cn.edu.whu.irlab.smart_cite.service.extractor.Impl.ExtractorImpl;
 import cn.edu.whu.irlab.smart_cite.util.ResponseUtil;
 import cn.edu.whu.irlab.smart_cite.util.UnPackeUtil;
 import cn.edu.whu.irlab.smart_cite.vo.ResponseVo;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 /**
  * @author gcr19
@@ -52,7 +57,7 @@ public class ExtractorController {
 
     @PostMapping("/batchExtract")
     public ResponseVo batchController(MultipartFile file) {
-        JSONArray array=new JSONArray();
+        List<JSONObject> array = new ArrayList<>();
         try {
             File uploaded = extractor.saveUploadedFile(file);
             String mimeType = extractor.identifyMimeType(uploaded);
@@ -66,16 +71,29 @@ public class ExtractorController {
                 default:
                     throw new FileTypeException("文件[" + file.getName() + "]的类型为：" + mimeType + ",不是合法的压缩文件类型");
             }
-            for (File f :
-                    folder.listFiles()) {
-                JSONObject object = extractor.asyncExtract(f).get();
-                array.add(object);
-            }
-        }catch (Exception e){
-            logger.error(e.getMessage());
-            if (e instanceof FileTypeException){
+            File[] files = folder.listFiles();
+            if (files == null || files.length == 0) {
+                logger.error("待抽取的文件个数非法");
                 return ResponseUtil.error(ResponseEnum.FILE_ERROR);
-            }else {
+            }
+            CountDownLatch countDownLatch = new CountDownLatch(files.length);
+            List<ListenableFuture<JSONObject>> listenableFutureList = new ArrayList<>();
+            for (File f : files) {
+                ListenableFuture<JSONObject> jsonObjectListenableFuture = extractor.asyncExtract(f, countDownLatch);
+                listenableFutureList.add(jsonObjectListenableFuture);
+            }
+            countDownLatch.await();
+
+            for (ListenableFuture<JSONObject> jsonObjectListenableFuture : listenableFutureList) {
+                JSONObject jsonObject = jsonObjectListenableFuture.get();
+                array.add(jsonObject);
+            }
+
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            if (e instanceof FileTypeException) {
+                return ResponseUtil.error(ResponseEnum.FILE_ERROR);
+            } else {
                 return ResponseUtil.error(ResponseEnum.SERVER_ERROR);
             }
         }

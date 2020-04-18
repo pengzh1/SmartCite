@@ -37,7 +37,7 @@ public class PaperXmlReader {
     private static final Logger logger = LoggerFactory.getLogger(PaperXmlReader.class);
 
 //    private Article article;
-    ThreadLocal<Article> article = null;
+    ThreadLocal<Article> article = new ThreadLocal<>();
 
 
     /**
@@ -51,6 +51,8 @@ public class PaperXmlReader {
         Element header = root.getChild("header");
 
         Article article = new Article(FilenameUtils.getBaseName(file.getName()));
+        this.article.set(article);
+
 
         //初始化article 设置摘要
         article.setAbsText(header.getChild("abstract").getValue());//todo plos数据中有的摘要有多个段落
@@ -89,7 +91,6 @@ public class PaperXmlReader {
 //            logs.info(s.toText());
         }
 
-        this.article.set(article);
         return article;
     }
 

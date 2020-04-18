@@ -50,9 +50,10 @@ public abstract class PreprocessorImpl {
         }
     };
 
-
-    File file;
-    Element root;
+    ThreadLocal<File> file = new ThreadLocal<File>();
+    ThreadLocal<Element> root = new ThreadLocal<Element>();
+//    File file;
+//    Element root;
 
     @Autowired
     private LingPipeSplitterImpl lingPipeSplitter;

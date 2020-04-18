@@ -1,6 +1,5 @@
 package cn.edu.whu.irlab.smart_cite.service.extractor.Impl;
 
-import cn.edu.whu.irlab.smart_cite.enums.ResponseEnum;
 import cn.edu.whu.irlab.smart_cite.enums.XMLTypeEnum;
 import cn.edu.whu.irlab.smart_cite.exception.FileTypeException;
 import cn.edu.whu.irlab.smart_cite.service.attrGenerator.AttrGenerator;
@@ -12,8 +11,6 @@ import cn.edu.whu.irlab.smart_cite.service.preprocessor.LeiPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.PlosPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.weka.WekaService;
 import cn.edu.whu.irlab.smart_cite.util.ReadUtil;
-import cn.edu.whu.irlab.smart_cite.util.ResponseUtil;
-import cn.edu.whu.irlab.smart_cite.util.UnPackeUtil;
 import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
 import cn.edu.whu.irlab.smart_cite.vo.Article;
 import cn.edu.whu.irlab.smart_cite.vo.FileLocation;
@@ -22,7 +19,6 @@ import cn.edu.whu.irlab.smart_cite.vo.Result;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.metadata.HttpHeaders;
 import org.apache.tika.metadata.Metadata;
@@ -36,7 +32,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.helpers.DefaultHandler;
 import weka.core.Instances;
@@ -48,8 +46,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CountDownLatch;
 
 import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.FEATURE_FILE;
 import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.OUTPUT;
@@ -169,9 +166,15 @@ public class ExtractorImpl {
     }
 
     @Async
-    public CompletableFuture<JSONObject> asyncExtract(File file) {
-        JSONObject object = Extract(file);
-        return CompletableFuture.completedFuture(object);
+    public ListenableFuture<JSONObject> asyncExtract(File file, CountDownLatch countDownLatch) {
+        AsyncResult<JSONObject> jsonObjectAsyncResult = null;
+        try {
+            JSONObject object = Extract(file);
+            jsonObjectAsyncResult = new AsyncResult<>(object);
+        } finally {
+            countDownLatch.countDown();
+        }
+        return jsonObjectAsyncResult;
     }
 
     /**
