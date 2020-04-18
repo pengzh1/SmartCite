@@ -29,21 +29,21 @@ public abstract class PreprocessorImpl {
 
     private static final Logger logger = LoggerFactory.getLogger(PreprocessorImpl.class);
 
-    ThreadLocal<List<Element>> paragraphs = new ThreadLocal<List<Element>>(){
+    static ThreadLocal<List<Element>> paragraphs = new ThreadLocal<List<Element>>() {
         @Override
         protected List<Element> initialValue() {
             return new ArrayList<>();
         }
     };
 
-    ThreadLocal<List<Element>> sentences = new ThreadLocal<List<Element>>(){
+    static ThreadLocal<List<Element>> sentences = new ThreadLocal<List<Element>>() {
         @Override
         protected List<Element> initialValue() {
             return new ArrayList<>();
         }
     };
 
-    ThreadLocal<List<Element>> xrefs = new ThreadLocal<List<Element>>(){
+    static ThreadLocal<List<Element>> xrefs = new ThreadLocal<List<Element>>() {
         @Override
         protected List<Element> initialValue() {
             return new ArrayList<>();

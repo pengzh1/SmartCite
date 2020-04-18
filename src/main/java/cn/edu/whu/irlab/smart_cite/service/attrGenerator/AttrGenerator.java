@@ -27,24 +27,24 @@ public class AttrGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(AttrGenerator.class);
 
-    ThreadLocal<List<Element>> sentences = new ThreadLocal<List<Element>>(){
+    private static ThreadLocal<List<Element>> sentences = new ThreadLocal<List<Element>>() {
         @Override
         protected List<Element> initialValue() {
             return new ArrayList<>();
         }
     };
 
-    private File file;
 
     public Element generateAttr(Element root, File file) {
-        this.file=file;
-        sentences.get().clear();
+        sentences.remove();
+
         Element body = root.getChild("body");
         ElementUtil.extractElements(body, "s", sentences.get());
-        addSecAttr();
+        addSecAttr(file);
         addLevelAndPAttr();
         addCTypeAttr();
         writeFile(root, ADDED, file);
+
         return root.setAttribute("status", "attrAdded");
     }
 
@@ -76,14 +76,14 @@ public class AttrGenerator {
         }
     }
 
-    private void addSecAttr() {
+    private void addSecAttr(File file) {
         for (Element s :
                 sentences.get()) {
             Element sec = s.getParentElement().getParentElement();
             if (sec.getName().equals("sec")) {
                 s.setAttribute("sec", sec.getAttributeValue("id"));
             } else {
-                logger.error("error in article:" +file.getName());
+                logger.error("error in article:" + file.getName());
                 throw new IllegalArgumentException("this element name is " + sec.getName() + ". please input sec element");
             }
         }
