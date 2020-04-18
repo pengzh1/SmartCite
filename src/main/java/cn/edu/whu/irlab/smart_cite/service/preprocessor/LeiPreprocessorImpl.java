@@ -41,11 +41,11 @@ public class LeiPreprocessorImpl extends PreprocessorImpl {
     @Autowired
     private GrobidService grobidService;
 
+    private File file;
 
     @Override
     public Element parseXML(Element root, File file) {
         this.file = file;
-        this.root = root;
         Element newRoot = reformat(root);
         newRoot.setAttribute("status", root.getAttributeValue("status"));
         writeFile(newRoot, REFORMATTED, file);
@@ -58,11 +58,11 @@ public class LeiPreprocessorImpl extends PreprocessorImpl {
     }
 
     @Override
-    public void extractXref(Element element) {
+    public void extractXref(Element element,List<Element> xrefs) {
     }
 
     @Override
-    public void removeElementNotXref() {
+    public void removeElementNotXref(List<Element> paragraphs) {
     }
 
     @Override

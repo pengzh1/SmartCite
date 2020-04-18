@@ -90,6 +90,7 @@ public class ExtractorImpl {
     }
 
 
+
     public JSONObject extract(File file) {
         if (!file.exists()) {
             throw new IllegalArgumentException("文件不存在");
@@ -159,7 +160,6 @@ public class ExtractorImpl {
 //        WriteUtil.writeList(OUTPUT + FilenameUtils.getBaseName(file.getName()) + ".txt", refTags);//todo 配置多样的输出
         WriteUtil.writeStr(OUTPUT + FilenameUtils.getBaseName(file.getName()) + ".txt", result.toJSONString());
         logger.info("extract context of article " + file.getName() + " successfully");
-
         return result;
     }
 

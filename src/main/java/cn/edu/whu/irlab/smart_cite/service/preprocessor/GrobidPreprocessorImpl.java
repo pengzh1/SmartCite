@@ -35,8 +35,8 @@ public class GrobidPreprocessorImpl extends PreprocessorImpl {
     }
 
     @Override
-    public void removeElementNotXref() {
-        super.removeElementNotXref(XREF_LABEL_NAME, ATTRIBUTE_NAME, ATTRIBUTE_VALUE);
+    public void removeElementNotXref(List<Element> paragraphs) {
+        super.removeElementNotXref(XREF_LABEL_NAME, ATTRIBUTE_NAME, ATTRIBUTE_VALUE,paragraphs);
     }
 
     @Override
@@ -143,21 +143,21 @@ public class GrobidPreprocessorImpl extends PreprocessorImpl {
     }
 
     @Override
-    public void extractXref(Element element) {
+    public void extractXref(Element element,List<Element> xrefs) {
         super.extractXref(element.getChild("text", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).
                         getChild("body", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")),
-                XREF_LABEL_NAME, ATTRIBUTE_NAME, ATTRIBUTE_VALUE);
+                XREF_LABEL_NAME, ATTRIBUTE_NAME, ATTRIBUTE_VALUE,xrefs);
     }
 
     @Override
-    void extractParagraphs(Element root) {
+    void extractParagraphs(Element root,List<Element> paragraphs) {
         ElementUtil.extractElements(root.getChild("text", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).
-                getChild("body", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")), "p", paragraphs.get());
+                getChild("body", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")), "p", paragraphs);
     }
 
     @Override
-    void extractSentence(Element root) {
+    void extractSentence(Element root,List<Element> sentences) {
         ElementUtil.extractElements(root.getChild("text", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).
-                getChild("body", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")), "s", sentences.get());
+                getChild("body", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")), "s", sentences);
     }
 }

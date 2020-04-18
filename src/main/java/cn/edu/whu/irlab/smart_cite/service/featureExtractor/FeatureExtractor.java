@@ -37,30 +37,46 @@ public class FeatureExtractor {
 
     private static List<Article> trainArticles; //训练数据
 
-    private static List<Result> information = new ArrayList<>();
+    private static ThreadLocal<List<Result>> information = new ThreadLocal<List<Result>>() {
+        @Override
+        protected List<Result> initialValue() {
+            return new ArrayList<>();
+        }
+    };
+//    private static List<Result> information = new ArrayList<>();
 
     @SuppressWarnings("rawtypes")
-    private List<IFeature> features = new ArrayList<>();    //特征列表
+    private ThreadLocal<List<IFeature>> features = new ThreadLocal<List<IFeature>>(){
+        @Override
+        protected List<IFeature> initialValue() {
+            return new ArrayList<>();
+        }
+    };
+//    private List<IFeature> features = new ArrayList<>();    //特征列表
 
-    public Files featureWriter;  //写特征
 
-    @Autowired
-    private StatisticVisitor statisticVisitor;   //统计分析
+//    @Autowired
+//    private StatisticVisitor statisticVisitor;   //统计分析
 
     public List<Result> extract(Article article) {
-        featureWriter = Files.open(FEATURE_FILE + FilenameUtils.getBaseName(article.getName()) + "_features.libsvm");
-        features.clear();
-        information.clear();
-        loadFeatures();
-        extractArticle(article);
+        Files featureWriter = Files.open(FEATURE_FILE + FilenameUtils.getBaseName(article.getName()) + "_features.libsvm");
 
-        statisticVisitor.printRCCount();
-        statisticVisitor.save();
+        features.get().clear();
+        information.get().clear();
+
+        loadFeatures();
+        extractArticle(article,featureWriter);
+
+//        statisticVisitor.printRCCount();
+//        statisticVisitor.save();
         //关闭特征文件流
         featureWriter.close();
         //保存位置信息
-        WriteUtil.writeList("temp/location/" + FilenameUtils.getBaseName( article.getName()) + "_location.txt", information);
-        return information;
+        WriteUtil.writeList("temp/location/" + FilenameUtils.getBaseName(article.getName()) + "_location.txt", information.get());
+
+
+
+        return information.get();
     }
 
     /**
@@ -69,28 +85,28 @@ public class FeatureExtractor {
     public void loadFeatures() {
         logger.info("--------load features---------");
 
-        features.add(new AuthorFeature());//1:
-        features.add(new RefListFeature(RefListFeature.NUMBER));//2
-        features.add(new ConjFeature(ConjFeature.START));//3
-        features.add(new DistanceFeature());//4
-        features.add(new InParaFeature());//5
-        features.add(new LexicalHooksFeature());//6
-        features.add(new PronFeature(10));//7
-        features.add(new SimilarityFeature(SimilarityFeature.GRAM_1));//8
-        features.add(new SimilarityFeature(SimilarityFeature.GRAM_2));//9
-        features.add(new SimilarityFeature(SimilarityFeature.GRAM_3));//10
-        features.add(new RefPositionFeature(RefPositionFeature.PRE));//11
-        features.add(new RefPositionFeature(RefPositionFeature.NEXT));//12
-        features.add(new RefRefFeature());//13
-        features.add(new SectionFeature(SectionFeature.START));//14
-        features.add(new SectionFeature(SectionFeature.PRE_START));//15
-        features.add(new SectionFeature(SectionFeature.NEXT_START));//16
-        features.add(new SectionPositionFeature());//17
-        features.add(new WorkNounsFeature(5));//18
-        features.add(new RefFeature(RefFeature.OTHER_REF));//19
+        features.get().add(new AuthorFeature());//1:
+        features.get().add(new RefListFeature(RefListFeature.NUMBER));//2
+        features.get().add(new ConjFeature(ConjFeature.START));//3
+        features.get().add(new DistanceFeature());//4
+        features.get().add(new InParaFeature());//5
+        features.get().add(new LexicalHooksFeature());//6
+        features.get().add(new PronFeature(10));//7
+        features.get().add(new SimilarityFeature(SimilarityFeature.GRAM_1));//8
+        features.get().add(new SimilarityFeature(SimilarityFeature.GRAM_2));//9
+        features.get().add(new SimilarityFeature(SimilarityFeature.GRAM_3));//10
+        features.get().add(new RefPositionFeature(RefPositionFeature.PRE));//11
+        features.get().add(new RefPositionFeature(RefPositionFeature.NEXT));//12
+        features.get().add(new RefRefFeature());//13
+        features.get().add(new SectionFeature(SectionFeature.START));//14
+        features.get().add(new SectionFeature(SectionFeature.PRE_START));//15
+        features.get().add(new SectionFeature(SectionFeature.NEXT_START));//16
+        features.get().add(new SectionPositionFeature());//17
+        features.get().add(new WorkNounsFeature(5));//18
+        features.get().add(new RefFeature(RefFeature.OTHER_REF));//19
 //        features.add(new RefPronFeature()); //20
 
-        logger.info(">>>>特征总数为" + features.size());
+        logger.info(">>>>特征总数为" + features.get().size());
     }
 
     public static List<Article> loadTrainArticles() {
@@ -115,16 +131,16 @@ public class FeatureExtractor {
     /**
      * 开始抽取
      */
-    public void extractAll() {
+    public void extractAll(Files featureWriter) {
         logger.info("start extract...");
 
         trainArticles.stream().forEach(ar -> {  //每篇文章
             logger.info("开始处理Article：" + ar.getNum() + "-" + ar.getName() + ":" + ar.getTitle());
-            extractArticle(ar);
+            extractArticle(ar,featureWriter);
         });
 
-        statisticVisitor.printRCCount();
-        statisticVisitor.save();
+//        statisticVisitor.printRCCount();
+//        statisticVisitor.save();
         //关闭特征文件流
         featureWriter.close();
     }
@@ -134,26 +150,26 @@ public class FeatureExtractor {
      *
      * @param ar
      */
-    public void extractArticle(Article ar) {
+    public void extractArticle(Article ar,Files featureWriter) {
 
         ar.getSentenceTreeMap().forEach((k, sent) -> {  //遍历每个句子
             //	System.out.println("abc");
             logger.debug("article:[" + sent.getArticle().getNum() + "].sentence<" + sent.getId() + ">");
             if (sent.getCType() != null && sent.getCType().equals("r")) { //只在r中找
 
-                statisticVisitor.visitRSentence(sent);
-                statisticVisitor.visitRefListSentence(sent);
+//                statisticVisitor.visitRSentence(sent);
+//                statisticVisitor.visitRefListSentence(sent);
 
                 sent.getWordList().stream().filter((i) -> i.getType() != WordItem.WordType.Word).forEach((i) -> {  //过滤出引文标记类WordItem
 
                     logger.debug("ref:" + i.getIndex() + ":" + i.getWord());
 
                     i.getRefs().forEach((r) -> {    //每个引文标记
-                        featuresRef(r);
+                        featuresRef(r,featureWriter);
                     });
                 });
             }
-            statisticVisitor.contextSCount(sent);
+//            statisticVisitor.contextSCount(sent);
         });
 
     }
@@ -163,18 +179,18 @@ public class FeatureExtractor {
      *
      * @param r 引文标记
      */
-    private void featuresRef(RefTag r) {
+    private void featuresRef(RefTag r,Files featureWriter) {
         //统计距离
-        statisticVisitor.visitRefCount(r);
-        statisticVisitor.visitRefDistanceCount(r);
-        statisticVisitor.visitRefNonContext(r);
+//        statisticVisitor.visitRefCount(r);
+//        statisticVisitor.visitRefDistanceCount(r);
+//        statisticVisitor.visitRefNonContext(r);
 //        if (r.getContexts().trim().equals("")) {    //TEST，没有正例则不进行抽取
 //            return;
 //        }
         //计算特征
         @SuppressWarnings("unchecked")
         List<String> result = candidate(r).stream() //遍历每个引文的候选上下文句
-                .map(sent -> features.stream()  //遍历所有特征
+                .map(sent -> features.get().stream()  //遍历所有特征
                         .map(f -> f.f(sent, r)) //求特征值
                         .reduce(label(r, sent), (re, fv) -> re + " " + text(fv), (re1, re2) -> re1))   //拼接特征值
                 //搜集特征值
@@ -209,7 +225,7 @@ public class FeatureExtractor {
      * @return
      */
     public static String label(RefTag r, Sentence s) {
-        information.add(new Result(s,r));
+        information.get().add(new Result(s, r));
         //类别值:文章编号:引文句编号:引文编号:候选上下文编号 todo important
 //        return (contain(r.getContexts().split(","), s.getId() + "") ? "1" : "0") + ":" + s.getArticle().getNum() +
 //                ":" + r.getSentence().getId() + ":" + r.getId() + ":" + s.getId();

@@ -40,13 +40,13 @@ public class PlosPreprocessorImpl extends PreprocessorImpl {
     }
 
     @Override
-    public void extractXref(Element element) {
-        super.extractXref(element, XREF_LABEL_NAME, ATTRIBUTE_NAME, ATTRIBUTE_VALUE);
+    public void extractXref(Element element,List<Element> xrefs) {
+        super.extractXref(element, XREF_LABEL_NAME, ATTRIBUTE_NAME, ATTRIBUTE_VALUE,xrefs);
     }
 
     @Override
-    public void removeElementNotXref() {
-        super.removeElementNotXref(XREF_LABEL_NAME, ATTRIBUTE_NAME, ATTRIBUTE_VALUE);
+    public void removeElementNotXref(List<Element> paragraphs) {
+        super.removeElementNotXref(XREF_LABEL_NAME, ATTRIBUTE_NAME, ATTRIBUTE_VALUE,paragraphs);
     }
 
     @Override
