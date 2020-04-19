@@ -14,8 +14,8 @@ import org.springframework.scheduling.annotation.Async;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.*;
 
@@ -29,48 +29,67 @@ public abstract class PreprocessorImpl {
 
     private static final Logger logger = LoggerFactory.getLogger(PreprocessorImpl.class);
 
+    ThreadLocal<List<Element>> paragraphs = new ThreadLocal<List<Element>>(){
+        @Override
+        protected List<Element> initialValue() {
+            return new ArrayList<>();
+        }
+    };
+
+    ThreadLocal<List<Element>> sentences = new ThreadLocal<List<Element>>(){
+        @Override
+        protected List<Element> initialValue() {
+            return new ArrayList<>();
+        }
+    };
+
+    ThreadLocal<List<Element>> xrefs = new ThreadLocal<List<Element>>(){
+        @Override
+        protected List<Element> initialValue() {
+            return new ArrayList<>();
+        }
+    };
+
+    ThreadLocal<File> file = new ThreadLocal<File>();
+    ThreadLocal<Element> root = new ThreadLocal<Element>();
+//    File file;
+//    Element root;
+
     @Autowired
     private LingPipeSplitterImpl lingPipeSplitter;
 
-    @Async
-    public CompletableFuture<Element> asyncParseXML(Element root, File file){
-        logger.info("preprocess [article] "+file.getName());
-        return CompletableFuture.completedFuture(parseXML(root, file));
-    }
-
     public Element parseXML(Element root, File file) {
-
-        List<Element> paragraphs=new ArrayList<>();
-        List<Element> sentences=new ArrayList<>();
-        List<Element> xrefs=new ArrayList<>();
+        paragraphs.get().clear();
+        sentences.get().clear();
+        xrefs.get().clear();
 
         //节点过滤
         filterTags(root);
         //段落抽取
-        extractParagraphs(root,paragraphs);
-        removeElementNotXref(paragraphs);
+        extractParagraphs(root);
+        removeElementNotXref();
         //写出到新文件
         writeFile(root, FILTERED, file);
 
+
         //给段落编号
-        numberElement(paragraphs);
+        numberElement(paragraphs.get());
         //分句
-        splitSentences(paragraphs);
+        splitSentences();
         //抽取句子
-        extractSentence(root,sentences);
+        extractSentence(root);
         //给句子编号
-        numberElement(sentences);
+        numberElement(sentences.get());
         //抽取引文标志节点
-        extractXref(root,xrefs);
+        extractXref(root);
         //引文标志编号
-        numberElement(xrefs);
+        numberElement(xrefs.get());
         //写出到新文件
         writeFile(root, NUMBERED, file);
 
         //整理有效信息
         Element newRoot = reformat(root);
         writeFile(newRoot, REFORMATTED, file);
-
         return newRoot.setAttribute("status", "preprocessed");
     }
 
@@ -82,7 +101,7 @@ public abstract class PreprocessorImpl {
      **/
     public abstract void filterTags(Element root);
 
-    public abstract void removeElementNotXref(List<Element> paragraphs);
+    public abstract void removeElementNotXref();
 
     void filterTags(Element root, List<String> filterTagList) {
         ArrayList<Element> nodes = new ArrayList<>();
@@ -131,30 +150,30 @@ public abstract class PreprocessorImpl {
         }
     }
 
-    public abstract void extractXref(Element element,List<Element> xrefs);
+    public abstract void extractXref(Element element);
 
-    void extractXref(Element element, String xrefLabelName, String attributeName, String attributeValue,List<Element> xrefs) {
+    void extractXref(Element element, String xrefLabelName, String attributeName, String attributeValue) {
         if (element.getName().equals(xrefLabelName) && element.getAttributeValue(attributeName).equals(attributeValue)) {
-            xrefs.add(element);
+            xrefs.get().add(element);
         } else {
             for (Element e :
                     element.getChildren()) {
-                extractXref(e, xrefLabelName, attributeName, attributeValue,xrefs);
+                extractXref(e, xrefLabelName, attributeName, attributeValue);
             }
         }
     }
 
-    void extractParagraphs(Element root,List<Element> paragraphs) {
-        ElementUtil.extractElements(root.getChild("body"), "p", paragraphs);
+    void extractParagraphs(Element root) {
+        ElementUtil.extractElements(root.getChild("body"), "p", paragraphs.get());
     }
 
-    void extractSentence(Element root,List<Element> sentences) {
-        ElementUtil.extractElements(root.getChild("body"), "s", sentences);
+    void extractSentence(Element root) {
+        ElementUtil.extractElements(root.getChild("body"), "s", sentences.get());
     }
 
-    private void splitSentences(List<Element> paragraphs) {
+    private void splitSentences() {
         for (Element p :
-                paragraphs) {
+                paragraphs.get()) {
             try {
                 List<Content> contents = lingPipeSplitter.splitSentences(p);
                 p.removeContent();
@@ -171,9 +190,9 @@ public abstract class PreprocessorImpl {
         }
     }
 
-    void removeElementNotXref(String xrefLabelName, String attributeName, String attributeValue,List<Element> paragraphs) {
+    void removeElementNotXref(String xrefLabelName, String attributeName, String attributeValue) {
         for (Element paragraph :
-                paragraphs) {
+                paragraphs.get()) {
             if (paragraph.getChildren() != null) {
                 List<Element> needDeleted = new ArrayList<>();
                 List<Element> children = paragraph.getChildren();

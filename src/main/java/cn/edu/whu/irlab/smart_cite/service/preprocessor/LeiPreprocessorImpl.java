@@ -41,11 +41,11 @@ public class LeiPreprocessorImpl extends PreprocessorImpl {
     @Autowired
     private GrobidService grobidService;
 
-    private File file;
 
     @Override
     public Element parseXML(Element root, File file) {
-        this.file = file;
+        this.file.set(file);
+        this.root.set(root);
         Element newRoot = reformat(root);
         newRoot.setAttribute("status", root.getAttributeValue("status"));
         writeFile(newRoot, REFORMATTED, file);
@@ -58,11 +58,11 @@ public class LeiPreprocessorImpl extends PreprocessorImpl {
     }
 
     @Override
-    public void extractXref(Element element,List<Element> xrefs) {
+    public void extractXref(Element element) {
     }
 
     @Override
-    public void removeElementNotXref(List<Element> paragraphs) {
+    public void removeElementNotXref() {
     }
 
     @Override
@@ -116,7 +116,7 @@ public class LeiPreprocessorImpl extends PreprocessorImpl {
                 String secId = s.getParentElement().getParentElement().getAttributeValue("id");
                 s.setAttribute("sec", secId);
             } catch (NullPointerException e) {
-                System.out.println(file.getName() + " " + s.getValue());
+                System.out.println(file.get().getName() + " " + s.getValue());
             }
         }
 

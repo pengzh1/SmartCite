@@ -32,7 +32,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.helpers.DefaultHandler;
 import weka.core.Instances;
@@ -44,7 +46,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 
 import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.FEATURE_FILE;
 import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.OUTPUT;
@@ -88,7 +90,6 @@ public class ExtractorImpl {
         File upload = saveUploadedFile(file);
         return extract(upload);
     }
-
 
 
     public JSONObject extract(File file) {
@@ -160,13 +161,20 @@ public class ExtractorImpl {
 //        WriteUtil.writeList(OUTPUT + FilenameUtils.getBaseName(file.getName()) + ".txt", refTags);//todo 配置多样的输出
         WriteUtil.writeStr(OUTPUT + FilenameUtils.getBaseName(file.getName()) + ".txt", result.toJSONString());
         logger.info("extract context of article " + file.getName() + " successfully");
+
         return result;
     }
 
     @Async
-    public CompletableFuture<JSONObject> asyncExtract(File file) {
-        JSONObject object = extract(file);
-        return CompletableFuture.completedFuture(object);
+    public ListenableFuture<JSONObject> asyncExtract(File file, CountDownLatch countDownLatch) {
+        AsyncResult<JSONObject> jsonObjectAsyncResult = null;
+        try {
+            JSONObject object = extract(file);
+            jsonObjectAsyncResult = new AsyncResult<>(object);
+        } finally {
+            countDownLatch.countDown();
+        }
+        return jsonObjectAsyncResult;
     }
 
     /**

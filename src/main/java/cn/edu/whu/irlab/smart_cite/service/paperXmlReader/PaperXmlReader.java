@@ -36,6 +36,10 @@ public class PaperXmlReader {
 
     private static final Logger logger = LoggerFactory.getLogger(PaperXmlReader.class);
 
+//    private Article article;
+    ThreadLocal<Article> article = new ThreadLocal<>();
+
+
     /**
      *@auther gcr19
      *@desc 将预处理后的xml文档转换为Article对象
@@ -47,6 +51,8 @@ public class PaperXmlReader {
         Element header = root.getChild("header");
 
         Article article = new Article(FilenameUtils.getBaseName(file.getName()));
+        this.article.set(article);
+
 
         //初始化article 设置摘要
         article.setAbsText(header.getChild("abstract").getValue());//todo plos数据中有的摘要有多个段落
@@ -79,7 +85,7 @@ public class PaperXmlReader {
                 sentenceElements) {
             sentence = new Sentence(Integer.parseInt(e.getAttributeValue("id").split(",")[0]),
                     e.getText(), article);//todo lei的数据个别句子存在一个句子含2各以上id的情况
-//            logger.info("analyze [article] " + sentence.getArticle().getName() + " [sentence] " + sentence.getId());
+            logger.info("analyze [article] " + sentence.getArticle().getName() + " [sentence] " + sentence.getId());
             setSecInfo(e, sentence);
             article.append(sentence);   //append中设置一些索引位置信息
 //            logs.info(s.toText());
@@ -192,7 +198,7 @@ public class PaperXmlReader {
                 String refNum = element.getAttributeValue("rid");
                 if (refNum != null && !refNum.trim().equals("")) {  //指向的参考文献
                     xref.setRid(refNum.trim());
-                    xref.setReference(sentence.getArticle().getReferences().get(xref.getRid()));
+                    xref.setReference(article.get().getReferences().get(xref.getRid()));
                 }
                 sentence.addRef(xref);  //给句子加引文引用
                 //引文替换工作
