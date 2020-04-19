@@ -232,7 +232,7 @@ public class ExtractorImpl {
      * @param file
      * @return
      * @auther gcr19
-     * @desc TODO
+     * @desc 识别XML文件的类型
      **/
     public XMLTypeEnum identifyXMLType(Element article, File file) {
         String nameOfFirstNode = article.getName();
@@ -244,6 +244,12 @@ public class ExtractorImpl {
         throw new IllegalArgumentException("非法的XML类型，文件名：" + file.getName());
     }
 
+    /**
+     * @param file 上传的文件
+     * @return 保存的文件
+     * @auther gcr19
+     * @desc 保存上传的文件
+     **/
     public File saveUploadedFile(MultipartFile file) throws IOException {
         File upload = new File(FileLocation.UPLOAD_FILE + file.getOriginalFilename());
         file.transferTo(upload);

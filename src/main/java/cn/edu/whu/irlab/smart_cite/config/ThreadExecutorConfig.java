@@ -21,7 +21,7 @@ public class ThreadExecutorConfig {
     @Bean
     public Executor executor(){
         ThreadPoolTaskExecutor executor=new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(4);//线程池维护线程最少数量
+        executor.setCorePoolSize(6);//线程池维护线程最少数量
         executor.setMaxPoolSize(8);//线程池维护最大线程数量
         executor.setQueueCapacity(15);//缓存队列
         /**

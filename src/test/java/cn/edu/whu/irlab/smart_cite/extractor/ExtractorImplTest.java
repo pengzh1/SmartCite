@@ -1,5 +1,7 @@
-package cn.edu.whu.irlab.smart_cite.service.extractor.Impl;
+package cn.edu.whu.irlab.smart_cite.extractor;
 
+import cn.edu.whu.irlab.smart_cite.service.extractor.Impl.ExtractorImpl;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,13 +26,14 @@ public class ExtractorImplTest {
 
     @Test
     public void batchTest() throws ExecutionException, InterruptedException {
-        File folder = new File("C:\\Users\\Zhang_Li\\Desktop\\plos-samples1\\cs");
+        long start = System.currentTimeMillis();
+        File folder = new File("sources/plos/computer_science");
         File[] files = folder.listFiles();
-        int size = 4;
+        int size = 8;
         List<ListenableFuture<JSONObject>> listenableFutureList = new ArrayList<>();
         CountDownLatch countDownLatch = new CountDownLatch(size);
         if (files != null) {
-            for (int i = 0; i < size; i++) {
+            for (int i = 0; i < 10; i++) {
                 ListenableFuture<JSONObject> jsonObjectListenableFuture = extractor.asyncExtract(files[i], countDownLatch);
                 listenableFutureList.add(jsonObjectListenableFuture);
             }
@@ -38,11 +41,13 @@ public class ExtractorImplTest {
 
         countDownLatch.await();
 
+        JSONArray array = new JSONArray();
         for (ListenableFuture<JSONObject> jsonObjectListenableFuture : listenableFutureList) {
             JSONObject jsonObject = jsonObjectListenableFuture.get();
-            System.out.println(jsonObject.toJSONString());
+            array.add(jsonObject);
         }
-
-        System.out.println("finished");
+        System.out.println(array);
+        long end = System.currentTimeMillis();
+        System.out.println("finished! 用时：" + (end - start) + " ms");
     }
 }
