@@ -104,7 +104,7 @@ public class PaperXmlReader {
             if (person_group != null && person_group.getAttributeValue("person-group-type").equals("author")) {
                 for (Element name :
                         person_group.getChildren("name")) {
-                    reference.addAuthor(new Author(name.getChildText("surname"), name.getChildText("given-name")));
+                    reference.addAuthor(new Author(name.getChildText("surname"), name.getChildText("given-names")));
                 }
             }
             reference.setYear(element_citation.getChildText("year"));
