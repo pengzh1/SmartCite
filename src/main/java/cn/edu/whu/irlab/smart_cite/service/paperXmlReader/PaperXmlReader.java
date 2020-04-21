@@ -84,7 +84,7 @@ public class PaperXmlReader {
         for (Element e :
                 sentenceElements) {
             sentence = new Sentence(Integer.parseInt(e.getAttributeValue("id").split(",")[0]),
-                    e.getText(), article);//todo lei的数据个别句子存在一个句子含2各以上id的情况
+                    e.getValue(), article);//todo lei的数据个别句子存在一个句子含2各以上id的情况
             logger.info("analyze [article] " + sentence.getArticle().getName() + " [sentence] " + sentence.getId());
             setSecInfo(e, sentence);
             article.append(sentence);   //append中设置一些索引位置信息

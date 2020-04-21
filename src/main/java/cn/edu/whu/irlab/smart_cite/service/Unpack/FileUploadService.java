@@ -3,7 +3,7 @@ package cn.edu.whu.irlab.smart_cite.service.Unpack;
 
 
 import cn.edu.whu.irlab.smart_cite.enums.ZipFileTypeEnum;
-import cn.edu.whu.irlab.smart_cite.util.UnPackeUtil;
+import cn.edu.whu.irlab.smart_cite.util.UnPackageUtil;
 import cn.edu.whu.irlab.smart_cite.vo.PackParam;
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.exception.ZipException;
@@ -47,10 +47,10 @@ public class FileUploadService  {
         }
         if (isZipPack) {
             //zip压缩包
-            UnPackeUtil.unPackZip(file);
+            UnPackageUtil.unPackZip(file);
         } else {
             //rar压缩包
-            UnPackeUtil.unPackRar(file, packParam.getDestPath());
+            UnPackageUtil.unPackRar(file, packParam.getDestPath());
         }
         return AjaxList.createSuccess("解压成功");
     }

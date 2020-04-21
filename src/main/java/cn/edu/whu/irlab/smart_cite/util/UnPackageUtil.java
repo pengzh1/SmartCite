@@ -13,7 +13,7 @@ import java.io.FileOutputStream;
 
 
 @Slf4j
-public class UnPackeUtil {
+public class UnPackageUtil {
 
     /**
      *@auther gcr19
