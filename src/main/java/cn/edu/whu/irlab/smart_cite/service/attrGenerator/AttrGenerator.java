@@ -36,7 +36,7 @@ public class AttrGenerator {
         addSecAttr(sentences,file);
         addLevelAndPAttr(sentences);
         addCTypeAttr(sentences);
-        writeFile(root, ADDED, file);
+//        writeFile(root, ADDED, file);
         return root.setAttribute("status", "attrAdded");
     }
 

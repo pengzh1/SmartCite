@@ -13,16 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import java.io.BufferedWriter;
+
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.ART;
 import static com.leishengwei.jutils.Collections.toStr;
 
 /**
@@ -52,7 +48,6 @@ public class PaperXmlReader {
 
         Article article = new Article(FilenameUtils.getBaseName(file.getName()));
         this.article.set(article);
-
 
         //初始化article 设置摘要
         article.setAbsText(header.getChild("abstract").getValue());//todo plos数据中有的摘要有多个段落

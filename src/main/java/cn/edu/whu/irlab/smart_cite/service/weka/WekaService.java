@@ -23,22 +23,22 @@ public class WekaService {
 
     private static final Logger logger = LoggerFactory.getLogger(WekaService.class);
 
-    private static final String MODEL_PATH = "result/model/libsvm.model";
+    private static final String MODEL_PATH = System.getProperty("user.dir") + "/result/model/libsvm.model";
 
     private LibSVM svm;
 
     public Instances classify(String instancesPath) {
         Instances instances = loadInstances(instancesPath);
-        if (svm==null){
+        if (svm == null) {
             svm = reloadPersistModel();
         }
         return classify(svm, instances);
     }
 
-    public Instances trainAndClassify(String trainingDataPath,String instancesPath){
-        Instances instances=loadInstances(instancesPath);
-        LibSVM svm=train(trainingDataPath);
-        return classify(svm,instances);
+    public Instances trainAndClassify(String trainingDataPath, String instancesPath) {
+        Instances instances = loadInstances(instancesPath);
+        LibSVM svm = train(trainingDataPath);
+        return classify(svm, instances);
     }
 
     public Instances loadInstances(String instancesPath) {
@@ -72,9 +72,9 @@ public class WekaService {
         return instances;
     }
 
-    public LibSVM train(String trainingDataPath){
-        Instances instances =loadInstances(trainingDataPath);
-        instances=preprocessInstances(instances);
+    public LibSVM train(String trainingDataPath) {
+        Instances instances = loadInstances(trainingDataPath);
+        instances = preprocessInstances(instances);
         return train(instances);
     }
 
@@ -91,8 +91,8 @@ public class WekaService {
 
     public Instances classify(LibSVM svm, Instances instances) {
         for (Instance instance : instances) {
-                double category = classify(svm, instance);
-                instance.setClassValue(category);
+            double category = classify(svm, instance);
+            instance.setClassValue(category);
         }
         return instances;
     }
@@ -130,7 +130,7 @@ public class WekaService {
     }
 
     public void outputInstances(Instances instances, String outputPath) {
-        WriteUtil.writeStr(outputPath,instances.toString());
+        WriteUtil.writeStr(outputPath, instances.toString());
     }
 
 }
