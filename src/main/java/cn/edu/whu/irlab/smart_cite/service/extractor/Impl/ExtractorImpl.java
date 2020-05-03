@@ -113,6 +113,8 @@ public class ExtractorImpl {
                 root = grobidService.processFulltextDocument(file);
                 xmlTypeEnum = XMLTypeEnum.Grobid;
                 break;
+            case "application/json":
+                break;
             default:
                 throw new FileTypeException("文件[" + file.getName() + "]的类型为：" + mimeType + ",不是合法的文件类型");
         }
