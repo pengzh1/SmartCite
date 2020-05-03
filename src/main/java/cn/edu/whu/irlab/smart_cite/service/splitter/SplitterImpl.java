@@ -3,8 +3,11 @@ package cn.edu.whu.irlab.smart_cite.service.splitter;
 import cn.edu.whu.irlab.smart_cite.exception.SplitSentenceException;
 import org.jdom2.Content;
 import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author gcr19
@@ -13,6 +16,7 @@ import java.util.*;
  * @desc 分词器
  **/
 public abstract class SplitterImpl {
+    private static final Logger logger = LoggerFactory.getLogger(SplitterImpl.class);
 
     abstract List<String> splitSentences(String text) throws SplitSentenceException;
 
@@ -48,7 +52,7 @@ public abstract class SplitterImpl {
                         sentenceElement.addContent(residualSentence.substring(0, end));
                     } catch (Exception e) {
                         System.out.println(sentence);
-                        e.printStackTrace();
+                        logger.error(e.getMessage(), e);
                     }
                     sub.removeAttribute("coordinate");
                     sub.removeAttribute("localizer");
@@ -58,7 +62,7 @@ public abstract class SplitterImpl {
                         residualSentence = residualSentence.substring(end + sub.getValue().length());
                     } catch (Exception e) {
                         System.out.println(sentence);
-                        e.printStackTrace();
+                        logger.error(e.getMessage(), e);
                     }
                     if (elements.isEmpty()) break;
                 }
@@ -85,10 +89,10 @@ public abstract class SplitterImpl {
             String contentValue = c.getValue();
             if (c.getCType().equals(Content.CType.Element)) {
                 Element e = (Element) c;
-                    e.setAttribute("localizer", prefix + contentValue);
-                    e.setAttribute("coordinate", String.valueOf(coordinatePoint));
-                    coordinatePoint += contentValue.length();
-                    elements.add(e);
+                e.setAttribute("localizer", prefix + contentValue);
+                e.setAttribute("coordinate", String.valueOf(coordinatePoint));
+                coordinatePoint += contentValue.length();
+                elements.add(e);
             } else {
                 coordinatePoint += contentValue.length();
             }

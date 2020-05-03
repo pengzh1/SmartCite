@@ -141,7 +141,7 @@ public class ExtractorImpl {
         List<Result> results = featureExtractor.extract(article);
 
         //分类
-        Instances instances = wekaService.classify(FEATURE_FILE + FilenameUtils.getBaseName(file.getName()) + "_features.libsvm");
+        Instances instances = wekaService.classify(FEATURE_FILE + file.getName() + "_features.libsvm");
 
         //匹配分类结果
         for (int i = 0; i < results.size(); i++) {
@@ -159,7 +159,7 @@ public class ExtractorImpl {
         result.put("refTags", refTags);
 
 //        WriteUtil.writeList(OUTPUT + FilenameUtils.getBaseName(file.getName()) + ".txt", refTags);//todo 配置多样的输出
-        WriteUtil.writeStr(OUTPUT + FilenameUtils.getBaseName(file.getName()) + ".txt", result.toJSONString());
+        WriteUtil.writeStr(OUTPUT + file.getName() + ".txt", result.toJSONString());
         logger.info("extract context of article " + file.getName() + " successfully");
 
         return result;

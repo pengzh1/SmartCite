@@ -61,9 +61,9 @@ public class AttrGenerator {
 
     private void writeFile(Element root, String folderPath, File file) {
         try {
-            WriteUtil.writeXml(root, folderPath + FilenameUtils.getBaseName(file.getName()) + ".xml");
+            WriteUtil.writeXml(root, folderPath + file.getName() + ".xml");
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
     }
 

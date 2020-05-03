@@ -46,7 +46,7 @@ public class PaperXmlReader {
     public Article processFile(File file, Element root) {
         Element header = root.getChild("header");
 
-        Article article = new Article(FilenameUtils.getBaseName(file.getName()));
+        Article article = new Article(file.getName());
         this.article.set(article);
 
         //初始化article 设置摘要
@@ -182,7 +182,7 @@ public class PaperXmlReader {
                 try{
                     Integer.parseInt((element.getAttributeValue("id")));
                 }catch (Exception e){
-                    logger.error(e.getMessage());
+                    logger.error(e.getMessage(), e);
                     System.out.println(element.getAttributeValue("id"));
                     System.out.println();
                 }

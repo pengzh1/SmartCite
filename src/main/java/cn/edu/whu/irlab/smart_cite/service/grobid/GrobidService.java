@@ -72,7 +72,7 @@ public class GrobidService {
         try {
             element = TypeConverter.str2xml(responseEntity.getBody());
         } catch (JDOMException | IOException e) {
-            logger.error(e.getMessage());//todo 异常待自定义
+            logger.error(e.getMessage(), e);
         }
         return element;
     }

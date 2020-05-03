@@ -180,7 +180,7 @@ public abstract class PreprocessorImpl {
                 p.removeContent();
                 p.addContent(contents);
             } catch (SplitSentenceException e) {
-                log.error(e.getMessage() + " At paragraph: " + p.getAttributeValue("id"));
+                log.error(e.getMessage() + " At paragraph: " + p.getAttributeValue("id"), e);
             }
         }
     }
@@ -323,9 +323,9 @@ public abstract class PreprocessorImpl {
 
     void writeFile(Element root, String folderPath, File file) {
         try {
-            WriteUtil.writeXml(root, folderPath + FilenameUtils.getBaseName(file.getName()) + ".xml");
+            WriteUtil.writeXml(root, folderPath + file.getName() + ".xml");
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
         }
 
     }
