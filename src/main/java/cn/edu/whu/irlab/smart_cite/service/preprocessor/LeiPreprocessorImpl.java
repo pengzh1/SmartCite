@@ -151,7 +151,7 @@ public class LeiPreprocessorImpl extends PreprocessorImpl {
         try {
             biblStruct = TypeConverter.str2xml(stringRef);
         } catch (JDOMException | IOException e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
         Element element_citation = new Element("element-citation");
 

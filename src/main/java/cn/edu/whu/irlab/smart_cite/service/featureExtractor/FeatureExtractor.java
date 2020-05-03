@@ -59,7 +59,9 @@ public class FeatureExtractor {
 //    private StatisticVisitor statisticVisitor;   //统计分析
 
     public List<Result> extract(Article article) {
-        Files featureWriter = Files.open(FEATURE_FILE + FilenameUtils.getBaseName(article.getName()) + "_features.libsvm");
+        String name = article.getName();
+        String fileName = FEATURE_FILE + name + "_features.libsvm ";
+        Files featureWriter = Files.open(fileName);
 
         features.get().clear();
         information.get().clear();
@@ -72,7 +74,7 @@ public class FeatureExtractor {
         //关闭特征文件流
         featureWriter.close();
         //保存位置信息
-        WriteUtil.writeList("temp/location/" + FilenameUtils.getBaseName(article.getName()) + "_location.txt", information.get());
+        WriteUtil.writeList("temp/location/" + article.getName() + "_location.txt", information.get());
 
 
 

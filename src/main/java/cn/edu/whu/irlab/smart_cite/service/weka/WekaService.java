@@ -8,6 +8,9 @@ import weka.classifiers.functions.LibSVM;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils;
+import weka.core.converters.LibSVMLoader;
+import weka.core.converters.Loader;
+import weka.core.converters.SVMLightLoader;
 import weka.filters.unsupervised.attribute.NumericToNominal;
 
 import java.io.*;
@@ -23,7 +26,8 @@ public class WekaService {
 
     private static final Logger logger = LoggerFactory.getLogger(WekaService.class);
 
-    private static final String MODEL_PATH = System.getProperty("user.dir") + "/result/model/libsvm.model";
+    private static final String MODEL_NAME = "libsvm.model";
+    private static final String MODEL_PATH = System.getProperty("user.dir") + "/result/model/" + MODEL_NAME;
 
     private LibSVM svm;
 
@@ -45,10 +49,12 @@ public class WekaService {
         Instances data = null;
 
         try {
-            ConverterUtils.DataSource dataSource = new ConverterUtils.DataSource(instancesPath);
+            LibSVMLoader libSVMLoader = new LibSVMLoader();
+            libSVMLoader.setSource(new File(instancesPath));
+            ConverterUtils.DataSource dataSource = new ConverterUtils.DataSource(libSVMLoader);
             data = dataSource.getDataSet();
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
         if (data != null) {
             data.setClassIndex(data.numAttributes() - 1);
@@ -67,7 +73,7 @@ public class WekaService {
             toNominal.setInputFormat(instances);
             instances = weka.filters.Filter.useFilter(instances, toNominal);
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
         return instances;
     }
@@ -83,7 +89,7 @@ public class WekaService {
         try {
             svm.buildClassifier(instances);
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
 
         return svm;
@@ -101,7 +107,7 @@ public class WekaService {
         try {
             return svm.classifyInstance(instance);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return -1;
     }
@@ -114,18 +120,29 @@ public class WekaService {
             objectOutputStream.flush();
             objectOutputStream.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 
     public LibSVM reloadPersistModel() {
         ObjectInputStream objectInputStream;
         try {
-            objectInputStream = new ObjectInputStream(new FileInputStream(MODEL_PATH));
+            if (new File(MODEL_PATH).exists()) {
+                // 从jar包外部加载模型
+                logger.info("load outer libsvm model");
+                objectInputStream = new ObjectInputStream(new FileInputStream(MODEL_PATH));
+            } else {
+                // 从jar包内部加载模型
+                logger.info("load inner libsvm model");
+                InputStream resourceAsStream = this.getClass().getResourceAsStream("/" + MODEL_NAME);
+                objectInputStream = new ObjectInputStream(resourceAsStream);
+            }
+
             return (LibSVM) objectInputStream.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
         }
+
         return null;
     }
 

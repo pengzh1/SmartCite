@@ -44,7 +44,7 @@ public class ExtractorController {
         try {
             object = extractor.extract(file);
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
             if (e instanceof FileTypeException) {
                 return ResponseUtil.error(ResponseEnum.FILE_ERROR);
             } else {
@@ -90,7 +90,7 @@ public class ExtractorController {
             }
 
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
             if (e instanceof FileTypeException) {
                 return ResponseUtil.error(ResponseEnum.FILE_ERROR);
             } else {
