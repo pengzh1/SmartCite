@@ -1,6 +1,5 @@
 package cn.edu.whu.irlab.smart_cite.service.extractor.Impl;
 
-import cn.edu.whu.irlab.smart_cite.enums.ResponseEnum;
 import cn.edu.whu.irlab.smart_cite.enums.XMLTypeEnum;
 import cn.edu.whu.irlab.smart_cite.exception.FileTypeException;
 import cn.edu.whu.irlab.smart_cite.service.attrGenerator.AttrGenerator;
@@ -12,8 +11,6 @@ import cn.edu.whu.irlab.smart_cite.service.preprocessor.LeiPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.PlosPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.weka.WekaService;
 import cn.edu.whu.irlab.smart_cite.util.ReadUtil;
-import cn.edu.whu.irlab.smart_cite.util.ResponseUtil;
-import cn.edu.whu.irlab.smart_cite.util.UnPackeUtil;
 import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
 import cn.edu.whu.irlab.smart_cite.vo.Article;
 import cn.edu.whu.irlab.smart_cite.vo.FileLocation;
@@ -22,7 +19,6 @@ import cn.edu.whu.irlab.smart_cite.vo.Result;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.metadata.HttpHeaders;
 import org.apache.tika.metadata.Metadata;
@@ -36,7 +32,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.helpers.DefaultHandler;
 import weka.core.Instances;
@@ -48,8 +46,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CountDownLatch;
 
 import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.FEATURE_FILE;
 import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.OUTPUT;
@@ -89,13 +86,13 @@ public class ExtractorImpl {
     private WekaService wekaService;
 
 
-    public JSONObject Extract(MultipartFile file) throws IOException {
+    public JSONObject extract(MultipartFile file) throws IOException {
         File upload = saveUploadedFile(file);
-        return Extract(upload);
+        return extract(upload);
     }
 
 
-    public JSONObject Extract(File file) {
+    public JSONObject extract(File file) {
         if (!file.exists()) {
             throw new IllegalArgumentException("文件不存在");
         }
@@ -115,6 +112,8 @@ public class ExtractorImpl {
             case "application/pdf":
                 root = grobidService.processFulltextDocument(file);
                 xmlTypeEnum = XMLTypeEnum.Grobid;
+                break;
+            case "application/json":
                 break;
             default:
                 throw new FileTypeException("文件[" + file.getName() + "]的类型为：" + mimeType + ",不是合法的文件类型");
@@ -144,7 +143,7 @@ public class ExtractorImpl {
         List<Result> results = featureExtractor.extract(article);
 
         //分类
-        Instances instances = wekaService.classify(FEATURE_FILE + FilenameUtils.getBaseName(file.getName()) + "_features.libsvm");
+        Instances instances = wekaService.classify(FEATURE_FILE + file.getName() + "_features.libsvm");
 
         //匹配分类结果
         for (int i = 0; i < results.size(); i++) {
@@ -162,16 +161,22 @@ public class ExtractorImpl {
         result.put("refTags", refTags);
 
 //        WriteUtil.writeList(OUTPUT + FilenameUtils.getBaseName(file.getName()) + ".txt", refTags);//todo 配置多样的输出
-        WriteUtil.writeStr(OUTPUT + FilenameUtils.getBaseName(file.getName()) + ".txt", result.toJSONString());
+        WriteUtil.writeStr(OUTPUT + file.getName() + ".txt", result.toJSONString());
         logger.info("extract context of article " + file.getName() + " successfully");
 
         return result;
     }
 
     @Async
-    public CompletableFuture<JSONObject> asyncExtract(File file) {
-        JSONObject object = Extract(file);
-        return CompletableFuture.completedFuture(object);
+    public ListenableFuture<JSONObject> asyncExtract(File file, CountDownLatch countDownLatch) {
+        AsyncResult<JSONObject> jsonObjectAsyncResult = null;
+        try {
+            JSONObject object = extract(file);
+            jsonObjectAsyncResult = new AsyncResult<>(object);
+        } finally {
+            countDownLatch.countDown();
+        }
+        return jsonObjectAsyncResult;
     }
 
     /**
@@ -229,7 +234,7 @@ public class ExtractorImpl {
      * @param file
      * @return
      * @auther gcr19
-     * @desc TODO
+     * @desc 识别XML文件的类型
      **/
     public XMLTypeEnum identifyXMLType(Element article, File file) {
         String nameOfFirstNode = article.getName();
@@ -241,6 +246,12 @@ public class ExtractorImpl {
         throw new IllegalArgumentException("非法的XML类型，文件名：" + file.getName());
     }
 
+    /**
+     * @param file 上传的文件
+     * @return 保存的文件
+     * @auther gcr19
+     * @desc 保存上传的文件
+     **/
     public File saveUploadedFile(MultipartFile file) throws IOException {
         File upload = new File(FileLocation.UPLOAD_FILE + file.getOriginalFilename());
         file.transferTo(upload);

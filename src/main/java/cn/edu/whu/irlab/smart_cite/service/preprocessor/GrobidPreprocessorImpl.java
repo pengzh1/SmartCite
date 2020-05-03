@@ -110,9 +110,14 @@ public class GrobidPreprocessorImpl extends PreprocessorImpl {
     @Override
     void fillBack(Element root, Element back) {
         Element ref_list = new Element("ref-list");
-        Element listBibl = root.getChild("text", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).
-                getChild("back", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).
-                getChild("div", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).
+        Element old_back = root.getChild("text", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).
+                getChild("back", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
+        for (Element div :
+                old_back.getChildren()) {
+            if (!div.getName().equals("div") || !div.getAttributeValue("type").equals("references"))
+                old_back.removeContent(div);
+        }
+        Element listBibl = old_back.getChild("div", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).
                 getChild("listBibl", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
         for (Element biblStruct :
                 listBibl.getChildren()) {
@@ -147,12 +152,12 @@ public class GrobidPreprocessorImpl extends PreprocessorImpl {
     @Override
     void extractParagraphs(Element root) {
         ElementUtil.extractElements(root.getChild("text", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).
-                getChild("body", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")), "p", paragraphs.get());
+                getChild("body", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")), "p");
     }
 
     @Override
     void extractSentence(Element root) {
         ElementUtil.extractElements(root.getChild("text", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).
-                getChild("body", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")), "s", sentences.get());
+                getChild("body", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")), "s");
     }
 }

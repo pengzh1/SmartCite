@@ -32,7 +32,7 @@ public class ReadUtil {
         try {
             docContent = FileUtils.readFileToString(file,"UTF-8");
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return docContent;
     }
@@ -61,7 +61,7 @@ public class ReadUtil {
             doc = saxBuilder.build(file);
             root = doc.getRootElement();
         } catch (JDOMException | IOException e) {
-            logger.error(e.getMessage());//todo 异常待自定义
+            logger.error(e.getMessage(), e);
         }
         return root;
     }

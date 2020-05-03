@@ -27,33 +27,24 @@ public class AttrGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(AttrGenerator.class);
 
-    ThreadLocal<List<Element>> sentences = new ThreadLocal<List<Element>>(){
-        @Override
-        protected List<Element> initialValue() {
-            return new ArrayList<>();
-        }
-    };
-
-    private File file;
-
     public Element generateAttr(Element root, File file) {
-        this.file=file;
-        sentences.get().clear();
+
         Element body = root.getChild("body");
-        ElementUtil.extractElements(body, "s", sentences.get());
-        addSecAttr();
-        addLevelAndPAttr();
-        addCTypeAttr();
-        writeFile(root, ADDED, file);
+        List<Element> sentences=new ArrayList<>();
+
+        ElementUtil.extractElements(body, "s", sentences);
+        addSecAttr(sentences,file);
+        addLevelAndPAttr(sentences);
+        addCTypeAttr(sentences);
+//        writeFile(root, ADDED, file);
         return root.setAttribute("status", "attrAdded");
     }
 
 
-    private void addLevelAndPAttr() {
+    private void addLevelAndPAttr(List<Element> sentences) {
         for (Element sElement :
-                sentences.get()) {
-
-            org.jdom2.Element parent = sElement.getParentElement();
+                sentences) {
+            Element parent = sElement.getParentElement();
             //addPAttr 添加p属性
             sElement.setAttribute("p", String.valueOf(parent.getAttributeValue("id")));
             //addLevelAttr 添加level属性
@@ -70,20 +61,20 @@ public class AttrGenerator {
 
     private void writeFile(Element root, String folderPath, File file) {
         try {
-            WriteUtil.writeXml(root, folderPath + FilenameUtils.getBaseName(file.getName()) + ".xml");
+            WriteUtil.writeXml(root, folderPath + file.getName() + ".xml");
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
     }
 
-    private void addSecAttr() {
+    private void addSecAttr(List<Element> sentences,File file) {
         for (Element s :
-                sentences.get()) {
+                sentences) {
             Element sec = s.getParentElement().getParentElement();
             if (sec.getName().equals("sec")) {
                 s.setAttribute("sec", sec.getAttributeValue("id"));
             } else {
-                logger.error("error in article:" +file.getName());
+                logger.error("error in article:" + file.getName());
                 throw new IllegalArgumentException("this element name is " + sec.getName() + ". please input sec element");
             }
         }
@@ -94,9 +85,9 @@ public class AttrGenerator {
      * @auther gcr19
      * @desc 仅为含有引文标记的sentence添加属性c_type="r"
      **/
-    private void addCTypeAttr() {
+    private void addCTypeAttr(List<Element> sentences) {
         for (Element s :
-                sentences.get()) {
+                sentences) {
             if (s.getChildren("xref").size() != 0) {
                 s.setAttribute("c_type", "r");
             }

@@ -13,16 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import java.io.BufferedWriter;
+
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.ART;
 import static com.leishengwei.jutils.Collections.toStr;
 
 /**
@@ -37,7 +33,7 @@ public class PaperXmlReader {
     private static final Logger logger = LoggerFactory.getLogger(PaperXmlReader.class);
 
 //    private Article article;
-    ThreadLocal<Article> article = null;
+    ThreadLocal<Article> article = new ThreadLocal<>();
 
 
     /**
@@ -50,7 +46,8 @@ public class PaperXmlReader {
     public Article processFile(File file, Element root) {
         Element header = root.getChild("header");
 
-        Article article = new Article(FilenameUtils.getBaseName(file.getName()));
+        Article article = new Article(file.getName());
+        this.article.set(article);
 
         //初始化article 设置摘要
         article.setAbsText(header.getChild("abstract").getValue());//todo plos数据中有的摘要有多个段落
@@ -82,14 +79,13 @@ public class PaperXmlReader {
         for (Element e :
                 sentenceElements) {
             sentence = new Sentence(Integer.parseInt(e.getAttributeValue("id").split(",")[0]),
-                    e.getText(), article);//todo lei的数据个别句子存在一个句子含2各以上id的情况
+                    e.getValue(), article);//todo lei的数据个别句子存在一个句子含2各以上id的情况
             logger.info("analyze [article] " + sentence.getArticle().getName() + " [sentence] " + sentence.getId());
             setSecInfo(e, sentence);
             article.append(sentence);   //append中设置一些索引位置信息
 //            logs.info(s.toText());
         }
 
-        this.article.set(article);
         return article;
     }
 
@@ -103,7 +99,7 @@ public class PaperXmlReader {
             if (person_group != null && person_group.getAttributeValue("person-group-type").equals("author")) {
                 for (Element name :
                         person_group.getChildren("name")) {
-                    reference.addAuthor(new Author(name.getChildText("surname"), name.getChildText("given-name")));
+                    reference.addAuthor(new Author(name.getChildText("surname"), name.getChildText("given-names")));
                 }
             }
             reference.setYear(element_citation.getChildText("year"));
@@ -186,7 +182,7 @@ public class PaperXmlReader {
                 try{
                     Integer.parseInt((element.getAttributeValue("id")));
                 }catch (Exception e){
-                    logger.error(e.getMessage());
+                    logger.error(e.getMessage(), e);
                     System.out.println(element.getAttributeValue("id"));
                     System.out.println();
                 }

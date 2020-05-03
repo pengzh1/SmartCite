@@ -4,6 +4,7 @@ import cn.edu.whu.irlab.smart_cite.exception.SplitSentenceException;
 import cn.edu.whu.irlab.smart_cite.service.splitter.LingPipeSplitterImpl;
 import cn.edu.whu.irlab.smart_cite.util.ElementUtil;
 import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.jdom2.*;
 import org.slf4j.Logger;
@@ -25,9 +26,9 @@ import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.*;
  * @date 2020/2/6 10:43
  * @desc 预处理器抽象类
  **/
+@Slf4j
 public abstract class PreprocessorImpl {
 
-    private static final Logger logger = LoggerFactory.getLogger(PreprocessorImpl.class);
 
     ThreadLocal<List<Element>> paragraphs = new ThreadLocal<List<Element>>(){
         @Override
@@ -50,9 +51,10 @@ public abstract class PreprocessorImpl {
         }
     };
 
-
-    File file;
-    Element root;
+    ThreadLocal<File> file = new ThreadLocal<File>();
+    ThreadLocal<Element> root = new ThreadLocal<Element>();
+//    File file;
+//    Element root;
 
     @Autowired
     private LingPipeSplitterImpl lingPipeSplitter;
@@ -68,7 +70,7 @@ public abstract class PreprocessorImpl {
         extractParagraphs(root);
         removeElementNotXref();
         //写出到新文件
-        writeFile(root, FILTERED, file);
+//        writeFile(root, FILTERED, file);
 
 
         //给段落编号
@@ -84,11 +86,11 @@ public abstract class PreprocessorImpl {
         //引文标志编号
         numberElement(xrefs.get());
         //写出到新文件
-        writeFile(root, NUMBERED, file);
+//        writeFile(root, NUMBERED, file);
 
         //整理有效信息
         Element newRoot = reformat(root);
-        writeFile(newRoot, REFORMATTED, file);
+//        writeFile(newRoot, REFORMATTED, file);
         return newRoot.setAttribute("status", "preprocessed");
     }
 
@@ -178,7 +180,7 @@ public abstract class PreprocessorImpl {
                 p.removeContent();
                 p.addContent(contents);
             } catch (SplitSentenceException e) {
-                logger.error(e.getMessage() + " At paragraph: " + p.getAttributeValue("id"));
+                log.error(e.getMessage() + " At paragraph: " + p.getAttributeValue("id"), e);
             }
         }
     }
@@ -321,9 +323,9 @@ public abstract class PreprocessorImpl {
 
     void writeFile(Element root, String folderPath, File file) {
         try {
-            WriteUtil.writeXml(root, folderPath + FilenameUtils.getBaseName(file.getName()) + ".xml");
+            WriteUtil.writeXml(root, folderPath + file.getName() + ".xml");
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage(), e);
         }
 
     }

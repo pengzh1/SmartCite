@@ -37,7 +37,7 @@ public class WriteUtil {
         try {
             FileUtils.writeStringToFile(file, content, "UTF-8");
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -46,7 +46,7 @@ public class WriteUtil {
         try {
             FileUtils.writeLines(file, list, "\n");
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -57,7 +57,7 @@ public class WriteUtil {
         try {
             csvWriter.writeRecord(header, false);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
 
         try {
@@ -72,7 +72,7 @@ public class WriteUtil {
                 csvWriter.writeRecord(record, false);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
 
         csvWriter.close();

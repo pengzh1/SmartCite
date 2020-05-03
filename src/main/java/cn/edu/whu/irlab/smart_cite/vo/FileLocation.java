@@ -1,5 +1,7 @@
 package cn.edu.whu.irlab.smart_cite.vo;
 
+import java.io.File;
+
 /**
  * @author gcr19
  * @version 1.0
@@ -9,10 +11,10 @@ package cn.edu.whu.irlab.smart_cite.vo;
 public class FileLocation {
 
     //存放上传的文件
-    public final static String UPLOAD_FILE = System.getProperty("user.dir")+"/"+"temp/upload/";
+    public final static String UPLOAD_FILE = System.getProperty("user.dir")+ File.separator+"temp"+ File.separator+"upload"+ File.separator;
 
     //存放Libsvm特征文件
-    public final static String FEATURE_FILE = "temp/feature_files/";
+    public final static String FEATURE_FILE = System.getProperty("user.dir")+File.separator+"temp"+File.separator+"feature_files"+ File.separator;
 
     //存放完成编号的XML文档
     public final static String NUMBERED = "temp/numbered/";

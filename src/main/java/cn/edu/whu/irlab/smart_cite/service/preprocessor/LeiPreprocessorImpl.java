@@ -44,8 +44,8 @@ public class LeiPreprocessorImpl extends PreprocessorImpl {
 
     @Override
     public Element parseXML(Element root, File file) {
-        this.file = file;
-        this.root = root;
+        this.file.set(file);
+        this.root.set(root);
         Element newRoot = reformat(root);
         newRoot.setAttribute("status", root.getAttributeValue("status"));
         writeFile(newRoot, REFORMATTED, file);
@@ -116,7 +116,7 @@ public class LeiPreprocessorImpl extends PreprocessorImpl {
                 String secId = s.getParentElement().getParentElement().getAttributeValue("id");
                 s.setAttribute("sec", secId);
             } catch (NullPointerException e) {
-                System.out.println(file.getName() + " " + s.getValue());
+                System.out.println(file.get().getName() + " " + s.getValue());
             }
         }
 
@@ -151,7 +151,7 @@ public class LeiPreprocessorImpl extends PreprocessorImpl {
         try {
             biblStruct = TypeConverter.str2xml(stringRef);
         } catch (JDOMException | IOException e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
         Element element_citation = new Element("element-citation");
 
