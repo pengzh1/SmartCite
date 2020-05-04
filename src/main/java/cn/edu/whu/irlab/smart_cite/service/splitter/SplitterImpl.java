@@ -1,6 +1,5 @@
 package cn.edu.whu.irlab.smart_cite.service.splitter;
 
-import cn.edu.whu.irlab.smart_cite.exception.SplitSentenceException;
 import org.jdom2.Content;
 import org.jdom2.Element;
 import org.slf4j.Logger;

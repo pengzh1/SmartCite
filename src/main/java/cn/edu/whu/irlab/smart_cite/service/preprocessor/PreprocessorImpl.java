@@ -1,24 +1,16 @@
 package cn.edu.whu.irlab.smart_cite.service.preprocessor;
 
-import cn.edu.whu.irlab.smart_cite.exception.SplitSentenceException;
 import cn.edu.whu.irlab.smart_cite.service.splitter.LingPipeSplitterImpl;
 import cn.edu.whu.irlab.smart_cite.util.ElementUtil;
 import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
 import org.jdom2.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.*;
 
 /**
  * @author gcr19

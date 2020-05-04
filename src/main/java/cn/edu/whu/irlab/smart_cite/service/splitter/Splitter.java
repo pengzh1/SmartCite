@@ -1,6 +1,5 @@
 package cn.edu.whu.irlab.smart_cite.service.splitter;
 
-import cn.edu.whu.irlab.smart_cite.exception.SplitSentenceException;
 import org.jdom2.Element;
 
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.List;
  **/
 public interface Splitter {
 
-    List<String> splitSentence(String text) throws SplitSentenceException;
+    List<String> splitSentence(String text);
 
     /**
      * 对段落中的句子进行拆分

@@ -1,7 +1,5 @@
 package cn.edu.whu.irlab.smart_cite.service.splitter;
 
-import cn.edu.whu.irlab.smart_cite.enums.SplitSentenceExceptionEnum;
-import cn.edu.whu.irlab.smart_cite.exception.SplitSentenceException;
 import com.aliasi.chunk.Chunk;
 import com.aliasi.chunk.Chunking;
 import com.aliasi.sentences.MedlineSentenceModel;
@@ -9,13 +7,9 @@ import com.aliasi.sentences.SentenceChunker;
 import com.aliasi.sentences.SentenceModel;
 import com.aliasi.tokenizer.IndoEuropeanTokenizerFactory;
 import com.aliasi.tokenizer.TokenizerFactory;
-import com.aliasi.util.Files;
 import org.springframework.stereotype.Service;
 
-import javax.xml.bind.Element;
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
