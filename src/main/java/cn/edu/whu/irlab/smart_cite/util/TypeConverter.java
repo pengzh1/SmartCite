@@ -57,12 +57,14 @@ public class TypeConverter {
      * @param json the json
      * @return the string
      */
-    public static String jsonToXml(String json) {
+    public static String json2Xml(String json) {
         try {
             StringBuffer buffer = new StringBuffer();
             buffer.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+            buffer.append("<article>");
             JSONObject jObj = JSON.parseObject(json);
             json2XmlStr(jObj, buffer);
+            buffer.append("</article>");
             return buffer.toString();
         } catch (Exception e) {
             e.printStackTrace();
@@ -93,8 +95,13 @@ public class TypeConverter {
                         JSONArray jarray = jObj.getJSONArray(en.getKey());
                         for (int i = 0; i < jarray.size(); i++) {
                             buffer.append("<" + en.getKey() + ">");
-                            JSONObject jsonobject = jarray.getJSONObject(i);
-                            json2XmlStr(jsonobject, buffer);
+                            Object object = jarray.get(i);
+                            if (object.getClass().getName().equals("com.alibaba.fastjson.JSONObject")) {
+                                JSONObject jsonobject = (JSONObject) object;
+                                json2XmlStr(jsonobject, buffer);
+                            }else {
+                                buffer.append(object.toString());
+                            }
                             buffer.append("</" + en.getKey() + ">");
                         }
                         break;
@@ -105,7 +112,7 @@ public class TypeConverter {
                     default:
                         break;
                 }
-            }else {
+            } else {
                 buffer.append("<" + en.getKey() + "></" + en.getKey() + ">");
             }
         }
