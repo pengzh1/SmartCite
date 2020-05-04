@@ -30,21 +30,21 @@ import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.*;
 public abstract class PreprocessorImpl {
 
 
-    ThreadLocal<List<Element>> paragraphs = new ThreadLocal<List<Element>>(){
+    ThreadLocal<List<Element>> paragraphs = new ThreadLocal<List<Element>>() {
         @Override
         protected List<Element> initialValue() {
             return new ArrayList<>();
         }
     };
 
-    ThreadLocal<List<Element>> sentences = new ThreadLocal<List<Element>>(){
+    ThreadLocal<List<Element>> sentences = new ThreadLocal<List<Element>>() {
         @Override
         protected List<Element> initialValue() {
             return new ArrayList<>();
         }
     };
 
-    ThreadLocal<List<Element>> xrefs = new ThreadLocal<List<Element>>(){
+    ThreadLocal<List<Element>> xrefs = new ThreadLocal<List<Element>>() {
         @Override
         protected List<Element> initialValue() {
             return new ArrayList<>();
@@ -76,7 +76,7 @@ public abstract class PreprocessorImpl {
         //给段落编号
         numberElement(paragraphs.get());
         //分句
-        splitSentences();
+        splitSentences(file);
         //抽取句子
         extractSentence(root);
         //给句子编号
@@ -172,15 +172,15 @@ public abstract class PreprocessorImpl {
         ElementUtil.extractElements(root.getChild("body"), "s", sentences.get());
     }
 
-    private void splitSentences() {
+    private void splitSentences(File file) {
         for (Element p :
                 paragraphs.get()) {
             try {
                 List<Content> contents = lingPipeSplitter.splitSentences(p);
                 p.removeContent();
                 p.addContent(contents);
-            } catch (SplitSentenceException e) {
-                log.error(e.getMessage() + " At paragraph: " + p.getAttributeValue("id"), e);
+            } catch (Exception e) {
+                log.error("[error message] "+e.getMessage() + " At [paragraph] " + p.getAttributeValue("id") + " [article] " + file.getName(), e);
             }
         }
     }

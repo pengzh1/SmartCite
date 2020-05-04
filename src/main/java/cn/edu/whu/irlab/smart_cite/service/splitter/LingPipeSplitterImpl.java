@@ -34,15 +34,15 @@ public class LingPipeSplitterImpl extends SplitterImpl {
 
 
     @Override
-    public List<String> splitSentences(String text) throws SplitSentenceException {
+    public List<String> splitSentences(String text){
 
-        List<String> sentenceList=new ArrayList<>();
+        List<String> sentenceList = new ArrayList<>();
 
         Chunking chunking
                 = SENTENCE_CHUNKER.chunk(text.toCharArray(), 0, text.length());
         Set<Chunk> sentences = chunking.chunkSet();
         if (sentences.size() < 1) {
-            throw new SplitSentenceException(SplitSentenceExceptionEnum.NoSentenceFound,text);
+            throw new IllegalArgumentException("未在文本[" + text + "]中发现句子边界");
         }
         String slice = chunking.charSequence().toString();
 
@@ -54,7 +54,6 @@ public class LingPipeSplitterImpl extends SplitterImpl {
 
         return sentenceList;
     }
-
 
 
 }
