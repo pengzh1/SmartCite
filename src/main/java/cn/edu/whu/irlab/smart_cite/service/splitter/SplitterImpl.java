@@ -1,6 +1,5 @@
 package cn.edu.whu.irlab.smart_cite.service.splitter;
 
-import cn.edu.whu.irlab.smart_cite.exception.SplitSentenceException;
 import org.jdom2.Content;
 import org.jdom2.Element;
 import org.slf4j.Logger;
@@ -18,12 +17,9 @@ import java.util.List;
 public abstract class SplitterImpl {
     private static final Logger logger = LoggerFactory.getLogger(SplitterImpl.class);
 
-    abstract List<String> splitSentences(String text) throws SplitSentenceException;
+    abstract List<String> splitSentences(String text);
 
-    public List<Content> splitSentences(Element p) throws SplitSentenceException {
-        if (!p.getName().equals("p")) {
-            throw new IllegalArgumentException("该节点<" + p.getName() + ">，请传入<p>节点");
-        }
+    public List<Content> splitSentences(Element p) {
         String text = p.getValue();
         List<String> sentences = splitSentences(text);
         List<Element> elements = calculateCoordinate(p.getContent());
@@ -48,22 +44,16 @@ public abstract class SplitterImpl {
                     Element sub = elements.remove(0).detach();
 
                     int end = Integer.parseInt(sub.getAttributeValue("coordinate")) - positionCoordinate;
-                    try {
-                        sentenceElement.addContent(residualSentence.substring(0, end));
-                    } catch (Exception e) {
-                        System.out.println(sentence);
-                        logger.error(e.getMessage(), e);
-                    }
+
+                    sentenceElement.addContent(residualSentence.substring(0, end));
+
                     sub.removeAttribute("coordinate");
                     sub.removeAttribute("localizer");
                     sentenceElement.addContent(sub);
                     positionCoordinate += end + sub.getValue().length();
-                    try {
-                        residualSentence = residualSentence.substring(end + sub.getValue().length());
-                    } catch (Exception e) {
-                        System.out.println(sentence);
-                        logger.error(e.getMessage(), e);
-                    }
+
+                    residualSentence = residualSentence.substring(end + sub.getValue().length());
+
                     if (elements.isEmpty()) break;
                 }
                 sentenceElement.addContent(residualSentence);

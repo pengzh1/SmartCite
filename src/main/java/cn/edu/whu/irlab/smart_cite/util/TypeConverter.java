@@ -1,5 +1,6 @@
 package cn.edu.whu.irlab.smart_cite.util;
 
+import cn.edu.whu.irlab.smart_cite.vo.ToJsonAble;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -42,13 +43,32 @@ public class TypeConverter {
         return outputter.outputElementContentString(element);
     }
 
-    public static <T> JSONArray list2JsonArray(List<T> list) {
+    public static <T extends ToJsonAble> JSONArray list2JsonArray(List<T> list) {
         JSONArray array = new JSONArray();
         for (T t :
                 list) {
-            array.add(JSON.parse(t.toString()));
+            try{
+                array.add(t.toJson());
+            }catch (Exception e){
+                System.out.println("exception");
+            }
         }
         return array;
+    }
+
+    /**
+     *@auther gcr19
+     *@desc json string to jdom element
+     *@param json json string
+     *@return jdom Element
+     **/
+    public static Element jsonStr2Xml(String json)  {
+        try {
+            return str2xml(json2XmlStr(json));
+        } catch (JDOMException | IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
@@ -57,17 +77,14 @@ public class TypeConverter {
      * @param json the json
      * @return the string
      */
-    public static String jsonToXml(String json) {
-        try {
+    public static String json2XmlStr(String json) {
             StringBuffer buffer = new StringBuffer();
             buffer.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+            buffer.append("<article>");
             JSONObject jObj = JSON.parseObject(json);
             json2XmlStr(jObj, buffer);
+            buffer.append("</article>");
             return buffer.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
-        }
     }
 
 
@@ -93,8 +110,13 @@ public class TypeConverter {
                         JSONArray jarray = jObj.getJSONArray(en.getKey());
                         for (int i = 0; i < jarray.size(); i++) {
                             buffer.append("<" + en.getKey() + ">");
-                            JSONObject jsonobject = jarray.getJSONObject(i);
-                            json2XmlStr(jsonobject, buffer);
+                            Object object = jarray.get(i);
+                            if (object.getClass().getName().equals("com.alibaba.fastjson.JSONObject")) {
+                                JSONObject jsonobject = (JSONObject) object;
+                                json2XmlStr(jsonobject, buffer);
+                            }else {
+                                buffer.append(object.toString());
+                            }
                             buffer.append("</" + en.getKey() + ">");
                         }
                         break;
@@ -105,7 +127,7 @@ public class TypeConverter {
                     default:
                         break;
                 }
-            }else {
+            } else {
                 buffer.append("<" + en.getKey() + "></" + en.getKey() + ">");
             }
         }

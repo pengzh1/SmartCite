@@ -2,6 +2,7 @@ package cn.edu.whu.irlab.smart_cite.vo;
 
 import cn.edu.whu.irlab.smart_cite.util.TypeConverter;
 import cn.edu.whu.irlab.smart_cite.util.WordTokenizer;
+import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ import static com.leishengwei.jutils.Strings.startCapital;
  * @desc 引文标记实体 （lei：Reference）
  **/
 @Data
-public class RefTag {
+public class RefTag implements ToJsonAble {
 
     public RefTag(Sentence sentence, String text, int id) {
         this.sentence = sentence;
@@ -127,13 +128,22 @@ public class RefTag {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("{");
-        sb.append("\"id\":").append(id);
-        sb.append(",\"text\":\"").append(text).append('\"');
-        sb.append(",\"reference\":").append(reference);
-        sb.append(",\"contextList\":").append(TypeConverter.list2JsonArray(contextList));
-        sb.append(",\"sentence\":").append(sentence);
-        sb.append('}');
-        return sb.toString();
+        return "{" + "\"id\":" + id +
+                ",\"text\":\"" + text + '\"' +
+                ",\"reference\":" + reference +
+                ",\"contextList\":" + TypeConverter.list2JsonArray(contextList) +
+                ",\"sentence\":" + sentence +
+                '}';
+    }
+
+    @Override
+    public JSONObject toJson(){
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("id",id);
+        jsonObject.put("text",text);
+        jsonObject.put("reference",reference);
+        jsonObject.put("contextList",TypeConverter.list2JsonArray(contextList));
+        jsonObject.put("sentence",sentence);
+        return jsonObject;
     }
 }

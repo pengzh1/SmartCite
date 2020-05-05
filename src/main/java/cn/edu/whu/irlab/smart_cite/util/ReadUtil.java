@@ -22,15 +22,15 @@ public class ReadUtil {
     private static final Logger logger = LoggerFactory.getLogger(ReadUtil.class);
 
     /**
-     * 读文件
-     * @param docPath 文件路径
-     * @return 文件内容
-     */
-    public static String read2Str(String docPath) {
-        File file = FileUtils.getFile(docPath);
-        String docContent= null;
+     *@auther gcr19
+     *@desc 读文件
+     *@param file 文件
+     *@return 文件内容
+     **/
+    public static String read2Str(File file) {
+        String docContent = null;
         try {
-            docContent = FileUtils.readFileToString(file,"UTF-8");
+            docContent = FileUtils.readFileToString(file, "UTF-8");
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
@@ -38,11 +38,23 @@ public class ReadUtil {
     }
 
     /**
+     * 读文件
+     *
+     * @param docPath 文件路径
+     * @return 文件内容
+     */
+    public static String read2Str(String docPath) {
+        File file = FileUtils.getFile(docPath);
+        return read2Str(file);
+    }
+
+    /**
      * 读xml文件
+     *
      * @param docPath 文件路径
      * @return jdom element 对象
      */
-    public static Element read2xml(String docPath) throws IOException,JDOMException{
+    public static Element read2xml(String docPath) throws IOException, JDOMException {
         SAXBuilder saxBuilder = new SAXBuilder();
         saxBuilder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         Document doc;
@@ -65,7 +77,6 @@ public class ReadUtil {
         }
         return root;
     }
-
 
 
 }
