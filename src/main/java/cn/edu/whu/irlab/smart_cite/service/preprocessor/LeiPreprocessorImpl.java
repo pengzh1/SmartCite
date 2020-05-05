@@ -4,6 +4,7 @@ import cn.edu.whu.irlab.smart_cite.service.grobid.GrobidService;
 import cn.edu.whu.irlab.smart_cite.util.ElementUtil;
 import cn.edu.whu.irlab.smart_cite.util.TypeConverter;
 import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -27,10 +28,9 @@ import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.REFORMATTED;
  * @date 2020/2/6 11:29
  * @desc lei数据预处理实现
  **/
+@Slf4j
 @Service
 public class LeiPreprocessorImpl extends PreprocessorImpl {
-
-    private static final Logger logger = LoggerFactory.getLogger(LeiPreprocessorImpl.class);
 
     //需要删除的节点名列表
     private static final String[] filterTag = {"footnote", "page", "doubt", "table", "tr", "td", "appendix", "figure",
@@ -151,7 +151,7 @@ public class LeiPreprocessorImpl extends PreprocessorImpl {
         try {
             biblStruct = TypeConverter.str2xml(stringRef);
         } catch (JDOMException | IOException e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
         Element element_citation = new Element("element-citation");
 
