@@ -1,5 +1,6 @@
 package cn.edu.whu.irlab.smart_cite.util;
 
+import cn.edu.whu.irlab.smart_cite.vo.ToJsonAble;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -42,13 +43,32 @@ public class TypeConverter {
         return outputter.outputElementContentString(element);
     }
 
-    public static <T> JSONArray list2JsonArray(List<T> list) {
+    public static <T extends ToJsonAble> JSONArray list2JsonArray(List<T> list) {
         JSONArray array = new JSONArray();
         for (T t :
                 list) {
-            array.add(JSON.parse(t.toString()));
+            try{
+                array.add(t.toJson());
+            }catch (Exception e){
+                System.out.println("exception");
+            }
         }
         return array;
+    }
+
+    /**
+     *@auther gcr19
+     *@desc json string to jdom element
+     *@param json json string
+     *@return jdom Element
+     **/
+    public static Element jsonStr2Xml(String json)  {
+        try {
+            return str2xml(json2XmlStr(json));
+        } catch (JDOMException | IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
@@ -57,8 +77,7 @@ public class TypeConverter {
      * @param json the json
      * @return the string
      */
-    public static String json2Xml(String json) {
-        try {
+    public static String json2XmlStr(String json) {
             StringBuffer buffer = new StringBuffer();
             buffer.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
             buffer.append("<article>");
@@ -66,10 +85,6 @@ public class TypeConverter {
             json2XmlStr(jObj, buffer);
             buffer.append("</article>");
             return buffer.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
-        }
     }
 
 

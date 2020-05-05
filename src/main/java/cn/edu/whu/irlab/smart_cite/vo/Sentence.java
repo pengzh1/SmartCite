@@ -1,5 +1,6 @@
 package cn.edu.whu.irlab.smart_cite.vo;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import static com.leishengwei.jutils.Collections.isEmpty;
  * @desc 句子实体
  **/
 @Data
-public class Sentence implements ISentence {
+public class Sentence implements ISentence,ToJsonAble {
 
     private int id;   //句子编号，从1开始(lei:number)
     private String text;    //句子内容
@@ -127,13 +128,16 @@ public class Sentence implements ISentence {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("{");
-        sb.append("\"id\":")
-                .append(id);
-        sb.append(",\"text\":\"")
-                .append(text).append('\"');
-        sb.append('}');
-        return sb.toString();
+        return "{" + "\"id\":" + id +
+                ",\"text\":\"" + text + '\"' +
+                '}';
+    }
+
+    public JSONObject toJson() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", id);
+        jsonObject.put("text", text);
+        return jsonObject;
     }
 
     public String plain() {
@@ -194,7 +198,6 @@ public class Sentence implements ISentence {
     public Optional<Sentence> previous() {
         return article.previous(id);
     }
-
 
 
 }

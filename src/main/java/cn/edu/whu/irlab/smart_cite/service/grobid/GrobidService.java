@@ -30,13 +30,13 @@ public class GrobidService {
 
     private static final Logger logger = LoggerFactory.getLogger(GrobidService.class);
 
-    private static final String urlPrefix = "http://localhost:8070/api/";
+    private static final String URL_PREFIX = "http://localhost:8070/api/";
 
     @Autowired
     private RestTemplate restTemplate;
 
     public String parseCitation(String citation) {
-        String url = urlPrefix + "processCitation";
+        String url = URL_PREFIX + "processCitation";
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         MultiValueMap<String, String> valueMap = new LinkedMultiValueMap<>();
@@ -54,7 +54,7 @@ public class GrobidService {
      *@return 转换后的jdom节点
      **/
     public Element processFulltextDocument(File pdf)  {
-        String url = urlPrefix + "processFulltextDocument";
+        String url = URL_PREFIX + "processFulltextDocument";
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
         MultiValueMap<String, Object> valueMap = new LinkedMultiValueMap<>();

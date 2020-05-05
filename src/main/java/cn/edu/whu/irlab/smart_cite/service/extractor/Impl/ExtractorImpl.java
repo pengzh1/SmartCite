@@ -11,6 +11,7 @@ import cn.edu.whu.irlab.smart_cite.service.preprocessor.LeiPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.PlosPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.weka.WekaService;
 import cn.edu.whu.irlab.smart_cite.util.ReadUtil;
+import cn.edu.whu.irlab.smart_cite.util.TypeConverter;
 import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
 import cn.edu.whu.irlab.smart_cite.vo.Article;
 import cn.edu.whu.irlab.smart_cite.vo.FileLocation;
@@ -114,6 +115,9 @@ public class ExtractorImpl {
                 xmlTypeEnum = XMLTypeEnum.Grobid;
                 break;
             case "application/json":
+                String jsonString = ReadUtil.read2Str(file);
+                root = TypeConverter.jsonStr2Xml(jsonString);
+                xmlTypeEnum=XMLTypeEnum.Json;
                 break;
             default:
                 throw new FileTypeException("文件[" + file.getName() + "]的类型为：" + mimeType + ",不是合法的文件类型");
@@ -132,6 +136,8 @@ public class ExtractorImpl {
             case Lei:
                 root = leiPreprocessor.parseXML(root, file);
                 break;
+            case Json:
+
             default:
                 break;
         }
@@ -201,7 +207,7 @@ public class ExtractorImpl {
         JSONArray array = new JSONArray();
         for (RefTag r :
                 refTags) {
-            JSONObject json = JSON.parseObject(r.toString());
+            JSONObject json = r.toJson();
             array.add(json);
         }
         return array;

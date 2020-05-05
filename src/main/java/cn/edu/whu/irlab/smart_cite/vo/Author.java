@@ -1,5 +1,6 @@
 package cn.edu.whu.irlab.smart_cite.vo;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 
 /**
@@ -9,7 +10,7 @@ import lombok.Data;
  * @desc 作者实体
  **/
 @Data
-public class Author {
+public class Author implements ToJsonAble {
 
     private String surName;
     private String givenName;
@@ -21,10 +22,16 @@ public class Author {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("{");
-        sb.append("\"surName\":\"").append(surName).append('\"');
-        sb.append(",\"givenName\":\"").append(givenName).append('\"');
-        sb.append('}');
-        return sb.toString();
+        return "{" + "\"surName\":\"" + surName + '\"' +
+                ",\"givenName\":\"" + givenName + '\"' +
+                '}';
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("surName",surName);
+        jsonObject.put("givenName",givenName);
+        return jsonObject;
     }
 }

@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.*;
+
 /**
  * @author gcr19
  * @version 1.0
@@ -22,34 +24,19 @@ import java.util.List;
 public abstract class PreprocessorImpl {
 
 
-    ThreadLocal<List<Element>> paragraphs = new ThreadLocal<List<Element>>() {
-        @Override
-        protected List<Element> initialValue() {
-            return new ArrayList<>();
-        }
-    };
+    ThreadLocal<List<Element>> paragraphs = ThreadLocal.withInitial(ArrayList::new);
 
-    ThreadLocal<List<Element>> sentences = new ThreadLocal<List<Element>>() {
-        @Override
-        protected List<Element> initialValue() {
-            return new ArrayList<>();
-        }
-    };
+    ThreadLocal<List<Element>> sentences = ThreadLocal.withInitial(ArrayList::new);
 
-    ThreadLocal<List<Element>> xrefs = new ThreadLocal<List<Element>>() {
-        @Override
-        protected List<Element> initialValue() {
-            return new ArrayList<>();
-        }
-    };
+    ThreadLocal<List<Element>> xrefs = ThreadLocal.withInitial(ArrayList::new);
 
-    ThreadLocal<File> file = new ThreadLocal<File>();
-    ThreadLocal<Element> root = new ThreadLocal<Element>();
+    ThreadLocal<File> file = new ThreadLocal<>();
+    ThreadLocal<Element> root = new ThreadLocal<>();
 //    File file;
 //    Element root;
 
     @Autowired
-    private LingPipeSplitterImpl lingPipeSplitter;
+    LingPipeSplitterImpl lingPipeSplitter;
 
     public Element parseXML(Element root, File file) {
         paragraphs.get().clear();
@@ -58,13 +45,12 @@ public abstract class PreprocessorImpl {
 
         //节点过滤
         filterTags(root);
+
         //段落抽取
         extractParagraphs(root);
         removeElementNotXref();
         //写出到新文件
-//        writeFile(root, FILTERED, file);
-
-
+        writeFile(root, FILTERED, file);
         //给段落编号
         numberElement(paragraphs.get());
         //分句
@@ -78,17 +64,16 @@ public abstract class PreprocessorImpl {
         //引文标志编号
         numberElement(xrefs.get());
         //写出到新文件
-//        writeFile(root, NUMBERED, file);
+        writeFile(root, NUMBERED, file);
 
         //整理有效信息
         Element newRoot = reformat(root);
-//        writeFile(newRoot, REFORMATTED, file);
+        writeFile(newRoot, REFORMATTED, file);
         return newRoot.setAttribute("status", "preprocessed");
     }
 
     /**
      * @param root 父节点
-     * @return
      * @auther gcr19
      * @desc 过滤删除无关节点
      **/
@@ -164,7 +149,7 @@ public abstract class PreprocessorImpl {
         ElementUtil.extractElements(root.getChild("body"), "s", sentences.get());
     }
 
-    private void splitSentences(File file) {
+    void splitSentences(File file) {
         for (Element p :
                 paragraphs.get()) {
             try {
@@ -172,7 +157,7 @@ public abstract class PreprocessorImpl {
                 p.removeContent();
                 p.addContent(contents);
             } catch (Exception e) {
-                log.error("[error message] "+e.getMessage() + " At [paragraph] " + p.getAttributeValue("id") + " [article] " + file.getName(), e);
+                log.error("[error message] " + e.getMessage() + " At [paragraph] " + p.getAttributeValue("id") + " [article] " + file.getName(), e);
             }
         }
     }
@@ -215,7 +200,6 @@ public abstract class PreprocessorImpl {
     /**
      * @param sentence 句子节点（child的父节点）
      * @param child    下个节点
-     * @return
      * @auther gcr19
      * @desc 取得下个节点的值合并到上个节点
      **/
@@ -255,7 +239,6 @@ public abstract class PreprocessorImpl {
      * @param targetElementName 目标节点名称
      * @param oldName           原属性名
      * @param newName           现属性名
-     * @return
      * @auther gcr19
      * @desc 为父节点下所有目标节点的属性重命名
      **/
@@ -324,7 +307,6 @@ public abstract class PreprocessorImpl {
 
     /**
      * @param body body节点
-     * @return
      * @auther gcr19
      * @desc 为sec节点重新排序
      **/

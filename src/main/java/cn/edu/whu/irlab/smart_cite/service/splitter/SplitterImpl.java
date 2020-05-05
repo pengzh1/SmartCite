@@ -20,9 +20,6 @@ public abstract class SplitterImpl {
     abstract List<String> splitSentences(String text);
 
     public List<Content> splitSentences(Element p) {
-        if (!p.getName().equals("p")) {
-            throw new IllegalArgumentException("该节点<" + p.getName() + ">，请传入<p>节点");
-        }
         String text = p.getValue();
         List<String> sentences = splitSentences(text);
         List<Element> elements = calculateCoordinate(p.getContent());
