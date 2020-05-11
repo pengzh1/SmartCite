@@ -58,15 +58,6 @@ public class AttrGenerator {
         }
     }
 
-
-    private void writeFile(Element root, String folderPath, File file) {
-        try {
-            WriteUtil.writeXml(root, folderPath + file.getName() + ".xml");
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
     private void addSecAttr(List<Element> sentences,File file) {
         for (Element s :
                 sentences) {

@@ -51,24 +51,29 @@ public abstract class PreprocessorImpl {
         removeElementNotXref();
         //写出到新文件
         writeFile(root, FILTERED, file);
-        //给段落编号
-        numberElement(paragraphs.get());
         //分句
         splitSentences(file);
         //抽取句子
         extractSentence(root);
-        //给句子编号
-        numberElement(sentences.get());
         //抽取引文标志节点
         extractXref(root);
-        //引文标志编号
-        numberElement(xrefs.get());
+
         //写出到新文件
         writeFile(root, NUMBERED, file);
+
+        numberElement(xrefs.get());
+
 
         //整理有效信息
         Element newRoot = reformat(root);
         writeFile(newRoot, REFORMATTED, file);
+
+        //给段落编号
+        numberElement(paragraphs.get());
+        //给句子编号
+        numberElement(sentences.get());
+        //引文标志编号
+        newRoot=generateAttr(newRoot,file);
         return newRoot.setAttribute("status", "preprocessed");
     }
 
@@ -326,4 +331,63 @@ public abstract class PreprocessorImpl {
             }
         }
     }
+
+    public Element generateAttr(Element root, File file) {
+
+        Element body = root.getChild("body");
+        List<Element> sentences=new ArrayList<>();
+
+        ElementUtil.extractElements(body, "s", sentences);
+        addSecAttr(sentences,file);
+        addLevelAndPAttr(sentences);
+        addCTypeAttr(sentences);
+//        writeFile(root, ADDED, file);
+        return root.setAttribute("status", "attrAdded");
+    }
+
+
+    private void addLevelAndPAttr(List<Element> sentences) {
+        for (Element sElement :
+                sentences) {
+            Element parent = sElement.getParentElement();
+            //addPAttr 添加p属性
+            sElement.setAttribute("p", String.valueOf(parent.getAttributeValue("id")));
+            //addLevelAttr 添加level属性
+            parent = parent.getParentElement();
+            int level = 0;
+            while (parent.getName().equals("sec")) {
+                level++;
+                parent = parent.getParentElement();
+            }
+            sElement.setAttribute("level", String.valueOf(level));
+        }
+    }
+
+    private void addSecAttr(List<Element> sentences,File file) {
+        for (Element s :
+                sentences) {
+            Element sec = s.getParentElement().getParentElement();
+            if (sec.getName().equals("sec")) {
+                s.setAttribute("sec", sec.getAttributeValue("id"));
+            } else {
+                log.error("error in article:" + file.getName());
+                throw new IllegalArgumentException("this element name is " + sec.getName() + ". please input sec element");
+            }
+        }
+    }
+
+    /**
+     * @return
+     * @auther gcr19
+     * @desc 仅为含有引文标记的sentence添加属性c_type="r"
+     **/
+    private void addCTypeAttr(List<Element> sentences) {
+        for (Element s :
+                sentences) {
+            if (s.getChildren("xref").size() != 0) {
+                s.setAttribute("c_type", "r");
+            }
+        }
+    }
+
 }
