@@ -7,6 +7,8 @@
 
 1. 安装Java8
 2. 下载下面的压缩包，并解压
+    链接：https://pan.baidu.com/s/1XR0GRRWME5UDNgPT1eguZQ 
+    提取码：vcfk
 3. 进入grobid-0.5.6文件夹，在该文件夹下打开控制台并运行命令 gradlew run 
 4. 在包含jar包文件夹下打开在控制台，并运行命令 java -jar smart_cite-1.0.0-SNAPSHOT.jar
 
