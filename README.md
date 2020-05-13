@@ -1,17 +1,14 @@
-# smartCite
+# smartCiteCon
 
 #### 介绍
-基于语义相关性的引文上下文抽取工具
-
-#### 软件架构
-软件架构说明
-
+一个基于语义的学术文献的引文上下文抽取工具。可提供PDF格式及符合Plosone数据集标准的XML格式的学术文件引文上下文抽取工作
 
 #### 安装教程
 
-1. xxxx
-2. xxxx
-3. xxxx
+1. 安装Java8
+2. 下载下面的压缩包，并解压
+3. 进入grobid-0.5.6文件夹，在该文件夹下打开控制台并运行命令 gradlew run 
+4. 在包含jar包文件夹下打开在控制台，并运行命令 java -jar smart_cite-1.0.0-SNAPSHOT.jar
 
 #### 接口说明
 
@@ -222,19 +219,7 @@
 }
                 
 ```
-#### 参与贡献
 
-1. Fork 本仓库
-2. 新建 Feat_xxx 分支
-3. 提交代码
-4. 新建 Pull Request
-
-
-#### 码云特技
-
-1. 使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2. 码云官方博客 [blog.gitee.com](https://blog.gitee.com)
-3. 你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解码云上的优秀开源项目
-4. [GVP](https://gitee.com/gvp) 全称是码云最有价值开源项目，是码云综合评定出的优秀开源项目
-5. 码云官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6. 码云封面人物是一档用来展示码云会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+#### 其他说明
+1.默认端口：8080
+2.上传文件大小 ≤ 10M
