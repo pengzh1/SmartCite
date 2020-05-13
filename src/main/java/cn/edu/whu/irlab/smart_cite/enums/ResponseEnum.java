@@ -8,10 +8,11 @@ package cn.edu.whu.irlab.smart_cite.enums;
  **/
 public enum ResponseEnum {
 
-    SUCCESS(0,"成功"),
-    UNKNOW_ERROR(-1,"未知错误"),
-    FILE_ERROR(100,"文件错误，请上传正确的文件"),
-    SERVER_ERROR(500,"服务器错误"),
+    SUCCESS(0,"success"),
+    UNKNOWN_ERROR(-1,"unknown error"),
+    FILE_ERROR(100,"file error, please upload right file"),
+    FILE_NOT_FOUND(101,"upload fail,file can no be found"),
+    SERVER_ERROR(500,"server error"),
     ;
 
     private Integer code;

@@ -29,7 +29,7 @@ public class ResponseUtil {
     public static ResponseVo success(Object object){
         ResponseVo responseVo = new ResponseVo();
         responseVo.setCode(0);
-        responseVo.setMsg("抽取成功");
+        responseVo.setMsg("extract successfully");
         responseVo.setData(object);
         return responseVo;
     }
@@ -37,7 +37,7 @@ public class ResponseUtil {
     public static ResponseVo success(){
         ResponseVo responseVo = new ResponseVo();
         responseVo.setCode(0);
-        responseVo.setMsg("成功");
+        responseVo.setMsg("success");
         return responseVo;
     }
 
