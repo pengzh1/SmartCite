@@ -40,9 +40,9 @@ public class ExtractorController {
     @PostMapping("/extract")
     public ResponseVo extractController(MultipartFile file) {
 
-        JSONObject object;
         try {
-            object = extractor.extract(file);
+            JSONObject object = extractor.extract(file);
+            return ResponseUtil.success(object);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             if (e instanceof FileTypeException) {
@@ -51,8 +51,6 @@ public class ExtractorController {
                 return ResponseUtil.error(ResponseEnum.SERVER_ERROR);
             }
         }
-
-        return ResponseUtil.success(object);
     }
 
     @PostMapping("/batchExtract")

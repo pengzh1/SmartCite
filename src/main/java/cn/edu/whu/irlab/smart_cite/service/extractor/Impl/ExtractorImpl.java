@@ -127,11 +127,9 @@ public class ExtractorImpl {
         switch (xmlTypeEnum) {
             case Plos:
                 root = plosPreprocessor.parseXML(root, file);
-                root = attrGenerator.generateAttr(root, file);
                 break;
             case Grobid:
                 root = grobidPreprocessor.parseXML(root, file);
-                root = attrGenerator.generateAttr(root, file);
                 break;
             case Lei:
                 root = leiPreprocessor.parseXML(root, file);

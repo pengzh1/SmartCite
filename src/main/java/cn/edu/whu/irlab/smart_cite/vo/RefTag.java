@@ -141,9 +141,10 @@ public class RefTag implements ToJsonAble {
         JSONObject jsonObject=new JSONObject();
         jsonObject.put("id",id);
         jsonObject.put("text",text);
-        jsonObject.put("reference",reference);
+        jsonObject.put("reference",reference.toJson());
         jsonObject.put("contextList",TypeConverter.list2JsonArray(contextList));
-        jsonObject.put("sentence",sentence);
+        jsonObject.put("sentence",sentence.toJson());
         return jsonObject;
     }
+
 }
