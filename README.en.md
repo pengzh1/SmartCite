@@ -38,7 +38,7 @@ Return result：
 ```json
 {
     "code": 0,
-    "msg": "抽取成功",
+    "msg": "Successful extraction",
     "data": {
         "fileName": "asset_id=10.1371%2Fjournal.pone.0000039.XML",
         "refTags": [
@@ -166,7 +166,7 @@ Return result：
 ```json
 {
     "code": 0,
-    "msg": "抽取成功",
+    "msg": "Successful extraction",
     "data": [
         {
             "fileName": "asset_id=10.1371%2Fjournal.pone.0000039.XML",
