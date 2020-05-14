@@ -20,6 +20,12 @@ Request method: POST
 Request address: / extract
 
 Request parameters:
+|Field|Description|Type|Length|
+---|---|---|---|---|---
+|12|2|3|4|
+
+
+
 
 |   Field  |  Description  |  Type   |  Length  |  IsRequired   |   Remarks  |
 | file | file | MultipleFile | --- | True | --- |
