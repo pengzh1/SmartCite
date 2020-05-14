@@ -21,9 +21,9 @@ Request address: / extract
 
 Request parameters:
 
-1|Field|Description|Type|Length|1
+Field|Description|Type|Length|IsRequired|Remarks
 ---|---|---|---|---|---
-2|12|2|3|4|2
+file|file|MultipleFile||True|
 
 
 
