@@ -1,4 +1,4 @@
-#  **smartCiteCon** 
+#  **SmartCiteCon** 
 
 ##  **介绍** 
 一个基于语义的学术文献的引文上下文抽取工具。可提供PDF格式及符合Plosone数据集标准的XML格式的学术文件引文上下文抽取工作
