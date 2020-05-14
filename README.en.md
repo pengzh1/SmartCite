@@ -16,7 +16,9 @@ A semantic citation context extraction tool for academic literature. Provide cit
 ####  Extract
 
 Request method: POST
+
 Request address: / extract
+
 Request parameters:
 
 |   Field  |  Description  |  Type   |  Length  |  IsRequired   |   Remarks  |
