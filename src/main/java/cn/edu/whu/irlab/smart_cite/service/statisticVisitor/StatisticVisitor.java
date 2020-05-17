@@ -4,15 +4,23 @@ import cn.edu.whu.irlab.smart_cite.feature.ConjFeature;
 import cn.edu.whu.irlab.smart_cite.feature.SectionPositionFeature;
 import cn.edu.whu.irlab.smart_cite.feature.WorkNounsFeature;
 import cn.edu.whu.irlab.smart_cite.service.featureExtractor.FeatureExtractor;
+import cn.edu.whu.irlab.smart_cite.util.ReadUtil;
 import cn.edu.whu.irlab.smart_cite.vo.Article;
 import cn.edu.whu.irlab.smart_cite.vo.RefTag;
 import cn.edu.whu.irlab.smart_cite.vo.Sentence;
 import cn.edu.whu.irlab.smart_cite.vo.WordItem;
 import cn.edu.whu.irlab.smart_cite.util.Count;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.leishengwei.jutils.Collections;
 import com.leishengwei.jutils.*;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+import org.springframework.util.concurrent.ListenableFuture;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,6 +31,7 @@ import static com.leishengwei.jutils.Collections.nGram;
  * 统计类
  * Created by lsw on 2015/4/26.
  */
+@Slf4j
 @Service
 public class StatisticVisitor {
     //统计数据
@@ -42,6 +51,25 @@ public class StatisticVisitor {
     public static int nGramIdIndex = 100; //从100开始
     public static Map<Integer, Map<String, Integer>> gramMap = new HashMap<>();   //n-gram得到的所有词条，{n:{item:id}}
     private Map<Integer, Map<Integer[], Integer>> contextCount = new HashMap<>();//引文上下文个数统计
+
+    @Async
+    public ListenableFuture<Long[]> calculateOutput(File outputFile) {
+        Long contextNum = 0L;
+        Long sentencesNum = 0L;
+        JSONObject object = JSONObject.parseObject(ReadUtil.read2Str(outputFile));
+        JSONArray refTags = object.getJSONArray("refTags");
+        for (int i = 0; i < refTags.size(); i++) {
+            JSONObject refTag = refTags.getJSONObject(i);
+            contextNum += refTag.getJSONArray("contextList").size();
+            sentencesNum++;
+        }
+        Long[] result = new Long[2];
+        result[0] = contextNum;
+        result[1] = sentencesNum;
+        log.info("c=" + contextNum + " s=" + sentencesNum);
+        return new AsyncResult<>(result);
+    }
+
 
     /**
      * 存储数据
@@ -251,7 +279,7 @@ public class StatisticVisitor {
         integers[0] = 0;    //前面的个数
         integers[1] = 0;    //后面的个数
         Arrays.asList(contexts).stream().filter(c -> Strings.isNotEmpty(c)).forEach(c -> {
-            if(!c.contains("，")) {
+            if (!c.contains("，")) {
                 Optional<Sentence> s = r.getSentence().getArticle().sentence(Integer.parseInt(c));
                 s.ifPresent(ss -> {
                     int distance = ss.getIndex() - r.getSentence().getIndex();

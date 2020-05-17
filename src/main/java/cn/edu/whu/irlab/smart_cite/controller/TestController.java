@@ -24,7 +24,7 @@ import java.io.IOException;
 @Controller
 @RequestMapping("/test")
 @Slf4j
-public class FileUploadController {
+public class TestController {
 
     @Autowired
     private FileUploadService fileUploadService;
@@ -32,8 +32,8 @@ public class FileUploadController {
     @Autowired
     private ExtractorImpl extractor;
 
-    @GetMapping("/redirect")
-    public String redirectHtml() {
+    @GetMapping("/connectTest")
+    public String connectTest() {
         return "work";
     }
 
@@ -60,7 +60,6 @@ public class FileUploadController {
             return ResponseUtil.error(ResponseEnum.SERVER_ERROR);
         }
     }
-
 
 }
 
