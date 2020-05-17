@@ -50,7 +50,7 @@ public abstract class PreprocessorImpl {
         extractParagraphs(root);
         removeElementNotXref();
         //写出到新文件
-        writeFile(root, FILTERED, file);
+//        writeFile(root, FILTERED, file);
         //分句
         splitSentences(file);
         //抽取句子
@@ -59,14 +59,13 @@ public abstract class PreprocessorImpl {
         extractXref(root);
 
         //写出到新文件
-        writeFile(root, NUMBERED, file);
-
+//        writeFile(root, NUMBERED, file);
         numberElement(xrefs.get());
 
 
         //整理有效信息
         Element newRoot = reformat(root);
-        writeFile(newRoot, REFORMATTED, file);
+//        writeFile(newRoot, REFORMATTED, file);
 
         //给段落编号
         numberElement(paragraphs.get());
@@ -74,7 +73,7 @@ public abstract class PreprocessorImpl {
         numberElement(sentences.get());
         //引文标志编号
         newRoot=generateAttr(newRoot,file);
-        writeFile(newRoot, ADDED, file);
+//        writeFile(newRoot, ADDED, file);
 
         return newRoot.setAttribute("status", "preprocessed");
     }

@@ -9,16 +9,7 @@ import cn.edu.whu.irlab.smart_cite.enums.ExceptionEnum;
  **/
 public class ExtractException extends Exception {
 
-    private Integer code;
-
-    public ExtractException(ExceptionEnum exceptionEnum) {
-        super(exceptionEnum.getMsg());
-        this.code = exceptionEnum.getCode();
+    public ExtractException(String message) {
+        super(message);
     }
-
-    public ExtractException(ExceptionEnum exceptionEnum,String otherMsg){
-        super(exceptionEnum.getMsg()+otherMsg);
-        this.code = exceptionEnum.getCode();
-    }
-
 }

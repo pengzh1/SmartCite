@@ -44,20 +44,21 @@ public class JsonXmlPreprocessorImpl extends PreprocessorImpl {
                 p.addContent(contents);
 
                 List<Element> cite_spans = p.getChildren("cite_spans");
-
-                for (Element cite_span :
-                        cite_spans) {
-                    String mention = cite_span.getChild("mention").getValue();
-                    for (Content content :
-                            contents) {
-                        if (content.getCType().equals(Content.CType.Element)) {
-                            Element element = (Element) content;
-                            if (element.getValue().contains(mention)) {
-                                Element xref = new Element("xref");
-                                xref.setAttribute("rid", cite_span.getChild("ref_id").getValue());
-                                xref.setAttribute("ref-type", "bibr");
-                                xref.setText(mention);
-                                element.addContent(xref);
+                if (cite_spans.size() != 0) {
+                    for (Element cite_span :
+                            cite_spans) {
+                        String mention = cite_span.getChild("mention").getValue();
+                        for (Content content :
+                                contents) {
+                            if (content.getCType().equals(Content.CType.Element)) {
+                                Element element = (Element) content;
+                                if (element.getValue().contains(mention)) {
+                                    Element xref = new Element("xref");
+                                    xref.setAttribute("rid", cite_span.getChild("ref_id").getValue());
+                                    xref.setAttribute("ref-type", "bibr");
+                                    xref.setText(mention);
+                                    element.addContent(xref);
+                                }
                             }
                         }
                     }
@@ -142,7 +143,7 @@ public class JsonXmlPreprocessorImpl extends PreprocessorImpl {
     @Override
     void fillBack(Element root, Element back) {
         Element ref_list = new Element("ref-list");
-        List<Element> oldRefList=root.getChild("bib_entries").getChildren();
+        List<Element> oldRefList = root.getChild("bib_entries").getChildren();
         for (Element bibref :
                 oldRefList) {
             Element ref = new Element("ref");

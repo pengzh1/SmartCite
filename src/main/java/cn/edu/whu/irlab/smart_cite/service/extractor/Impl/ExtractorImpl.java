@@ -29,6 +29,7 @@ import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,7 +117,12 @@ public class ExtractorImpl {
                 break;
             case "application/json":
                 String jsonString = ReadUtil.read2Str(file);
-                root = TypeConverter.jsonStr2Xml(jsonString);
+                try {
+                    root = TypeConverter.jsonStr2Xml(jsonString);
+                } catch (JDOMException | IOException e) {
+                    logger.error("文件[" + file.getName() + "]解析错误",e);
+                    throw new IllegalArgumentException("Json解析错误");
+                }
                 xmlTypeEnum = XMLTypeEnum.Json;
                 break;
             default:

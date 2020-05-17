@@ -28,12 +28,14 @@ public class LingPipeSplitterImpl extends SplitterImpl {
 
 
     @Override
-    public List<String> splitSentences(String text){
-
+    public List<String> splitSentences(String text) {
         List<String> sentenceList = new ArrayList<>();
 
-        Chunking chunking
-                = SENTENCE_CHUNKER.chunk(text.toCharArray(), 0, text.length());
+        if (text == null || text.equals("")) {
+            return sentenceList;
+        }
+
+        Chunking chunking = SENTENCE_CHUNKER.chunk(text.toCharArray(), 0, text.length());
         Set<Chunk> sentences = chunking.chunkSet();
         if (sentences.size() < 1) {
             throw new IllegalArgumentException("未在文本[" + text + "]中发现句子边界");
