@@ -2,11 +2,11 @@ package cn.edu.whu.irlab.smart_cite.service.extractor.Impl;
 
 import cn.edu.whu.irlab.smart_cite.enums.XMLTypeEnum;
 import cn.edu.whu.irlab.smart_cite.exception.FileTypeException;
-import cn.edu.whu.irlab.smart_cite.service.attrGenerator.AttrGenerator;
 import cn.edu.whu.irlab.smart_cite.service.featureExtractor.FeatureExtractor;
 import cn.edu.whu.irlab.smart_cite.service.grobid.GrobidService;
 import cn.edu.whu.irlab.smart_cite.service.paperXmlReader.PaperXmlReader;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.GrobidPreprocessorImpl;
+import cn.edu.whu.irlab.smart_cite.service.preprocessor.JsonXmlPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.LeiPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.PlosPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.weka.WekaService;
@@ -75,9 +75,6 @@ public class ExtractorImpl {
     private GrobidPreprocessorImpl grobidPreprocessor;
 
     @Autowired
-    private AttrGenerator attrGenerator;
-
-    @Autowired
     private PaperXmlReader paperXmlReader;
 
     @Autowired
@@ -85,6 +82,9 @@ public class ExtractorImpl {
 
     @Autowired
     private WekaService wekaService;
+
+    @Autowired
+    private JsonXmlPreprocessorImpl jsonXmlPreprocessor;
 
 
     public JSONObject extract(MultipartFile file) throws IOException {
@@ -117,7 +117,7 @@ public class ExtractorImpl {
             case "application/json":
                 String jsonString = ReadUtil.read2Str(file);
                 root = TypeConverter.jsonStr2Xml(jsonString);
-                xmlTypeEnum=XMLTypeEnum.Json;
+                xmlTypeEnum = XMLTypeEnum.Json;
                 break;
             default:
                 throw new FileTypeException("文件[" + file.getName() + "]的类型为：" + mimeType + ",不是合法的文件类型");
@@ -135,7 +135,7 @@ public class ExtractorImpl {
                 root = leiPreprocessor.parseXML(root, file);
                 break;
             case Json:
-
+                root = jsonXmlPreprocessor.parseXML(root, file);
             default:
                 break;
         }

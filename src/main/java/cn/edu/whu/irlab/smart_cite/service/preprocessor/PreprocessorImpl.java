@@ -74,6 +74,8 @@ public abstract class PreprocessorImpl {
         numberElement(sentences.get());
         //引文标志编号
         newRoot=generateAttr(newRoot,file);
+        writeFile(newRoot, ADDED, file);
+
         return newRoot.setAttribute("status", "preprocessed");
     }
 
