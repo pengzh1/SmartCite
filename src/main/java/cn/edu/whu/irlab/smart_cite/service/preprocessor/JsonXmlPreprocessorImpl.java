@@ -39,7 +39,7 @@ public class JsonXmlPreprocessorImpl extends PreprocessorImpl {
         for (Element p :
                 paragraphs.get()) {
             try {
-                List<Content> contents = lingPipeSplitter.splitSentences(p.getChild("text"));
+                List<Element> contents = lingPipeSplitter.splitSentences(p.getChild("text"));
 
                 List<Element> cite_spans = p.getChildren("cite_spans");
 

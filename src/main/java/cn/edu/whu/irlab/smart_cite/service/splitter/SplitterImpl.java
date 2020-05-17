@@ -19,15 +19,15 @@ public abstract class SplitterImpl {
 
     abstract List<String> splitSentences(String text);
 
-    public List<Content> splitSentences(Element p) {
+    public List<Element> splitSentences(Element p) {
         String text = p.getValue();
         List<String> sentences = splitSentences(text);
         List<Element> elements = calculateCoordinate(p.getContent());
         return sentences2paragraph(sentences, elements);
     }
 
-    private List<Content> sentences2paragraph(List<String> sentences, List<Element> elements) {
-        List<Content> sentenceElements = new ArrayList<>();
+    private List<Element> sentences2paragraph(List<String> sentences, List<Element> elements) {
+        List<Element> sentenceElements = new ArrayList<>();
         //句子位置指针
         int positionCoordinate = 0;
         for (String sentence :
