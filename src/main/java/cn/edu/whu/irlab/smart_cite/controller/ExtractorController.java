@@ -11,8 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -38,6 +37,7 @@ public class ExtractorController {
 
 
     @PostMapping("/extract")
+    @ResponseBody
     public ResponseVo extractController(MultipartFile file) {
 
         try {
@@ -54,6 +54,7 @@ public class ExtractorController {
     }
 
     @PostMapping("/batchExtract")
+    @ResponseBody
     public ResponseVo batchController(MultipartFile file) {
         List<JSONObject> array = new ArrayList<>();
         try {
@@ -97,4 +98,35 @@ public class ExtractorController {
         }
         return ResponseUtil.success(array);
     }
+
+    @GetMapping("/localExtract")
+    @ResponseBody
+    public ResponseVo localController(@RequestParam("path") String path) {
+        long start = System.currentTimeMillis();
+
+        try {
+            File folder = new File(path);
+            File[] files = folder.listFiles();
+            if (files == null || files.length == 0) {
+                logger.error("待抽取的文件个数非法");
+                return ResponseUtil.error(ResponseEnum.FILE_ERROR);
+            }
+            CountDownLatch countDownLatch = new CountDownLatch(files.length);
+            for (File f : files) {
+                extractor.asyncExtract(f, countDownLatch);
+            }
+            countDownLatch.await();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            if (e instanceof FileTypeException) {
+                return ResponseUtil.error(ResponseEnum.FILE_ERROR);
+            } else {
+                return ResponseUtil.error(ResponseEnum.SERVER_ERROR);
+            }
+        }
+        long end = System.currentTimeMillis();
+        return ResponseUtil.success("finished! 用时：" + (end - start) + " ms");
+    }
+
+
 }

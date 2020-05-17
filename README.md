@@ -1,21 +1,22 @@
-# smartCite
+#  **SmartCiteCon** 
 
-#### 介绍
-基于语义相关性的引文上下文抽取工具
+##  **介绍** 
+一个基于语义的学术文献的引文上下文抽取工具。可提供PDF格式及符合Plosone数据集标准的XML格式的学术文件引文上下文抽取工作
 
-#### 软件架构
-软件架构说明
+##  **安装教程** 
 
+1. 安装Java8
+2. 下载下面的压缩包，并解压
+    
+    链接：https://pan.baidu.com/s/1XR0GRRWME5UDNgPT1eguZQ 
+    
+    提取码：vcfk
+3. 进入grobid-0.5.6文件夹，在该文件夹下打开控制台并运行命令 gradlew run 
+4. 在包含jar包文件夹下打开在控制台，并运行命令 java -jar smart_cite-1.0.0-SNAPSHOT.jar
 
-#### 安装教程
+##  **接口说明** 
 
-1. xxxx
-2. xxxx
-3. xxxx
-
-#### 接口说明
-
-##### 抽取
+### 抽取
 请求方式：POST
 
 请求地址：/extract
@@ -26,15 +27,15 @@
 |---|---|---|---|---|---|
 |file|文件|MultipleFile|	|是||
 
-返回参数
+返回参数：
 
 |code|message|data|动作|
 |---|---|---|---|
 |0|成功|JsonObject|显示收到的data|
-|100|文件错误，请上传争取文件|null|提示错误信息|
-|500|服务器错我|null|提示错误信息|
+|100|文件错误，请上传正确文件|null|提示错误信息|
+|500|服务器错误|null|提示错误信息|
 
-返回示例
+返回示例：
 ```json
 {
     "code": 0,
@@ -141,7 +142,7 @@
 }
 ```
 
-##### 批量抽取
+#### 批量抽取
 请求方式：POST
 
 请求地址：/batchExtract
@@ -152,15 +153,15 @@
 |---|---|---|---|---|---|
 |file|文件|MultipleFile|	|是||
 
-返回参数
+返回参数：
 
 |code|message|data|动作|
 |---|---|---|---|
 |0|成功|JsonArray|显示收到的data|
-|100|文件错误，请上传争取文件|null|提示错误信息|
-|500|服务器错我|null|提示错误信息|
+|100|文件错误，请上传正确文件|null|提示错误信息|
+|500|服务器错误|null|提示错误信息|
 
-返回示例
+返回示例：
 ```json
 {
     "code": 0,
@@ -222,19 +223,9 @@
 }
                 
 ```
-#### 参与贡献
 
-1. Fork 本仓库
-2. 新建 Feat_xxx 分支
-3. 提交代码
-4. 新建 Pull Request
+##  **其他说明** 
 
+1.默认请求端口：8080
 
-#### 码云特技
-
-1. 使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2. 码云官方博客 [blog.gitee.com](https://blog.gitee.com)
-3. 你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解码云上的优秀开源项目
-4. [GVP](https://gitee.com/gvp) 全称是码云最有价值开源项目，是码云综合评定出的优秀开源项目
-5. 码云官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6. 码云封面人物是一档用来展示码云会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+2.上传文件大小 ≤ 10M

@@ -158,7 +158,7 @@ public abstract class PreprocessorImpl {
         for (Element p :
                 paragraphs.get()) {
             try {
-                List<Content> contents = lingPipeSplitter.splitSentences(p);
+                List<Element> contents = lingPipeSplitter.splitSentences(p);
                 p.removeContent();
                 p.addContent(contents);
             } catch (Exception e) {
