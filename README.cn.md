@@ -1,44 +1,45 @@
-# SmartCiteCon
+#  **SmartCiteCon** 
 
-##  **Description** 
-A semantic citation context extraction tool for academic literature. Provide citation context extraction of academic documents in PDF format and XML format in accordance with Plosone data set standards
+##  **介绍** 
+一个基于语义的学术文献的引文上下文抽取工具。可提供PDF格式及符合Plosone数据集标准的XML格式的学术文件引文上下文抽取工作
 
+##  **安装教程** 
 
-##  **Installation** 
+1. 安装Java8
+2. 下载下面的压缩包，并解压
+    
+    链接：https://pan.baidu.com/s/1XR0GRRWME5UDNgPT1eguZQ 
+    
+    提取码：vcfk
+3. 进入grobid-0.5.6文件夹，在该文件夹下打开控制台并运行命令 gradlew run 
+4. 在包含jar包文件夹下打开在控制台，并运行命令 java -jar smart_cite-1.0.0-SNAPSHOT.jar
 
-1. Install Java8
-2. Download the following compressed package and unzip the link: https://pan.baidu.com/s/1XR0GRRWME5UDNgPT1eguZQ ， extraction code: vcfk
-3. Go to the grobid-0.5.6 folder, open the console under this folder and run the command gradlew run
-4. Open the console under the folder containing the jar package and run the command java -jar smart_cite-1.0.0-SNAPSHOT.jar
+##  **接口说明** 
 
-##  **Interface Description** 
+### 抽取
+请求方式：POST
 
-###  Extract
+请求地址：/extract
 
-Request method: POST
+请求参数：
 
-Request address: /extract
+|字段|说明|类型|长度|是否必填|备注|
+|---|---|---|---|---|---|
+|file|文件|MultipleFile|	|是||
 
-Request parameters:
+返回参数：
 
-Field|Description|Type|Length|IsRequired|Remarks
----|---|---|---|---|---
-file|file|MultipleFile||True|
+|code|message|data|动作|
+|---|---|---|---|
+|0|成功|JsonObject|显示收到的data|
+|100|文件错误，请上传正确文件|null|提示错误信息|
+|500|服务器错误|null|提示错误信息|
 
-Return parameter:
-
-code|message|data|action
----|---|---|---
-0|Success|JsonObject|displays the received data
-100|File error, please upload the correct file|null|prompt error message
-500|server error|null|prompt error message
-
-
-Return result：
+返回示例：
 ```json
 {
     "code": 0,
-    "msg": "Successful extraction",
+    "msg": "extract successfully",
     "data": {
         "fileName": "asset_id=10.1371%2Fjournal.pone.0000039.XML",
         "refTags": [
@@ -141,32 +142,30 @@ Return result：
 }
 ```
 
-###  Batch Extraction
+#### 批量抽取
+请求方式：POST
 
-Request method: POST
+请求地址：/batchExtract
 
-Request address: /batchExtract
+请求参数：
 
-Request parameters:
+|字段|说明|类型|长度|是否必填|备注|
+|---|---|---|---|---|---|
+|file|文件|MultipleFile|	|是||
 
-Field|Description|Type|Length|IsRequired|Remarks
----|---|---|---|---|---
-file|file|MultipleFile||True|
+返回参数：
 
-Return parameter:
+|code|message|data|动作|
+|---|---|---|---|
+|0|成功|JsonArray|显示收到的data|
+|100|文件错误，请上传正确文件|null|提示错误信息|
+|500|服务器错误|null|提示错误信息|
 
-code|message|data|action
----|---|---|---
-0|Success|JsonObject|displays the received data
-100|File error, please upload the correct file|null|prompt error message
-500|server error|null|prompt error message
-
-
-Return result：
+返回示例：
 ```json
 {
     "code": 0,
-    "msg": "Successful extraction",
+    "msg": "抽取成功",
     "data": [
         {
             "fileName": "asset_id=10.1371%2Fjournal.pone.0000039.XML",
@@ -225,8 +224,8 @@ Return result：
                 
 ```
 
-##  **Other Instructions** 
-1. Default port: 8080
-2. Upload file size ≤ 10M
+##  **其他说明** 
 
+1.默认请求端口：8080
 
+2.上传文件大小 ≤ 10M
