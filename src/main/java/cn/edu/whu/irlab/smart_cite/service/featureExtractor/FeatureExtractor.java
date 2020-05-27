@@ -60,7 +60,7 @@ public class FeatureExtractor {
 
     public List<Result> extract(Article article) {
         String name = article.getName();
-        String fileName = FEATURE_FILE + name + "_features.libsvm ";
+        String fileName = FEATURE_FILE + name + "_features.libsvm";
         Files featureWriter = Files.open(fileName);
 
         features.get().clear();
