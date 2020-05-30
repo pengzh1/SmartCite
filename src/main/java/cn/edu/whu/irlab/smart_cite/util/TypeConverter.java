@@ -116,11 +116,13 @@ public class TypeConverter {
                             buffer.append("</" + en.getKey() + ">");
                         }
                         break;
-                    case "java.lang.String":
+//                    case "java.lang.String":
+//                        buffer.append("<" + en.getKey() + ">" + escapeCharacter(en.getValue().toString()));
+//                        buffer.append("</" + en.getKey() + ">");
+//                        break;
+                    default:
                         buffer.append("<" + en.getKey() + ">" + escapeCharacter(en.getValue().toString()));
                         buffer.append("</" + en.getKey() + ">");
-                        break;
-                    default:
                         break;
                 }
             } else {

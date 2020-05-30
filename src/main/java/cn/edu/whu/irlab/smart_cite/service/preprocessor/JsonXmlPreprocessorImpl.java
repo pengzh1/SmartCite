@@ -38,35 +38,82 @@ public class JsonXmlPreprocessorImpl extends PreprocessorImpl {
     void splitSentences(File file) {
         for (Element p :
                 paragraphs.get()) {
-            try {
-                List<Element> contents = lingPipeSplitter.splitSentences(p.getChild("text"));
-                p.removeChild("text");
-                p.addContent(contents);
 
-                List<Element> cite_spans = p.getChildren("cite_spans");
-                if (cite_spans.size() != 0) {
-                    for (Element cite_span :
-                            cite_spans) {
-                        String mention = cite_span.getChild("mention").getValue();
-                        for (Content content :
-                                contents) {
-                            if (content.getCType().equals(Content.CType.Element)) {
-                                Element element = (Element) content;
-                                if (element.getValue().contains(mention)) {
-                                    Element xref = new Element("xref");
-                                    xref.setAttribute("rid", cite_span.getChild("ref_id").getValue());
-                                    xref.setAttribute("ref-type", "bibr");
-                                    xref.setText(mention);
-                                    element.addContent(xref);
-                                }
-                            }
+            List<Element> sentences = lingPipeSplitter.splitSentences(p.getChild("text"));
+
+            p.removeChild("text");
+
+            Queue<Element> cite_spans = new LinkedList<>(p.getChildren("cite_spans"));
+
+            if (!cite_spans.isEmpty()) {
+                int origin = 0;
+                for (Element sentence :
+                        sentences) {
+                    if (cite_spans.isEmpty()) {
+                        break;
+                    }
+
+                    //获取句子内容
+                    String sentence_value = sentence.getValue();
+                    sentence.removeContent();
+                    int preElementEnd = 0;
+                    while (!cite_spans.isEmpty()) {
+                        Element top = cite_spans.peek();
+                        int start = Integer.parseInt(top.getChildText("start"));
+
+                        //判定cite_span是否在句子内部
+                        if (start < origin || start > origin + sentence_value.length()) {
+                            break;
                         }
+
+                        top = cite_spans.poll();
+                        //获取cite_span值
+                        int end = Integer.parseInt(top.getChildText("end"));
+                        Element mention = top.getChild("mention");
+                        Element text = top.getChild("text");
+                        String cite_span_value = null;
+                        if (mention != null) {
+                            cite_span_value = mention.getValue();
+                        } else if (text != null) {
+                            cite_span_value = text.getValue();
+                        }
+
+                        //置入cite_span
+                        String theFront;
+                        String current = sentence_value.substring(start - origin, end - origin);
+                        String theAfter = sentence_value.substring(end - origin);
+                        if (preElementEnd == 0) {
+                            theFront = sentence_value.substring(0, start - origin);
+                        } else {
+                            if (sentence.getContentSize() == 0) {
+                                System.out.println("error");
+                            }
+                            sentence.removeContent(sentence.getContentSize() - 1);
+                            theFront = sentence_value.substring(preElementEnd - origin, start - origin);
+                        }
+
+                        //验证是否获取正确并置入
+                        if (current.equals(cite_span_value)) {
+                            sentence.addContent(theFront);
+                            Element xref = new Element("xref");
+                            xref.setAttribute("rid", top.getChild("ref_id").getValue());
+                            xref.setAttribute("ref-type", "bibr");
+                            xref.setText(current);
+                            sentence.addContent(xref);
+                            sentence.addContent(theAfter);
+                        } else {
+                            System.out.println("error");//todo 分句结果可能做过trim 或者空格位置并不精准 有偏差 throw new IllegalArgumentException();
+                        }
+                        preElementEnd = end;
+                    }
+                    origin += sentence_value.length() + 1;
+                    if (sentence.getContentSize()==0){
+                        sentence.addContent(sentence_value);
                     }
                 }
-                p.removeChildren("cite_spans");
-            } catch (Exception e) {
-                log.error("[error message] " + e.getMessage() + " At [paragraph] " + p.getAttributeValue("id") + " [article] " + file.getName(), e);
             }
+            p.addContent(sentences);
+            p.removeChildren("cite_spans");
         }
     }
 
@@ -114,6 +161,7 @@ public class JsonXmlPreprocessorImpl extends PreprocessorImpl {
                 this.paragraphs.get()) {
             p.setName("p");
             String sectionName = p.getChild("section").getValue();
+            p.removeChild("section");
             if (sectionMap.containsKey(sectionName)) {
                 sectionMap.get(sectionName).add(p.clone());
             } else {
@@ -128,7 +176,7 @@ public class JsonXmlPreprocessorImpl extends PreprocessorImpl {
         for (Map.Entry<String, List<Element>> section :
                 sectionMap.entrySet()) {
             Element sec = new Element("sec");
-            sec.addContent(new Element("title").addContent(section.getValue().get(0).getChild("section").getValue()));
+            sec.addContent(new Element("title").addContent(section.getKey()));
             sec.addContent(section.getValue());
             sec.setAttribute("id", String.valueOf(++secId));
             body.addContent(sec);
