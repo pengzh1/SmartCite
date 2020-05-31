@@ -46,7 +46,7 @@ public class FeatureExtractor {
 //    private static List<Result> information = new ArrayList<>();
 
     @SuppressWarnings("rawtypes")
-    private ThreadLocal<List<IFeature>> features = new ThreadLocal<List<IFeature>>(){
+    private ThreadLocal<List<IFeature>> features = new ThreadLocal<List<IFeature>>() {
         @Override
         protected List<IFeature> initialValue() {
             return new ArrayList<>();
@@ -60,14 +60,14 @@ public class FeatureExtractor {
 
     public List<Result> extract(Article article) {
         String name = article.getName();
-        String fileName = FEATURE_FILE + name + "_features.libsvm";
+        String fileName = FEATURE_FILE + File.separator + name + "_features.libsvm";
         Files featureWriter = Files.open(fileName);
 
         features.get().clear();
         information.get().clear();
 
         loadFeatures();
-        extractArticle(article,featureWriter);
+        extractArticle(article, featureWriter);
 
 //        statisticVisitor.printRCCount();
 //        statisticVisitor.save();
@@ -75,7 +75,6 @@ public class FeatureExtractor {
         featureWriter.close();
         //保存位置信息
         WriteUtil.writeList("temp/location/" + article.getName() + "_location.txt", information.get());
-
 
 
         return information.get();
@@ -138,7 +137,7 @@ public class FeatureExtractor {
 
         trainArticles.stream().forEach(ar -> {  //每篇文章
             logger.info("开始处理Article：" + ar.getNum() + "-" + ar.getName() + ":" + ar.getTitle());
-            extractArticle(ar,featureWriter);
+            extractArticle(ar, featureWriter);
         });
 
 //        statisticVisitor.printRCCount();
@@ -152,7 +151,7 @@ public class FeatureExtractor {
      *
      * @param ar
      */
-    public void extractArticle(Article ar,Files featureWriter) {
+    public void extractArticle(Article ar, Files featureWriter) {
 
         ar.getSentenceTreeMap().forEach((k, sent) -> {  //遍历每个句子
             //	System.out.println("abc");
@@ -167,7 +166,7 @@ public class FeatureExtractor {
                     logger.debug("ref:" + i.getIndex() + ":" + i.getWord());
 
                     i.getRefs().forEach((r) -> {    //每个引文标记
-                        featuresRef(r,featureWriter);
+                        featuresRef(r, featureWriter);
                     });
                 });
             }
@@ -181,7 +180,7 @@ public class FeatureExtractor {
      *
      * @param r 引文标记
      */
-    private void featuresRef(RefTag r,Files featureWriter) {
+    private void featuresRef(RefTag r, Files featureWriter) {
         //统计距离
 //        statisticVisitor.visitRefCount(r);
 //        statisticVisitor.visitRefDistanceCount(r);

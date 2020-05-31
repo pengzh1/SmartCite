@@ -120,7 +120,7 @@ public class ExtractorImpl {
                 try {
                     root = TypeConverter.jsonStr2Xml(jsonString);
                 } catch (JDOMException | IOException e) {
-                    logger.error("文件[" + file.getName() + "]解析错误",e);
+                    logger.error("文件[" + file.getName() + "]解析错误", e);
                     throw new IllegalArgumentException("Json解析错误");
                 }
                 xmlTypeEnum = XMLTypeEnum.Json;
@@ -153,7 +153,7 @@ public class ExtractorImpl {
         List<Result> results = featureExtractor.extract(article);
 
         //分类
-        Instances instances = wekaService.classify(FEATURE_FILE + file.getName() + "_features.libsvm");
+        Instances instances = wekaService.classify(FEATURE_FILE + File.separator + file.getName() + "_features.libsvm");
 
         //匹配分类结果
         for (int i = 0; i < results.size(); i++) {
@@ -171,7 +171,7 @@ public class ExtractorImpl {
         result.put("refTags", refTags);
 
 //        WriteUtil.writeList(OUTPUT + FilenameUtils.getBaseName(file.getName()) + ".txt", refTags);//todo 配置多样的输出
-        WriteUtil.writeStr(OUTPUT + file.getName() + ".txt", result.toJSONString());
+        WriteUtil.writeStr(OUTPUT + File.separator + file.getName() + ".txt", result.toJSONString());
         logger.info("extract context of article " + file.getName() + " successfully");
 
         return result;
@@ -263,7 +263,7 @@ public class ExtractorImpl {
      * @desc 保存上传的文件
      **/
     public File saveUploadedFile(MultipartFile file) throws IOException {
-        File upload = new File(FileLocation.UPLOAD_FILE + file.getOriginalFilename());
+        File upload = new File(FileLocation.UPLOAD_FILE + File.separator + file.getOriginalFilename());
         file.transferTo(upload);
         return upload;
     }

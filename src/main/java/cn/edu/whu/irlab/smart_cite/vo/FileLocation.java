@@ -11,10 +11,10 @@ import java.io.File;
 public class FileLocation {
 
     //存放上传的文件
-    public final static String UPLOAD_FILE = System.getProperty("user.dir")+ File.separator+"temp"+ File.separator+"upload"+ File.separator;
+    public final static String UPLOAD_FILE = System.getProperty("user.dir") + File.separator + "temp" + File.separator + "upload";
 
     //存放Libsvm特征文件
-    public final static String FEATURE_FILE = System.getProperty("user.dir")+File.separator+"temp"+File.separator+"feature_files"+ File.separator;
+    public final static String FEATURE_FILE = System.getProperty("user.dir") + File.separator + "temp" + File.separator + "feature_files";
 
     //存放完成编号的XML文档
     public final static String NUMBERED = "temp/numbered/";
@@ -23,14 +23,15 @@ public class FileLocation {
     public final static String FILTERED = "temp/filtered/";
 
     //存放重新整理后的XML文档
-    public final static String REFORMATTED = "temp/reformatted/";
+    public final static String REFORMATTED = "temp/reformatted";
 
     //存放完成编号的XML文档
-    public final static String ADDED = "temp/addedAttr/";
+    public final static String ADDED = "temp/addedAttr";
 
     //存放art文件
-    public final static String ART = "temp/art/";
+    public final static String ART = "temp/art";
 
-    public final static String OUTPUT = "output/";
+    //存放输出问题
+    public final static String OUTPUT = "output";
 
 }

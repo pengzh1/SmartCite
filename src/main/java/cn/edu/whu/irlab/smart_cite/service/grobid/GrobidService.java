@@ -40,7 +40,7 @@ public class GrobidService {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         MultiValueMap<String, String> valueMap = new LinkedMultiValueMap<>();
-        valueMap.add("consolidateHeader", "1");
+        valueMap.add("consolidateHeader", "0");
         valueMap.add("citations", citation);
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(valueMap, httpHeaders);
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, request, String.class);
@@ -60,8 +60,8 @@ public class GrobidService {
         MultiValueMap<String, Object> valueMap = new LinkedMultiValueMap<>();
         FileSystemResource fileSystemResource = new FileSystemResource(pdf);
 
-        valueMap.add("consolidateHeader", "1");
-        valueMap.add("consolidateCitations", "1");
+        valueMap.add("consolidateHeader", "0");
+        valueMap.add("consolidateCitations", "0");
         valueMap.add("input", fileSystemResource);
         HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(valueMap, httpHeaders);
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, request, String.class);
