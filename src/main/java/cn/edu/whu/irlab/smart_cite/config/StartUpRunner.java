@@ -1,6 +1,7 @@
 package cn.edu.whu.irlab.smart_cite.config;
 
 import cn.edu.whu.irlab.smart_cite.vo.FileLocation;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -17,8 +18,14 @@ import java.io.File;
 //@Order(value = 1)
 public class StartUpRunner implements CommandLineRunner {
 
+    @Value("${test.location}")
+    private String ymlLocation;
+
     @Override
     public void run(String... args) throws Exception {
+
+        System.out.println("加载配置文件：" + ymlLocation);
+
         System.out.println(">>>>>>>>>>>>>>>服务启动执行，执行加载数据等操作22222222<<<<<<<<<<<<<");
 
         File temp = new File(System.getProperty("user.dir") + File.separator + "temp");

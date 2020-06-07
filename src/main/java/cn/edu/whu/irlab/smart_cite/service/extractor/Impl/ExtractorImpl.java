@@ -171,7 +171,7 @@ public class ExtractorImpl {
         result.put("refTags", refTags);
 
 //        WriteUtil.writeList(OUTPUT + FilenameUtils.getBaseName(file.getName()) + ".txt", refTags);//todo 配置多样的输出
-        WriteUtil.writeStr(OUTPUT + File.separator + file.getName() + ".txt", result.toJSONString());
+        WriteUtil.writeStr(OUTPUT + File.separator + file.getName() + ".json", result.toJSONString());
         logger.info("extract context of article " + file.getName() + " successfully");
 
         return result;
