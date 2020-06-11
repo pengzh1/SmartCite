@@ -107,7 +107,7 @@ public class JsonXmlPreprocessorImpl extends PreprocessorImpl {
                         preElementEnd = end;
                     }
                     origin += sentence_value.length() + 1;
-                    if (sentence.getContentSize()==0){
+                    if (sentence.getContentSize() == 0) {
                         sentence.addContent(sentence_value);
                     }
                 }
@@ -199,8 +199,33 @@ public class JsonXmlPreprocessorImpl extends PreprocessorImpl {
 
             Element element_citation = new Element("element-citation");
 
-            //设置标题
+            //set title
             element_citation.addContent(new Element("article-title").addContent(bibref.getChild("title").getValue()));
+
+            //set authors
+            Element person_group = new Element("person-group").setAttribute("person-group-type", "author");
+            for (Element author :
+                    bibref.getChildren("authors")) {
+                Element name = new Element("name");
+                name.addContent(new Element("surname").addContent(author.getChildText("first")));
+                name.addContent(new Element("given-names").addContent(author.getChildText("last")));
+                String suffixStr = author.getChildText("suffix");
+                if (suffixStr != null && !suffixStr.equals("")) {
+                    Element suffix = new Element("suffix").addContent(suffixStr);
+                    name.addContent(suffix);
+                }
+                person_group.addContent(name);
+                //todo 没有考虑middle 节点
+            }
+            element_citation.addContent(person_group);
+            //set year
+            element_citation.addContent(new Element("year").addContent(bibref.getChildText("year")));
+            //set volume
+            element_citation.addContent(new Element("volume").addContent(bibref.getChildText("volume")));
+            //set fpage and lpage
+            String[] pagesStr = bibref.getChildText("pages").split("-");
+            element_citation.addContent(new Element("fpage").addContent(pagesStr[0]));
+            element_citation.addContent(new Element("volume").addContent(pagesStr[1]));
 
             ref.addContent(element_citation);
             ref_list.addContent(ref);
