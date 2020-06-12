@@ -46,13 +46,11 @@ public class PaperXmlReader {
     public Article processFile(File file, Element root) {
         Element header = root.getChild("header");
 
-
         Article article = new Article(file.getName());
         this.article.set(article);
 
         //初始化article 设置摘要
         article.setAbsText(header.getChild("abstract").getValue());//todo plos数据中有的摘要有多个段落
-       // System.out.println("摘要"+article.getAbsText());
 
         //设置作者列表
         List<Author> authors = new ArrayList<>();
@@ -61,13 +59,10 @@ public class PaperXmlReader {
             authors.add(new Author(e.getChildText("surname"), e.getChildText("given-names")));
         }
         article.setAuthors(authors);
-       // System.out.println("作者"+article.getAuthors());
-
 
         //设置标题
         article.setTitle(new Title(header.getChild("title-group").getChildText("article-title"), header.
                 getChild("title-group").getChildText("alt-title")));
-//        System.out.println("标题"+article.getTitle());
 
         //references
         Element ref_list = root.getChild("back").getChild("ref-list");
@@ -77,8 +72,6 @@ public class PaperXmlReader {
                 article.putRef(ref.getAttributeValue("id"), parseReference(ref));// lei保存的是string
             }
         }
-     //   System.out.println("参考文献"+article.getReferences());
-
 
         //设置并解析句子
         List<Element> sentenceElements = ElementUtil.extractElements(root, "s");
@@ -92,7 +85,7 @@ public class PaperXmlReader {
             article.append(sentence);   //append中设置一些索引位置信息
 //            logs.info(s.toText());
         }
-        //System.out.println("句子"+article.getSentenceTreeMap());
+
         return article;
     }
 
@@ -198,7 +191,6 @@ public class PaperXmlReader {
                 String contexts = element.getAttributeValue("context");
                 xref.setContexts(contexts != null ? contexts : "");//todo 预处理无法生成这个属性
                 String refNum = element.getAttributeValue("rid");
-
                 if (refNum != null && !refNum.trim().equals("")) {  //指向的参考文献
                     if(refNum.trim().substring(0,1).equals("#")){
                         refNum=refNum.trim().substring(1);
