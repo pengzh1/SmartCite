@@ -83,6 +83,8 @@ public class PaperXmlReader {
             logger.info("analyze [article] " + sentence.getArticle().getName() + " [sentence] " + sentence.getId());
             setSecInfo(e, sentence);
             article.append(sentence);   //append中设置一些索引位置信息
+
+            sentence=null;//释放内存
 //            logs.info(s.toText());
         }
 
@@ -198,6 +200,7 @@ public class PaperXmlReader {
                 sentence.addRef(xref);  //给句子加引文引用
                 //引文替换工作
                 wordList.add(WordItem.ref(WordItem.REF, xref));
+                xref=null;//释放内存
             }
         }
     }

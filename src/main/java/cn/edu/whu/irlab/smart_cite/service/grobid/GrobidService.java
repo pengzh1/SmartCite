@@ -64,7 +64,7 @@ public class GrobidService {
         valueMap.add("consolidateCitations", "0");
         valueMap.add("input", fileSystemResource);
         HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(valueMap, httpHeaders);
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, request, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, request, String.class);// todo 没有检查返回是否成功
 
         System.out.println(responseEntity.getStatusCodeValue());
 

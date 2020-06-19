@@ -38,8 +38,13 @@ public class JsonXmlPreprocessorImpl extends PreprocessorImpl {
     void splitSentences(File file) {
         for (Element p :
                 paragraphs.get()) {
-
-            List<Element> sentences = lingPipeSplitter.splitSentences(p.getChild("text"));
+            List<Element> sentences;
+            try {
+                sentences = lingPipeSplitter.splitSentences(p.getChild("text"));
+            } catch (Exception e) {
+                log.error("分句异常 in article [" + file.getName() + "] in text : " + p.getChild("text"));
+                continue;
+            }
 
             p.removeChild("text");
 
@@ -223,10 +228,12 @@ public class JsonXmlPreprocessorImpl extends PreprocessorImpl {
             //set volume
             element_citation.addContent(new Element("volume").addContent(bibref.getChildText("volume")));
             //set fpage and lpage
-            String[] pagesStr = bibref.getChildText("pages").split("-");
-            element_citation.addContent(new Element("fpage").addContent(pagesStr[0]));
-            element_citation.addContent(new Element("volume").addContent(pagesStr[1]));
-
+            String pages = bibref.getChildText("pages");
+            if (!pages.isEmpty()) {
+                String[] pagesStr = pages.split("-");
+                element_citation.addContent(new Element("fpage").addContent(pagesStr[0]));
+                element_citation.addContent(new Element("lpage").addContent(pagesStr[1]));
+            }
             ref.addContent(element_citation);
             ref_list.addContent(ref);
         }
