@@ -30,6 +30,7 @@ public class GrobidService {
 
     private static final Logger logger = LoggerFactory.getLogger(GrobidService.class);
 
+
     private static final String URL_PREFIX = "http://localhost:8070/api/";
 
     @Autowired

@@ -26,7 +26,7 @@ public class StartUpRunner implements CommandLineRunner {
 
         System.out.println("加载配置文件：" + ymlLocation);
 
-        System.out.println(">>>>>>>>>>>>>>>服务启动执行，执行加载数据等操作22222222<<<<<<<<<<<<<");
+        System.out.println(">>>>>>>>>>>>>>>服务启动执行，执行加载数据等操作<<<<<<<<<<<<<");
 
         File temp = new File(System.getProperty("user.dir") + File.separator + "temp");
         mkdir(temp);
