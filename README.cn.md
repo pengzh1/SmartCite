@@ -8,9 +8,9 @@ A semantic citation context extraction tool for academic literature. Provide cit
 1. Install Java8
 2. Download the following compressed package and unzip 
 
-    the link: https://pan.baidu.com/s/1XODDiJmO9wYIPh38EJ37bQ ， 
+    the link: https://pan.baidu.com/s/1PPARTNc0NipZ7bKaNmsupg 
 
-    extraction code: ndi4
+    extraction code: ixj4
 
 3. Go to the grobid-0.5.6 folder, open the console under this folder and run the command ：gradlew run
 4. Open the console under the folder containing the jar package and run the command ：java -jar smart_cite-1.0.0-SNAPSHOT.jar

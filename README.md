@@ -9,11 +9,14 @@
 2. 如果需要处理PDF论文，请安装并运行gorbid。[点击查看grobid官方安装说明文档](https://grobid.readthedocs.io/en/latest/Install-Grobid/) 
 3. 下载下面的压缩包，并解压
     
-    链接：https://pan.baidu.com/s/1XR0GRRWME5UDNgPT1eguZQ 
-    
-    提取码：vcfk
-4. 在包含jar包文件夹下打开在控制台，并运行命令: java -jar smart_cite-1.0.0-SNAPSHOT.jar
+    链接: https://pan.baidu.com/s/1PPARTNc0NipZ7bKaNmsupg 
 
+    提取码: ixj4
+   
+4. 在包含jar包文件夹下打开在控制台，并运行命令: 
+    
+    java -jar smart_cite-1.0.0-SNAPSHOT.jar  
+        
 ##  **接口说明** 
 
 注意：上传的文件必须是学术论文且必须符合支持的文件格式
