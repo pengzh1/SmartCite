@@ -1,40 +1,58 @@
-# SmartCiteCon
+#  **SmartCiteCon** 
 
-##  **Description** 
-A semantic citation context extraction tool for academic literature. Provide citation context extraction of academic documents in PDF format and XML format in accordance with Plosone data set standards
+##  **介绍** 
+一个基于语义的学术文献的引文上下文抽取工具。可提供PDF格式及符合Plosone数据集标准的XML格式的学术文件引文上下文抽取工作
+
+##  **安装教程** 
+
+1. 安装Java8
+2. 如果需要处理PDF论文，请安装并运行gorbid。[点击查看grobid官方安装说明文档](https://grobid.readthedocs.io/en/latest/Install-Grobid/) 
+3. 下载下面的压缩包，并解压
+    
+    链接: https://pan.baidu.com/s/1PPARTNc0NipZ7bKaNmsupg 
+
+    提取码: ixj4
+   
+4. 在包含jar包文件夹下打开在控制台，并运行命令: 
+    
+    java -jar smart_cite-1.0.0-SNAPSHOT.jar  
+        
+##  **接口说明** 
+
+注意：上传的文件必须是学术论文且必须符合支持的文件格式
+
+SCC支持的文件格式有：
+Plosone数据库的XML、TEI格式的XML、符合GORC data format的Json数据
+
+### /extract
+功能：抽取单篇论文的引文上下文
+
+请求方式：POST
+
+请求地址：/extract
+
+请求参数：
+
+| method | request type | response type | parameters | reqirement | description|
+|---|---|---|---|---|---|
+|post|multipart/form-data|application/json|file|required|待处理的文件|
 
 
-##  **Installation** 
 
-1. Install Java8
-2. Download the following compressed package and unzip the link: https://pan.baidu.com/s/1XR0GRRWME5UDNgPT1eguZQ ， extraction code: vcfk
-3. Go to the grobid-0.5.6 folder, open the console under this folder and run the command gradlew run
-4. Open the console under the folder containing the jar package and run the command java -jar smart_cite-1.0.0-SNAPSHOT.jar
+请求示例：
+```ftl
+curl --location --request POST 'http://localhost:8080/extract' --form 'file=@/E://FileStorage/File/2020-05/pdf/CO13_1p014.pdf'
+```
 
-##  **Interface Description** 
+返回参数：
 
-###  Extract
+|code|message|data|动作|
+|---|---|---|---|
+|0|成功|JsonObject|显示收到的data|
+|100|文件错误，请上传正确文件|null|提示错误信息|
+|500|服务器错误|null|提示错误信息|
 
-Request method: POST
-
-Request address: /extract
-
-Request parameters:
-
-Field|Description|Type|Length|IsRequired|Remarks
----|---|---|---|---|---
-file|file|MultipleFile||True|
-
-Return parameter:
-
-code|message|data|action
----|---|---|---
-0|Success|JsonObject|displays the received data
-100|File error, please upload the correct file|null|prompt error message
-500|server error|null|prompt error message
-
-
-Return result：
+返回示例：
 ```json
 {
     "code": 0,
@@ -141,32 +159,44 @@ Return result：
 }
 ```
 
-###  Batch Extraction
+#### /batchExtract
+功能：批量抽取多篇论文的引文上下文
 
-Request method: POST
+注意：
 
-Request address: /batchExtract
+1. 目前仅支持上传zip类型的压缩文件
+2. zip中的文件的格式必须是SCC支持的
+3. zip文件大小不可超过10M，request大小不可超过100M。
 
-Request parameters:
+请求方式：POST
 
-Field|Description|Type|Length|IsRequired|Remarks
----|---|---|---|---|---
-file|file|MultipleFile||True|
+请求地址：/batchExtract
 
-Return parameter:
+请求参数：
 
-code|message|data|action
----|---|---|---
-0|Success|JsonObject|displays the received data
-100|File error, please upload the correct file|null|prompt error message
-500|server error|null|prompt error message
+| method | request type | response type | parameters | reqirement | description|
+|---|---|---|---|---|---|
+|post|multipart/form-data|application/json|file|required|待处理的zip文件|
 
 
-Return result：
+请求示例：
+```ftl
+curl --location --request POST 'http://localhost:8080/batchExtract' --form 'file=@/E:/temp/plos/computer_science/3(done).zip'
+```
+
+返回参数：
+
+|code|message|data|动作|
+|---|---|---|---|
+|0|成功|JsonArray|显示收到的data|
+|100|文件错误，请上传正确文件|null|提示错误信息|
+|500|服务器错误|null|提示错误信息|
+
+返回示例：
 ```json
 {
     "code": 0,
-    "msg": "Successful extraction",
+    "msg": "抽取成功",
     "data": [
         {
             "fileName": "asset_id=10.1371%2Fjournal.pone.0000039.XML",
@@ -221,12 +251,40 @@ Return result：
             ]
       },...
     ]
-}
-                
+}                
 ```
+#### /localExtract
+功能: 抽取文件夹下所有论文的引文上下文
 
-##  **Other Instructions** 
-1. Default port: 8080
-2. Upload file size ≤ 10M
+注意：
+1. 文件夹必须是在本地服务器上
+2. 文件夹下的文件必须都是SCC支持的格式
+3. 处理的结果存储在与jar包同级目录的output文件夹下
+4. 在没有完成处理前，请不要关停服务
+
+请求方式：GET
+
+请求地址：/localExtract
+
+请求参数：
+
+| method | request type | response type | parameters | reqirement | description|
+|---|---|---|---|---|---|
+|get|||path|required|含有待处理文件的文件夹路径|
+
+请求示例：
+
+```ftl
+curl --location --request GET 'http://localhost:8080/localExtract?path=/home/guochenrui/smart_cite/3000'
+```
+返回参数：无。只需发出请求即可，无需等待返回参数。
+
+##  **其他说明** 
+
+1. 默认请求端口：8080
+
+2. 上传文件大小 ≤ 10M
+
+3. 配置文件位于与jar包同级目录的resource文件夹下。可以根据您的情况修改默认端口等参数。
 
 

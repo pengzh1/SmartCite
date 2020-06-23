@@ -32,16 +32,16 @@ public class PaperXmlReader {
 
     private static final Logger logger = LoggerFactory.getLogger(PaperXmlReader.class);
 
-//    private Article article;
+    //    private Article article;
     ThreadLocal<Article> article = new ThreadLocal<>();
 
 
     /**
-     *@auther gcr19
-     *@desc 将预处理后的xml文档转换为Article对象
-     *@param file 文件
-     *@param  root 根节点
-     *@return Article对象
+     * @param file 文件
+     * @param root 根节点
+     * @return Article对象
+     * @auther gcr19
+     * @desc 将预处理后的xml文档转换为Article对象
      **/
     public Article processFile(File file, Element root) {
         Element header = root.getChild("header");
@@ -59,6 +59,7 @@ public class PaperXmlReader {
             authors.add(new Author(e.getChildText("surname"), e.getChildText("given-names")));
         }
         article.setAuthors(authors);
+        authors = null;//释放内存
 
         //设置标题
         article.setTitle(new Title(header.getChild("title-group").getChildText("article-title"), header.
@@ -83,6 +84,8 @@ public class PaperXmlReader {
             logger.info("analyze [article] " + sentence.getArticle().getName() + " [sentence] " + sentence.getId());
             setSecInfo(e, sentence);
             article.append(sentence);   //append中设置一些索引位置信息
+
+            sentence = null;//释放内存
 //            logs.info(s.toText());
         }
 
@@ -165,6 +168,7 @@ public class PaperXmlReader {
             }
         });
         logger.debug(toStr(sentence.getWordList(), " "));
+        wordItemList=null;//释放内存
     }
 
     private void addWordItem(Sentence sentence, List<WordItem> wordList, Content content) {
@@ -179,9 +183,9 @@ public class PaperXmlReader {
             }
             Element element = (Element) content;
             if (element.getName().equals("xref")) {   //应该都是xref
-                try{
+                try {
                     Integer.parseInt((element.getAttributeValue("id")));
-                }catch (Exception e){
+                } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                     System.out.println(element.getAttributeValue("id"));
                     System.out.println();
@@ -198,6 +202,7 @@ public class PaperXmlReader {
                 sentence.addRef(xref);  //给句子加引文引用
                 //引文替换工作
                 wordList.add(WordItem.ref(WordItem.REF, xref));
+                xref = null;//释放内存
             }
         }
     }

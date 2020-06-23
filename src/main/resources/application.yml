@@ -1,23 +1,25 @@
 spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://47.96.153.156:3306/irep?allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/irep?allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=UTC
     username: root
-    password: irlab_2013
+    password:
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 100MB
 logging:
   path: log/springboot
-  file: springboot.log
+  file: log/SmartCiteCon.log
 server:
   port: 8080
   tomcat:
     uri-encoding: utf-8
 thread-pool-factory:
   #IO密集型应用，线程数为2N+1
-  corePoolSize: 9
-  maxPoolSize: 18
+  corePoolSize: 4
+  maxPoolSize: 8
   queueCapacity: 100
   keepAliveSeconds: 120
+test:
+  location: internal_profile

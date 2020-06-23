@@ -20,6 +20,7 @@ import cn.edu.whu.irlab.smart_cite.vo.Result;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.metadata.HttpHeaders;
 import org.apache.tika.metadata.Metadata;
@@ -50,18 +51,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.FEATURE_FILE;
-import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.OUTPUT;
+import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.*;
 
 /**
  * @author gcr19
  * @date 2019-10-19 11:27
  * @desc 任务执行器 实现类
  **/
+@Slf4j
 @Service("extractor")
 public class ExtractorImpl {
 
-    private static final Logger logger = LoggerFactory.getLogger(ExtractorImpl.class);
 
     @Autowired
     private GrobidService grobidService;
@@ -120,7 +120,7 @@ public class ExtractorImpl {
                 try {
                     root = TypeConverter.jsonStr2Xml(jsonString);
                 } catch (JDOMException | IOException e) {
-                    logger.error("文件[" + file.getName() + "]解析错误",e);
+                    log.error("文件[" + file.getName() + "]解析错误", e);
                     throw new IllegalArgumentException("Json解析错误");
                 }
                 xmlTypeEnum = XMLTypeEnum.Json;
@@ -152,8 +152,10 @@ public class ExtractorImpl {
         //抽取特征
         List<Result> results = featureExtractor.extract(article);
 
+        article=null;//释放内存
+
         //分类
-        Instances instances = wekaService.classify(FEATURE_FILE + file.getName() + "_features.libsvm");
+        Instances instances = wekaService.classify(FEATURE_FILE + File.separator + file.getName() + "_features.libsvm");
 
         //匹配分类结果
         for (int i = 0; i < results.size(); i++) {
@@ -171,10 +173,26 @@ public class ExtractorImpl {
         result.put("refTags", refTags);
 
 //        WriteUtil.writeList(OUTPUT + FilenameUtils.getBaseName(file.getName()) + ".txt", refTags);//todo 配置多样的输出
-        WriteUtil.writeStr(OUTPUT + file.getName() + ".txt", result.toJSONString());
-        logger.info("extract context of article " + file.getName() + " successfully");
+        WriteUtil.writeStr(OUTPUT + File.separator + file.getName() + ".json", result.toJSONString());
+        log.info("extract context of article [" + file.getName() + "] successfully");
+        removeTempFile(file);
 
         return result;
+    }
+
+    private void removeTempFile(File file) {
+        File added = new File(ADDED + File.separator + file.getName() + ".xml");
+        File filtered = new File(FILTERED + File.separator + file.getName() + ".xml");
+        File numbered = new File(NUMBERED + File.separator + file.getName() + ".xml");
+        File reformatted = new File(REFORMATTED + File.separator + file.getName() + ".xml");
+        File feature = new File(FEATURE_FILE + File.separator + file.getName() + "_features.libsvm");
+
+        added.delete();
+        filtered.delete();
+        numbered.delete();
+        reformatted.delete();
+        feature.delete();
+        log.info("remove temp file about article [" + file.getName() + "] successfully!");
     }
 
     @Async
@@ -240,13 +258,13 @@ public class ExtractorImpl {
     }
 
     /**
-     * @param article
-     * @param file
+     * @param article 根节点
+     * @param file 文件
      * @return
      * @auther gcr19
      * @desc 识别XML文件的类型
      **/
-    public XMLTypeEnum identifyXMLType(Element article, File file) {
+    private XMLTypeEnum identifyXMLType(Element article, File file) {
         String nameOfFirstNode = article.getName();
         if (nameOfFirstNode.equals("article")) {
             return XMLTypeEnum.Plos;
@@ -263,7 +281,7 @@ public class ExtractorImpl {
      * @desc 保存上传的文件
      **/
     public File saveUploadedFile(MultipartFile file) throws IOException {
-        File upload = new File(FileLocation.UPLOAD_FILE + file.getOriginalFilename());
+        File upload = new File(FileLocation.UPLOAD_FILE + File.separator + file.getOriginalFilename());
         file.transferTo(upload);
         return upload;
     }

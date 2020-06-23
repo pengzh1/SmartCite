@@ -31,7 +31,7 @@ public class LingPipeSplitterImpl extends SplitterImpl {
     public List<String> splitSentences(String text) {
         List<String> sentenceList = new ArrayList<>();
 
-        if (text == null || text.equals("")) {
+        if (text == null || text.equals("") || text.length() == 1) {
             return sentenceList;
         }
 
