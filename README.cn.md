@@ -30,9 +30,9 @@ Request address: /extract
 
 Request parameters:
 
-Field|Description|Type|Length|IsRequired|Remarks
----|---|---|---|---|---
-file|file|MultipleFile||True|
+| method | request type | response type | parameters | reqirement | description|
+|---|---|---|---|---|---|
+|post|multipart/form-data|application/json|file|required|Pending file|
 
 Example request:
 
@@ -166,9 +166,9 @@ Request address: /batchExtract
 
 Request parameters:
 
-Field|Description|Type|Length|IsRequired|Remarks
----|---|---|---|---|---
-file|file|MultipleFile||True|
+| method | request type | response type | parameters | reqirement | description|
+|---|---|---|---|---|---|
+|post|multipart/form-data|application/json|file|required|Pending zip file|
 
 Example request:
 
