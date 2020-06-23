@@ -27,7 +27,7 @@ public class WekaService {
     private static final Logger logger = LoggerFactory.getLogger(WekaService.class);
 
     private static final String MODEL_NAME = "libsvm.model";
-    private static final String MODEL_PATH = System.getProperty("user.dir") + "/result/model/" + MODEL_NAME;
+    private static final String MODEL_PATH = System.getProperty("user.dir") + "/data/model/" + MODEL_NAME;
 
     private LibSVM svm;
 

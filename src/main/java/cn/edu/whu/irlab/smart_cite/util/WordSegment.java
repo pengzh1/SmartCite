@@ -7,6 +7,8 @@ import edu.stanford.nlp.ling.SentenceUtils;
 import edu.stanford.nlp.ling.TaggedWord;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 import edu.stanford.nlp.trees.*;
+import edu.stanford.nlp.util.RuntimeInterruptedException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,7 @@ import java.util.stream.Collectors;
  * 英文分词和词性标注
  * Created by Lei Shengwei (Leo) on 2015/3/30.
  */
+@Slf4j
 public class WordSegment {
     public static LexicalizedParser lexicalizedParser;
 
@@ -26,10 +29,15 @@ public class WordSegment {
 
     }
 
-    public static List<WordItem> wordSegment(Sentence sentence) {
+    public static void wordSegment(Sentence sentence) {
         Tree tree = getTree(sentence);
-        return getWordItems(sentence, tree);
+        getWordItems(sentence, tree);
     }
+
+//    public static List<WordItem> wordSegment(Sentence sentence) {
+//        Tree tree = getTree(sentence);
+//        return getWordItems(sentence, tree);
+//    }
 
     /**
      * 分词
@@ -65,12 +73,19 @@ public class WordSegment {
      */
     private static Tree getTree(Sentence sentence) {
         String[] words = sentence.toTextArr();
-        return getTree(words);
+        try {
+            return getTree(words);
+        } catch (RuntimeInterruptedException e) {
+            log.error("error in sentence [" + sentence.getId() + "] at article [" + sentence.getArticle().getName(), e);
+            throw e;
+        }
     }
 
     private static Tree getTree(String[] words) {
         List<HasWord> rawWords = SentenceUtils.toWordList(words);
-        return lexicalizedParser.apply(rawWords);
+        Tree tree = lexicalizedParser.apply(rawWords);
+        rawWords = null;//释放内存
+        return tree;
     }
 
     /**

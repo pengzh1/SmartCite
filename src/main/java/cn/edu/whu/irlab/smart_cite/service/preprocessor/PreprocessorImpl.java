@@ -50,7 +50,7 @@ public abstract class PreprocessorImpl {
         extractParagraphs(root);
         removeElementNotXref();
         //写出到新文件
-        writeFile(root, FILTERED, file);
+//        writeFile(root, FILTERED, file);
         //分句
         splitSentences(file);
         //抽取句子
@@ -59,21 +59,22 @@ public abstract class PreprocessorImpl {
         extractXref(root);
 
         //写出到新文件
-        writeFile(root, NUMBERED, file);
-
+//        writeFile(root, NUMBERED, file);
         numberElement(xrefs.get());
 
 
         //整理有效信息
         Element newRoot = reformat(root);
-        writeFile(newRoot, REFORMATTED, file);
+//        writeFile(newRoot, REFORMATTED, file);
 
         //给段落编号
         numberElement(paragraphs.get());
         //给句子编号
         numberElement(sentences.get());
         //引文标志编号
-        newRoot=generateAttr(newRoot,file);
+        newRoot = generateAttr(newRoot, file);
+        writeFile(newRoot, ADDED, file);
+
         return newRoot.setAttribute("status", "preprocessed");
     }
 
@@ -303,7 +304,7 @@ public abstract class PreprocessorImpl {
 
     void writeFile(Element root, String folderPath, File file) {
         try {
-            WriteUtil.writeXml(root, folderPath + file.getName() + ".xml");
+            WriteUtil.writeXml(root, folderPath + File.separator + file.getName() + ".xml");
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         }
@@ -335,10 +336,10 @@ public abstract class PreprocessorImpl {
     public Element generateAttr(Element root, File file) {
 
         Element body = root.getChild("body");
-        List<Element> sentences=new ArrayList<>();
+        List<Element> sentences = new ArrayList<>();
 
         ElementUtil.extractElements(body, "s", sentences);
-        addSecAttr(sentences,file);
+        addSecAttr(sentences, file);
         addLevelAndPAttr(sentences);
         addCTypeAttr(sentences);
 //        writeFile(root, ADDED, file);
@@ -363,7 +364,7 @@ public abstract class PreprocessorImpl {
         }
     }
 
-    private void addSecAttr(List<Element> sentences,File file) {
+    private void addSecAttr(List<Element> sentences, File file) {
         for (Element s :
                 sentences) {
             Element sec = s.getParentElement().getParentElement();

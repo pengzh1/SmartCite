@@ -47,9 +47,9 @@ public class TypeConverter {
         JSONArray array = new JSONArray();
         for (T t :
                 list) {
-            try{
+            try {
                 array.add(t.toJson());
-            }catch (Exception e){
+            } catch (Exception e) {
                 System.out.println("exception");
             }
         }
@@ -57,18 +57,14 @@ public class TypeConverter {
     }
 
     /**
-     *@auther gcr19
-     *@desc json string to jdom element
-     *@param json json string
-     *@return jdom Element
+     * @param json json string
+     * @return jdom Element
+     * @auther gcr19
+     * @desc json string to jdom element
      **/
-    public static Element jsonStr2Xml(String json)  {
-        try {
-            return str2xml(json2XmlStr(json));
-        } catch (JDOMException | IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public static Element jsonStr2Xml(String json) throws JDOMException, IOException {
+        String s = json2XmlStr(json);
+        return str2xml(s);
     }
 
     /**
@@ -78,13 +74,13 @@ public class TypeConverter {
      * @return the string
      */
     public static String json2XmlStr(String json) {
-            StringBuffer buffer = new StringBuffer();
-            buffer.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-            buffer.append("<article>");
-            JSONObject jObj = JSON.parseObject(json);
-            json2XmlStr(jObj, buffer);
-            buffer.append("</article>");
-            return buffer.toString();
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+        buffer.append("<article>");
+        JSONObject jObj = JSON.parseObject(json);
+        json2XmlStr(jObj, buffer);
+        buffer.append("</article>");
+        return buffer.toString();
     }
 
 
@@ -114,17 +110,19 @@ public class TypeConverter {
                             if (object.getClass().getName().equals("com.alibaba.fastjson.JSONObject")) {
                                 JSONObject jsonobject = (JSONObject) object;
                                 json2XmlStr(jsonobject, buffer);
-                            }else {
-                                buffer.append(object.toString());
+                            } else {
+                                buffer.append(escapeCharacter(object.toString()));
                             }
                             buffer.append("</" + en.getKey() + ">");
                         }
                         break;
-                    case "java.lang.String":
-                        buffer.append("<" + en.getKey() + ">" + en.getValue());
-                        buffer.append("</" + en.getKey() + ">");
-                        break;
+//                    case "java.lang.String":
+//                        buffer.append("<" + en.getKey() + ">" + escapeCharacter(en.getValue().toString()));
+//                        buffer.append("</" + en.getKey() + ">");
+//                        break;
                     default:
+                        buffer.append("<" + en.getKey() + ">" + escapeCharacter(en.getValue().toString()));
+                        buffer.append("</" + en.getKey() + ">");
                         break;
                 }
             } else {
@@ -132,5 +130,24 @@ public class TypeConverter {
             }
         }
         return buffer.toString();
+    }
+
+    private static String escapeCharacter(String s) {
+        if (s.contains("&")) {
+            s = s.replace("&", "&amp;");
+        }
+        if (s.contains("<")) {
+            s = s.replace("<", "&lt;");
+        }
+        if (s.contains(">")) {
+            s = s.replace(">", "&gt;");
+        }
+        if (s.contains("'")) {
+            s = s.replace("'", "&apos;");
+        }
+        if (s.contains("\"")) {
+            s = s.replace("\"", "&quot;");
+        }
+        return s;
     }
 }

@@ -105,65 +105,65 @@ public class WordItemReplace {
         }
     }
 
-    /**
-     * 使用分词信息替换非句法成分
-     *
-     * @param list
-     */
-    public void replaceNonSyntactic2(List<WordItem> list) {
-        if (list.stream().filter((v) -> v.getType() == WordItem.WordType.Ref || v.getType() == WordItem.WordType.G_REF).count() == 0) {
-            return;
-        }
-        //词性标记
-        WordSegment.wordSegment(list);
-        //根据<citation>前面一个词的postag来判断这个引文标记在句子中是否有作用
-        int i = 0;
-        while (i < list.size()) {
-            WordItem item = list.get(i);
-            if (item.getRef().getText().matches(".+?\\(\\d{4}\\).*?")) {  //作者,(年份)格式
-                continue;
-            }
-            if (list.indexOf(item) == 0) {  //第一个位置
-                continue;
-            }
-            if (i > 0 && in(Words.SP, list.get(i - 1).getWord().toLowerCase())) {   //第一个位置
-                continue;
-            }
-            //前面一个词是介词，词性为IN或者TO
-            if (list.get(i - 1).getTag().equals("IN") || list.get(i - 1).getTag().equals("TO")) {
-                i++;
-                continue;
-            }
-            //前一个词是动词且是动词主动时态（是VB但是非VBN）
-            if (list.get(i - 1).getTag().startsWith("VB") && !list.get(i - 1).getTag().equals("VBN")) {
-                i++;
-                continue;
-            }
-            //前一个词是连词如While、However（CC连词）
-            if (list.get(i - 1).getTag().equals("CC")) {
-                i++;
-                continue;
-            }
-
-            //前面是标点符号
-            if (list.get(i - 1).getTag().length() == 1 && !Character.isLetter(list.get(i - 1).getTag().charAt(0))) {
-                i++;
-                continue;
-            }
-            //前面是e.g., cf.
-            if (list.get(i - 1).getWord().trim().equals("e.g.") || list.get(i - 1).getWord().trim().equals("cf.")) {
-                i++;
-                continue;
-            }
-            /*
-             * 否则将citation拼到前一个词上（citation_word），并删除该citation标记
-             */
-            list.get(i - 1).setType(item.getType() == WordItem.WordType.G_REF ? WordItem.WordType.Word_G_Ref : WordItem.WordType.WordRef);
-            list.get(i - 1).setRefs(item.getRefs());
-            list.remove(i);
-            i--;
-        }
-    }
+//    /**
+//     * 使用分词信息替换非句法成分
+//     *
+//     * @param list
+//     */
+//    public void replaceNonSyntactic2(List<WordItem> list) {
+//        if (list.stream().filter((v) -> v.getType() == WordItem.WordType.Ref || v.getType() == WordItem.WordType.G_REF).count() == 0) {
+//            return;
+//        }
+//        //词性标记
+//        WordSegment.wordSegment(list);
+//        //根据<citation>前面一个词的postag来判断这个引文标记在句子中是否有作用
+//        int i = 0;
+//        while (i < list.size()) {
+//            WordItem item = list.get(i);
+//            if (item.getRef().getText().matches(".+?\\(\\d{4}\\).*?")) {  //作者,(年份)格式
+//                continue;
+//            }
+//            if (list.indexOf(item) == 0) {  //第一个位置
+//                continue;
+//            }
+//            if (i > 0 && in(Words.SP, list.get(i - 1).getWord().toLowerCase())) {   //第一个位置
+//                continue;
+//            }
+//            //前面一个词是介词，词性为IN或者TO
+//            if (list.get(i - 1).getTag().equals("IN") || list.get(i - 1).getTag().equals("TO")) {
+//                i++;
+//                continue;
+//            }
+//            //前一个词是动词且是动词主动时态（是VB但是非VBN）
+//            if (list.get(i - 1).getTag().startsWith("VB") && !list.get(i - 1).getTag().equals("VBN")) {
+//                i++;
+//                continue;
+//            }
+//            //前一个词是连词如While、However（CC连词）
+//            if (list.get(i - 1).getTag().equals("CC")) {
+//                i++;
+//                continue;
+//            }
+//
+//            //前面是标点符号
+//            if (list.get(i - 1).getTag().length() == 1 && !Character.isLetter(list.get(i - 1).getTag().charAt(0))) {
+//                i++;
+//                continue;
+//            }
+//            //前面是e.g., cf.
+//            if (list.get(i - 1).getWord().trim().equals("e.g.") || list.get(i - 1).getWord().trim().equals("cf.")) {
+//                i++;
+//                continue;
+//            }
+//            /*
+//             * 否则将citation拼到前一个词上（citation_word），并删除该citation标记
+//             */
+//            list.get(i - 1).setType(item.getType() == WordItem.WordType.G_REF ? WordItem.WordType.Word_G_Ref : WordItem.WordType.WordRef);
+//            list.get(i - 1).setRefs(item.getRefs());
+//            list.remove(i);
+//            i--;
+//        }
+//    }
 
 }
 
