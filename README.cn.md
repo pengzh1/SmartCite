@@ -16,8 +16,13 @@ A semantic citation context extraction tool for academic literature. Provide cit
 4. Open the console under the folder containing the jar package and run the command ：java -jar smart_cite-1.0.0-SNAPSHOT.jar
 
 ##  **Interface Description** 
+Note: The uploaded file must be an academic paper and must conform to the supported file format
+
+The file formats supported by SCC are: XML of Plosone database, XML of TEI format, Json data conforming to GORC data format
 
 ###  Extract
+
+Function: Extract the citation context of a single paper
 
 Request method: POST
 
@@ -25,9 +30,15 @@ Request address: /extract
 
 Request parameters:
 
-Field|Description|Type|Length|IsRequired|Remarks
----|---|---|---|---|---
-file|file|MultipleFile||True|
+| method | request type | response type | parameters | reqirement | description|
+|---|---|---|---|---|---|
+|post|multipart/form-data|application/json|file|required|Pending file|
+
+Example request:
+
+```ftl
+curl --location --request POST 'http://localhost:8080/extract' --form 'file=@/E://FileStorage/File/2020-05/pdf/CO13_1p014.pdf'
+```
 
 Return parameter:
 
@@ -147,15 +158,23 @@ Return result：
 
 ###  Batch Extraction
 
+Function: Batch extract citation contexts of multiple papers
+
 Request method: POST
 
 Request address: /batchExtract
 
 Request parameters:
 
-Field|Description|Type|Length|IsRequired|Remarks
----|---|---|---|---|---
-file|file|MultipleFile||True|
+| method | request type | response type | parameters | reqirement | description|
+|---|---|---|---|---|---|
+|post|multipart/form-data|application/json|file|required|Pending zip file|
+
+Example request:
+
+```ftl
+curl --location --request POST 'http://localhost:8080/batchExtract' --form 'file=@/E:/temp/plos/computer_science/3(done).zip'
+```
 
 Return parameter:
 
@@ -229,6 +248,37 @@ Return result：
                 
 ```
 
+### /localExtract
+Function: Extract the citation context of all papers in the folder
+
+note:
+1. The folder must be on the local server
+2. The files in the folder must be in the format supported by SCC
+3. The processing results are stored in the output folder at the same level as the jar package
+4. Please do not shut down the service before processing
+
+Request method: GET
+
+Request address: /localExtract
+
+Request parameters:
+
+| method | request type | response type | parameters | reqirement | description|
+|---|---|---|---|---|---|
+|get|||path|required|Folder path containing pending files|
+
+Example request:
+
+```ftl
+curl --location --request GET 'http://localhost:8080/localExtract?path=/home/guochenrui/smart_cite/3000'
+```
+
+Return parameter:
+
+No parameters. Just issue a request, without waiting for the return parameter.
+
 ##  **Other Instructions** 
-1. Default port: 8080
+
+1. Default request port: 8080
 2. Upload file size ≤ 10M
+3. The configuration file is located in the resource folder at the same level as the jar package. You can modify the default port and other parameters according to your situation.
