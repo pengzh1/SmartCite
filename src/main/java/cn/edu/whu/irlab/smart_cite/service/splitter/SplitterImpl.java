@@ -1,12 +1,17 @@
 package cn.edu.whu.irlab.smart_cite.service.splitter;
 
+import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
 import org.jdom2.Content;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.NUMBERED;
 
 /**
  * @author gcr19
@@ -23,6 +28,7 @@ public abstract class SplitterImpl {
         String text = p.getValue();
         List<String> sentences = splitSentences(text);
         List<Element> elements = calculateCoordinate(p.getContent());
+
         return sentences2paragraph(sentences, elements);
     }
 
@@ -39,21 +45,26 @@ public abstract class SplitterImpl {
             } else {
                 //残余句子
                 String residualSentence = sentence;
+
+
                 while (residualSentence.contains(elements.get(0).getAttributeValue("localizer"))) {
+               //     System.out.println(elements.get(0).getAttributeValue("localizer"));
 
                     Element sub = elements.remove(0).detach();
+
+
 
                     int end = Integer.parseInt(sub.getAttributeValue("coordinate")) - positionCoordinate;
 
                     sentenceElement.addContent(residualSentence.substring(0, end));
-
+                  //  System.out.println(residualSentence+"  "+(end+sub.getValue().length())+"  "+residualSentence.length());
                     sub.removeAttribute("coordinate");
                     sub.removeAttribute("localizer");
                     sentenceElement.addContent(sub);
                     positionCoordinate += end + sub.getValue().length();
 
                     residualSentence = residualSentence.substring(end + sub.getValue().length());
-
+                //    System.out.println(residualSentence);
                     if (elements.isEmpty()) break;
                 }
                 sentenceElement.addContent(residualSentence);
@@ -70,28 +81,40 @@ public abstract class SplitterImpl {
      * @auther gcr19
      * @desc 计算节点位置坐标并添加用于定位的特征
      **/
-    private List<Element> calculateCoordinate(List<Content> contents) {
+    private List<Element> calculateCoordinate(List<Content> contents)  {
         List<Element> elements = new ArrayList<>();
         int coordinatePoint = 0;
+        int pdnum=0;
         String prefix = "";
         for (Content c :
                 contents) {
             String contentValue = c.getValue();
+
             if (c.getCType().equals(Content.CType.Element)) {
+
                 Element e = (Element) c;
-                e.setAttribute("localizer", prefix + contentValue);
+                if(e.getAttribute("target")==null && e.getAttribute("rid")==null) break;
+                if(pdnum==0)
+                    e.setAttribute("localizer", prefix + contentValue);
+                else
+                    e.setAttribute("localizer", contentValue);
                 e.setAttribute("coordinate", String.valueOf(coordinatePoint));
                 coordinatePoint += contentValue.length();
                 elements.add(e);
+                pdnum=1;
+
             } else {
                 coordinatePoint += contentValue.length();
+                pdnum=0;
             }
             if (contentValue.length() > 5) {
                 prefix = c.getValue().substring(contentValue.length() - 5);
             } else {
                 prefix = c.getValue();
             }
+
         }
+
         return elements;
     }
 
