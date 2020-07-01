@@ -196,6 +196,9 @@ public class PaperXmlReader {
                 xref.setContexts(contexts != null ? contexts : "");//todo 预处理无法生成这个属性
                 String refNum = element.getAttributeValue("rid");
                 if (refNum != null && !refNum.trim().equals("")) {  //指向的参考文献
+                    if(refNum.trim().substring(0,1).equals("#")){
+                        refNum=refNum.trim().substring(1);
+                    }
                     xref.setRid(refNum.trim());
                     xref.setReference(article.get().getReferences().get(xref.getRid()));
                 }
