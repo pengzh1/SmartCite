@@ -54,19 +54,22 @@ public class StatisticVisitor {
 
     @Async
     public ListenableFuture<Long[]> calculateOutput(File outputFile) {
-        Long contextNum = 0L;
-        Long sentencesNum = 0L;
+        Long icc = 0L;
+        Long ecc = 0L;
         JSONObject object = JSONObject.parseObject(ReadUtil.read2Str(outputFile));
-        JSONArray refTags = object.getJSONArray("refTags");
-        for (int i = 0; i < refTags.size(); i++) {
-            JSONObject refTag = refTags.getJSONObject(i);
-            contextNum += refTag.getJSONArray("contextList").size();
-            sentencesNum++;
-        }
         Long[] result = new Long[2];
-        result[0] = contextNum;
-        result[1] = sentencesNum;
-        log.info("c=" + contextNum + " s=" + sentencesNum);
+        if (object!=null){
+            JSONArray refTags = object.getJSONArray("refTags");
+            for (int i = 0; i < refTags.size(); i++) {
+                JSONObject refTag = refTags.getJSONObject(i);
+                icc += refTag.getJSONArray("contextList").size();
+                ecc++;
+            }
+        }
+
+        result[0] = icc;
+        result[1] = ecc;
+        log.info("ICC=" + icc + " ECC=" + ecc);
         return new AsyncResult<>(result);
     }
 

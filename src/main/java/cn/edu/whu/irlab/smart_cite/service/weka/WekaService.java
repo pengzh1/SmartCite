@@ -29,7 +29,7 @@ public class WekaService {
     private static final String MODEL_NAME = "libsvm.model";
     private static final String MODEL_PATH = System.getProperty("user.dir") + "/data/model/" + MODEL_NAME;
 
-    private LibSVM svm;
+    private static LibSVM svm;
 
     public Instances classify(String instancesPath) {
         Instances instances = loadInstances(instancesPath);
