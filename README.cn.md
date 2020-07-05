@@ -277,6 +277,48 @@ Return parameter:
 
 No parameters. Just issue a request, without waiting for the return parameter.
 
+### /count/contextNum
+Function: Count the number of ICC and ECC in the result file
+
+Request method: GET
+
+Request address: /count/contextNum
+
+Request parameters:
+
+| method | request type | response type | parameters | reqirement | description|
+|---|---|---|---|---|---|
+|get| | |outputFolder|unrequired|The path of the folder containing the result, the default is the output folder|
+
+Example request:
+
+```ftl
+curl --location --request GET 'http://localhost:8080/count/contextNum?outputFolder=E:\code\smart_cite\output\json'
+```
+
+Return parameter:
+
+code|message|data|action
+---|---|---|---
+0|Success|JsonObject|displays the received data
+100|File error, please upload the correct file|null|prompt error message
+500|server error|null|prompt error message
+
+
+Return result：
+```json
+{
+    "code": 0,
+    "msg": "extract successfully",
+    "data": {
+        "ECC": 1605695,
+        "ICC": 10215848,
+        "FileNum": 33319
+    }
+}
+```
+
+
 ##  **Other Instructions** 
 
 1. Default request port: 8080
