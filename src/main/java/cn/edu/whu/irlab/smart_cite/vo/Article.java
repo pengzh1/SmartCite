@@ -51,17 +51,17 @@ public class Article {
         this.name = name;
     }
 
+    private int index = 0;  //句子索引，temp data
+    private int sectionIndex = 0; //章节索引，temp data
+    private int paraIndex = 0;    //段落索引，temp data
+    private Sentence last = null; //上一个句子
+
     /**
      * 将句子添加到当前文章，按顺序添加
      *
      * @param s
      * @return
      */
-    private int index = 0;  //句子索引，temp data
-    private int sectionIndex = 0; //章节索引，temp data
-    private int paraIndex = 0;    //段落索引，temp data
-    private Sentence last = null; //上一个句子
-
     public void append(Sentence s) {
         if (s == null) {
             throw new IllegalArgumentException("不能添加空句子.");
@@ -75,11 +75,13 @@ public class Article {
             System.out.println("last [article]" + last.getArticle().getName() + "[sentence]" + last.getId());
             System.out.println("this [article]" + s.getArticle().getName() + "[sentence]" + s.getId());
         }//todo 这里可能有错误
+
         if (last != null && !last.getSect().equals(s.getSect())) {
             sectionIndex = 0;
         }
         s.setPIndex(++paraIndex);
         s.setSectionIndex(++sectionIndex);
+
         sentenceTreeMap.put(s.getId(), s);
         last = s;
     }
