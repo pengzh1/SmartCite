@@ -1,5 +1,6 @@
 package cn.edu.whu.irlab.smart_cite.util;
 
+import cn.edu.whu.irlab.smart_cite.vo.BertPair;
 import cn.edu.whu.irlab.smart_cite.vo.RecordVo;
 import com.csvreader.CsvWriter;
 import org.apache.commons.io.FileUtils;
@@ -51,7 +52,34 @@ public class WriteUtil {
         }
     }
 
-    public static void writeRecord2csv(String path, List<RecordVo> recordVos) {
+    public static void writeBertPair2csv(String path, List<BertPair> bertPairs) {
+        CsvWriter csvWriter = new CsvWriter(path, ',', StandardCharsets.UTF_8);
+        String[] header = {"aroundSentence", "refInformation", "isContextPair"};
+
+        try {
+            csvWriter.writeRecord(header, false);
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        try {
+            for (BertPair bertPair :
+                    bertPairs) {
+                String[] record = new String[3];
+                record[0] = bertPair.getAroundSentence();
+                record[1] = bertPair.getRefInformation();
+                record[2] = String.valueOf(bertPair.isContextPair()?1:0);
+                csvWriter.writeRecord(record, false);
+            }
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        csvWriter.close();
+    }
+
+        public static void writeRecord2csv(String path, List<RecordVo> recordVos) {
+
         CsvWriter csvWriter = new CsvWriter(path, ',', StandardCharsets.UTF_8);
         String[] header = {"article_id", "ref_rid", "ref_title", "sentence", "position", "is_similar"};
 

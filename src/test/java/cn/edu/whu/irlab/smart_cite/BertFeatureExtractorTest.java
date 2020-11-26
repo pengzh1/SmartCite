@@ -5,6 +5,7 @@ import cn.edu.whu.irlab.smart_cite.service.paperXmlReader.PaperXmlReader;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.LeiPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.PlosPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.util.ReadUtil;
+import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
 import cn.edu.whu.irlab.smart_cite.vo.Article;
 import cn.edu.whu.irlab.smart_cite.vo.BertPair;
 import org.jdom2.Element;
@@ -51,6 +52,7 @@ public class BertFeatureExtractorTest {
         Element newRoot = leiPreprocessor.parseXML(element, file);
         Article article = paperXmlReader.processLabeledFile(file, newRoot);
         List<BertPair> bertPairs = bertFeatureExtractor.extract(article);
+        WriteUtil.writeBertPair2csv("test/testOutput/31-P07-1001-paper.csv",bertPairs);
         System.out.println(bertPairs);
     }
 
