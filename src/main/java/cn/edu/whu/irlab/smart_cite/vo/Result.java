@@ -22,4 +22,6 @@ public class Result {
         this.sentence = sentence;
         this.refTag = refTag;
     }
+
+
 }

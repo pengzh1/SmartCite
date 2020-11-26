@@ -15,9 +15,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static com.leishengwei.jutils.Collections.toStr;
 
@@ -35,6 +33,36 @@ public class PaperXmlReader {
     //    private Article article;
     ThreadLocal<Article> article = new ThreadLocal<>();
 
+    /**
+     * @param file 文件
+     * @param root 根节点
+     * @return Article对象
+     * @auther gcr19
+     * @desc 将预处理后的xml文档转换为Article对象(处理标记文件)
+     **/
+    public Article processLabeledFile(File file, Element root){
+        Article article=processFile(file,root);
+
+        TreeMap<Integer, Sentence> sentenceTreeMap=article.getSentenceTreeMap();
+        for (Map.Entry<Integer, Sentence> sentenceEntry :
+                sentenceTreeMap.entrySet()) {
+            Sentence sentence=sentenceEntry.getValue();
+            List<RefTag> refTags=sentence.getRefList();
+            if (!refTags.isEmpty()){
+                for (RefTag refTag :
+                        refTags) {
+                    if (!refTag.getContexts().equals("")){
+                        String[] contexts = refTag.getContexts().split(",");
+                        for (String s :
+                                contexts) {
+                                refTag.addContext(sentenceTreeMap.get(Integer.parseInt(s)));
+                        }
+                    }
+                }
+            }
+        }
+        return article;
+    }
 
     /**
      * @param file 文件

@@ -33,7 +33,7 @@ public class Sentence implements ISentence,ToJsonAble {
      */
     private int pNum;   //段落Id
     private int level;    //1,2,3，对应section的层次级别
-    private List<WordItem> wordList = new ArrayList<>();    //词项列表，不对外开放结构，否则可能会出错
+    private List<WordItem> wordList = new ArrayList<>(); //词项列表，不对外开放结构，否则可能会出错
     private String section;    //一级章节编号
     private String subSection;  //二级章节编号
     private String subSubSection;   //三级章节编号

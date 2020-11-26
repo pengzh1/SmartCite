@@ -10,8 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.leishengwei.jutils.Strings.isNotEmpty;
-import static com.leishengwei.jutils.Strings.startCapital;
+import static com.leishengwei.jutils.Strings.*;
 
 /**
  * @author gcr19
@@ -54,6 +53,16 @@ public class RefTag implements ToJsonAble {
 
     public Article getArticle() {
         return this.getSentence().getArticle();
+    }
+
+    /**
+     *@auther gcr19
+     *@desc 向 contextList 添加引文上下文句子对象
+     *@param sentence 引文上下文句子对象
+     *@return
+     **/
+    public void addContext(Sentence sentence){
+        contextList.add(sentence);
     }
 
     /**
