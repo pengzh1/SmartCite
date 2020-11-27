@@ -83,7 +83,7 @@ public class WordSegment {
 
     private static Tree getTree(String[] words) {
         List<HasWord> rawWords = SentenceUtils.toWordList(words);
-        Tree tree = lexicalizedParser.apply(rawWords);
+        Tree tree = lexicalizedParser.apply(rawWords);//todo 速度慢
         rawWords = null;//释放内存
         return tree;
     }

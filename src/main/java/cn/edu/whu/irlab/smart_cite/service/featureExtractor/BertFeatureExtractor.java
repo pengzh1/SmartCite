@@ -26,21 +26,20 @@ public class BertFeatureExtractor {
             Sentence s = sentenceEntry.getValue();
             for (RefTag reftag :
                     s.getRefList()) {
+                //插入正例
                 for (Sentence contextSentence :
                         reftag.getContextList()) {
-                    //插入正例
                     bertPairs.add(new BertPair(contextSentence.getText(), reftag.getSentence().getText(), true));
-
-                    //todo 插入负例当前句子（前后各4句非上下文）
-                    int sentenceId = s.getId();
-                    List<String> context = new ArrayList<>(Arrays.asList(reftag.getContexts().split(",")));
-                    context.add(String.valueOf(reftag.getSentence().getId()));
-                    for (int i = sentenceId - 4; i < sentenceId + 4; i++) {
-                        if (i > 0 && !context.contains(String.valueOf(i))) {
-                            Sentence unContextSentence = sentenceTreeMap.get(i);
-                            if (unContextSentence != null){
-                                bertPairs.add(new BertPair(contextSentence.getText(), unContextSentence.getText(), false));
-                            }
+                }
+                //插入负例（前后各4句中非上下文的）
+                int sentenceId = s.getId();
+                List<String> context = new ArrayList<>(Arrays.asList(reftag.getContexts().split(",")));
+                context.add(String.valueOf(reftag.getSentence().getId()));
+                for (int i = sentenceId - 4; i < sentenceId + 4; i++) {
+                    if (i > 0 && !context.contains(String.valueOf(i))) {
+                        Sentence unContextSentence = sentenceTreeMap.get(i);
+                        if (unContextSentence != null){
+                            bertPairs.add(new BertPair(unContextSentence.getText(), reftag.getSentence().getText(), false));
                         }
                     }
                 }

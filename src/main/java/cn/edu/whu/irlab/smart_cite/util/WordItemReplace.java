@@ -51,7 +51,7 @@ public class WordItemReplace {
             WordItem item = wordList.get(i);
             if (item.getType() == WordItem.WordType.Ref) {  //R
                 int index = 0;
-                while (i < wordList.size() - 2 && wordList.get(i + 1).getWord().equals(";") && wordList.get(i + 2).getType() == WordItem.WordType.Ref) { //todo 判定条件可能不通用
+                while (i < wordList.size() - 2 && wordList.get(i + 1).getWord().equals(";") && wordList.get(i + 2).getType() == WordItem.WordType.Ref) { //todo 判定条件可能不通用，“-”分割符号如何处理？
                     if (index  ==0) {
                         RefTag ref = item.getRef();
                         item = new WordItem(WordItem.WordType.G_REF, WordItem.G_REF);
@@ -81,7 +81,7 @@ public class WordItemReplace {
         for (int i = 0; i < wordList.size(); i++) {
             WordItem item = wordList.get(i);
             if (item.getType() == WordItem.WordType.Ref || item.getType() == WordItem.WordType.G_REF) { //引文类型
-                if (item.getRef().getText().matches(".+?\\(\\d{4}\\).*?")) {  //作者,(年份)格式
+                if (item.getRef().getText().matches(".+?\\(\\d{4}\\).*?")) {  //作者,(年份)格式 todo？？Ittycheriah and Roukos, 2005没有匹配成功？？
                     continue;
                 }
                 if (i == 0) {  //第一个位置
@@ -94,7 +94,7 @@ public class WordItemReplace {
                     continue;
                 }
                 /*
-                 * 将citation拼到前一个词上（citation_word），并删除该citation标记 todo为啥要做这步
+                 * 将citation拼到前一个词上（citation_word），并删除该citation标记 todo 为啥要做这步??
                  */
                 wordList.get(i - 1).setType(item.getType() == WordItem.WordType.G_REF ? WordItem.WordType.Word_G_Ref : WordItem.WordType.WordRef);
                 wordList.get(i - 1).setRefs(item.getRefs());
