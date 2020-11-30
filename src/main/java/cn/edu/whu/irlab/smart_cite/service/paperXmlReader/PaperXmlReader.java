@@ -26,7 +26,6 @@ import static com.leishengwei.jutils.Collections.toStr;
 public class PaperXmlReader {
 
 
-
     private static final Logger logger = LoggerFactory.getLogger(PaperXmlReader.class);
 
     //    private Article article;
@@ -57,7 +56,14 @@ public class PaperXmlReader {
                         String[] contexts = refTag.getContexts().split(",");
                         for (String s :
                                 contexts) {
-                            refTag.addContext(sentenceTreeMap.get(Integer.parseInt(s)));
+                            Sentence contextSentence = null;
+                            try {
+                                contextSentence = sentenceTreeMap.get(Integer.parseInt(s));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            if (contextSentence != null)
+                                refTag.addContext(contextSentence);
                         }
                     }
                 }

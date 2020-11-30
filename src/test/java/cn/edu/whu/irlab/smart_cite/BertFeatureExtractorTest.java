@@ -18,7 +18,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author gcr19
@@ -52,8 +54,34 @@ public class BertFeatureExtractorTest {
         Element newRoot = leiPreprocessor.parseXML(element, file);
         Article article = paperXmlReader.processLabeledFile(file, newRoot);
         List<BertPair> bertPairs = bertFeatureExtractor.extract(article);
-        WriteUtil.writeBertPair2csv("test/testOutput/31-P07-1001-paper.csv",bertPairs);
+        WriteUtil.writeBertPair2csv("test/testOutput/31-P07-1001-paper.csv", bertPairs);
         System.out.println(bertPairs);
+    }
+
+    @Test
+    public void batchCollectTest() {
+
+        long start = System.currentTimeMillis();
+        File folder = new File("E:\\code\\smart_cite\\sources\\data_of_lei");
+        File[] files = folder.listFiles();
+
+        List<BertPair> bertPairs = new ArrayList<>();
+
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) continue;//todo 不能处理文件夹
+                Element element = ReadUtil.read2xml(file);
+                Element newRoot = leiPreprocessor.parseXML(element, file);
+                Article article = paperXmlReader.processLabeledFile(file, newRoot);
+                bertPairs.addAll(bertFeatureExtractor.extract(article));
+            }
+        }
+
+        WriteUtil.writeBertPair2csv("test/testOutput/bertData2.csv", bertPairs);
+
+        long end = System.currentTimeMillis();
+        System.out.println("finished! 用时：" + (end - start) + " ms");
+
     }
 
 

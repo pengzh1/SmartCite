@@ -29,7 +29,12 @@ public class BertFeatureExtractor {
                 //插入正例
                 for (Sentence contextSentence :
                         reftag.getContextList()) {
-                    bertPairs.add(new BertPair(contextSentence.getText(), reftag.getSentence().getText(), true));
+                    try {
+                        bertPairs.add(new BertPair(contextSentence.getText(), reftag.getSentence().getText(), true));
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+
                 }
                 //插入负例（前后各4句中非上下文的）
                 int sentenceId = s.getId();
