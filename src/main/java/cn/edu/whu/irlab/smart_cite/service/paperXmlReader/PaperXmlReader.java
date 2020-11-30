@@ -1,16 +1,13 @@
 package cn.edu.whu.irlab.smart_cite.service.paperXmlReader;
 
-import cn.edu.whu.irlab.smart_cite.util.ElementUtil;
-import cn.edu.whu.irlab.smart_cite.util.WordItemReplace;
-import cn.edu.whu.irlab.smart_cite.util.WordSegment;
-import cn.edu.whu.irlab.smart_cite.util.WordTokenizer;
+import cn.edu.whu.irlab.smart_cite.util.*;
 import cn.edu.whu.irlab.smart_cite.vo.*;
-import org.apache.commons.io.FilenameUtils;
 import org.jdom2.Attribute;
 import org.jdom2.Content;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
@@ -28,10 +25,15 @@ import static com.leishengwei.jutils.Collections.toStr;
 @Service
 public class PaperXmlReader {
 
+
+
     private static final Logger logger = LoggerFactory.getLogger(PaperXmlReader.class);
 
     //    private Article article;
     ThreadLocal<Article> article = new ThreadLocal<>();
+
+    @Autowired
+    private StanfordNLPUtil stanfordNLPUtil;
 
     /**
      * @param file 文件
@@ -179,7 +181,7 @@ public class PaperXmlReader {
         List<WordItem> wordItemList = new ArrayList<>();
         for (Content content :
                 e.getContent()) {
-            addWordItem(sentence, wordItemList, content);
+            addWordItem(sentence, wordItemList, content);//同时完成分词和词性标注
         }
 
 //        Iterator iterator = e.getDescendants();
@@ -196,7 +198,7 @@ public class PaperXmlReader {
         WordItemReplace.replaceNonSyntactic(wordItemList);
         //分词
         sentence.setWordList(wordItemList);
-        WordSegment.wordSegment(sentence);
+
         wordItemList.forEach(wordItem -> {
             if (wordItem.getType() != WordItem.WordType.Word) {
                 wordItem.getRef().setWordItem(wordItem);
@@ -209,8 +211,7 @@ public class PaperXmlReader {
     private void addWordItem(Sentence sentence, List<WordItem> wordList, Content content) {
         if (content.getCType().equals(Content.CType.Text)) {
             String text = content.getValue();
-            String[] arr = WordTokenizer.split(text);
-            wordList.addAll(WordItem.words(arr));
+            wordList.addAll(stanfordNLPUtil.tokenizeAndPosTags(text));
         } else if (content.getCType().equals(Content.CType.Element)) {
             Attribute c_type = content.getParentElement().getAttribute("c_type");
             if (c_type != null && !c_type.getValue().equals("r")) {

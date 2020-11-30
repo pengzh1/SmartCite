@@ -37,7 +37,7 @@ public class WordItemReplace {
             }
         }
         return wordList;
-    }//todo 右括号没有删除
+    }
 
     /**
      * 引文分组替换

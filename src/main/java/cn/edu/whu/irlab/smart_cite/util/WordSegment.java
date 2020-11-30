@@ -20,13 +20,25 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class WordSegment {
-    public static LexicalizedParser lexicalizedParser;
+    private static LexicalizedParser lexicalizedParser;
 
     static {
         lexicalizedParser = LexicalizedParser
                 .loadModel("edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz");
 //        tagger = new MaxentTagger("lib/stanford-postagger/modelsj-0-18-bidirectional-distsim.tagger".replace("/", File.separator));
 
+    }
+
+    public static List<String> posTags(String text) {
+        List<String> tags = new ArrayList<>();
+        String[] arr = WordTokenizer.split(text);
+        Tree tree = getTree(arr);
+        List<TaggedWord> list = getTaggedWords(tree);
+        for (TaggedWord taggedWord :
+                list) {
+            tags.add(taggedWord.tag());
+        }
+        return tags;
     }
 
     public static void wordSegment(Sentence sentence) {
