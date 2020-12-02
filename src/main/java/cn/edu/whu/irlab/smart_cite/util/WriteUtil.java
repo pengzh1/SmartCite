@@ -52,6 +52,15 @@ public class WriteUtil {
         }
     }
 
+    public static void writeList(String docPath, List list,boolean isAppend) {
+        File file = new File(docPath);
+        try {
+            FileUtils.writeLines(file, list, "\n",isAppend);
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
     public static void writeBertPair2csv(String path, List<BertPair> bertPairs) {
         CsvWriter csvWriter = new CsvWriter(path, ',', StandardCharsets.UTF_8);
         String[] header = {"aroundSentence", "refInformation", "isContextPair"};

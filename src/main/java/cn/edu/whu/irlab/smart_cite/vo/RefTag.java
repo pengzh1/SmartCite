@@ -80,7 +80,7 @@ public class RefTag implements ToJsonAble {
     private void collectAuthors() {
         String[] tr = WordTokenizer.split(this.text);
         //搜集作者信息
-        this.authors = Arrays.stream(tr).filter((t) -> t.length() > 0 && t.charAt(0) >= 65 && t.charAt(0) <= 90).collect(Collectors.toList());//大写字母
+        this.authors = Arrays.stream(tr).filter((t) -> t.length() > 0 && t.charAt(0) >= 65 && t.charAt(0) <= 90).collect(Collectors.toList());//大写字母 todo 规则只适应部分情况
     }
 
     /**
