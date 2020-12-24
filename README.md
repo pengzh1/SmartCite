@@ -319,6 +319,10 @@ curl --location --request GET 'http://localhost:8080/count/contextNum?outputFold
 }
 ```
 
+##  **导入Jar包到本地Maven仓库**
+mvn install:install-file -DgroupId=com.leishengwei -DartifactId=jutils -Dversion=0.0.1 -Dpackaging=jar -Dfile=E:\code\smart_cite\lib\JavaUtils.jar
+
+
 ##  **其他说明** 
 
 1. 默认请求端口：8080
