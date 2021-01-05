@@ -1,0 +1,850 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T11:28+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Dual Decomposition for Parsing with Non-Projective Head Automata</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher>Association for Computational Linguistics</publisher>
+				<availability status="unknown"><p>Copyright Association for Computational Linguistics</p>
+				</availability>
+				<date type="published" when="2010-10">October 2010. 2010</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Terry</forename><surname>Koo</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">MIT CSAIL</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<region>MA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alexander</forename><forename type="middle">M</forename><surname>Rush</surname></persName>
+							<email>srush@csail.mit.edu</email>
+							<affiliation key="aff0">
+								<orgName type="institution">MIT CSAIL</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<region>MA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Michael</forename><surname>Collins</surname></persName>
+							<email>mcollins@csail.mit.edu</email>
+							<affiliation key="aff0">
+								<orgName type="institution">MIT CSAIL</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<region>MA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Tommi</forename><surname>Jaakkola</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">MIT CSAIL</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<region>MA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">David</forename><surname>Sontag</surname></persName>
+							<email>dsontag@csail.mit.edu</email>
+							<affiliation key="aff0">
+								<orgName type="institution">MIT CSAIL</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<region>MA</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Dual Decomposition for Parsing with Non-Projective Head Automata</title>
+					</analytic>
+					<monogr>
+						<title level="m">Proceedings of the 2010 Conference on Empirical Methods in Natural Language Processing</title>
+						<meeting>the 2010 Conference on Empirical Methods in Natural Language Processing <address><addrLine>MIT, Massachusetts, USA, 9; c</addrLine></address>
+						</meeting>
+						<imprint>
+							<publisher>Association for Computational Linguistics</publisher>
+							<biblScope unit="issue">11</biblScope>
+							<biblScope unit="page" from="1288" to="1298"/>
+							<date type="published" when="2010-10">October 2010. 2010</date>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>This paper introduces algorithms for nonprojective parsing based on dual decomposition. We focus on parsing algorithms for nonprojective head automata, a generalization of head-automata models to non-projective structures. The dual decomposition algorithms are simple and efficient, relying on standard dynamic programming and minimum spanning tree algorithms. They provably solve an LP relaxation of the non-projective parsing problem. Empirically the LP relaxation is very often tight: for many languages, exact solutions are achieved on over 98% of test sentences. The accuracy of our models is higher than previous work on a broad range of datasets.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Non-projective dependency parsing is useful for many languages that exhibit non-projective syntactic structures. Unfortunately, the non-projective parsing problem is known to be NP-hard for all but the simplest models <ref type="bibr" target="#b16">(McDonald and Satta, 2007)</ref>. There has been a long history in combinatorial optimization of methods that exploit structure in complex problems, using methods such as dual decomposition or Lagrangian relaxation <ref type="bibr" target="#b12">(Lemaréchal, 2001)</ref>. Thus far, however, these methods are not widely used in NLP.</p><p>This paper introduces algorithms for nonprojective parsing based on dual decomposition. We focus on parsing algorithms for non-projective head automata, a generalization of the head-automata models of <ref type="bibr" target="#b5">Eisner (2000)</ref> and <ref type="bibr" target="#b0">Alshawi (1996)</ref> to nonprojective structures. These models include nonprojective dependency parsing models with higherorder (e.g., sibling and/or grandparent) dependency relations as a special case. Although decoding of full parse structures with non-projective head automata is intractable, we leverage the observation that key components of the decoding can be efficiently computed using combinatorial algorithms. In particular, 1. Decoding for individual head-words can be accomplished using dynamic programming.</p><p>2. Decoding for arc-factored models can be accomplished using directed minimum-weight spanning tree (MST) algorithms.</p><p>The resulting parsing algorithms have the following properties:</p><p>• They are efficient and easy to implement, relying on standard dynamic programming and MST algorithms.</p><p>• They provably solve a linear programming (LP) relaxation of the original decoding problem.</p><p>• Empirically the algorithms very often give an exact solution to the decoding problem, in which case they also provide a certificate of optimality.</p><p>In this paper we first give the definition for nonprojective head automata, and describe the parsing algorithm. The algorithm can be viewed as an instance of Lagrangian relaxation; we describe this connection, and give convergence guarantees for the method. We describe a generalization to models that include grandparent dependencies. We then introduce a perceptron-driven training algorithm that makes use of point 1 above.</p><p>We describe experiments on non-projective parsing for a number of languages, and in particular compare the dual decomposition algorithm to approaches based on general-purpose linear programming (LP) or integer linear programming (ILP) solvers <ref type="bibr" target="#b14">(Martins et al., 2009)</ref>. The accuracy of our models is higher than previous work on a broad range of datasets. The method gives exact solutions to the decoding problem, together with a certificate of optimality, on over 98% of test examples for many of the test languages, with parsing times ranging between 0.021 seconds/sentence for the most simple languages/models, to 0.295 seconds/sentence for the most complex settings. The method compares favorably to previous work using LP/ILP formulations, both in terms of efficiency, and also in terms of the percentage of exact solutions returned.</p><p>While the focus of the current paper is on nonprojective dependency parsing, the approach opens up new ways of thinking about parsing algorithms for lexicalized formalisms such as TAG <ref type="bibr" target="#b7">(Joshi and Schabes, 1997)</ref>, CCG <ref type="bibr" target="#b27">(Steedman, 2000)</ref>, and projective head automata.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Related Work</head><p>McDonald et al. <ref type="formula" target="#formula_2">(2005)</ref> describe MST-based parsing for non-projective dependency parsing models with arc-factored decompositions; <ref type="bibr" target="#b15">McDonald and Pereira (2006)</ref> make use of an approximate (hill-climbing) algorithm for parsing with more complex models. <ref type="bibr" target="#b15">McDonald and Pereira (2006)</ref> and <ref type="bibr" target="#b16">McDonald and Satta (2007)</ref> describe complexity results for nonprojective parsing, showing that parsing for a variety of models is NP-hard. <ref type="bibr" target="#b22">Riedel and Clarke (2006)</ref> describe ILP methods for the problem; <ref type="bibr" target="#b14">Martins et al. (2009)</ref> recently introduced alternative LP and ILP formulations. Our algorithm differs in that we do not use general-purpose LP or ILP solvers, instead using an MST solver in combination with dynamic programming; thus we leverage the underlying structure of the problem, thereby deriving more efficient decoding algorithms.</p><p>Both dual decomposition and Lagrangian relaxation have a long history in combinatorial optimization. Our work was originally inspired by recent work on dual decomposition for inference in graphical models <ref type="bibr" target="#b30">(Wainwright et al., 2005;</ref><ref type="bibr" target="#b8">Komodakis et al., 2007)</ref>. However, the non-projective parsing problem has a very different structure from these models, and the decomposition we use is very different in nature from those used in graphical models. Other work has made extensive use of decomposition approaches for efficiently solving LP relaxations for graphical models (e.g., <ref type="bibr" target="#b26">Sontag et al. (2008)</ref>). Methods that incorporate combinatorial solvers within loopy belief propagation (LBP) <ref type="bibr" target="#b4">(Duchi et al., 2007;</ref><ref type="bibr" target="#b24">Smith and Eisner, 2008)</ref> are also closely related to our approach. Unlike LBP, our method has strong theoretical guarantees, such as guaranteed convergence and the possibility of a certificate of optimality.</p><p>Finally, in other recent work, <ref type="bibr" target="#b23">Rush et al. (2010)</ref> describe dual decomposition approaches for other NLP problems.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Sibling Models</head><p>This section describes a particular class of models, sibling models; the next section describes a dualdecomposition algorithm for decoding these models.</p><p>Consider the dependency parsing problem for a sentence with n words. We define the index set for dependency parsing to be I = {(i, j) : i ∈ {0 . . . n}, j ∈ {1 . . . n}, i = j}. A dependency parse is a vector y = {y(i, j) : (i, j) ∈ I}, where y(i, j) = 1 if a dependency with head word i and modifier j is in the parse, 0 otherwise. We use i = 0 for the root symbol. We define Y to be the set of all well-formed non-projective dependency parses (i.e., the set of directed spanning trees rooted at node 0). Given a function f : Y → R that assigns scores to parse trees, the optimal parse is</p><formula xml:id="formula_0">y * = argmax y∈Y f (y) (1) A particularly simple definition of f (y) is f (y) = (i,j)∈I y(i, j)θ(i, j)</formula><p>where θ(i, j) is the score for dependency (i, j). Models with this form are often referred to as arc-factored models. In this case the optimal parse tree y * can be found efficiently using MST algorithms <ref type="bibr" target="#b17">(McDonald et al., 2005)</ref>. This paper describes algorithms that compute y * for more complex definitions of f (y); in this section, we focus on algorithms for models that capture interactions between sibling dependencies. To this end, we will find it convenient to define the following notation. Given a vector y, define</p><formula xml:id="formula_1">y |i = {y(i, j) : j = 1 . . . n, j = i}</formula><p>Hence y |i specifies the set of modifiers to word i; note that the vectors y |i for i = 0 . . . n form a partition of the full set of variables.</p><p>We then assume that f (y) takes the form</p><formula xml:id="formula_2">f (y) = n i=0 f i (y |i )<label>(2)</label></formula><p>Thus f (y) decomposes into a sum of terms, where each f i considers modifiers to the i'th word alone.</p><p>In the general case, finding y * = argmax y∈Y f (y) under this definition of f (y) is an NP-hard problem. However for certain definitions of f i , it is possible to efficiently compute argmax y |i ∈Z i f i (y |i ) for any value of i, typically using dynamic programming. (Here we use Z i to refer to the set of all possible values for y |i : specifically, Z 0 = {0, 1} n and for i = 0, Z i = {0, 1} n−1 .) In these cases we can efficiently compute</p><formula xml:id="formula_3">z * = argmax z∈Z f (z) = argmax z∈Z i f i (z |i )<label>(3)</label></formula><p>where Z = {z : z |i ∈ Z i for i = 0 . . . n} by simply computing z * |i = argmax z |i ∈Z i f i (z |i ) for i = 0 . . . n. Eq. 3 can be considered to be an approximation to Eq. 1, where we have replaced Y with Z. We will make direct use of this approximation in the dual decomposition parsing algorithm. Note that Y ⊆ Z, and in all but trivial cases, Y is a strict subset of Z. For example, a structure z ∈ Z could have z(i, j) = z(j, i) = 1 for some (i, j); it could contain longer cycles; or it could contain words that do not modify exactly one head. Nevertheless, with suitably powerful functions f i -for example functions based on discriminative models-z * may be a good approximation to y * . Later we will see that dual decomposition can effectively use MST inference to rule out ill-formed structures.</p><p>We now give the main assumption underlying sibling models:</p><p>Assumption 1 (Sibling Decompositions) A model f (y) satisfies the sibling-decomposition assumption if: 1) f (y) = n i=0 f i (y |i ) for some set of functions f 0 . . . f n . 2) For any i ∈ {0 . . . n}, for any value of the variables u(i, j) ∈ R for j = 1 . . . n, it is possible to compute</p><formula xml:id="formula_4">argmax y |i ∈Z i   f i (y |i ) − j u(i, j)y(i, j)   in polynomial time.</formula><p>The second condition includes additional terms involving u(i, j) variables that modify the scores of individual dependencies. These terms are benign for most definitions of f i , in that they do not alter decoding complexity. They will be of direct use in the dual decomposition parsing algorithm.</p><p>Example 1: Bigram Sibling Models. Recall that y |i is a binary vector specifying which words are modifiers to the head-word i. Define l 1 . . . l p to be the sequence of left modifiers to word i under y |i , and r 1 . . . r q to be the set of right modifiers (e.g., consider the case where n = 5, i = 3, and we have y(3, 1) = y(3, 5) = 0, and y(3, 2) = y(3, 4) = 1: in this case p = 1, l 1 = 2, and q = 1, r 1 = 4). In bigram sibling models, we have</p><formula xml:id="formula_5">f i (y |i ) = p+1 k=1 g L (i, l k−1 , l k ) + q+1 k=1 g R (i, r k−1 , r k )</formula><p>where l 0 = r 0 = START is the initial state, and l p+1 = r q+1 = END is the end state. The functions g L and g R assign scores to bigram dependencies to the left and right of the head. Under this model cal-</p><formula xml:id="formula_6">culating argmax y |i ∈Z i f i (y |i ) − j u(i, j)y(i, j)</formula><p>takes O(n 2 ) time using dynamic programming, hence the model satisfies Assumption 1.</p><p>Example 2: Head Automata Head-automata models constitute a second important model type that satisfy the sibling-decomposition assumption (bigram sibling models are a special case of head automata). These models make use of functions g R (i, s, s , r) where s ∈ S, s ∈ S are variables in a set of possible states S, and r is an index of a word in the sentence such that i &lt; r ≤ n. The function g R returns a cost for taking word r as the next dependency, and transitioning from state s to s . A similar function g L is defined for left modifiers. We define</p><formula xml:id="formula_7">f i (y |i , s 0 . . . s q , t 0 . . . t p ) = q k=1 g R (i, s k−1 , s k , r k ) + p k=1 g L (i, t k−1 , t k , l l )</formula><p>to be the joint score for dependencies y |i , and left and right state sequences s 0 . . . s q and t 0 . . . t p . We specify that s 0 = t 0 = START and s q = t p = END. In this case we define</p><formula xml:id="formula_8">f i (y |i ) = max s 0 ...sq,t 0 ...tp f i (y |i , s 0 . . . s q , t 0 . . . t p )</formula><p>and it follows that argmax y |i ∈Z i f i (y |i ) can be computed in O(n|S| 2 ) time using a variant of the Viterbi algorithm, hence the model satisfies the siblingdecomposition assumption.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">The Parsing Algorithm</head><p>We now describe the dual decomposition parsing algorithm for models that satisfy Assumption 1. Consider the following generalization of the decoding</p><formula xml:id="formula_9">Set u (1) (i, j) ← 0 for all (i, j) ∈ I for k = 1 to K do y (k) ← argmax y∈Y (i,j)∈I γ(i, j) + u (k) (i, j) y(i, j) for i ∈ {0 . . . n}, z (k) |i ← argmax z |i ∈Z i (fi(z |i ) − j u (k) (i, j)z(i, j)) if y (k) (i, j) = z (k) (i, j) for all (i, j) ∈ I then return (y (k) , z (k) ) for all (i, j) ∈ I, u (k+1) (i, j) ← u (k) (i, j)+α k (z (k) (i, j)−y (k) (i, j)) return (y (K) , z (K) )</formula><p>Figure 1: The parsing algorithm for sibling decomposable models. α k ≥ 0 for k = 1 . . . K are step sizes, see Appendix A for details.</p><p>problem from Eq. 1, where</p><formula xml:id="formula_10">f (y) = i f i (y |i ), h(y) = (i,j)∈I γ(i, j)y(i, j), and γ(i, j) ∈ R for all (i, j): 1 argmax z∈Z,y∈Y f (z) + h(y) (4) such that z(i, j) = y(i, j) for all (i, j) ∈ I (5)</formula><p>Although the maximization w.r.t. z is taken over the set Z, the constraints in Eq. 5 ensure that z = y for some y ∈ Y, and hence that z ∈ Y. Without the z(i, j) = y(i, j) constraints, the objective would decompose into the separate maximizations z * = argmax z∈Z f (z), and y * = argmax y∈Y h(y), which can be easily solved using dynamic programming and MST, respectively. Thus, it is these constraints that complicate the optimization. Our approach gets around this difficulty by introducing new variables, u(i, j), that serve to enforce agreement between the y(i, j) and z(i, j) variables. In the next section we will show that these u(i, j) variables are actually Lagrange multipliers for the z(i, j) = y(i, j) constraints.</p><p>Our parsing algorithm is shown in <ref type="figure">Figure 1</ref>. At each iteration k, the algorithm finds y (k) ∈ Y using an MST algorithm, and z (k) ∈ Z through separate decoding of the (n + 1) sibling models. The</p><formula xml:id="formula_11">u (k) variables are updated if y (k) (i, j) = z (k) (i, j)</formula><p>for some (i, j); these updates modify the objective functions for the two decoding steps, and intuitively encourage the y (k) and z (k) variables to be equal.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Lagrangian Relaxation</head><p>Recall that the main difficulty in solving Eq. 4 was the z = y constraints. We deal with these constraints using Lagrangian relaxation <ref type="bibr" target="#b12">(Lemaréchal, 2001)</ref>. We first introduce Lagrange multipliers u = {u(i, j) : (i, j) ∈ I}, and define the Lagrangian</p><formula xml:id="formula_12">L(u, y, z) = (6) f (z) + h(y) + (i,j)∈I u(i, j) y(i, j) − z(i, j)</formula><p>If L * is the optimal value of Eq. 4 subject to the constraints in Eq. 5, then for any value of u,</p><formula xml:id="formula_13">L * = max z∈Z,y∈Y,y=z L(u, y, z)<label>(7)</label></formula><p>This follows because if y = z, the right term in Eq. 6 is zero for any value of u. The dual objective L(u) is obtained by omitting the y = z constraint:</p><formula xml:id="formula_14">L(u) = max z∈Z,y∈Y L(u, y, z) = max z∈Z f (z) − i,j u(i, j)z(i, j) + max y∈Y h(y) + i,j u(i, j)y(i, j) .</formula><p>Since L(u) maximizes over a larger space (y may not equal z), we have that L * ≤ L(u) (compare this to Eq. 7). The dual problem, which our algorithm optimizes, is to obtain the tightest such upper bound,</p><formula xml:id="formula_15">(Dual problem) min u∈R |I| L(u).<label>(8)</label></formula><p>The dual objective L(u) is convex, but not differentiable. However, we can use a subgradient method to derive an algorithm that is similar to gradient descent, and which minimizes</p><formula xml:id="formula_16">L(u). A subgradient of a convex function L(u) at u is a vector d u such that for all v ∈ R |I| , L(v) ≥ L(u) + d u · (v − u). By standard results, d u (k) = y (k) − z (k) is a subgradient for L(u) at u = u (k) , where z (k) = argmax z∈Z f (z) − i,j u (k) (i, j)z(i, j) and y (k) = argmax y∈Y h(y) + i,j u (k) (i, j)y(i, j)</formula><p>. Subgradient optimization methods are iterative algorithms with updates that are similar to gradient descent:</p><formula xml:id="formula_17">u (k+1) = u (k) − α k d u (k) = u (k) − α k (y (k) − z (k) ),</formula><p>where α k is a step size. It is easily verified that the algorithm in <ref type="figure">Figure 1</ref> uses precisely these updates.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Formal Guarantees</head><p>With an appropriate choice of the step sizes α k , the subgradient method can be shown to solve the dual problem, i.e.</p><formula xml:id="formula_18">lim k→∞ L(u (k) ) = min u L(u).</formula><p>See <ref type="bibr" target="#b10">Korte and Vygen (2008)</ref>, page 120, for details. As mentioned before, the dual provides an upper bound on the optimum of the primal problem (Eq. 4),</p><formula xml:id="formula_19">max z∈Z,y∈Y,y=z f (z) + h(y) ≤ min u∈R |I| L(u). (9)</formula><p>However, we do not necessarily have strong duality-i.e., equality in the above equationbecause the sets Z and Y are discrete sets. That said, for some functions h(y) and f (z) strong duality does hold, as stated in the following:</p><formula xml:id="formula_20">Theorem 1 If for some k ∈ {1 . . . K} in the al- gorithm in Figure 1, y (k) (i, j) = z (k) (i, j) for all (i, j) ∈ I, then (y (k) , z (k)</formula><p>) is a solution to the maximization problem in Eq. 4.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Proof.</head><p>We have that</p><formula xml:id="formula_21">f (z (k) ) + h(y (k) ) = L(u (k) , z (k) , y (k) ) = L(u (k) )</formula><p>, where the last equality is because y (k) , z (k) are defined as the respective argmax's. Thus, the inequality in Eq. 9 is tight, and (y (k) , z (k) ) and u (k) are primal and dual optimal.</p><p>Although the algorithm is not guaranteed to satisfy y (k) = z (k) for some k, by Theorem 1 if it does reach such a state, then we have the guarantee of an exact solution to Eq. 4, with the dual solution u providing a certificate of optimality. We show in the experiments that this occurs very frequently, in spite of the parsing problem being NP-hard.</p><p>It can be shown that Eq. 8 is the dual of an LP relaxation of the original problem. When the conditions of Theorem 1 are satisfied, it means that the LP relaxation is tight for this instance. For brevity we omit the details, except to note that when the LP relaxation is not tight, the optimal primal solution to the LP relaxation could be recovered by averaging methods <ref type="bibr" target="#b19">(Nedić and Ozdaglar, 2009</ref>).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Grandparent Dependency Models</head><p>In this section we extend the approach to consider grandparent relations. In grandparent models each parse tree y is represented as a vector</p><formula xml:id="formula_22">y = {y(i, j) : (i, j) ∈ I} ∪ {y ↑ (i, j) : (i, j) ∈ I}</formula><p>where we have added a second set of duplicate variables, y ↑ (i, j) for all (i, j) ∈ I. The set of all valid parse trees is then defined as Y = {y : y(i, j) variables form a directed tree,</p><formula xml:id="formula_23">y ↑ (i, j) = y(i, j) for all (i, j) ∈ I}</formula><p>We again partition the variables into n + 1 subsets, y |0 . . . y |n , by (re)defining</p><formula xml:id="formula_24">y |i = {y(i, j) : j = 1 . . . n, j = i} ∪{y ↑ (k, i) : k = 0 . . . n, k = i}</formula><p>So as before y |i contains variables y(i, j) which indicate which words modify the i'th word. In addition, y |i includes y ↑ (k, i) variables that indicate the word that word i itself modifies. The set of all possible values of y |i is now</p><formula xml:id="formula_25">Z i = {y |i : y(i, j) ∈ {0, 1} for j = 1 . . . n, j = i; y ↑ (k, i) ∈ {0, 1} for k = 0 . . . n, k = i; k y ↑ (k, i) = 1}</formula><p>Hence the y(i, j) variables can take any values, but only one of the y ↑ (k, i) variables can be equal to 1 (as only one word can be a parent of word i). As before, we define Z = {y : y |i ∈ Z i for i = 0 . . . n}. We introduce the following assumption: Assumption 2 (GS Decompositions) A model f (y) satisfies the grandparent/siblingdecomposition (GSD) assumption if: 1) f (z) = n i=0 f i (z |i ) for some set of functions f 0 . . . f n . 2) For any i ∈ {0 . . . n}, for any value of the variables u(i, j) ∈ R for j = 1 . . . n, and v(k, i) ∈ R for k = 0 . . . n, it is possible to compute</p><formula xml:id="formula_26">argmax z |i ∈Z i (f i (z |i )− j u(i, j)z(i, j)− k v(k, i)z ↑ (k, i)) in polynomial time.</formula><p>Again, it follows that we can approxi-</p><formula xml:id="formula_27">mate y * = argmax y∈Y n i=0 f i (y |i ) by z * = argmax z∈Z n i=0 f i (z |i ), by defining z * |i = argmax z |i ∈Z i f i (z |i ) for i = 0 . . . n.</formula><p>The resulting vector z * may be deficient in two respects. First, the variables z * (i, j) may not form a wellformed directed spanning tree. Second, we may have z * ↑ (i, j) = z * (i, j) for some values of (i, j).</p><p>Example 3: Grandparent/Sibling Models An important class of models that satisfy Assumption 2 are defined as follows. Again, for a vector y |i define l 1 . . . l p to be the sequence of left modifiers to word i under y |i , and r 1 . . . r q to be the set of right modifiers. Define k * to the value for k such that y ↑ (k, i) = 1. Then the model is defined as follows:</p><formula xml:id="formula_28">f i (y |i ) = p+1 j=1 g L (i, k * , l j−1 , l j )+ q+1 j=1 g R (i, k * , r j−1 , r j )</formula><p>This is very similar to the bigram-sibling model, but with the modification that the g L and g R functions depend in addition on the value for k * . This allows these functions to model grandparent dependencies such as (k * , i, l j ) and sibling dependencies such as (i, l j−1 , l j ). Finding z * |i under the definition can be accomplished in O(n 3 ) time, by decoding the model using dynamic programming separately for each of the O(n) possible values of k * , and picking the value for k * that gives the maximum value under these decodings.</p><p>A dual-decomposition algorithm for models that satisfy the GSD assumption is shown in <ref type="figure">Figure 2</ref>. The algorithm can be justified as an instance of Lagrangian relaxation applied to the problem argmax z∈Z,y∈Y</p><formula xml:id="formula_29">f (z) + h(y)<label>(10)</label></formula><p>with constraints</p><formula xml:id="formula_30">z(i, j) = y(i, j) for all (i, j) ∈ I (11) z ↑ (i, j) = y(i, j) for all (i, j) ∈ I<label>(12)</label></formula><p>The algorithm employs two sets of Lagrange multipliers, u(i, j) and v(i, j), corresponding to constraints in Eqs. 11 and 12. As in Theorem 1, if at any point in the algorithm</p><formula xml:id="formula_31">z (k) = y (k) , then (z (k) , y (k) )</formula><p>is an exact solution to the problem in Eq. 10.</p><formula xml:id="formula_32">Set u (1) (i, j) ← 0, v (1) (i, j) ← 0 for all (i, j) ∈ I for k = 1 to K do y (k) ← argmax y∈Y (i,j)∈I y(i, j)θ(i, j)</formula><p>where</p><formula xml:id="formula_33">θ(i, j) = γ(i, j) + u (k) (i, j) + v (k) (i, j). for i ∈ {0 . . . n}, z (k) |i ← argmax z |i ∈Z i (fi(z |i ) − j u (k) (i, j)z(i, j) − j v (k) (j, i)z ↑ (j, i)) if y (k) (i, j) = z (k) (i, j) = z (k) ↑ (i, j) for all (i, j) ∈ I then return (y (k) , z (k) ) for all (i, j) ∈ I, u (k+1) (i, j) ← u (k) (i, j)+α k (z (k) (i, j)−y (k) (i, j)) v (k+1) (i, j) ← v (k) (i, j)+α k (z (k) ↑ (i, j)−y (k) (i, j)) return (y (K) , z (K) )</formula><p>Figure 2: The parsing algorithm for grandparent/siblingdecomposable models.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">The Training Algorithm</head><p>In our experiments we make use of discriminative linear models, where for an input sentence x, the score for a parse y is f (y) = w · φ(x, y) where w ∈ R d is a parameter vector, and φ(x, y) ∈ R d is a feature-vector representing parse tree y in conjunction with sentence x. We will assume that the features decompose in the same way as the siblingdecomposable or grandparent/sibling-decomposable models, that is φ(x, y) = n i=0 φ(x, y |i ) for some feature vector definition φ(x, y |i ). In the bigram sibling models in our experiments, we assume that</p><formula xml:id="formula_34">φ(x, y |i ) = p+1 k=1 φL(x, i, l k−1 , l k ) + q+1 k=1 φR(x, i, r k−1 , r k )</formula><p>where as before l 1 . . . l p and r 1 . . . r q are left and right modifiers under y |i , and where φ L and φ R are feature vector definitions. In the grandparent models in our experiments, we use a similar definition with feature vectors φ L (x, i, k * , l k−1 , l k ) and φ R (x, i, k * , r k−1 , r k ), where k * is the parent for word i under y |i .</p><p>We train the model using the averaged perceptron for structured problems <ref type="bibr" target="#b3">(Collins, 2002)</ref>. Given the i'th example in the training set, (x (i) , y (i) ), the perceptron updates are as follows:</p><formula xml:id="formula_35">• z * = argmax y∈Z w · φ(x (i) , y) • If z * = y (i) , w = w +φ(x (i) , y (i) )−φ(x (i) , z * )</formula><p>The first step involves inference over the set Z, rather than Y as would be standard in the perceptron. Thus, decoding during training can be achieved by dynamic programming over head automata alone, which is very efficient.</p><p>Our training approach is closely related to local training methods <ref type="bibr" target="#b21">(Punyakanok et al., 2005)</ref>. We have found this method to be effective, very likely because Z is a superset of Y. Our training algorithm is also related to recent work on training using outer bounds (see, e.g., <ref type="bibr" target="#b29">(Taskar et al., 2003;</ref><ref type="bibr" target="#b6">Finley and Joachims, 2008;</ref><ref type="bibr" target="#b11">Kulesza and Pereira, 2008;</ref><ref type="bibr" target="#b14">Martins et al., 2009)</ref>). Note, however, that the LP relaxation optimized by dual decomposition is significantly tighter than Z. Thus, an alternative approach would be to use the dual decomposition algorithm for inference during training.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7">Experiments</head><p>We report results on a number of data sets. For comparison to <ref type="bibr" target="#b14">Martins et al. (2009)</ref>, we perform experiments for Danish, Dutch, Portuguese, Slovene, Swedish and Turkish data from the CoNLL-X shared task <ref type="bibr" target="#b1">(Buchholz and Marsi, 2006)</ref>, and English data from the CoNLL-2008 shared task <ref type="bibr" target="#b28">(Surdeanu et al., 2008)</ref>. We use the official training/test splits for these data sets, and the same evaluation methodology as <ref type="bibr" target="#b14">Martins et al. (2009)</ref>. For comparison to <ref type="bibr" target="#b24">Smith and Eisner (2008)</ref>, we also report results on Danish and Dutch using their alternate training/test split. Finally, we report results on the English WSJ treebank, and the Prague treebank. We use feature sets that are very similar to those described in <ref type="bibr" target="#b2">Carreras (2007)</ref>. We use marginalbased pruning, using marginals calculated from an arc-factored spanning tree model using the matrixtree theorem <ref type="bibr" target="#b16">(McDonald and Satta, 2007;</ref><ref type="bibr" target="#b25">Smith and Smith, 2007;</ref><ref type="bibr" target="#b9">Koo et al., 2007)</ref>.</p><p>In all of our experiments we set the value K, the maximum number of iterations of dual decomposition in <ref type="figure">Figures 1 and 2</ref>, to be 5,000. If the algorithm does not terminate-i.e., it does not return (y (k) , z (k) ) within 5,000 iterations-we simply take the parse y (k) with the maximum value of f (y (k) ) as the output from the algorithm. At first sight 5,000 might appear to be a large number, but decoding is still fast-see Sections 7.3 and 7.4 for discussion. 2 2 Note also that the feature vectors φ and inner products w ·φ</p><p>The strategy for choosing step sizes α k is described in Appendix A, along with other details.</p><p>We first discuss performance in terms of accuracy, success in recovering an exact solution, and parsing speed. We then describe additional experiments examining various aspects of the algorithm. <ref type="table" target="#tab_1">Table 1</ref> shows results for previous work on the various data sets, and results for an arc-factored model with pure MST decoding with our features. (We use the acronym UAS (unlabeled attachment score) for dependency accuracy.) We also show results for the bigram-sibling and grandparent/sibling (G+S) models under dual decomposition. Both the bigramsibling and G+S models show large improvements over the arc-factored approach; they also compare favorably to previous work-for example the G+S model gives better results than all results reported in the CoNLL-X shared task, on all languages. Note that we use different feature sets from both <ref type="bibr" target="#b14">Martins et al. (2009)</ref> and <ref type="bibr" target="#b24">Smith and Eisner (2008)</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.1">Accuracy</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.2">Success in Recovering Exact Solutions</head><p>Next, we consider how often our algorithms return an exact solution to the original optimization problem, with a certificate-i.e., how often the algorithms in <ref type="figure">Figures 1 and 2</ref> terminate with y (k) = z (k) for some value of k &lt; 5000 (and are thus optimal, by Theorem 1). The CertS and CertG columns in <ref type="table" target="#tab_1">Table 1</ref> give the results for the sibling and G+S models respectively. For all but one setting 3 over 95% of the test sentences are decoded exactly, with 99% exactness in many cases.</p><p>For comparison, we also ran both the singlecommodity flow and multiple-commodity flow LP relaxations of <ref type="bibr" target="#b14">Martins et al. (2009)</ref> with our models and features. We measure how often these relaxations terminate with an exact solution. The results in <ref type="table">Table 2</ref> show that our method gives exact solutions more often than both of these relaxations. <ref type="bibr">4</ref> In computing the accuracy figures for <ref type="bibr">Martins et al.</ref> only need to be computed once, thus saving computation.  <ref type="table" target="#tab_1">Table 1</ref>: A comparison of non-projective automaton-based parsers with results from previous work. MST: Our firstorder baseline. Sib/G+S: Non-projective head automata with sibling or grandparent/sibling interactions, decoded via dual decomposition. Ma09: The best UAS of the LP/ILP-based parsers introduced in <ref type="bibr" target="#b14">Martins et al. (2009)</ref>. Sm08:</p><p>The best UAS of any LBP-based parser in <ref type="bibr" target="#b24">Smith and Eisner (2008)</ref>. Mc06: The best UAS reported by <ref type="bibr" target="#b15">McDonald and Pereira (2006)</ref>. Best: For the CoNLL-X languages only, the best UAS for any parser in the original shared task <ref type="bibr" target="#b1">(Buchholz and Marsi, 2006)</ref> or in any column of <ref type="bibr" target="#b14">Martins et al. (2009,</ref>  (2009), we project fractional solutions to a wellformed spanning tree, as described in that paper. Finally, to better compare the tightness of our LP relaxation to that of earlier work, we consider randomly-generated instances. <ref type="table">Table 2</ref> gives results for our model and the LP relaxations of <ref type="bibr" target="#b14">Martins et al. (2009)</ref> with randomly generated scores on automata transitions. We again recover exact solutions more often than the <ref type="bibr">Martins et al. relaxations</ref>. Note that with random parameters the percentage of exact solutions is significantly lower, suggesting that the exactness of decoding of the trained models is a special case. We speculate that this is due to the high performance of approximate decoding with Z in place of Y under the trained models for f i ; the training algorithm described in section 6 may have the tendency to make the LP relaxation tight. <ref type="table" target="#tab_1">Table 1</ref>, columns TimeS and TimeG, shows decoding times for the dual decomposition algorithms. <ref type="table">Table 2</ref> gives speed comparisons to <ref type="bibr" target="#b14">Martins et al. (2009)</ref>. Our method gives significant speed-ups over the <ref type="bibr" target="#b14">Martins et al. (2009)</ref> method, presumably because it leverages the underlying structure of the problem, rather than using a generic solver.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.3">Speed</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.4">Lazy Decoding</head><p>Here we describe an important optimization in the dual decomposition algorithms. Consider the algorithm in <ref type="figure">Figure 1</ref>. At each iteration we must find   The last column is the percentage of integral solutions on a random problem of length 10 words. The (I)LP experiments were carried out using Gurobi, a high-performance commercial-grade solver.</p><formula xml:id="formula_36">z (k) |i = argmax z |i ∈Z i (f i (z |i ) − j u (k) (i, j)z(i, j))</formula><p>for i = 0 . . . n. However, if for some i,</p><formula xml:id="formula_37">u (k) (i, j) = u (k−1) (i, j) for all j, then z (k) |i = z (k−1) |i</formula><p>. In lazy decoding we immediately set z</p><formula xml:id="formula_38">(k) |i = z (k−1) |i if u (k) (i, j) = u (k−1) (i, j)</formula><p>for all j; this check takes O(n) time, and saves us from decoding with the i'th automaton. In practice, the updates to u are very sparse, and this condition occurs very often in practice. <ref type="figure" target="#fig_0">Figure 3</ref> demonstrates the utility of this method for both sibling automata and G+S automata.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.5">Early Stopping</head><p>We also ran experiments varying the value of Kthe maximum number of iterations-in the dual decomposition algorithms. As before, if we do not find y (k) = z (k) for some value of k ≤ K, we choose the y (k) with optimal value for f (y (k) ) as the final solution. <ref type="figure">Figure 4</ref> shows three graphs: 1) the accuracy of the parser on PTB validation data versus the value for K; 2) the percentage of examples where  returned is the same as the solution for the algorithm with K = 5000 (our original setting). It can be seen for K as small as 250 we get very similar accuracy to K = 5000 (see <ref type="table">Table 2</ref>). In fact, for this setting the algorithm returns the same solution as for K = 5000 on 99.59% of the examples. However only 89.29% of these solutions are produced with a certificate of optimality (y (k) = z (k) ).</p><formula xml:id="formula_39">y (k) = z (k) at</formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.6">How Good is the Approximation z * ?</head><p>We ran experiments measuring the quality of z * = argmax z∈Z f (z), where f (z) is given by the perceptron-trained bigram-sibling model. Because z * may not be a well-formed tree with n dependencies, we report precision and recall rather than conventional dependency accuracy. Results on the PTB validation set were 91.11%/88.95% precision/recall, which is accurate considering the unconstrained nature of the predictions. Thus the z * approximation is clearly a good one; we suspect that this is one reason for the good convergence results for the method.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.7">Importance of Non-Projective Decoding</head><p>It is simple to adapt the dual-decomposition algorithms in figures 1 and 2 to give projective dependency structures: the set Y is redefined to be the set of all projective structures, with the arg max over Y being calculated using a projective first-order parser <ref type="bibr" target="#b5">(Eisner, 2000)</ref>. <ref type="table" target="#tab_5">Table 3</ref> shows results for projective and non-projective parsing using the dual decomposition approach. For Czech data, where nonprojective structures are common, non-projective decoding has clear benefits. In contrast, there is little difference in accuracy between projective and nonprojective decoding on English.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8">Conclusions</head><p>We have described dual decomposition algorithms for non-projective parsing, which leverage existing dynamic programming and MST algorithms. There are a number of possible areas for future work. As described in section 7.7, the algorithms can be easily modified to consider projective structures by replacing Y with the set of projective trees, and then using first-order dependency parsing algorithms in place of MST decoding. This method could be used to derive parsing algorithms that include higher-order features, as an alternative to specialized dynamic programming algorithms. <ref type="bibr" target="#b5">Eisner (2000)</ref> describes extensions of head automata to include word senses; we have not discussed this issue in the current paper, but it is simple to develop dual decomposition algorithms for this case, using similar methods to those used for the grandparent models. The general approach should be applicable to other lexicalized syntactic formalisms, and potentially also to decoding in syntax-driven translation. In addition, our dual decomposition approach is well-suited to parallelization. For example, each of the head-automata could be optimized independently in a multi-core or GPU architecture. Finally, our approach could be used with other structured learning algorithms, e.g. <ref type="bibr" target="#b18">Meshi et al. (2010)</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A Implementation Details</head><p>This appendix describes details of the algorithm, specifically choice of the step sizes α k , and use of the γ(i, j) parameters.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.1 Choice of Step Sizes</head><p>We have found the following method to be effective. First, define δ = f (z (1) ) − f (y (1) ), where (z (1) , y (1) ) is the output of the algorithm on the first iteration (note that we always have δ ≥ 0 since f (z (1) ) = L(u (1) )). Then define α k = δ/(1 + η k ), where η k is the number of times that L(u (k ) ) &gt; L(u (k −1) ) for k ≤ k. Hence the learning rate drops at a rate of 1/(1 + t), where t is the number of times that the dual increases from one iteration to the next.</p><p>A.2 Use of the γ(i, j) Parameters</p><p>The parsing algorithms both consider a generalized problem that includes γ(i, j) parameters. We now describe how these can be useful. Recall that the optimization problem is to solve argmax z∈Z,y∈Y f (z) + h(y), subject to a set of agreement constraints. In our models, f (z) can be written as f (z) + i,j α(i, j)z(i, j) where f (z) includes only terms depending on higherorder (non arc-factored features), and α(i, j) are weights that consider the dependency between i and j alone. For any value of 0 ≤ β ≤ 1, the problem argmax z∈Z,y∈Y f 2 (z) + h 2 (y) is equivalent to the original problem, if f 2 (z) = f (z) + (1 − β) i,j α(i, j)z(i, j) and h 2 (y) = β i,j α(i, j)y(i, j). We have simply shifted the α(i, j) weights from one model to the other. While the optimization problem remains the same, the algorithms in <ref type="figure">Figure 1</ref> and 2 will converge at different rates depending on the value for β. In our experiments we set β = 0.001, which puts almost all the weight in the head-automata models, but allows weights on spanning tree edges to break ties in MST inference in a sensible way. We suspect this is important in early iterations of the algorithm, when many values for u(i, j) or v(i, j) will be zero, and where with β = 0 many spanning tree solutions y (k) would be essentially random, leading to very noisy updates to the u(i, j) and v(i, j) values. We have not tested other values for β.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: The average percentage of head automata that must be recomputed on each iteration of dual decomposition on the PTB validation set.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head></head><label></label><figDesc>2: A comparison of dual decomposition with lin- ear programs described by Martins et al. (2009). LP(S): Linear Program relaxation based on single-commodity flow. LP(M): Linear Program relaxation based on multi-commodity flow. ILP: Exact Integer Linear Pro- gram. DD-5000/DD-250: Dual decomposition with non- projective head automata, with K = 5000/250. Upper results are for the sibling model, lower results are G+S. Columns give scores for UAS accuracy, percentage of so- lutions which are integral, and solution speed in seconds per sentence. These results are for Section 22 of the PTB.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1" validated="false"><head>Table 1 )</head><label>1</label><figDesc>G+S. TrainS/TrainG: Seconds/sentence during training, for Sib/G+S. For consistency of timing, test decoding was carried out on identical machines with zero additional load; however, training was conducted on machines with varying hardware and load. We ran two tests on the CoNLL-08 corpus. Eng 1 : UAS when testing on the CoNLL-08 validation set, following Martins et al. (2009). Eng 2 : UAS when testing on the CoNLL-08 test set.</figDesc><table>; note that the latter includes McDonald 
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3" validated="false"><head>Table</head><label></label><figDesc></figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4" validated="false"><head></head><label></label><figDesc>some point during the algorithm, hence the algorithm returns a certificate of optimal- ity; 3) the percentage of examples where the solutionFigure 4: The behavior of the dual-decomposition parser with sibling automata as the value of K is varied.</figDesc><table>50 
+
+60 
+
+70 
+
+80 
+
+90 
+
+100 
+
+0 
+200 
+400 
+600 
+800 
+1000 
+
+Percentage 
+
+Maximum Number of Dual Decomposition Iterations 
+
+% validation UAS 
+% certificates 
+% match K=5000 
+
+Sib 
+P-Sib 
+G+S 
+P-G+S 
+PTB 
+92.19 92.34 
+92.71 
+92.70 
+PDT 
+86.41 85.67 
+87.40 
+86.43 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5" validated="false"><head>Table 3 :</head><label>3</label><figDesc>UAS of projective and non-projective decoding for the English (PTB) and Czech (PDT) validation sets. Sib/G+S: as in Table 1. P-Sib/P-G+S: Projective versions of Sib/G+S, where the MST component has been re- placed with the Eisner (2000) first-order projective parser.</figDesc><table></table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1">This is equivalent to Eq. 1 when γ(i, j) = 0 for all (i, j). In some cases, however, it is convenient to have a model with non-zero values for the γ variables; see the Appendix. Note that this definition of h(y) allows argmax y∈Y h(y) to be calculated efficiently, using MST inference.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="3">The exception is Slovene, which has the smallest training set at only 1534 sentences. 4 Note, however, that it is possible that the Martins et al. relaxations would have given a higher proportion of integral solutions if their relaxation was used during training.</note>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0" />
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Head Automata and Bilingual Tiling: Translation with Minimal Representations</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><surname>Alshawi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. ACL</title>
+		<meeting>ACL</meeting>
+		<imprint>
+			<date type="published" when="1996" />
+			<biblScope unit="page" from="167" to="176" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">CoNLL-X Shared Task on Multilingual Dependency Parsing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Buchholz</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><surname>Marsi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. CoNLL</title>
+		<meeting>CoNLL</meeting>
+		<imprint>
+			<date type="published" when="2006" />
+			<biblScope unit="page" from="149" to="164" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Experiments with a Higher-Order Projective Dependency Parser</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">X</forename><surname>Carreras</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. EMNLPCoNLL</title>
+		<meeting>EMNLPCoNLL</meeting>
+		<imprint>
+			<date type="published" when="2007" />
+			<biblScope unit="page" from="957" to="961" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Discriminative Training Methods for Hidden Markov Models: Theory and Experiments with Perceptron Algorithms</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Collins</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. EMNLP</title>
+		<meeting>EMNLP</meeting>
+		<imprint>
+			<date type="published" when="2002" />
+			<biblScope unit="page" from="1" to="8" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Using Combinatorial Optimization within Max-Product Belief Propagation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Duchi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Tarlow</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Elidan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Koller</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">NIPS</title>
+		<imprint>
+			<date type="published" when="2007" />
+			<biblScope unit="page" from="369" to="376" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Bilexical grammars and their cubictime parsing algorithms</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Eisner</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Advances in Probabilistic and Other Parsing Technologies</title>
+		<imprint>
+			<date type="published" when="2000" />
+			<biblScope unit="page" from="29" to="62" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Training structural svms when exact inference is intractable</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Finley</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Joachims</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ICML</title>
+		<imprint>
+			<date type="published" when="2008" />
+			<biblScope unit="page" from="304" to="311" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Tree-Adjoining Grammars</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><forename type="middle">K</forename><surname>Joshi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Schabes</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Handbook of Formal Languages: Beyond Words</title>
+		<imprint>
+			<date type="published" when="1997" />
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="page" from="69" to="123" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">MRF Optimization via Dual Decomposition: MessagePassing Revisited</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">N</forename><surname>Komodakis</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">N</forename><surname>Paragios</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Tziritas</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. ICCV</title>
+		<meeting>ICCV</meeting>
+		<imprint>
+			<date type="published" when="2007" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Structured Prediction Models via the Matrix-Tree Theorem</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Koo</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Globerson</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">X</forename><surname>Carreras</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Collins</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. EMNLP-CoNLL</title>
+		<meeting>EMNLP-CoNLL</meeting>
+		<imprint>
+			<date type="published" when="2007" />
+			<biblScope unit="page" from="141" to="150" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<title level="m" type="main">Combinatorial Optimization: Theory and Algorithms</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><forename type="middle">H</forename><surname>Korte</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Vygen</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2008" />
+			<publisher>Springer Verlag</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Structured learning with approximate inference</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Kulesza</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Pereira</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">NIPS</title>
+		<imprint>
+			<date type="published" when="2008" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<monogr>
+		<title level="m" type="main">Lagrangian Relaxation. In Computational Combinatorial Optimization, Optimal or Provably Near-Optimal Solutions</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2001" />
+			<publisher>SpringerVerlag</publisher>
+			<biblScope unit="page" from="112" to="156" />
+			<pubPlace>London, UK</pubPlace>
+		</imprint>
+	</monogr>
+	<note>based on a Spring School</note>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Stacking Dependency Parsers</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><forename type="middle">F T</forename><surname>Martins</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Das</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">N</forename><forename type="middle">A</forename><surname>Smith</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><forename type="middle">P</forename><surname>Xing</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. EMNLP</title>
+		<meeting>EMNLP</meeting>
+		<imprint>
+			<date type="published" when="2008" />
+			<biblScope unit="page" from="157" to="166" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Concise Integer Linear Programming Formulations for Dependency Parsing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><forename type="middle">F T</forename><surname>Martins</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">N</forename><forename type="middle">A</forename><surname>Smith</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><forename type="middle">P</forename><surname>Xing</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. ACL</title>
+		<meeting>ACL</meeting>
+		<imprint>
+			<date type="published" when="2009" />
+			<biblScope unit="page" from="342" to="350" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Online Learning of Approximate Dependency Parsing Algorithms</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Mcdonald</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Pereira</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. EACL</title>
+		<meeting>EACL</meeting>
+		<imprint>
+			<date type="published" when="2006" />
+			<biblScope unit="page" from="81" to="88" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">On the Complexity of Non-Projective Data-Driven Dependency Parsing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Mcdonald</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Satta</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. IWPT</title>
+		<meeting>IWPT</meeting>
+		<imprint>
+			<date type="published" when="2007" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Non-Projective Dependency Parsing using Spanning Tree Algorithms</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Mcdonald</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Pereira</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Ribarov</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Hajič</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. HLT-EMNLP</title>
+		<meeting>HLT-EMNLP</meeting>
+		<imprint>
+			<date type="published" when="2005" />
+			<biblScope unit="page" from="523" to="530" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Learning Efficiently with Approximate Inference via Dual Losses</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">O</forename><surname>Meshi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Sontag</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Jaakkola</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Globerson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. ICML</title>
+		<meeting>ICML</meeting>
+		<imprint>
+			<date type="published" when="2010" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Approximate Primal Solutions and Rate Analysis for Dual Subgradient Methods</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Nedić</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Ozdaglar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">SIAM Journal on Optimization</title>
+		<imprint>
+			<biblScope unit="volume">19</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="1757" to="1780" />
+			<date type="published" when="2009" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Integrating GraphBased and Transition-Based Dependency Parsers</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Nivre</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Mcdonald</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. ACL</title>
+		<meeting>ACL</meeting>
+		<imprint>
+			<date type="published" when="2008" />
+			<biblScope unit="page" from="950" to="958" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Learning and Inference over Constrained Output</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">V</forename><surname>Punyakanok</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Roth</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><surname>Yih</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Zimak</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. IJCAI</title>
+		<meeting>IJCAI</meeting>
+		<imprint>
+			<date type="published" when="2005" />
+			<biblScope unit="page" from="1124" to="1129" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Incremental Integer Linear Programming for Non-projective Dependency Parsing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Riedel</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Clarke</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. EMNLP</title>
+		<meeting>EMNLP</meeting>
+		<imprint>
+			<date type="published" when="2006" />
+			<biblScope unit="page" from="129" to="137" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">On Dual Decomposition and Linear Programming Relaxations for Natural Language Processing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><forename type="middle">M</forename><surname>Rush</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Sontag</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Collins</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Jaakkola</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. EMNLP</title>
+		<meeting>EMNLP</meeting>
+		<imprint>
+			<date type="published" when="2010" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Dependency Parsing by Belief Propagation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><forename type="middle">A</forename><surname>Smith</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Eisner</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. EMNLP</title>
+		<meeting>EMNLP</meeting>
+		<imprint>
+			<date type="published" when="2008" />
+			<biblScope unit="page" from="145" to="156" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Probabilistic Models of Nonprojective Dependency Trees</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><forename type="middle">A</forename><surname>Smith</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">N</forename><forename type="middle">A</forename><surname>Smith</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. EMNLP-CoNLL</title>
+		<meeting>EMNLP-CoNLL</meeting>
+		<imprint>
+			<date type="published" when="2007" />
+			<biblScope unit="page" from="132" to="140" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Tightening LP Relaxations for MAP using Message Passing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Sontag</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Meltzer</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Globerson</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Jaakkola</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Weiss</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. UAI</title>
+		<meeting>UAI</meeting>
+		<imprint>
+			<date type="published" when="2008" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<monogr>
+		<title level="m" type="main">The Syntactic Process</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Steedman</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2000" />
+			<publisher>MIT Press</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">The CoNLL-2008 Shared Task on Joint Parsing of Syntactic and Semantic Dependencies</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Surdeanu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Johansson</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Meyers</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">L</forename><surname>Màrquez</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Nivre</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. CoNLL</title>
+		<meeting>CoNLL</meeting>
+		<imprint>
+			<date type="published" when="2008" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Max-margin Markov networks</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Taskar</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Guestrin</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Koller</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">NIPS</title>
+		<imprint>
+			<date type="published" when="2003" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">MAP estimation via agreement on trees: message-passing and linear programming</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Wainwright</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Jaakkola</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Willsky</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE Transactions on Information Theory</title>
+		<imprint>
+			<date type="published" when="2005" />
+			<biblScope unit="volume">51</biblScope>
+			<biblScope unit="page" from="3697" to="3717" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

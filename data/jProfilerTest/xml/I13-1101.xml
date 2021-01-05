@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T14:23+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">A Two-Step Named Entity Recognizer for Open-Domain Search Queries</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+				<date type="published" when="2013-10">October 2013</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Andreas</forename><surname>Eiselt</surname></persName>
+							<email>eiselt@yahoo-inc.com</email>
+							<affiliation key="aff0">
+								<orgName type="department">Yahoo! Research</orgName>
+								<orgName type="institution">Yahoo! Research Latin America Av</orgName>
+								<address>
+									<addrLine>Blanco Encalada 2120, Latin America Av. Blanco Encalada 2120</addrLine>
+									<settlement>Santiago, Santiago</settlement>
+									<country>Chile, Chile</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alejandro</forename><surname>Figueroa</surname></persName>
+							<email>afiguero@yahoo-inc.com</email>
+							<affiliation key="aff0">
+								<orgName type="department">Yahoo! Research</orgName>
+								<orgName type="institution">Yahoo! Research Latin America Av</orgName>
+								<address>
+									<addrLine>Blanco Encalada 2120, Latin America Av. Blanco Encalada 2120</addrLine>
+									<settlement>Santiago, Santiago</settlement>
+									<country>Chile, Chile</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">A Two-Step Named Entity Recognizer for Open-Domain Search Queries</title>
+					</analytic>
+					<monogr>
+						<title level="m">International Joint Conference on Natural Language Processing</title>
+						<meeting> <address><addrLine>Nagoya, Japan</addrLine></address>
+						</meeting>
+						<imprint>
+							<biblScope unit="page" from="14" to="18"/>
+							<date type="published" when="2013-10">October 2013</date>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>Named entity recognition in queries is the task of identifying sequences of terms in search queries that refer to a unique concept. This problem is catching increasing attention, since the lack of context in short queries makes this task difficult for full-text off-the-shelf named entity recognizers. In this paper, we propose to deal with this problem in a two-step fashion.</p><p>The first step classifies each query term as token or part of a named entity. The second step takes advantage of these binary labels for categorizing query terms into a pre-defined set of 28 named entity classes. Our results show that our two-step strategy is promising by outperforming a one-step traditional baseline by more than 10%.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Search engines are key players in serving as interface between users and web resources. Hence, they started to take on the challenge of modelling user interests and enhance their search experience. This is one of the main drivers of replacing the classical document-keyword matching, a.k.a. bagof-word approach, with user-oriented strategies. Specifically, these changes are geared towards improving the precision, contextualization, and personalization of the search results. To achieve this, it is vital to identify fundamental structures such as named entities (e.g., persons, locations and organizations) <ref type="bibr" target="#b4">(Hu et al., 2009)</ref>. Indeed, previous studies indicate that over 70% of all queries contain entities <ref type="bibr" target="#b3">(Guo et al., 2009;</ref><ref type="bibr" target="#b9">Yin and Shah, 2010)</ref>.</p><p>Search queries are on average composed of 2-3 words, yielding few context and breaking the grammatical rules of natural language <ref type="bibr" target="#b3">(Guo et al., 2009;</ref><ref type="bibr" target="#b2">Du et al., 2010)</ref>. Thus, named entity recognizers for relatively lengthy grammatically wellformed documents perform poorly on the task of Named Entity Recognition in Queries (NERQ).</p><p>At heart, the contribution of this work is a novel supervised approach to NERQ, trained with a large set of manually tagged queries and consisting of two steps: 1) performs a binary classification, where each query term is tagged as token/entity depending on whether or not it is part of a named entity; and 2) takes advantage of these binary token/entity labels for categorizing each term within the query into one of a pre-defined set of classes.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Related Work</head><p>To the best of our knowledge, there have been a few previous research efforts attempting to recognize named entities in search queries. This problem is relatively new and it was first introduced by <ref type="bibr" target="#b7">(Paşca, 2007)</ref>. Their weakly supervised method starts with an input class represented by a set of seeds, which are used to induce typical querycontexts for the respective input category. Contexts are then used to acquire and select new candidate instances for the corresponding class.</p><p>In their pioneer work, <ref type="bibr" target="#b3">(Guo et al., 2009)</ref> focused on queries that contain only one named entity belonging to four classes (i.e., movie, game, book and song). As for learning approach, they employed weakly supervised topic models using partially labeled seed named entities. These topic models were trained using query log data corresponding to 120 seed named entities (another 60 for testing) selected from three target web sites. Later, <ref type="bibr" target="#b5">(Jain and Pennacchiotti, 2010)</ref> extended this approach to a completely unsupervised and classindependent method.</p><p>In another study, <ref type="bibr" target="#b2">(Du et al., 2010)</ref> tackled the lack of context in short queries by interpreting query sequences in the same search session as extra contextual information. They capitalized on a collection of 6,000 sessions containing only queries targeted at the car model domain.</p><p>They trained Conditional Random Field (CRF) and topic models, showing that using search sessions improves the performance significantly. More recent, <ref type="bibr" target="#b0">(Alasiry et al., 2012a;</ref><ref type="bibr" target="#b1">Alasiry et al., 2012b)</ref> determined named entity boundaries, combining grammar annotation, query segmentation, top ranked snippets from search engine results in conjunction with a web n-gram model.</p><p>In contrast, we do not profit from seed named entities nor web search results, but rather from a large manually annotated collection of about 80,000 open-domain queries. We consider search queries containing multiple named entities, and we do not benefit from search sessions. Furthermore, our approach performs two labelling steps instead of a straightforward one-step labelling. The first step checks if each query term is part of a named entity or not, while the second assigns each term to one out of a set of 29 1 classes by taking into account the outcome of the first step.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">NERQ-2S</head><p>NERQ-2S is a two-step named entity recognizer for open-domain search queries. First, it differentiates named entity terms from other types of tokens (e.g., word and numbers) on the basis of a CRF 2 trained with manually annotated data. In the second step, NERQ-2S incorporates the output of this CRF into a new CRF as a feature. This second CRF assigns each term within the query to one out of 29 pre-defined categories. In essence, considering these automatically computed binary entity/token labels seeks to influence the second model so that the overall performance is improved.</p><p>Given the fact that binary entity/token tags are only used as additional contextual evidence by the second CRF, these labels can be reverted in the second step. NERQ-2S identifies 28 named entity classes that are prominent in search engine opendomain queries (see <ref type="table">table 1</ref>). This set of categories was deliberately chosen as a means of enriching search results regarding general user interests, and thus aimed at providing a substantially better overall user experience. In particular, named entities are normally utilized for devising the lay-out and the content of the result page of a search engine.</p><p>At both steps, NERQ-2S uses a CRF as classifier and a set of properties, which was determined separately for each classifier by executing a greedy feature selection algorithm (see next section). For both CRFs, this algorithm contemplated as candidates the 24 attributes explained in table 2. Additionally, in the case of the second CRF, this algorithm took into account the entity/token feature produced by the first CRF. Note that features in table 2 are well-known from other named entity recognition systems <ref type="bibr" target="#b6">(Nadeau and Sekine, 2007)</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Experiments</head><p>In all our experiments, we carried out a 10-fold cross-validation. As for data-sets, we benefited from a collection comprising 82,413 queries, which are composed of 242,723 terms 3 . These queries were randomly extracted from the query log of a commercial search engine, and they are exclusively in English. In order to annotate our query collection, these queries were first tokenized, and then each term was manually tagged by an editorial team using the schema adopted in <ref type="bibr" target="#b8">(Tjong Kim Sang and De Meulder, 2003)</ref>.</p><p>Attributes were selected by exploiting a greedy algorithm. This procedure starts with an empty bag of properties and after each iteration adds the one that performs the best. In order to determine this feature, this procedure tests each non-selected attribute together with all the properties in the bag. The algorithm stops when there is no non-selected feature that enhances the performance.  As for a baseline, we used a traditional onestep approach grounded on CRF enriched with 13  <ref type="table">Table 1</ref>: Named entity classes recognized by NERQ-2S.</p><p>out of our 24 features (see table 2), which were chosen by running our greedy feature selection algorithm. <ref type="figure" target="#fig_1">Figure 1</ref> shows the order that these 13 features were chosen, and their respective impact on the performance. Regarding these results, it is worth highlighting the following findings:</p><p>1. The first feature selected by the greedy algorithm models each term by its non-numerical characters (id=11 in table 2). This attribute helps to correctly tag 80.42% of the terms when they are modified (numbers removed).</p><p>2. The third chosen feature considers the value of the following word, when tagging a term (id=2 in table 2). This attribute helps to correctly annotate 79.68%, 74.55% and 74.87% of tokens belonging to person, place and organization names, respectively.</p><p>3. Our figures also point out to the relevance of the three word features (id=0,1,2 in table 2). These features were selected in a row, boosting the performance from F (1) = 0.561 to F (1) = 0.634, a 13.01% increase with respect to the previously selected properties.</p><p>In summary, the performance of the one-step baseline is F (1) = 0.659. In contrast, <ref type="figure" target="#fig_3">figure  2</ref> highlights the 16 out of the 25 features utilized by the second phase of NERQ-2S. Note that the "new" bar indicates the token/entity attribute determined in the first step. Most importantly, NERQ-2S finished with an F (1) = 0.729, which means a 10.62% enhancement with respect to the one-step baseline. From these results, it is worth considering the following aspects:</p><p>1. In terms of features, 11 of the 13 attributes used by the one-step baseline were also exploited by NERQ-2S. Further, NERQ-2S profits from four additional properties that were also available for the one-step baseline.</p><p>2. The five more prominent properties selected by the baseline, were also chosen by NERQ-2S with just a slight change in order.</p><p>3. The "new" feature achieves an improvement of 23.51% (F (1) = 0.641) with respect to the previous selected property. The impact of the entity/token attribute can be measure when compared with the performance accomplished by the first five features selected by the baseline (F (1) = 0.634).</p><p>In light of these results, we can conclude that: a) adding the entity/token feature to the CRF is vital for boosting the performance, making a two-step approach a better solution than the traditional onestep approach; and b) this entity/token property is complementary to the list shown in table 2.</p><p>The confusion matrix for NERQ-2S shows that errors, basically, regard highly ambiguous terms. Some interesting misclassifications:</p><p>1. Overall, 17.38% of the terms belonging to place names were mistagged by NERQ-2S. From these, 72.11% were perceived as part of organization names.</p><p>2. On the other hand, 17.27% of the terms corresponding to organization names were mislabelled by NERQ-2S. Here, 15.52% and 12.84% of these errors were due to the fact that these terms were seen as tokens and parts of place names, respectively.    Incidentally, NERQ-2S mislabelled 10.40% of the tokens (non-named entity terms), while the one-step baseline 17.57%. This difference signals the importance of first-step consisting of an specialized and efficient token/entity term annotator. With regard to the first step of NERQ-2S, nine out of the 24 properties were useful, and the first step finished with an F (1) = 0.8077. From these nine attributes, eight correspond to the top eight features used by our one-step baseline, and one extra attribute (id=20). Thus, the discriminative probabilistic model learned in this first step is more specialized for this task. That is to say, though the context of a term might be modelled similarly, the parameters of the CRF model are different.</p><p>The confusion matrix for this binary classifier shows that 11.44% of entity terms were mistagged as token, while 22.24% of tokens as entity terms. This means a higher percentage of errors comes from mislabelled tokens.</p><p>On a final note, as a means of quantifying the impact of the first step on NERQ-2S, we replaced the output given by the first CRF model with the manual binary token/annotations given by the editorial team. In other words, the "new" feature is now a manual input instead of an automatically computed property. By doing this, NERQ-2S increases the performance from F (1) = 0.729 to F (1) = 0.809, which means 10.97% better than NERQ-2S and 22.76% than the one-step baseline. This corroborates that a two-step approach to NERQ is promising.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Conclusions and Further Work</head><p>This paper presents NERQ-2S, a two-step approach to the problem of recognizing named entities in search queries. In the first stage, NERQ-2S checks as to whether or not each query term belongs to a named entity, and in the second phase, it categorizes each token according to a set of predefined classes. These classes are aimed at enhancing the user experience with the search engine in contrast to previous pre-defined categories.</p><p>Our results indicate that our two-step approach outperforms the typical one-step NERQ. Since our error analysis indicates that there is about 11% of potential global improvement by boosting the performance of the entity/token tagger, one research direction regards combining the output of distinct two-sided classifiers for improving the overall performance of NERQ-2S.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 1 :</head><label>1</label><figDesc>Figure 1: Attributes selected by the greedy algorithm and their respective contribution (baseline). See also table 2 for id-feature mappings.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: Attributes selected by the greedy algorithm and their respective contribution (NERQ-2S). See also table 2 for id-feature mappings. The word "new" denotes the binary token/entity attribute determined in the first step.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2" validated="false"><head>Table 2 :</head><label>2</label><figDesc>List of used features. Examples are for the third term of query "first before abc123 after".</figDesc><table></table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1">In actuality, we considered 29 classes: 28 regards named entities and one class for non-entity (token). For the sake of readability, from now on, we say indistinctly that the second step identifies 28 named entity classes or 29 classes. 2 CRFsuite: http://www.chokkan.org/software/crfsuite</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="3">Due to privacy laws, query logs cannot be made public.</note>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Detecting candidate named entities in search queries</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Areej</forename><surname>Alasiry</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Mark</forename><surname>Levene</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">SIGIR</title>
+		<imprint>
+			<date type="published" when="2012" />
+			<biblScope unit="page" from="1049" to="1050" />
+		</imprint>
+	</monogr>
+	<note>and Alexandra Poulovassilis</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Extraction and evaluation of candidate named entities in search engine queries</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Areej</forename><surname>Alasiry</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Mark</forename><surname>Levene</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">WISE</title>
+		<imprint>
+			<date type="published" when="2012" />
+			<biblScope unit="page" from="483" to="496" />
+		</imprint>
+	</monogr>
+	<note>and Alexandra Poulovassilis</note>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Using search session context for named entity recognition in query</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Junwu</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Zhimin</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jun</forename><surname>Yan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Yan</forename><surname>Cui</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Zheng</forename><surname>Chen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceeding of the 33rd international ACM SIGIR conference on Research and development in information retrieval -SIGIR &apos;10</title>
+		<meeting>eeding of the 33rd international ACM SIGIR conference on Research and development in information retrieval -SIGIR &apos;10</meeting>
+		<imprint>
+			<date type="published" when="2010" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Named entity recognition in query</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jiafeng</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Gu</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Xueqi</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hang</forename><surname>Li</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 32nd international ACM SIGIR conference on Research and development in information retrieval -SIGIR &apos;09</title>
+		<meeting>the 32nd international ACM SIGIR conference on Research and development in information retrieval -SIGIR &apos;09<address><addrLine>New York, New York, USA</addrLine></address></meeting>
+		<imprint>
+			<publisher>ACM Press</publisher>
+			<date type="published" when="2009" />
+			<biblScope unit="page">267</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Understanding users query intent with Wikipedia</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jian</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Gang</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Fred</forename><surname>Lochovsky</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jian-Tao</forename><surname>Sun</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Zheng</forename><surname>Chen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of WWW-09</title>
+		<meeting>WWW-09</meeting>
+		<imprint>
+			<date type="published" when="2009" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Open entity extraction from web search query logs</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Jain</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Marco</forename><surname>Pennacchiotti</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 23rd International Conference on Computational Linguistics</title>
+		<meeting>the 23rd International Conference on Computational Linguistics</meeting>
+		<imprint>
+			<date type="published" when="2010" />
+			<biblScope unit="page" from="510" to="518" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title level="m" type="main">A survey of named entity recognition and classification. Linguisticae Investigationes</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">David</forename><surname>Nadeau</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Satoshi</forename><surname>Sekine</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2007-01" />
+			<publisher>John Benjamins Publishing Company</publisher>
+			<biblScope unit="volume">30</biblScope>
+			<biblScope unit="page" from="3" to="26" />
+		</imprint>
+	</monogr>
+<note type="report_type">Publisher</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Weakly-supervised discovery of named entities using web search queries</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Marius</forename><surname>Paşca</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the sixteenth ACM conference on Conference on information and knowledge management -CIKM &apos;07</title>
+		<meeting>the sixteenth ACM conference on Conference on information and knowledge management -CIKM &apos;07<address><addrLine>New York, New York, USA</addrLine></address></meeting>
+		<imprint>
+			<publisher>ACM Press</publisher>
+			<date type="published" when="2007" />
+			<biblScope unit="volume">683</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Introduction to the CoNLL-2003 shared task: language-independent named entity recognition</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Erik</forename><forename type="middle">F</forename><surname>Tjong</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kim</forename><surname>Sang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Fien</forename><surname>De Meulder</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the seventh conference on Natural language learning at HLT-NAACL 2003</title>
+		<meeting>the seventh conference on Natural language learning at HLT-NAACL 2003<address><addrLine>Stroudsburg, PA, USA</addrLine></address></meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2003" />
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="page" from="142" to="147" />
+		</imprint>
+	</monogr>
+	<note>CONLL &apos;03</note>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Building Taxonomy of Web Search Intents for Name Entity Queries</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Xiaoxin</forename><surname>Yin</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sarthak</forename><surname>Shah</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of WWW-2010</title>
+		<meeting>WWW-2010</meeting>
+		<imprint>
+			<date type="published" when="2010" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

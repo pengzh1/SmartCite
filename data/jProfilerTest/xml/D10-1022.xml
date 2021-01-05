@@ -1,0 +1,1206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T11:25+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Negative Training Data can be Harmful to Text Classification</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher>Association for Computational Linguistics</publisher>
+				<availability status="unknown"><p>Copyright Association for Computational Linguistics</p>
+				</availability>
+				<date type="published" when="2010-10">October 2010. 2010</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Xiao-Li</forename><surname>Li</surname></persName>
+							<email>xlli@i2r.a-star.edu.sg</email>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Bing</forename><surname>Liu</surname></persName>
+							<email>liub@cs.uic.edu</email>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">See-Kiong</forename><surname>Ng</surname></persName>
+							<email>skng@i2r.a-star.edu.sg</email>
+						</author>
+						<author>
+							<affiliation key="aff0">
+								<orgName type="department">Institute for Infocomm Research</orgName>
+								<orgName type="institution">University of Illinois at Chicago Institute for Infocomm Research</orgName>
+								<address>
+									<addrLine>1 Fusionopolis Way, 851 South Morgan Street</addrLine>
+									<postCode>#21-01, 138632, 60607-7053</postCode>
+									<settlement>Connexis, Chicago</settlement>
+									<region>IL</region>
+									<country>Singapore, USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<affiliation key="aff1">
+								<orgName type="department">Fusionopolis Way</orgName>
+								<address>
+									<postCode>#21-01, 138632</postCode>
+									<settlement>Connexis</settlement>
+									<country key="SG">Singapore</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Negative Training Data can be Harmful to Text Classification</title>
+					</analytic>
+					<monogr>
+						<title level="m">Proceedings of the 2010 Conference on Empirical Methods in Natural Language Processing</title>
+						<meeting>the 2010 Conference on Empirical Methods in Natural Language Processing <address><addrLine>MIT, Massachusetts, USA, 9; c</addrLine></address>
+						</meeting>
+						<imprint>
+							<publisher>Association for Computational Linguistics</publisher>
+							<biblScope unit="issue">11</biblScope>
+							<biblScope unit="page" from="218" to="228"/>
+							<date type="published" when="2010-10">October 2010. 2010</date>
+						</imprint>
+					</monogr>
+					<note>A fundamental assump-tion is that the training and test data are iden-tically distributed. However, this assumption may not hold in practice. In this paper, we study a particular problem where the positive data is identically distributed but the negative data may or may not be so. Many practical text classification and retrieval applications fit this model. We argue that in this setting nega-tive training data should not be used, and that PU learning can be employed to solve the problem. Empirical evaluation has been con-ducted to support our claim. This result is im-portant as it may fundamentally change the current binary classification paradigm.</note>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>This paper studies the effects of training data on binary text classification and postulates that negative training data is not needed and may even be harmful for the task. Traditional binary classification involves building a classifier using labeled positive and negative training examples. The classifier is then applied to classify test instances into positive and negative classes.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Text classification is a well-studied problem in machine learning, natural language processing, and information retrieval. To build a text classifier, a set of training documents is first labeled with predefined classes. Then, a supervised machine learning algorithm (e.g., Support Vector Machines (SVM), naïve Bayesian classifier (NB)) is applied to the training examples to build a classifier that is subsequently employed to assign class labels to the instances in the test set. In this paper, we focus on binary text classification with two classes (i.e. positive and negative classes).</p><p>Most learning methods assume that the training and test data have identical distributions. However, this assumption may not hold in practice, i.e., the training and the test distributions can be different. The problem is called covariate shift or sample selection bias <ref type="bibr" target="#b27">(Heckman 1979;</ref><ref type="bibr" target="#b45">Shimodaira 2000;</ref><ref type="bibr" target="#b53">Zadrozny 2004;</ref><ref type="bibr" target="#b28">Huang et al. 2007;</ref><ref type="bibr" target="#b47">Sugiyama et al. 2008;</ref><ref type="bibr" target="#b13">Bickel et al. 2009</ref>). In general, this problem is not solvable because the two distributions can be arbitrarily far apart from each other. Various assumptions were made to solve special cases of the problem. One main assumption was that the conditional distribution of the class given an instance is the same over the training and test sets (Shimodaira 2000; <ref type="bibr" target="#b28">Huang et al. 2007;</ref><ref type="bibr" target="#b13">Bickel et al. 2009)</ref>.</p><p>In this paper, we study another special case of the problem in which the positive training and test samples have identical distributions, but the negative training and test samples may have different distributions. We believe this scenario is more applicable for binary text classification. As the focus in many applications is on identifying positive instances correctly, it is important that the positive training and the positive test data have the same distribution. The distributions of the negative training and negative test data can be different. We believe that this special case of the sample selection bias problem is also more applicable for machine learning. We will show that a partially supervised learning model, called PU learning (learning from Positive and Unlabeled examples) fits this special case quite well <ref type="bibr" target="#b39">(Liu et al. 2002)</ref>.</p><p>Following the notations in <ref type="bibr" target="#b13">(Bickel et al. 2009</ref>), our special case of the sample selection bias problem can be formulated as follows: We are given a training sample matrix X L with row vectors x 1 , …, x k . The positive and negative training instances are governed by different unknown distributions p <ref type="bibr">(x|λ)</ref> and p(x|δ) respectively. The element y i of vector y = (y 1 , y 2 , …, y k ) is the class label for training instance x i (y i ∈{+1, -1}, where +1 and -1 denote positive and negative classes respectively) and is drawn based on an unknown target concept p(y|x). In addition, we are also given an unlabeled test set in matrix X T with rows x k+1 , …, x k+m . The (hidden) positive test instances in X T are also governed by the unknown distribution p(x|λ), but the (hidden) negative test instances in X T are governed by an unknown distribution, p(x|θ), where θ may or may not be the same as δ. p(x|θ) and p(x|δ) can differ arbitrarily, but there is only one unknown target conditional class distribution p <ref type="bibr">(y|x)</ref>.</p><p>This problem setting is common in many applications, especially in those applications where the user is interested in identifying a particular type of documents (i.e. binary text classification). For example, we want to find sentiment analysis papers in the literature. For training a text classifier, we may label the papers in some EMNLP proceedings as sentiment analysis (positive) and non-sentiment analysis (negative) papers. A classifier can then be built to find sentiment analysis papers from ACL and other EMNLP proceedings. However, this labeled training set will not be appropriate for identifying sentiment analysis papers from the WWW, KDD and SIGIR conference proceedings. This is because although the sentiment analysis papers in these proceedings are similar to those in the training data, the non-sentiment analysis papers in these conferences can be quite different. Another example is email spam detection. A spam classification system built using the training data of spam and non-spam emails from a university may not perform well in a company. The reason is that although the spam emails (e.g., unsolicited commercial ads) are similar in both environments, the non-spam emails in them can be quite different.</p><p>One can consider labeling the negative data in each environment individually so that only the negative instances relevant to the testing environment are used to train the classifier. However, it is often impractical (if not impossible) to do so. For example, given a large blog hosting site, we want to classify its blogs into those that discuss stock markets (positive), and those that do not (negative). In this case, the negative data covers an arbitrary range of topics. It is clearly impractical to label all the negative data.</p><p>Most existing methods for addressing the sample selection bias problem work as follows. First, they estimate the bias of the training data based on the given test data using statistical methods. Then, a classifier is trained on a weighted version of the original training set based on the estimated bias. In this paper, we show that our special case of the sample selection bias problem can be solved in a much simpler and somewhat radical manner-by simply discarding the negative training data altogether. We can use the positive training data and the unlabeled test data to build the classifier using the PU learning model <ref type="bibr" target="#b39">(Liu et al. 2002)</ref>. PU learning was originally proposed to solve the learning problem where no labeled negative training data exist. Several algorithms have been developed in the past few years that can learn from a set of labeled positive examples augmented with a set of unlabeled examples. That is, given a set P of positive examples of a particular class (called the positive class) and a set U of unlabeled examples (which contains both hidden positive and hidden negative examples), a classifier is built using P and U to classify the data in U as well as future test data into two classes, i.e., those belonging to P (positive) and those not belonging to P (negative). In this paper, we also propose a new PU learning method which gives more consistently accurate results than the current methods.</p><p>Our experimental evaluation shows that when the distributions of the negative training and test samples are different, PU learning is much more accurate than traditional supervised learning from the positive and negative training samples. This means that the negative training data actually harms classification in this case. In addition, when the distributions of the negative training and test samples are identical, PU learning is shown to perform equally well as supervised learning, which means that the negative training data is not needed. This paper thus makes three contributions. First, it formulates a new special case of the sample selection bias problem, and proposes to solve the problem using PU learning by discarding the negative training data. Second, it proposes a new PU learning method which is more accurate than the existing methods. Third, it experimentally demonstrates the effectiveness of the proposed method and shows that negative training data is not needed and can even be harmful. This result is important as it may fundamentally change the way that many practical classification problems should be solved.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Related Work</head><p>A key assumption made by most machine learning algorithms is that the training and test samples must be drawn from the same distribution. As mentioned, this assumption can be violated in practice. Some researchers have addressed this problem under covariate shift or sample selection bias. Sample selection bias was first introduced in the econometrics by <ref type="bibr" target="#b27">Heckman (1979)</ref>. It came into the field of machine learning through the work of <ref type="bibr" target="#b53">Zadrozny (2004)</ref>. The main approach in machine learning is to first estimate the distribution bias of the training data based on the test data, and then learn using weighted training examples to compensate for the bias <ref type="bibr" target="#b13">(Bickel et al. 2009</ref>).</p><p>Shimodaira <ref type="formula">(2000)</ref> and <ref type="bibr" target="#b46">Sugiyama and Muller (2005)</ref> proposed to estimate the training and test data distributions using kernel density estimation. The estimated density ratio could then be used to generate weighted training examples. <ref type="bibr" target="#b24">Dudik et al. (2005)</ref> and <ref type="bibr" target="#b14">Bickel and Scheffer (2007)</ref> used maximum entropy density estimation, while <ref type="bibr" target="#b28">Huang et al. (2007)</ref> proposed kernel mean matching. <ref type="bibr" target="#b47">Sugiyama et al. (2008)</ref> and <ref type="bibr" target="#b48">Tsuboi et al. (2008)</ref> estimated the weights for the training instances by minimizing the Kullback-Leibler divergence between the test and the weighted training distributions. <ref type="bibr" target="#b13">Bickel et al. (2009)</ref> proposed an integrated model. In this paper, we adopt an entirely different approach by dropping the negative training data altogether in learning. Without the negative training data, we use PU learning to solve the problem <ref type="bibr" target="#b39">(Liu et al. 2002;</ref><ref type="bibr" target="#b52">Yu et al. 2002;</ref><ref type="bibr" target="#b22">Denis et al. 2002;</ref><ref type="bibr" target="#b30">Lee and Liu, 2003;</ref><ref type="bibr" target="#b38">Liu et al. 2003;</ref><ref type="bibr" target="#b21">Denis et al. 2003;</ref><ref type="bibr" target="#b35">Li et al. 2007;</ref><ref type="bibr" target="#b25">Elkan and Noto, 2008;</ref><ref type="bibr" target="#b36">Li et al. 2009;</ref><ref type="bibr" target="#b37">Li et al. 2010</ref>). We will discuss this learning model further in Section 3.</p><p>Another related work to ours is transfer learning or domain adaptation. Unlike our problem setting, transfer learning addresses the scenario where one has little or no training data for the target domain, but has ample training data in a related domain where the data could be in a different feature space and follow a different distribution. A survey of transfer learning can be found in <ref type="bibr" target="#b41">(Pan and Yang 2009)</ref>. Several NLP researchers have studied transfer learning for different applications <ref type="bibr">(Wu et al. 2009a;</ref><ref type="bibr" target="#b51">Yang et al. 2009;</ref><ref type="bibr" target="#b11">Agirre &amp; Lacalle 2009;</ref><ref type="bibr">Wu et al. 2009b;</ref><ref type="bibr" target="#b42">Sagae &amp; Tsujii 2008;</ref><ref type="bibr" target="#b26">Goldwasser &amp; Roth 2008;</ref><ref type="bibr" target="#b32">Li and Zong 2008;</ref><ref type="bibr" target="#b12">Andrew et al. 2008;</ref><ref type="bibr" target="#b18">Chan and Ng 2007;</ref><ref type="bibr" target="#b29">Jiang and Zhai 2007;</ref><ref type="bibr" target="#b54">Zhou et al. 2006</ref>), but none of them addresses the problem studied here.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">PU Learning Techniques</head><p>In traditional supervised learning, ideally, there is a large number of labeled positive and negative examples for learning. In practice, the negative examples can often be limited or unavailable. This has motivated the development of the model of learning from positive and unlabeled examples, or PU learning, where P denotes a set of positive examples, and U a set of unlabeled examples (which contains both hidden positive and hidden negative instances). The PU learning problem is to build a classifier using P and U in the absence of negative examples to classify the data in U or a future test data T. In our setting, the test set T will also act as the unlabeled set U.</p><p>PU learning has been investigated by several researchers in the past decade. A study of PAC learning for the setting under the statistical query model was given in <ref type="bibr" target="#b20">(Denis, 1998)</ref>. Liu et al. reported the sample complexity result and showed how the problem may be solved <ref type="bibr" target="#b39">(Liu et al., 2002)</ref>. Subsequently, a number of practical algorithms (e.g., <ref type="bibr" target="#b39">Liu et al., 2002;</ref><ref type="bibr" target="#b52">Yu et al., 2002;</ref> were proposed. They generally follow a two-step strategy: (i) identifying a set of reliable negative documents RN from the unlabeled set; and then (ii) building a classifier using P (positive set), RN (reliable negative set) and U-RN (unlabelled set) by applying an existing learning algorithm (such as naive Bayesian classifier or SVM) iteratively. There are also some other approaches based on unbalanced errors (e.g., <ref type="bibr" target="#b38">Liu et al. 2003;</ref><ref type="bibr" target="#b30">Lee and Liu, 2003;</ref><ref type="bibr" target="#b25">Elkan and Noto, 2008)</ref>.</p><p>In this section, we first introduce a representative PU learning technique S-EM, and then present a new technique called CR-SVM.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">S-EM Algorithm</head><p>S-EM <ref type="bibr" target="#b39">(Liu et al. 2002</ref>) is based on naïve Bayesian classification (NB) <ref type="bibr" target="#b31">(Lewis, 1995;</ref><ref type="bibr" target="#b40">Nigam et al., 2000)</ref> and the EM algorithm <ref type="bibr" target="#b19">(Dempster et al. 1977)</ref>. It has two steps. The first step uses a spy technique to identify some reliable negatives (RN) from the unlabeled set U and the second step uses the EM algorithm to learn a Bayesian classifier from P, RN and U-RN.</p><p>Step 1: Extracting reliable negatives RN from U using a spy technique The spy technique in S-EM works as follows <ref type="bibr">(Figure 1)</ref>: First, a small set of positive examples (denoted by SP) called "spies" is randomly sampled from P (line 2). The default sampling ratio in S-EM is s = 15%. Then, an NB classifier is built using P-SP as the positive set and U∪SP as the negative set (lines <ref type="bibr" target="#b2">[3]</ref><ref type="bibr" target="#b3">[4]</ref><ref type="bibr" target="#b4">[5]</ref>. The NB classifier is applied to classify each u ∈ U∪SP, i.e., to assign a probabilistic class label p(+|u) (+ means positive) to u. The idea of the spy technique is as follows. Since the spy examples were from P and were put into U as negatives in building the NB classifier, they should behave similarly to the hidden positive instances in U. We thus can use them to find the reliable negative set RN from U. Using the probabilistic labels of spies in SP and an input parameter l (noise level), a probability threshold t is determined. Due to space constraints, we are unable to explain l. Details can be found in <ref type="bibr" target="#b39">(Liu et al. 2002)</ref>. t is then used to find RN from U (lines 8-10).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.">RN ← ∅;</head><p>// Reliable negative set 2. SP ← Sample(P, s%); // spy set 3. Assign each example in P -SP the class label +1; 4. Assign each example in U ∪SP the class label -1; 5. C ←NB(P -SP, U∪SP); // Produce a NB classifier 6. Classify each u ∈U∪SP using C; 7. Decide a probability threshold t using SP and l; 8. For each u ∈U do 9.</p><p>If its probability p(+|u) &lt; t then 10.</p><p>RN ← RN ∪ {u};</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Figure 1. Spy technique for extracting RN from U</head><p>Step 2: Learning using the EM algorithm Given the positive set P, the reliable negative set RN, and the remaining unlabeled set U-RN, we run EM using NB as the base learning algorithm. The naive Bayesian (NB) method is an effective text classification algorithm. There are two different NB models, namely, the multinomial NB and the multi-variate Bernoulli NB. In this paper, we use the multinomial NB since it has been observed to perform consistently better than the multivariate Bernoulli NB <ref type="bibr" target="#b40">(Nigam et al., 2000)</ref>.</p><p>Given a set of training documents D, each document d i ∈ D is an ordered list of words. We use w d i ,k to denote the word in position k of d i , where each word is from the vocabulary V = {w 1 , … , w |v| }, which is the set of all words considered in classification. We also have a set of classes C = {c 1 , c 2 } representing positive and negative classes. For classification, we compute the posterior probability Pr(c j |d i ). Based on the Bayes rule and multinomial model, we have <ref type="formula">(1)</ref> and with Laplacian smoothing, <ref type="bibr" target="#b1">(2)</ref> where N(w t ,d i ) is the number of times that the word w t occurs in document d i , and Pr(c j |d i ) {0,1} depending on the class label of the document. Assuming that probabilities of words are independent given the class, we have the NB classifier: <ref type="formula">(3)</ref> EM <ref type="bibr" target="#b19">(Dempster et al. 1977</ref>) is a popular class of iterative algorithms for maximum likelihood estimation in problems with incomplete data. It is often used to address missing values in the data by computing expected values using the existing values. The EM algorithm consists of two steps, the E-step and the M-step. The E-step fills in the missing data, and M-step re-estimated the parameters. This process is iterated till satisfaction (i.e. convergence). For NB, the steps used by EM are identical to those used to build the classifier (equations <ref type="formula">(3)</ref> for the E-step, and equations <ref type="formula">(1)</ref> and <ref type="formula">(2)</ref> for the</p><formula xml:id="formula_0">∑ ∑ ∑ = = = + + = | V | s | D | i i j i s | D | i i j i t j t d | c d , w N | V | d | c d , w N c | w 1 1 1 ) )Pr( ( ) )Pr( ( 1 ) Ρr( ∈ 1.</formula><p>Each document in P is assigned the class label 1; 2. Each document in RN is assigned the class label −1; 3. Learn an initial NB classifier f from P and RN, using Equations <ref type="formula">(1)</ref> and <ref type="formula">(2)</ref></p><formula xml:id="formula_1">; 4. Repeat 5. For each document d i in U-RN do // E-Step 6.</formula><p>Using the current classifier f compute Pr(c j |d i ) using Equation <ref type="formula">(3)</ref>; 7.</p><p>Learn a new NB classifier f from P, RN and U-RN by computing Pr(c j ) and Pr(w t |c j ), using Equations <ref type="formula">(1)</ref> and <ref type="formula">(2)</ref>; // M-Step 8. Until the classifier parameters stabilize 9. The last iteration of EM gives the final classifier f ; 10.</p><formula xml:id="formula_2">For each document d i in U do 11.</formula><p>If its probability Pr(+|d i ) ≥ 0.5 then 12.</p><p>Output d i as a positive document; 13.</p><p>else Output d i as a negative document  <ref type="bibr">]</ref> instead of {0, 1} in all the three equations.</p><formula xml:id="formula_3">∑ = Ρ = Ρ ∑ ∏ ∏ = = = Ρ Ρ Ρ Ρ = Ρ | | 1 | | 1 , | | 1 , ) | ( r ) ( r ) | ( r ) ( r ) | ( r C r d k r k d r d k j k d j i j i i i i c w c c w c d c M-step).</formula><note type="other">In EM, Pr(c j |d i ) takes the value in [0, 1</note><p>The algorithm for the second step of S-EM is given in <ref type="figure" target="#fig_0">Figure 2</ref>. Lines 1-3 build a NB classifier f using P and RN. Lines 4-8 run EM until convergence. Finally, the converged classifier is used to classify the unlabeled set U (lines 10-13).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Proposed CR-SVM</head><p>As we will see in the experiment section, the performance of S-EM can be weak in some cases. This is due to the mixture model assumption of its NB classifier <ref type="bibr" target="#b40">(Nigam et al. 2000)</ref>, which requires that the mixture components and classes be of oneto-one correspondence. Intuitively, this means that each class should come from a distinctive distribution rather than a mixture of multiple distributions. In our setting, however, the negative class often has documents of mixed topics, e.g., representing the broad class of everything else except the topic(s) represented by the positive class.</p><p>There are some existing PU learning methods based on SVM which can deal with this problem, e.g., Roc-SVM . Like S-EM, Roc-SVM also has two steps. The first step uses Rocchio classification <ref type="bibr" target="#b42">(Rocchio, 1971)</ref> to find a set of reliable negatives RN from U. In particular, this method treats the entire unlabeled set U as negative documents and then uses the positive set P and the unlabeled set U as the training data to build a Rocchio classifier. The classifier is subsequently applied to classify the unlabeled set U. Those documents that are classified as negative are then considered as reliable negative examples RN. The second step of Roc-SVM runs SVM iteratively (instead of EM). Unlike NB, SVM does not make any distributional assumption.</p><p>However, Roc-SVM does not do well due to the weakness of its first step in finding a good set of reliable negatives RN. This motivates us to propose a new SVM based method CR-SVM to detect a better quality RN set. The second step of CR-SVM is similar to that in Roc-SVM.</p><p>Step 1: Extracting reliable negatives RN from U using Cosine and Rocchio</p><p>The first step of the proposed CR-SVM algorithm for finding a RN set consists of two sub-steps: Sub-step 1 (extracting the potential negative set PN using the cosine similarity): Given the positive set P and the unlabeled set U, we extract a set of potential negatives PN from U by computing the similarities of the unlabeled documents in U and the positive documents in P. The idea is that those documents in U that are very dissimilar to the documents in P are likely to be negative.</p><p>1. PN = ∅; 2. Represent each document in P and U as vectors using the TF-IDF representation; 3. For each d j ∈ P do 4.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>5.</head><p>;</p><formula xml:id="formula_4">6. For each d j ∈ P do 7.</formula><p>compute cos(pr, d j ) using Equation <ref type="formula" target="#formula_5">(4)</ref> </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Figure 3. Extracting potential negatives PN from U</head><p>The detailed algorithm is given in <ref type="figure">Figure 3</ref>. Each document in P and U is first represented as a vector d = (q 1 , q 2 , …, q n ) using the TF-IDF scheme <ref type="bibr" target="#b43">(Salton 1986)</ref>. Each element q i (i=1, 2, …, n) in d represents a word feature w i . A positive representative vector (pr) is built by summing up the documents in P and normalizing it (lines 3-5). Lines 6-7 compute the similarities of each document d j in P with pr using the cosine similarity, cos(pr, d j ).</p><p>Line 8 sorts the documents in P according to their cos(pr, d j ) values. We want to filter away as many as possible hidden positive documents from U so that we can obtain a very pure negative set. Since the hidden positives in U should have the same behaviors as the positives in P in terms of their similarities to pr, we set their minimum similarity as the threshold value ω which is the minimum similarity before a document is considered as a potential negative document:</p><formula xml:id="formula_5">P j j P j ∈ = = d d pr ), , ( cos min | | 1 ω<label>(4)</label></formula><p>In a noiseless scenario, using the minimum similarity is acceptable. However, most real-life applications contain outliers and noisy artifacts. Using the absolute minimum similarity may be unreliable; the similarity cos(pr, d j ) of an outlier docu- ment d j in P could be near 0 or smaller than most (or even all) negative documents. It would therefore be prudent to ignore a small percentage l of the documents in P most dissimilar to the representative positive (pr) and assume them as noise or outliers. Since we do not know the noise level of the data, to be safe, we use a noise level l = 5% as the default. The final classification result is not sensitive to l as long as it is not too big. In line 9, we use the noise level l to decide on a suitable ω. Then, for each document d i in U, if its cosine similarity cos(pr, d i ) &lt; ω, we regard it as a potential negative and store it in PN (lines 10-12).</p><p>Our experiment results showed that PN is still not sufficient or big enough for accurate PU learning. Thus, we need to do a bit more work to find the final RN. Sub-step 2 (extracting the final reliable negative set RN from U using Rocchio with PN): At this point, we have a positive set P and a potential negative set PN where PN is a purer negative set than U. To extract the final reliable negatives, we employ the Rocchio classification to build a classifier RC using P and PN (We do not use SVM here as it is very sensitive to the noise in PN). Those documents in U that are classified as negatives by RC will then be regarded as reliable negatives, and stored in set RN.</p><p>The algorithm for this sub-step is given in <ref type="figure">Figure 4</ref>. Following the Rocchio formula, a positive and a negative prototype vectors p and n are built (lines 3 and 4), which are used to classify the documents in U (lines 5-7). α and β are parameters for adjusting the relative impact of the positive and negative examples. In this work, we use α = 16 and β = 4 as recommended in <ref type="bibr" target="#b16">(Buckley et al. 1994</ref>).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Step 2: Learning by running SVM iteratively</head><p>This step is similar to that in Roc-SVM, building the final classifier by running SVM iteratively with the sets P, RN and the remaining unlabeled set Q (Q = U -RN).</p><p>The algorithm is given in <ref type="figure">Figure 5</ref>. We run SVM classifiers S i (line 3) iteratively to extract more and more negative documents from Q. The iteration stops when no more negative documents can be extracted from Q (line 5). There is, however, a danger in running SVM iteratively, as SVM is quite sensitive to noise. It is possible that during some iteration, SVM is misled by noisy data to extract many positive documents from Q and put them in the negative set RN. If this happens, the final SVM classifier will be inferior. As such, we employ a test to decide whether to keep the first SVM classifier or the final one. To do so, we use the final SVM classifier obtained at convergence (called S last , line 9) to classify the positive set P to see if many positive documents in P are classified as negatives. Roc-SVM chooses 5% as the threshold, so CR-SVM also uses this threshold. If there are 5% of positive documents (5%*|P|) in P that are classified as negative, it indicates that SVM has gone wrong and we should use the first SVM classifier (S 1 ). In our experience, the first classifier is always quite strong; good results can therefore be achieved even without catching the last (possibly better) classifier.</p><p>The main difference between Roc-SVM and CR-SVM is that Roc-SVM does not produce PN. It simply treats the unlabeled set U as negatives for extracting RN. Since PN is clearly a purer negative set than U, the use of PN by CR-SVM helps extract a better quality reliable negative set RN which subsequently allows the final classifier of CR-SVM to give better results than Roc-SVM.</p><p>Note that the methods (S-EM and CR-SVM) are all two-step algorithms in which the first step and the second step are independent of each other. The algorithm for the second step basically needs a good set of reliable negatives RN extracted from U. This means that one can pick any algorithm for the first step to work with any algorithm for the second step. For example, we can also have CR-EM which uses the algorithm (shown in <ref type="figure">Figures 3 and 4)</ref> of the first step of CR-SVM to combine with the algorithm of the second step of S-EM. CR-EM actually works quite well as it is also able to exploit the more accurate reliable negative set RN extracted using cosine and Rocchio. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Empirical Evaluation</head><p>We now present the experimental results to support our claim that negative training data is not needed and can even harm text classification. We also show the effectiveness of the proposed PU learning methods CR-SVM and CR-EM. The following methods are compared: (1) traditional supervised learning methods SVM and NB which use both positive and negative training data; (2) PU learning methods, including two existing methods S-EM and Roc-SVM and two new methods CR-SVM and CR-EM, and (3) one-class SVM <ref type="bibr" target="#b44">(Schölkop et al., 1999)</ref> where only positive training data is used in learning (the unlabeled set is not used at all).</p><p>We used LIBSVM 1 for SVM and one-class SVM, and two publicly available 2 PU learning techniques S-EM and Roc-SVM. Note that we do not compare with some other PU learning methods such as those in <ref type="bibr" target="#b25">and Elkan and Noto, 2008</ref> as the purpose of this paper is not to find the best PU learning method but to show that PU learning can address our special sample selection bias problem. Our current methods already do very well for this purpose.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Datasets and Experimental Settings</head><p>We used two well-known benchmark data collections for text classification, the Reuters-21578 collection 3 and the 20 Newsgroup collection 4 . Reuters-21578 contains 21578 documents. We used the most populous 10 out of the 135 categories following the common practice of other researchers. 20 Newsgroup has 11997 documents from 20 discussion groups. The 20 groups were also categorized into 4 main categories.</p><p>We have performed two sets of experiments, and just used bag-of-words as features since our objective in this paper is not feature engineering.</p><p>(1) Test set has other topic documents. This set of experiments simulates the scenario in which the negative training and test samples have different distributions. We select positive, negative and other topic documents for Reuters and 20 Newsgroup, and produce various data sets. Using these data sets, we want to show that PU learning can do bet-1 http://www.csie.ntu.edu.tw/~cjlin/libsvm/ 2 http://www.cs.uic.edu/~liub/LPU/LPU-download.html 3 http://www.research.att.com/~lewis/reuters21578.html 4 http://people.csail.mit.edu/jrennie/20Newsgroups/ ter than traditional learning that uses both positive and negative training data.</p><p>For the Reuters collection, each of the 10 categories is used as a positive class. We randomly select one or two of the remaining categories as the negative class (denoted by Neg 1 or Neg 2), and then we randomly choose some documents from the rest of the categories as other topic documents. These other topic documents are regarded as negatives and added to the test set but not to the negative training data. They thus introduce a different distribution to the negative test data. We generated 20 data sets (10*2) for our experiments this way.</p><p>The 20 Newsgroup collection has 4 main categories with sub-categories <ref type="bibr" target="#b4">5</ref> ; the sub-categories in the same main category are relatively similar to each other. We are able to simulate two scenarios: (1) the other topic documents are similar to the negative class documents (similar case), and <ref type="formula">(2)</ref> the other topic documents are quite different from the negative class documents (different case). This allows us to investigate whether the classification results will be affected when the other topic documents are somewhat similar or vastly different from the negative training set. To create the training and test data for our experiments, we randomly select one sub-category from a main category (cat 1) as the positive class, and one (or two) subcategory from another category (cat 2) as the negative class (again denoted by Neg 1 or Neg 2). For the other topics, we randomly choose some docu-ments from the remaining sub-categories of cat 2 for the similar case, and some documents from a randomly chosen different category (cat 3) (as the other topic documents) for the different case. We generated 8 data sets (4*2) for the similar case, and 8 data sets (4*2) for the different case.</p><p>The training and test sets are then constructed as follows: we partition the positive (and similarly for the negative) class documents into two standard subsets: 70% for training and 30% for testing. In order to create different experimental settings, we vary the number of the other topic documents that are added to the test set as negatives, controlled by a parameter α, which is a percentage of |TN|, where |TN| is the size of the negative test set without the other topic documents. That is, the number of other topic documents added is α × |TN|.</p><p>(2) Test set has no other topic documents. This set of experiments is the traditional classification in which the training and test data have the same distribution. We employ the same data sets as in <ref type="formula">(1)</ref> but without having any other topic documents in the test set. Here we want to show that PU learning can do equally well without using the negative training data even in the traditional setting.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Results with Other Topic Documents in Test Set</head><p>We show the results for experiment set (1), i.e. the distributions of the negative training and test data are different (caused by the inclusion of other topic documents in the test set, or the addition of other topic documents to complement existing negatives in the test set). The evaluation metric is the F-score on the positive class <ref type="bibr" target="#b15">(Bollmann and Cherniavsky, 1981)</ref>, which is commonly used for evaluating text classification. <ref type="figure" target="#fig_3">Figure 6</ref> shows the comparison results when the negative class contains only one category of documents (Neg 1), while <ref type="figure" target="#fig_4">Figure 7</ref> shows the results when the negative class contains documents from two categories (Neg 2) in the Reuters collection. The data points in the figures are the averages of the results from the corresponding datasets. Our proposed method CR-SVM is shown to perform consistently better than the other techniques. When the size of the other topic documents (xaxis) in the test set increases, the F-scores of the two traditional learning methods SVM and NB decreased much more dramatically as compared with the PU learning techniques. The traditional learning models were clearly unable to handle different distributions for training and test data. Among the PU learning techniques, the proposed CR-SVM gave the best results consistently. Roc-SVM did not do consistently well as it did not manage to find high quality reliable negatives RN sometimes. The EM based methods (CR-EM and S-EM) performed well in the case when we had only one negative class ( <ref type="figure" target="#fig_3">Figure 6</ref>). However, it did not do well in the situation where there were two negative classes <ref type="figure" target="#fig_4">(Figure 7</ref>) due to the underlying mixture model assumption of the naïve Bayesian classifier. One-class SVM (OSVM) performed poorly because it did not exploit the useful information in the unlabeled set at all.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.1">Results on the Reuters data</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.2">Results on 20 Newsgroup data</head><p>Recall that for the 20 Newsgroup data, we have two settings: similar case and different case.  <ref type="figure">Figure 9</ref> (Neg 2). We observe that CR-EM, S-EM and CR-SVM all performed well. EM based methods (CR-EM and S-EM) have a slight edge over CR-SVM. Again, the F-scores of the traditional supervised learning (SVM and NB) deteriorated when more other topic documents were added to the test set, while CR-EM, S-EM and CR-SVM were able to remain unaffected and maintained roughly constant F-scores. When the negative class contained documents from two categories (Neg 2), the F-scores of the traditional learning dropped even more rapidly. Both Roc-SVM and One-class SVM (OSVM) performed poorly, due to the same reasons given previously. The results are shown in <ref type="figure">Figures 10 (Neg 1)</ref> and 11 (Neg 2). The trends are similar to those for the similar case, except that the performance of the traditional supervised learning methods (SVM and NB) dropped even more rapidly with more other topic documents. As the other topic documents have very different distributions from the negatives in the training set in this case, they really confused the traditional classifiers. In contrast, the three PU learning techniques were still able to perform consistently well, regardless of the number of other topic documents added to the test data. In summary, the results showed that learning with negative training data based on the traditional paradigm actually harms classification when the identical distribution assumption does not hold.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3">Results without Other Topic Documents in Test Set</head><p>Given an application, one may not know whether the identical distribution assumption holds. The above results showed that PU learning is better when it does not hold. How about when the assumption does hold? To find out, we compared the results of SVM, NB, and three PU learning methods using the datasets without any other topic documents added to the test set. In this case, the training and test data distributions are the same. <ref type="table" target="#tab_3">Table 1</ref> shows the results for this scenario. Note that for PU learning, the negative training data were not used. The traditional supervised learning techniques (SVM and NB), which made full use of the positive and negative training data, only performed just about 1-2% better than the PU learning method CR-SVM (which is not statistically significant based on paired t-test). This suggests that we can do away with negative training data, since PU learning can perform equally well without them. This has practical importance since the full coverage of negative training data is hard to find and to label in many applications.</p><p>From the results in <ref type="figure" target="#fig_3">Figures 6-11</ref> and <ref type="table" target="#tab_3">Table 1</ref>, we can conclude that PU learning can be used for binary text classification without the negative training data (which can be harmful for the task). CR-SVM is our recommended PU learning method based on its generally consistent performance. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Conclusions</head><p>This paper studied a special case of the sample selection bias problem in which the positive training and test distributions are the same, but the negative training and test distributions may be different. We showed that in this case, the negative training data should not be used in learning, and PU learning can be applied to this setting. A new PU learning algorithm (called CR-SVM) was also proposed to overcome the weaknesses of the current two-step algorithms.</p><p>Our experiments showed that the traditional classification methods suffered greatly when the distributions are different for the negative training and test data, but PU learning does not. We also showed that PU learning performed equally well in the ideal case where the training and test data have identical distributions. As such, it can be advantageous to discard the potentially harmful negative training data and use PU learning for classification.</p><p>In our future work, we plan to do more comprehensive experiments to compare the classic supervised learning and PU learning techniques with different kinds of settings, for example, by varying the ratio between positive and negative examples, as well as their sizes. It is also important to explore how to catch the best iteration of the SVM/NB classifier in the iterative running process of the algorithms. Finally, we would like to point out that it is conceivable that negative training data could still be useful in many cases. An interesting direction to explore is to somehow combine the extracted reliable negative data from the unlabeled set and the existing negative training data to further enhance learning algorithms.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 2 .</head><label>2</label><figDesc>Figure 2. EM algorithm with the NB classifier</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>1 .Figure 4 .</head><label>14</label><figDesc>Figure 4. Identifying RN using the Rocchio classifier</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 6 .</head><label>6</label><figDesc>Figure 6. Results of Neg 1 using the Reuter data</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 7 .</head><label>7</label><figDesc>Figure 7. Results of Neg 2 using the Reuter data</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Figure 8 .Figure 9 .</head><label>89</label><figDesc>Figure 8. Results of Neg 1, similar case -using the 20 Newsgroup data</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Figure 10 .Figure 11 .</head><label>1011</label><figDesc>Figure 10. Results of Neg 1, different case -using the 20 Newsgroup data</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1" validated="false"><head></head><label></label><figDesc>Similar case: Here, the other topic documents aresimilar to the negative class documents, as they belong to the same main category. The comparison results are given in Figure 8 (Neg 1) and</figDesc><table>0.6 
+
+0.7 
+
+0.8 
+
+0.9 
+
+1 
+
+10% 
+20% 
+30% 
+40% 
+50% 
+60% 
+70% 
+80% 
+90% 100% 
+
+a %*|TN | of other topic documents 
+
+F-score 
+
+SVM 
+NB 
+OSVM 
+S-EM 
+
+Roc-SVM 
+CR-EM 
+CR-SVM 
+
+0.5 
+
+0.6 
+
+0.7 
+
+0.8 
+
+0.9 
+
+1 
+
+10% 
+20% 
+30% 
+40% 
+50% 
+60% 
+70% 
+80% 
+90% 100% 
+
+a %*|TN | of other topic documents 
+
+F-score 
+
+SVM 
+NB 
+OSVM 
+S-EM 
+
+Roc-SVM 
+CR-EM 
+CR-SVM </table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3" validated="true"><head>Table 1 .</head><label>1</label><figDesc>Comparison of methods without other docu- ments in test set</figDesc><table>Methods 
+
+Reuters 
+(Neg 1) 
+
+Reuters 
+(Neg 2) 
+
+20News 
+(Neg 1) 
+
+20News 
+(Neg 2) 
+
+SVM 
+0.971 
+0.964 
+0.988 
+0.990 
+NB 
+0.972 
+0.947 
+0.988 
+0.992 
+S-EM 
+0.952 
+0.921 
+0.974 
+0.975 
+CR-EM 
+0.955 
+0.897 
+0.983 
+0.986 
+CR-SVM 
+0.960 
+0.959 
+0.967 
+0.974 
+
+</table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="5">The four main categories and their corresponding subcategories are: computer (graphics, os, ibmpc.hardware, mac.hardware, windows.x), recreation (autos, motorcycles, baseball, hockey), science (crypt, electronics, med, space), and talk (politics.misc, politics.guns, politics.mideast, religion).</note>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<title level="m" type="main">Every document in P is assigned the class label +1</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<title level="m" type="main">Every document in RN is assigned the label -1</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title level="m" type="main">Use P and RN to train a SVM classifier S i , with i = 1 initially and i = i+1 with each iteration</title>
+		<imprint>
+			<biblScope unit="page" from="3" to="7" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<monogr>
+		<title level="m" type="main">Let the set of documents in Q that are classified as negative be W</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Q</forename><surname>Classify</surname></persName>
+		</author>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<title level="m" type="main">= ∅) then stop</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<title/>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Else Q = Q -W</surname></persName>
+		</author>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title/>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Rn = Rn</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>∪w</surname></persName>
+		</author>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">Use the last SVM classifier S last to classify P</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<monogr>
+		<title level="m" type="main">If more than 5% positives are classified as negative 11. then use S 1 as the final classifier</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<monogr>
+		<title level="m" type="main">12. else use S last as the final classifier</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<title level="m" type="main">Constructing the final classifier using SVM References</title>
+		<imprint/>
+	</monogr>
+	<note>Figure 5</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Supervised Domain Adaption for WSD</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><surname>Agirre</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">L</forename><forename type="middle">O</forename><surname>Lacalle</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 12th Conference of the European Chapter for Computational Linguistics (EACL09)</title>
+		<meeting>the 12th Conference of the European Chapter for Computational Linguistics (EACL09)</meeting>
+		<imprint>
+			<date type="published" when="2009" />
+			<biblScope unit="page" from="42" to="50" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<monogr>
+		<title level="m" type="main">Exploiting Feature Hierarchy for Transfer Learning in Named Entity Recognition</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Andrew</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Nallapati</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><surname>Cohen</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2008" />
+			<publisher>ACL</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">T. Discriminative learning under covariate shift</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Bickel</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Bruckner</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Scheffer</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Machine Learning Research</title>
+		<imprint>
+			<date type="published" when="2009" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Dirichlet-enhanced spam filtering based on biased samples</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Bickel</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Scheffer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Advances in Neural Information Processing Systems</title>
+		<imprint>
+			<date type="published" when="2007" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+		<title level="m" type="main">Measurementtheoretical investigation of the mz-metric. Information Retrieval Research</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Bollmann</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">V</forename><surname>Cherniavsky</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1981" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<title level="m" type="main">The effect of adding relevance information in a relevance feedback environment</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Buckley</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Salton</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Allan</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1994" />
+			<publisher>SIGIR</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Combining labeled and unlabeled data with co-training</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Blum</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Mitchell</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. of Computational Learning Theory</title>
+		<meeting>of Computational Learning Theory</meeting>
+		<imprint>
+			<date type="published" when="1998" />
+			<biblScope unit="page" from="92" to="102" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<monogr>
+		<title level="m" type="main">Domain Adaptation with Active Learning for Word Sense Disambiguation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><forename type="middle">S</forename><surname>Chan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><forename type="middle">T</forename><surname>Ng</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2007" />
+			<publisher>ACL</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Maximum likelihood from incomplete data via the EM algorithm</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Dempster</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">N</forename><surname>Laird</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Rubin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of the Royal Statistical Society</title>
+		<imprint>
+			<date type="published" when="1977" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<monogr>
+		<title level="m" type="main">PAC learning from positive statistical queries</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Denis</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1998" />
+			<publisher>ALT</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<monogr>
+		<title level="m" type="main">Text classification and co-training from positive and unlabeled examples</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Denis</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Laurent</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Rémi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Marc</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2003" />
+		</imprint>
+	</monogr>
+	<note>ICML</note>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Text Classification from Positive and Unlabeled Examples</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Denis</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Rémi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Marc</forename><forename type="middle">T</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 9th International Conference on Information Processing and Management of Uncertainty in Knowledge-Based Systems</title>
+		<meeting>the 9th International Conference on Information Processing and Management of Uncertainty in Knowledge-Based Systems</meeting>
+		<imprint>
+			<date type="published" when="2002" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Locating complex named entities in Web Text</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Downey</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Broadhead</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">O</forename><surname>Etzioni</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IJCAI</title>
+		<imprint>
+			<date type="published" when="2007" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Correcting sample selection bias in maximum entropy density estimation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Dudik</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Schapire</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Phillips</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Advances in Neural Information Processing Systems</title>
+		<imprint>
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Learning classifiers from only positive and unlabeled data</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Elkan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Noto</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">KDD</title>
+		<imprint>
+			<biblScope unit="page" from="213" to="220" />
+			<date type="published" when="2008" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<monogr>
+		<title level="m" type="main">Active Sample Selection for Named Entity Transliteration</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Goldwasser</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Roth</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2008" />
+			<publisher>ACL</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Sample selection bias as a specification error</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Heckman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Econometrica</title>
+		<imprint>
+			<biblScope unit="volume">47</biblScope>
+			<biblScope unit="page" from="153" to="161" />
+			<date type="published" when="1979" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Correcting sample selection bias by unlabeled data</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Smola</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Gretton</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Borgwardt</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Scholkopf</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Advances in Neural Information Processing Systems</title>
+		<imprint>
+			<date type="published" when="2007" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<monogr>
+		<title level="m" type="main">Instance Weighting for Domain Adaptation in NLP</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><forename type="middle">X</forename><surname>Zhai</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2007" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<monogr>
+		<title level="m" type="main">Learning with Positive and Unlabeled Examples Using Weighted Logistic Regression</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><forename type="middle">S</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Liu</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2003" />
+		</imprint>
+	</monogr>
+	<note>ICML</note>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">A sequential algorithm for training text classifiers: corrigendum and additional data</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Lewis</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">SIGIR Forum</title>
+		<imprint>
+			<date type="published" when="1995" />
+			<biblScope unit="page" from="13" to="19" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<monogr>
+		<title level="m" type="main">Multi-Domain Sentiment Classification</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Zong</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2008" />
+			<publisher>ACL</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">Learning to classify texts using positive and unlabeled data</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">X</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Liu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IJCAI</title>
+		<imprint>
+			<date type="published" when="2003" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<monogr>
+		<title level="m" type="main">Learning from Positive and Unlabeled Examples with Different Data Distributions</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">X</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Liu</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Learning to Identify Unexpected Instances in the Test Set</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">X</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Liu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IJCAI</title>
+		<imprint>
+			<date type="published" when="2007" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<monogr>
+		<title level="m" type="main">Positive Unlabeled Learning for Data Stream Classification</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">X</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><forename type="middle">S</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Ng</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2009" />
+			<publisher>SDM</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<monogr>
+		<title level="m" type="main">Distributional Similarity vs</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">X</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">L</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Ng</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2010" />
+		</imprint>
+		<respStmt>
+			<orgName>PU Learning for Entity Set Expansion, ACL</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<monogr>
+				<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">X</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W-S</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Yu</forename><forename type="middle">P</forename></persName>
+		</author>
+		<title level="m">Building text classifiers using positive and unlabeled examples. ICDM</title>
+		<imprint>
+			<date type="published" when="2003" />
+			<biblScope unit="page" from="179" to="188" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<monogr>
+				<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W-S</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Yu</forename></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><forename type="middle">S</forename></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Li</forename></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">X</forename></persName>
+		</author>
+		<title level="m">Partially supervised text classification. ICML</title>
+		<imprint>
+			<date type="published" when="2002" />
+			<biblScope unit="page" from="387" to="394" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<analytic>
+		<title level="a" type="main">Text classification from labeled and unlabeled documents using EM</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Nigam</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Mccallum</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Thrun</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Mitchell</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Machine Learning</title>
+		<imprint>
+			<date type="published" when="2000" />
+			<biblScope unit="volume">39</biblScope>
+			<biblScope unit="page" from="103" to="134" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<analytic>
+		<title level="a" type="main">A survey on transfer learning</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><forename type="middle">J</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Q</forename><surname>Yang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Knowledge and Data Engineering</title>
+		<imprint>
+			<biblScope unit="volume">99</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<date type="published" when="2009" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<analytic>
+		<title level="a" type="main">The smart retrieval system: experiments in automatic document processing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Rocchio</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Sagae</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Tsujii</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Online Methods for Multi-Domain Learning and Adaptation</title>
+		<editor>G. Salton</editor>
+		<meeting><address><addrLine>Englewood Cliffs, NJ</addrLine></address></meeting>
+		<imprint>
+			<publisher>EMNLP</publisher>
+			<date type="published" when="1971" />
+		</imprint>
+	</monogr>
+	<note>Relevant feedback in information retrieval</note>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<monogr>
+		<title level="m" type="main">Introduction to Modern Information Retrieval</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Salton</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><forename type="middle">J</forename><surname>Mcgill</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1986" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<monogr>
+		<title level="m" type="main">Estimating the support of a high-dimensional distribution</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Schölkop</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><forename type="middle">C</forename><surname>Platt</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Shawe-Taylor</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><forename type="middle">J</forename><surname>Smola</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><forename type="middle">C</forename><surname>Williamson</surname></persName>
+		</author>
+		<idno>MSR-TR-99-87</idno>
+		<imprint>
+			<date type="published" when="1999" />
+			<pubPlace>Microsoft Research</pubPlace>
+		</imprint>
+	</monogr>
+<note type="report_type">Technical report</note>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<analytic>
+		<title level="a" type="main">Improving predictive inference under covariate shift by weighting the log-likelihood function</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><surname>Shimodaira</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Statistical Planning and Inference</title>
+		<imprint>
+			<biblScope unit="volume">90</biblScope>
+			<biblScope unit="page" from="227" to="244" />
+			<date type="published" when="2000" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<analytic>
+		<title level="a" type="main">Input-dependent estimation of generalization error under covariate shift</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Sugiyama</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K.-R</forename><surname>Muller</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Statistics and Decision</title>
+		<imprint>
+			<biblScope unit="volume">23</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="249" to="279" />
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<analytic>
+		<title level="a" type="main">Direct importance estimation with model selection and its application to covariate shift adaptation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Sugiyama</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Nakajima</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><surname>Kashima</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Bunau</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kawanabe</forename><forename type="middle">M</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Advances in Neural Information Processing Systems</title>
+		<imprint>
+			<date type="published" when="2008" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<analytic>
+		<title level="a" type="main">Direct density ratio estimation for large-scale covariate shift adaptation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Tsuboi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><surname>Kashima</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Hido</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Bickel</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Sugiyama</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the SIAM International Conference on Data Mining</title>
+		<meeting>the SIAM International Conference on Data Mining</meeting>
+		<imprint>
+			<date type="published" when="2008" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<monogr>
+		<title level="m" type="main">Domain adaptive bootstrapping for named entity recognition</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><forename type="middle">S</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">N</forename><surname>Ye</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><forename type="middle">L</forename><surname>Chieu</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2009" />
+			<publisher>ACL</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b50">
+	<monogr>
+		<title level="m" type="main">Graph Ranking for Sentiment Transfer</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Q</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Tan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">X</forename><surname>Cheng</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2009" />
+			<publisher>ACL</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b51">
+	<monogr>
+		<title level="m" type="main">Heterogeneous Transfer Learning for Image Clustering via the SocialWeb</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Q</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Xue</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Yu</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2009" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b52">
+	<monogr>
+		<title level="m" type="main">PEBL: Positive example based learning for Web page classification using SVM</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Chang</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2002" />
+			<biblScope unit="page" from="239" to="248" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b53">
+	<monogr>
+		<title level="m" type="main">Learning and evaluating classifiers under s ample selection bias</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Zadrozny</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2004" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b54">
+	<monogr>
+		<title level="m" type="main">A Comparative Study of Discriminative Methods for Reranking LVCSR N-best Hypotheses in Domain Adaptation and Generalization</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Z</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Soong</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><surname>Meng</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2006" />
+			<publisher>ICASSP</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

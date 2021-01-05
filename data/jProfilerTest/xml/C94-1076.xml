@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T10:58+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Minimal Change and Bounded Incremental Parsing</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Wirdn</forename><surname>Mats</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Universit</orgName>
+								<address>
+									<addrLine>~t des Saarlandes Postfach</addrLine>
+									<postCode>1150 D-66041</postCode>
+									<settlement>Saarbr/icken</settlement>
+									<country key="DE">Germany</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Fachrichttmg</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Universit</orgName>
+								<address>
+									<addrLine>~t des Saarlandes Postfach</addrLine>
+									<postCode>1150 D-66041</postCode>
+									<settlement>Saarbr/icken</settlement>
+									<country key="DE">Germany</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Minimal Change and Bounded Incremental Parsing</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>Ideally, the time that an incremental algorithm uses to process a change should be a fimction of the size of the change rather than, say, the size of the entire current input. Based on a formalization of "the set of things changed" by an increInental modification, this paper investigates how and to what extent it is possibh~' to give such a guarantee for a chart-ba.se(l parsing frmnework and discusses the general utility of a tninlmality notion in incremental processing)</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.1">Background</head><p>Natural-language computing has traditionally been understood as a "batch-mode" or "once-only" process, in which a problem instance P (shy, a text) is mapped as a whole to a solution S (such as air analysis of the text). IIowever, in highly interactive and real-time applications --for example, grammar checking, structure editing and on-line translation --what is required is efficient processing of a sequence of small changes of a text. Exhaustive recomlmtation is tber, not a feasible alternative. Rather, to avoid ms much recomputation as possible, each update cycle must re-use those parts of the previous solution that are still wdid. We say that an algorithm is incremental if it rises information from an old solution in computing the new solution.</p><p>The problem of incremental processing can be stal.ed its follows, using a notation similar to that of All)ern et al. <ref type="bibr" target="#b0">[1]</ref>: Assume given a problenr instance P (a representation of the current input), a solution S (the current output), and a modification Ap to p.2 The modification results in a new problem instance P' = P • At,, where • is a composition operator. The task of an in- <ref type="bibr">1I</ref> would like to thank Ralph RSnnqulst as well as Gregor Erbach and other colleagues in Snarbrfieken for discussions on the material presented here, Peter Fritzson for originally alerting my attention to Ramalingam and tleps' paper, and the anonymous referees. This research has been flmded by the Cerman Science Foundation (DFG) through the Sonderforschnngsl)erelch 314, project N3 (BiLD).</p><p>~A terminological note: we use "input change" and "modification" as well as "output cllange" and "update" synonymously. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>~-S' --S (I) A s</head><p>l;'igure 1: Batch-mode versus incremental cornlmtation.</p><p>cremental algorithm is then to produce an upd~te As in the old solution such that .5' • As is a solution to P(DAp (see <ref type="figure">figure 1</ref>). At this point, nothing is stipulated about tim amount, of information it, S tlmt should be re-used in S'.</p><p>To show properties such im correctness and complexity of incremental algorithms, it is necessary to establish a formal measure of "the set of things changed". This me,inure sllouhl capture tim minimal change resuiting from a modification and, moreover, should be independent of any particular algorithms R)r incremental update. One way of achieving this is to compare the results obtained by batch-mode processing of the inputs before and after the change, respectively (Wirfin and l~.Snnquist <ref type="bibr" target="#b14">[15,</ref><ref type="bibr" target="#b16">17]</ref>): By forming tile "difference" l)el.ween the lmtch-mode soh,tions S and £,1 obtained before ;tlt(] after a modillcation At, to P, we obtain a parameter As,m ' which captures tin.' minimal change in a way which is indeed imlependent of the incremental ul)date. Given that A.s,,,i" corre.sl)onds precisely to what any sound and complete incremental algorithm must do, it, can be used as a blmis lbr correctness proofs for suclt algorithms (given tl,at the batch-rhode algorithm is correct).</p><p>Fnrthermore, Asmi" can be used ms a basis of complexity analyses: Ideally, each update cycle of an incremental algorithm slmuld expend an amount of work which is a polynomial fimction of the size of the change, rather than, say, tile size of tl,e entire current input. However, making this notion precise in a way which is independent of particular incremental algorithms is not always straightforward. Two early approaches along these lines are Goodwin <ref type="bibr" target="#b2">[3,</ref><ref type="bibr" target="#b3">4]</ref> (reason maintenance) and <ref type="bibr">Reps [11]</ref> (language-based editing). More recently, Alpern et al. <ref type="bibr" target="#b0">[1]</ref> and Ramalingam and R.eps <ref type="bibr" target="#b8">[9,</ref><ref type="bibr" target="#b9">10]</ref> have provided a framework for analysing incremental algorithms, in which the basic measure used is the snm of the sizes of the changes in the input and output. This framework assumes that the modification of the input can be carried out in o(IAPI) time, where the generic notation IXI is used for the size of X. Furthermore, it</p><p>assumes that ]As,m,] denotes the minimal IAsl such that S (9 As solves P (9 Ap. Alpern et al. then define = lapl + IzXs,~. I as the intrinsic size of a change.</p><p>The choice of 6 is motivated as follows: IAph the size of the modification, is in itself too crude a measure, since a small change in problem instance may cause a large change in solution or vice versa. IAs..,,I iv then chosen as a measure of the size of the chauge in the solution, since the time for updating the solution can be no less than this. The 5 measure thus makes it possible to capture how well a particular algorithm performs relative to the amount of work that must be performed in response to a change.</p><p>An incremental algorithm is said to be bounded if it can process any change in time O(f <ref type="bibr" target="#b4">(5)</ref>), that is, in time depending only or, 5. Intuitively, this means that it only processes the "region" where the input or output changes. Algorithms of this kind can then be classified according to their respective degrees of boundedness (see Ftamalingam and Reps <ref type="bibr">[10, section 5]</ref>). For exampie, an algorithm which is linear in 5 is asymptotically optimal. Furthermore, an incremental algorithm is said to be unbounded if the time it takes to update the solution can be arbitrarily large for a given 5.</p><p>It might seem that what has been discussed so far has little relevance to natural-language processing, where incrementality is typically understood ,as the piecemeM assembly of an analysis during a single left-to-right a pass through a text or a spoken utterance. In particular, incrementality is often used as a synonym for interleaved approaches, in which syntax and semantics work in parallel such that each word or phr~me is given an interpretation immediately upon being recognized (see, for example, Mellish <ref type="bibr" target="#b6">[7]</ref> and lladdock <ref type="bibr" target="#b4">[5]</ref>). llowever, the two views are closely related: The "leftto-right view" is an idealized, psycholinguistically motivated special case, in which the only kind of change allowed is addition of new material at the end of the current input, resulting in piecemeal expansion of the analysis. Moreover, the interleaving is just a consequence of the fact that every piece of new input must, in some sense, be fully analysed in order to be integrated with the old analysis.</p><p>To distinguish this special case from the general case, in wtfich arbitrary changes are allowed, Wirdn <ref type="bibr" target="#b14">[15]</ref> refers to them as left-to-right (Lll) incrementality and 3Strictly speaking front-to-back or beginMng-to-end.</p><p>full incremenlalily, respectively. The former case corresponds to on-line analysis --that each prefix of a string is parsed (interpreted) before any of the input beyond that prefix is read (llarrison <ref type="bibr">[6, page 433]</ref>). The latter case has long been studied in interactive language-based programming environments (for example, Ghezzi and Mandrioli <ref type="bibr" target="#b1">[2]</ref>), whereas the only previous such work that we are aware of in the context of natural-language processing is Wirdn and R.gmlqnist <ref type="bibr" target="#b13">[14,</ref><ref type="bibr" target="#b14">15,</ref><ref type="bibr" target="#b15">16,</ref><ref type="bibr" target="#b16">17</ref>].</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>1.2</head><p>The Problem</p><p>The aim of this paper is to begin to adapt and apply the notion of bounded incremental computation to natural-language parsing, using a method for establishing minimal change previously introduced by Wir6n and RSnnquist <ref type="bibr" target="#b14">[15,</ref><ref type="bibr" target="#b16">17]</ref>. To this end, the paper shows how the 6 parameter can be defined in a fully incremental, chart-based parsing framework, briefly describes a previous, unbomMed algorithm, and then shows how a polynomially bounded algorithm can be obtained.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Batch-Mode Chart Parsing</head><p>An incremental problem can be defined by specifying its batch-mode version and the set of allowable modifications. We thus begin by specifying batch-rhode chart parsing, restricting ourselves to a standard context-free grammar without cyclic or empty productions.</p><p>Definition 1 (Chart) A chart is a directed graph C = (V, E) such that V is a linite, non-empty set of vertices and E C V x V x R is a finite set of edges, where R iv the set of dotted context-free rules obtained from the grammar. 4</p><p>The vertices vl,...,vn+l G V correspond to the linear positions between the tokens r = tl ... t, of an n-token text. <ref type="bibr" target="#b4">5</ref> All edge e G I'; hetween vertices vl and vj carries information al&gt;out a (partially) analysed constituent between the corresponding positions. The algorithm makes use of an agenda (see Thompson <ref type="bibr" target="#b11">[12]</ref>). Agenda t;~sks are created in response to tokens being read and edges being added to the chart, and may be ordered according to their priorities. To define the agenda, we make use of the set of possible tokens 7'kns and the set of possible edges Edgs.</p><p>Definition 2 (Agenda)We define the agenda as Agda C Tkns U Edgs U ( Edgs x Edgs). We refer to the three types of tasks that it contains as scanning, prediction and combination tasks, respectively. 4For brevity, we omit a fourth edge component corresponding to tile set of (partial) parse trees according to the grammar and lexicon (assuming that only the topmost portion of a tree corresponding to the (lotted rule needs to be stored in an edge).</p><p>5We shall use ~" interchangeably to denote a sequence a~td a set of tokens.</p><p>Each agenda task is executed by a ste 1) of the algorithln below. We specify two versions of batch-nmde chart parsing --the basic bottom-up (strictly speaking, leftcorner) and top-down (Earlcy-stylc) strategies -. aSSll~ ruing that the one or the other is chosen.</p><p>Algorithm 1 (Batch-mode chart parsing)</p><p>Input: A seqnence of tokens r = t1 .. • t,.</p><p>Output: A chart.</p><p>Initialization: If tile tOll-down strategy is used, then add an agenda task corresponding to ail initial topdown prediction (Vl, Vl, S --~ .c~) for each rule S --+ ~v, where S is ttle start category of tile grammar.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Method:</head><p>For each token, create a scanning tm~k. While tile agenda is not empty, remove the next task and execute tile corresponding step below:</p><p>Scan: Given a token I at position j, lbr each lexical entry of the form X -&gt; t, add all edge </p><formula xml:id="formula_0">(vj,Vj+l,X --+ l.</formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>3</head><p>Incremental Chart Parsing a. <ref type="bibr" target="#b0">1</ref> The Problem ]'lie overall incremental process can be thought of ~Ls a cliange-update loop, where each chalige of the input is immediately followed by a corresponding update of the output. To completely specify the state of this process, we shall make use of a conliguration consisting of (a reI)resentation of) an input text r, a cliart C and an edge-dependency relation 79 (to be &amp;dined in section 4). The problem of incremental chart parsing can then be specilied abstractly as a mapping</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>f((r,C, 79),Ar) ~ (r',C',79')</head><p>from an old configuration and a modillcation Ar to a new configuration. We shall allow two kinds of change, namely, insertion and deletion of w &gt; 1 contiguons ~We refer to the new edge as a lezical'edge.</p><p>tokens. We assume that a modification A~ is given as a vertex pair vj, Vj+m G V defining the update interval and, in the cILsc of an insertion, a seqnence of tokens T ~ lj • • • tit m . We fiirthernlore ;ussume that either the bottom-up or top-down strategy is chosen throughout a change-ul)date session, and, in tile latter case, that tile toll-down initialization is made before the session is started.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">A C, eneral Vertex Mapping</head><p>flow can tile minilnal change ASh, in be defined il, a chart-b~sed framework? One way of doing this is to colnpare the charts C = (V, E} and C' = (V', I',") that are obtained by batch-mode parsing of tile texts before and after a change, respectively. We thereby obtain a measure which is independent of particular increniental update algoril, hms. hltnitively, only those edges that are in E but not in lq re,st I)e relnoved, and only those elites that are in 1'; ~ Ilut not in E must lie generated anew. If the change is snlall, then a large fraction of the edges are in /q gl I'Y (I.hat is, are unchanged). llowever, to be able to colnpare the edge sets in the two ('harts, we nmst first establish a one-to-one mapping between their vertices, l,et us consider the case in wlfich a single token ti is (Meted from an n-token text.</p><p>The probleln is that, becanse of tile remove(l token, the two vertices vl and vi+l would seem to correspond to a single w~rtex in V ~. llowever, we can regard this single vertex as consisting of a "left half" and a "right half", which we assign diffe.rent indices. In other words, after having increase(l each index of v~_l.1,... , v~, G V' by one, we "split" vertex v~ and assign the index i+1 to its "right half". The incoming non-predicted edges ms well as (looping) top-down predictions at tile split vertex are then associated with its left half, and tile ontgoing non-predicted edges as well ~us (looping) bottom-up predictions are associated with its right half. 7 q'he reason for dividing the pre(licted edges in this way is that a tOll-down prediction is made at (,tie ending vertex of the i,riggcril, g edge (that is, froln tim left), wllereas a /)ol.toln-up pre(liction is lnade at tim starting veri,ex of the triggering edge (that is, from the right).</p><p>The lnapping Call I)e geIieralized to tile cruse ill whil:]l Ill COlitiguoiiS tokelis are deleted. Ttlis is done by iilc.reasilig the index of eax:h w~rtex froin the "right half" of tile split wn'tex an(I oilwards by m (instead of one). Fnrtherinore, by nsing the salile lnlq)ping but in the opposite direction, we can ills() cover insertion of m contiguous toke[is. To express this generalized inal)-ping, m'-ISlliln~ that !) is the set of vertices of the larger chart and V is that of the smaller chart. A deletion of m contiguous tokens then involves a mapping frona to V and an insertion of rn tokens involves a real/ping from V to V. In terms of tile indexing that holds before the vertices in V are renumbered, and assuniing that l) 7A,u lllentloiled above, we aSsulne that only the one or the other st, i'ategy is ilsed, so that ii, is kllowli llefOl'ehllnd which kind of predi&lt;:tlons the cltal't COlttliillS,  <ref type="figure" target="#fig_5">Figure 2</ref>: Chart of the sentence "The old man the tall ships" under bottom-up parsing. Inactive edges are drawn using continuous lines, active edges using dashed lines, and predicted (looping) edges are depicted below the vertices.  has n + 1 vertices, we obtain the following bidirectional mapping:</p><p>• Vertices vl,..., vi-1 C V correspond to vl, • •., vi-1 G V, respectively.</p><p>• Vertex vi corresponds to the "left half" of vertex Vi.</p><p>• Vertices vi+l,...,Vi+m-t E ~" do not correspond to any vertices in V.</p><p>• Vertex ~i+m corresponds to the "right half" of vertex vl.</p><p>• Vertices 91+re+x, • •., ~.+1 correspond to vi+l, • •., vn+l-m, respectively.</p><p>The mapping is thus established with respect to insettion or deletion of an arbitrary number of contiguous tokens, s</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3">Minimal Change</head><p>Assume that E and E' are the sets of edges of the charts C and C' obtained by batch-mode parsing of a text before and after a modification Ar, respectively. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.4">An Example</head><p>As an illustration, tile chart in tigure 2 is obtained under (batch-mode) bottom-up parsing, given the grammar in <ref type="figure" target="#fig_3">figure 4</ref> and the sentence 'q'he old man the tall ships". If the token "tall" is removed, the chart in <ref type="figure" target="#fig_2">figure 3</ref> is obtained. Vertex v~ in figure 2 then col responds to the left half of vertex v~ in <ref type="figure" target="#fig_2">figure 3</ref>, and vertex v6 corresponds to the right half of vertex v~. Furthermore, v7 corresponds to v~. Clearly, tile input change A~ consists of the token "tall". The output change A¢,,i, consists of the missing set M, which contains the three edges A26, NP27 and NPa4 in figure 2, and the new set N, which contains the singh. edge NPau in <ref type="figure" target="#fig_2">figure 3</ref>. ']'he size of the change is then 6= I~Xrl + IZXC,,,.,I := t+a+l =5. If instead "tall" is inserted before the last word in the sentence in <ref type="figure" target="#fig_2">figure 3</ref>, then the input change still eonslsts of the token "tall". ]lowever, the two sets making up the output change are reversed: the missing set contains the single edge NPa2 in <ref type="figure" target="#fig_2">figure 3</ref> and the new set contains the three edges A26, NP2r and NP34 in <ref type="figure" target="#fig_5">figure 2</ref>. Thus, the size of the change is again 5.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">An Unbounded Algorithm</head><p>A key idea of the incremental chart-parsing algorithm put forward by Wir&amp;, <ref type="bibr" target="#b13">[14,</ref><ref type="bibr" target="#b14">15]</ref> is to use edge dependencies for keeping track of edges that ]lave to be removed in response to a change. An edge e' is said to depend upon another edge or token e if it is formed (derived) directly on the b~usis of e. Furthermore, if e' is redundantly proposed by an edge f, then d can be said to . q'he nodes of tl|e gral)h correspond to the chart edges in <ref type="figure" target="#fig_2">figure 3</ref>. A dummy root node 0 is shown instead of nodes corresponding to the tokens.</p><p>depend (also) on f. By e' being "redundantly propose(l", we mean that the parser attempts to add an edge that is equivalent to # to the chart, but thai, that edge is rejected by the standard redundancy test in chart parsing. In effect, f provides an additional "justification" for #.</p><p>Given a chart C = (V, E) and a set of tokens r, these conditions correspond to the following dependency relation on E and r:</p><p>Definition 5 (Edge dependency) We define 79 as a binary relation on the set of chart edges and the set of tokens E U r such that 79(s, d) hohts if and only if d G E is formed, or is redun(lantly proposed, directly using s C EU r according to a chart-l)arsing algorithm. We say that d is a dependent (or derivative) edge of s, and tl|at s is a source edge (token) of d. 7) can be ilh|strated by a graph. The dependency graph corresponding to the chart in <ref type="figure" target="#fig_2">figure 3</ref> is shown in [igure 5.</p><p>On the basis of the dependency relation, WirSn and RSnnqnist <ref type="bibr" target="#b14">[15,</ref><ref type="bibr" target="#b16">17]</ref> define different disturbance sets, given as fimctions t'rom tokens to sets of edges, and containing edges that need to be removed from the chart in response to a token-level change. The simplest such set is 7)*(tj), the transitive closure of 79(tj). Wirdn and Rfnnquist <ref type="bibr" target="#b14">[15,</ref><ref type="bibr" target="#b16">17]</ref> discuss this and other alternatives and show completeness of 79* with respect to the missing set.</p><p>The algorithm performs an update essentially by removing the entire disturbance set an([ then generating all possible edges. The latter set includes not only the new edges, but also disturbed, non-missing edges, which have to be generated anew. q'he coml)lexity analysis of the algorithm yields that it is unbounded incremental in both its botto|n-up and top-down version (see Wir6n <ref type="bibr" target="#b15">[16]</ref>). The source of this is that the algorithm removes the entire disturbance set, whose size depends on n, the size of the entire input.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">A Bounded Algorithm</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.1">Intuitive Idea</head><p>Intuitively, a bounded incremental algorii.hm only processes the region where the input or output changes during an update cycle. In our c~se, the problem in achieving this is that the missing and new edges are not a priori known --when the incremental update begins, only a set of potentially missing edges (the disturbance set) is known. Ilowever, the ul)date can be limited by using a change-prol)agation algorithm (compare Itamalingam and l{.eps [10, page 21]): By initially retaining the disturl)ance set, new and old edges can be coml)ared during reparsing. If a new edge e' is different from the corresponding old edge e (if this exists), then the dependants of c are regarded ms disturbed (potentially missing). If # is equivalent to e in the sense of giving rise to the sltme derivative edges, then the dependants of c are known not to be missing, and hence tim reparsing process does not have to proceed beyond this point in the search sl)ace, in order to avoid extra computation, the disturbed edges should be visited in the order given by the dependency graph. llow can the points aL which a change "(lies out" be characterized? Since we are interested in characterizing the conditions under which two edges give rise to the same derivtLtive edges, the contents part of an edge (that is, the rigltt-hand side before the dot of the dotted rule) is irrelevant. For example, we want to say that the new edge Nl):~2 in fig||re 3 to be reparsingequivalent with edge NP:~4 in figure 2 although their dotted rules and parse trees are different: the dotte(I rule of the former is NP -~ Dcl N. and that of the latter is NI" ~ l)cI A N.. We can summarize this in tile following delinition:</p><p>Definition 6 (Reparsing-equivalent edges) Assume given a proposed edge e and a disturbed edge e' C-C. Wesay that e = (vi,vj,X-.*o~.fl) and # = <ref type="bibr">(v,, vt, Y-*tt.v)</ref> are equivalent from the point of view ofreparsingifi=s,j=t,X=Y andfl=v.</p><p>Inactive (combined or lexical) edges and predicted edges are special cases under this definition. Ill the former case, fl and u are empty, and thus two inactive edges are reparsing-equivalent if i = s, j = t and X = Y. In the latter case, (v and i t are empty, and thus two predicted edges e and c' are reparsing-equivalent if e = d.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.2">The Algorithm</head><p>We now specify a bounded incremental chart-parsing algorithm that handles one update cycle. 9 In comparison with the unbounded algorithm, the differences are in the reparse and remove steps. • Bottom-up case: If the looping edge depends on an outgoing, non-looping edge <ref type="bibr">((vi, vj, r)</ref> such that j &gt; i), then the looping edge is replaced with an edge (vi+,n, Vi+m, r) (in effect, it is moved).</p><p>• Top-down case: If the looping edge depends on an incoming, possibly looping edge ((vi, v~, r) such that k &lt; i), then do nothing.</p><p>Finally, update the depemlency relation 79 so that any edge <ref type="bibr">(vj,vk,r)</ref>  Reparse: Do the following steps:</p><p>In the ease of insertion: create a scanning task for each new token; create a combination tmsk for each active-inactive edge pair meeting at vl and vi+m.</p><p>In the case of deletion: create a combination task for each active-inactive edge pair meeting at vi.</p><p>Reparse while visiting the disturbed edges in the order given by the dependency graph and treating the disturbed edges as "sleeping" (that is, they do not play any role in the parsing process ms such).</p><p>9The algorithm is currently being implenlented.</p><p>Whenever a new edge is proposed, check if an equivalent edge exists in the disturbance set according to definition 6. If so, install the new edge, update 2) by letting the new edge inherit the dependencies from the old edge. Do not add any agenda items for the new edge (thereby discontinuing reparsing along this path). Mark the new edge as re-created (with respect to a reparsing-equivalent one).</p><p>Remove edges: Remove each edge that is in the disturbance set but not in the dependency set of any re-created edge.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.3">Incremental Complexity</head><p>For the purpose of analysing the incremental complexity of algorithm 2, we assume that adding or removing an edge takes unit time. We also assume that no edge h,'~ more than a constant munber of sources or dependants and, hence, that the time required to install or examine the depemlencies of k edges is O(k). t° We first focus on the reparsing step. 11 Consider the case of a deletion within a text. The set of new edges N are generated ;ks a result of joining two subcharts, which we assume have length i and j and contain O( </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Conclusions</head><p>The boundedness criterion used here provides a guarantee that tile next update state is never more than an amount of computation away from the current state that is limited by the size of the change. This criterion is very strong. It can be thought of as constituting one l°Thls assmnption is considered too strong in reason maintenance, where, in the worst case, all formulas can be directly connected (see Goodwln [4, page 110 f.]). However, it seems approprlate here, since nmler a context-free grammar of the kind 'ased here only predicted edges may have mu|tlple sources. Moreover, the number of these sources is limited because of the llnearlty of the problem instance (the text).</p><p>ll Since we take addition and removal of edges to be the pl'imary tasks of incremental update, we disregard the chart-preparation step. Although a more thorough analysis might take this step into &amp;ccotlnt both in the definition of g and in the complexity analysis, we do not believe that anything fundamental would be altered by this. extreme point of a continuum of ways in which to measure tile complexity of incremental algorithms. At. the other extreme, we have the option of using 11"1 + I,~"1, the cost of discarding the ohl solution and invoking a hatch-mode algorithm on the moditied problem instance. This measure might be used for showing that an algorithm with poor worst&lt;ase incremental behaviour is still practical: Poor incremental behaviour means that the algorithm does not respond quickly to (some) small changes, tlowever, it may still perform better than discarding the old solution and invoking a hatchmode algorithm. In other words, even if the algorithm is unbounded in ~, it may have a lower time bound in IP'[ + 1,9'1 than the batch-mode algorithm, q'he unbonn(led algorithm described ilk section 4 is an example of this: it is clearly more ellicient than the batch-mode algorithm for the lmrpose of incremental update.</p><p>Several interesting topics for further research present themselves: One is to generalize the notions of minimal change and hounded incrementality to other processing frameworks that make use of a table or a chart, for example, pseudo-parallel LR. parsing (Tomita [13]) or taMlar generation <ref type="bibr">(Neumann [8]</ref>). Another interesting topic is to translate the slmre notions to a unificationbased grammar formalism. Defining minimal change then requires a definition of the dill'erence between two feature structures. An immediate observation is that this is itself hardly a feature structure, but rather the set of (suh)structnres that are not present in both feature structures (in analogy with our delinition of the difference between two charts).</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head></head><label></label><figDesc>....................... l ....................... , Ii .... .r""" ..................</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: Chart of the sentence "The old man tile ships" under bottom-up parsing.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 4 :</head><label>4</label><figDesc>Figure 4: Example grammar and lexicon.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 5 :</head><label>5</label><figDesc>Figure 5: Edge-dependency graph induced by 1). q'he nodes of tl|e gral)h correspond to the chart edges in figure 3. A dummy root node 0 is shown instead of nodes corresponding to the tokens.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Algorithm 2 (</head><label>2</label><figDesc>Incremental Chart Parsing) Input: A configuration (r,C,:D) and a modification Ar corresponding to insertion or dcletlon of m tokens ti , . . •, ti+m. Output: An updated configuration (r', C ~, D'). Method: Do the following steps: Modify the problem instance: Insert or delete the modified tokens given by A~ into or from r. Prepare the chart: Do one of the following steps in the case of insertion or deletion, respectively: Insertion: Renumber edges as follows: First, re- place each edge (vj,v~,r} where j _&gt; i and k i with an edge (vj+m,vk,r}. Secondly, replace each edge (vj,v~,r) where k &gt; i with an edge (vj, vk+m, r). Looping edges at the "modification vertex", which have the form (vi, vi, r), are dealt with differently depending on where their sources are located, which in turn depends on the predic- tion strategy:</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head></head><label></label><figDesc>such that j &lt; i and k &gt; i is made dependent on ti. Deletion: Renumber edges ms follows: First, re- place each edge (vj, vie, r) where j &gt; i with an edge (Vj-m,vk,r). Then replace each edge (vj, vk, r) where k &gt; i with an edge (vj, vk ..... r).</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head></head><label></label><figDesc>i 2) and O(j 2) edges, respectively (disregarding the grammar constant ]G D. The joined chart thus has length i + j and consists of O((i + j)'-') edges. The number of uew edges resulting from joining the subcharts is then INI -- O((i + j)2) _ (O(i 2) + O(j2)) = O(i. j) cages. Since the algorithm generates these edges by invoking a O(n 3) reparsing algorithm, the new edges require O((i+j)a) - (O(i a) + O(jJ)) = O(i.j. (i+ j)) = O(i ~. j2) = O(IN2[) time. The insertion case can be obtained in a similar way and gives the same result. In the remove step, the missing edges are found by following dependency chains originating from tokens until a reparsing-equi- valent edge is found or the chain ends. This step can therefore be executed in O(IM]) time. The algorithm as a whole then requires 0(/~ 2) time.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0" validated="false"><head></head><label></label><figDesc>). d Add restllting new t~sks to the agenda. Predict 1 (Bottom-up): If tile edge is of the form (vj, vk,X --* c¢.), then, for each rule of the form Y --+ XT, add an edge (vjivj,Y ~-+ .XT) unless it already exists. Add resulting new tasks to tile agenda. Predict 2 (Top-down): If the edge is of tile form (vl, vj, X--+ oe. gfl), tlien, for each rule of the form Y "-* 3', add an edge (vj,vj,Y -+ -7) unless it already exists. Add resulting new tasks to the agenda. Combine: If tile first edge is of tim form (vi, vj, X --* ~.Yfl} and the second is of the form (vj, vk, Y -, 7.), then add an edge (vi,vk,X -+ aY.fl). Add resulting new tasks to the agenda.</figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1" validated="false"><head></head><label></label><figDesc>.............. ~ /r .... -',l lit .............. , r .....</figDesc><table>,m3m 
+
+'" 
+r.__~2 
+
+wls 
+........... 
+=17 ................ 
+
+-"' 
+
+. 
+
+I 
+
+It, 
+
+' ..... 
+
+..... 
+' 
+...... 
+
+:::zc-: 
+-
+
+_.. 
+:-1¢:. 
+
+~a 
+
+wx~ 
+
+~al 
+
+veal 
+.,] 
+wx~ 
+~aa 
+
+vP}0 
+
+</table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="8">Presumably, it is possible to generalize the mapping to more complex (non-contiguous) operations such as replacements or reversals. However, we do not pursue that here.</note>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Kenneth Zadeck. Incremental Evaluation of Computational Circuits</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Llowen Alpern</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Barry</forename><forename type="middle">K</forename><surname>Roger [loow&amp;apos;.R</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Peter</forename><forename type="middle">F</forename><surname>Rosen</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Sweeney</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. First Annual A CM-SIA M Symposium on Discrete Algorithms, l)ages</title>
+		<meeting>First Annual A CM-SIA M Symposium on Discrete Algorithms, l)ages<address><addrLine>San l&quot;rancisco, California, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="1990" />
+			<biblScope unit="volume">32</biblScope>
+			<biblScope unit="page">42</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Incremental l&apos;arsing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Carlo</forename><surname>Ghezzi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Dino</forename><surname>Mandrioli</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ACM 7)&apos;ansaclions on Prv qramming Languages and Systems</title>
+		<imprint>
+			<date type="published" when="1979" />
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="58" to="70" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title level="m" type="main">An hnproved Algorithm for Non-Monotonic l)ependency Net, Update. Research Report LiTII-MNI&apos;-R-82-23</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">James</forename><forename type="middle">W</forename><surname>Goodwin</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1982" />
+			<pubPlace>Sweden</pubPlace>
+		</imprint>
+		<respStmt>
+			<orgName>Department of Computer and lnfornaation Science, Link6ping University, Link/3ping</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<monogr>
+		<title level="m" type="main">A &apos;l&apos;heory and Systom for Non-Monotonic Reasoning. LinkSping Studies in Science and q&apos;eehnology, l)issertation 165, l)epartment of</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">James</forename><forename type="middle">W</forename><surname>Goodwin</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1987" />
+			<pubPlace>LinkSping, Sweden</pubPlace>
+		</imprint>
+		<respStmt>
+			<orgName>Computer and Information Science, Linkgping University</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+				<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Nicholas</forename><forename type="middle">A</forename><surname>Iladdock</surname></persName>
+		</author>
+		<title level="m">Comlmtational Models of Incremental Semantic Interpretation. l, angnage and Cognitive Processes</title>
+		<imprint>
+			<date type="published" when="1989" />
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="page">68</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<title level="m" type="main">Ilarrison. introduction to l&quot;ormal Language Theory</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Michael</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1978" />
+			<publisher>Addison-Wesley</publisher>
+			<pubPlace>Reading, M~ssa-chuset, ts, USA</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title level="m" type="main">Computer lnlerprelalion of Natural Language Descriptions. Ellis llorwood</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Christopher</forename><forename type="middle">S</forename><surname>Melllsh</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1985" />
+			<pubPlace>Chiehester, England</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">A Tabular Uniform Algorithm for Parsing and Generation. Chapter of forthcoming Ph.l). thesis</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G/Inter</forename><surname>Neumann</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1994" />
+		</imprint>
+		<respStmt>
+			<orgName>Universit~</orgName>
+		</respStmt>
+	</monogr>
+	<note>t des Saarlandes, Sitarbriicken, Gerrnany</note>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<monogr>
+		<title level="m" type="main">) 1172, Computer Sciences l)epartment, U&apos;niversity of Wisconsin</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">O</forename><surname>L{amalingam</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1993" />
+			<pubPlace>Madison, Wisconsin, USA</pubPlace>
+		</imprint>
+	</monogr>
+<note type="report_type">Ph.D. Thesis</note>
+	<note>Bounded Incremental Computation</note>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<monogr>
+		<title level="m" type="main">el)s. On l, he. Comlmtational Complexity of Incremental Algorithms. Technical li.eport 10a&apos;.l, Computer Sciences I)epartmeut</title>
+		<imprint>
+			<date type="published" when="1991" />
+			<pubPlace>Madison, Wisconsin, USA</pubPlace>
+		</imprint>
+		<respStmt>
+			<orgName>University of Wisconsin</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Optimal-Time Incremental Se--mantle Analysis lbr Syntax-Directed Editors</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Thomas</forename><forename type="middle">W</forename><surname>Reps</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ILk Proc. Ninth ACM Symposium on Principles of Programming Languages</title>
+		<meeting><address><addrLine>New Mexico, USA</addrLine></address></meeting>
+		<imprint>
+			<publisher>Alhuquerque</publisher>
+			<date type="published" when="1982" />
+			<biblScope unit="page" from="169" to="176" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">MClIAItT: A Flexible, Mo-(htlar Chart l&apos;arsing System</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Iienry</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Thompson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. Third National (;onfeTvnce on Artificial Intelligence</title>
+		<meeting>Third National (;onfeTvnce on Artificial Intelligence<address><addrLine>W~kshington, I).C., USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="1983" />
+			<biblScope unit="page" from="408" to="410" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">An EIficient Context-l,&apos;ree Parsing Algorithm for Natural Languages</title>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. Ninth International Joint Conference on Artificial Intelligence</title>
+		<meeting>Ninth International Joint Conference on Artificial Intelligence<address><addrLine>Los Angeles, California, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="1985" />
+			<biblScope unit="page" from="756" to="764" />
+		</imprint>
+	</monogr>
+	<note>Masaru qbnfita</note>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Mitts Wirdn. lnteractiw&apos;~ Incremental Chart Parsing</title>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. Fourth Co,ferenee of the European Chapter of the Association for Compnlalionol Linguistics</title>
+		<meeting>Fourth Co,ferenee of the European Chapter of the Association for Compnlalionol Linguistics</meeting>
+		<imprint>
+			<publisher>Manchester</publisher>
+			<date type="published" when="1989" />
+			<biblScope unit="page" from="241" to="248" />
+		</imprint>
+	</monogr>
+	<note>li}ng -land</note>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Dissertation 292, l)epartment of</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Mats Wir6n</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Stutlies in lncrenmntal NaturalLanguage M,alysis. l,ink6ping Stndies ilk Science and q~chnology</title>
+		<meeting><address><addrLine>LiukSping, Sweden</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="1992" />
+		</imprint>
+		<respStmt>
+			<orgName>Computer and Information Science, LinkSping University</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+				<title level="m">Mats Wirdn. l/ounded Incremental Parsing. In PTvc. 6th 7&apos;wente Workshop on Language 7&apos;echnology</title>
+		<imprint>
+			<date type="published" when="1993" />
+			<biblScope unit="page" from="145" to="156" />
+		</imprint>
+	</monogr>
+	<note>I,&apos;mschede, the Netherhmds</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Mats Wir(n and Rall)h Rgnnquist. l&quot;ully Incremental Pro&apos;sing</title>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. Third International Workshop o11 Parsing 7~chnologies</title>
+		<meeting>Third International Workshop o11 Parsing 7~chnologies<address><addrLine>Tilburg, the Netherlands and Durlmy, IMgium</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="1993" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

@@ -1,0 +1,601 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T16:57+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Transforming Wikipedia into a Large-Scale Fine-Grained Entity Type Corpus</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author role="corresp">
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Abbas</forename><surname>Ghaddar</surname></persName>
+							<email>abbas.ghaddar@umontreal.ca</email>
+							<affiliation key="aff0">
+								<orgName type="institution">RALI-DIRO Montreal</orgName>
+								<address>
+									<country key="CA">Canada</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Philippe</forename><surname>Langlais</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">RALI-DIRO Montreal</orgName>
+								<address>
+									<country key="CA">Canada</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Transforming Wikipedia into a Large-Scale Fine-Grained Entity Type Corpus</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>Annotated Corpus</term>
+					<term>Fine-Grained Entity Type</term>
+					<term>Wikipedia</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>This paper presents WiFiNE, an English corpus annotated with fine-grained entity types. We propose simple but effective heuristics we applied to English Wikipedia to build a large, high quality, annotated corpus. We evaluate the impact of our corpus on the fine-grained entity typing system of <ref type="bibr" target="#b10">Shimaoka et al. (2017)</ref>, with 2 manually annotated benchmarks, FIGER (GOLD) and ONTONOTES. We report state-of-the-art performances, with a gain of 0.8 micro F1 score on the former dataset and a gain of 2.7 macro F1 score on the latter one, despite the fact that we employ the same quantity of training data used in previous works. We make our corpus available as a resource for future works.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.">Introduction</head><p>Entity typing is the task of classifying textual mentions into their respective types. While the standard Named-Entity Recognition (NER) task focuses on a small set of types (e.g. 4 classes defined by the CONLL shared <ref type="bibr">task-2003 (Tjong Kim Sang and</ref><ref type="bibr" target="#b12">De Meulder, 2003)</ref>), fine-grained tagging deals with much larger type sets (e.g. 112 types used in <ref type="bibr" target="#b7">(Ling and Weld, 2012)</ref>). Entity typing has received an increasing interest lately from the NLP community, due its role in Relation Extraction, Entity Linking, Question Answering, etc. One issue in fine-grained typing is the absence of a wellestablished training corpus. The large number of types makes it difficult to manually annotate the amount of data needed for training. This bottleneck was addressed by using an automatic annotation procedure (Section 2), which follows two steps:</p><p>1. Identifying and linking entity mentions to a Knowledge Base (typically Freebase).</p><p>2. Assigning to each mention the set of types that apply in the context of the sentence.</p><p>Step 1 suffers a number of issues: lack of coverage when Wikipedia is used as a source <ref type="bibr" target="#b4">(Ghaddar and Langlais, 2016b)</ref>, and entity linking which is error prone <ref type="bibr" target="#b9">(Ren et al., 2016)</ref>.</p><p>Step 2 also has limitations: the type of a mention is often resolved with strict pruning heuristics (regardless of the context) as in <ref type="bibr" target="#b6">(Gillick et al., 2014)</ref>; or the type of a mention is kept ambiguous following <ref type="bibr" target="#b10">(Shimaoka et al., 2017)</ref>. For instance, in the sentence: "Gonzales embarked on a pop career as the leader of the alternative rock band Son." The entity Chilly Gonzales has 3 labels in Freebase: musician, writer , actor but only musician applies here.</p><p>In this paper, we revisit the idea of automatically extracting fine-grained entity annotations from Wikipedia. Similarly to previous works, we gather annotations from anchored texts in an article, as well as their associated types in Freebase <ref type="bibr" target="#b1">(Bollacker et al., 2008)</ref>. In addition, we also generate annotations for texts not anchored in Wikipedia following <ref type="bibr" target="#b5">(Ghaddar and Langlais, 2017)</ref>. We do this by considering coreference mentions of anchored texts as candidate annotations, and by exploiting the out-link structure of Wikipedia. We propose an easy-first annotation pipeline described in Section 3 which happens to reduce noise. Second, we define simple yet efficient heuristics in order to prune the set of candidate types of each entity mention found in the article. These heuristics are based on: Freebase tuples, the high density of entity mentions, and the paragraph and section structure of the article. We applied our methodology on a 2013 English Wikipedia dump, leading to a large annotated corpus called WiFiNE, which contains more annotations than similar corpora. We evaluate annotation quality intrinsically on a set of manually annotated mentions. We perform an extrinsic evaluation by training the entity typing model of <ref type="bibr" target="#b10">(Shimaoka et al., 2017)</ref> on randomly generated subsets of WiFiNE. We compare the performances obtained by the resulting models on two well-established test sets: FIGER (GOLD) <ref type="bibr" target="#b7">(Ling and Weld, 2012)</ref> and ONTONOTES <ref type="bibr" target="#b6">(Gillick et al., 2014)</ref>. The newly trained models clearly outperform previous ones on both benchmarks, demonstrating the superiority of our approach. In summary, our contributions are the following:</p><p>• We provide over 110M proper name, nominal, and pronominal mentions annotated with fine-grained entity types in two taxonomies.</p><p>• We measure the efficiency of WiFiNE for training fine-grained entity typing. We outperform state-of the art results by 0.3 strict, and 0.8 macro F1 scores on the FIGER benchmark and by 0.9 strict, and 2.3 macro F1 scores on the OntoNotes dataset.</p><p>The remainder of paper is organized as follows. Section 2, discusses recent related works. We describe the annotation process along with the main statistics of our corpus in Section 3. An evaluation of WiFiNE on entity typing is described in Section 4, before concluding and discussing future works in Section 5. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">Related Works</head><p>In previous works, the entity mention detection process is performed using one of two methods. The first one consists in using the internal links in Wikipedia as training data, where anchored strings (that have an equivalent page in Freebase) are treated as entity mentions <ref type="bibr" target="#b7">(Ling and Weld, 2012;</ref><ref type="bibr" target="#b9">Ren et al., 2016)</ref>. Another method is to directly use a Freebase entity resolver such as DB-pedia Spotligh <ref type="bibr" target="#b2">(Daiber et al., 2013)</ref> to link textual mentions to their Freebase page <ref type="bibr" target="#b6">(Gillick et al., 2014;</ref><ref type="bibr" target="#b14">Yogatama et al., 2015;</ref><ref type="bibr" target="#b9">Ren et al., 2016)</ref>. In both cases, the Freebase object type attributes of the entity are mapped to a predefined set of types.</p><p>In the last few years, two popular mapping schemes emerged: FIGER <ref type="bibr" target="#b7">(Ling and Weld, 2012</ref>) (112 label) and GILLICK <ref type="bibr" target="#b6">(Gillick et al., 2014</ref>) (89 label). They are both organized in a hierarchical structure, where children labels also inherit the parent label. FIGER defines a 2-level hierarchy (e.g. /person and /person/musician); while GILLICK uses 3 levels of types (e.g. /person and /person/artist, /person/artist/musician). Most resolved entities have multiple type labels, but not all of them typically apply in a given context. One solution consists in ignoring the issue, and instead relying on the robustness of the model to deal with heterogeneous labels; this approach is adopted by <ref type="bibr" target="#b14">(Yogatama et al., 2015;</ref><ref type="bibr" target="#b10">Shimaoka et al., 2017)</ref>. Another solution involves filtering. In <ref type="bibr" target="#b7">(Ling and Weld, 2012;</ref><ref type="bibr" target="#b6">Gillick et al., 2014)</ref>, the authors apply hard pruning heuristics:</p><p>• Sibling pruning Removes sibling types if they came from a single parent type. For instance, a mention labelled as /person/artist/musician and /person/artist/actor would be tagged by /person/artist and /person.</p><p>• Minimum count pruning All labels that appear once in the document are removed. For example, if multiple entities in a document are labelled as /person/artist/musician and only one of them have /person/artist/actor as an extra label, the latter is considered noisy.</p><p>Such heuristics decrease the number of training data by 40-45% according to <ref type="bibr" target="#b6">(Gillick et al., 2014;</ref><ref type="bibr" target="#b9">Ren et al., 2016)</ref>. <ref type="bibr" target="#b9">Ren et al. (2016)</ref> propose a distant supervision approach to deal with noisy labelled data. Their method consists in using unambiguous mentions to de-noise mentions with heterogeneous labels that appear in a similar context. Because only a tiny portion of texts in Wikipedia are anchored, some strategies are needed to infer more annotations. In this study, we revisited the approach of <ref type="bibr" target="#b5">(Ghaddar and Langlais, 2017)</ref> which consist in annotating Wikipedia with coarse-grained entity type (PER, LOC, ORG and MISC), resulting in a corpus called WiNER. In this paper, we propose to extend this approach with more types and mentions, leading to WiFiNE. First, we enrich the corpus with nominal and pronominal coreference mentions, then we extend the set of types (4 previously) to either 112 (FIGER) or 89 (GILLICK). In the next Section, we summarize the original process proposed by <ref type="bibr" target="#b5">(Ghaddar and Langlais, 2017</ref>) and then we describe our extensions.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.">WiFiNE 3.1 Mention Recognition</head><p>The pipeline used to extract annotations from Wikipedia is illustrated in <ref type="figure">Figure 1</ref>, for an excerpt of the Wikipedia article Chilly_Gonzales, hereafter named the target article. The anchored texts of out-links in the target article are elected entity mentions. For instance, we identify Warner Bros. Records and Paris as mentions. In general, a Wikipedia article has an equivalent page in Freebase. We remove mentions that do not have such a page. This way, we filter out anchored texts that are not named-entities (such as List of Presidents of the United States). Because the number of anchored strings in Wikipedia is rather small -less than 3% of the text tokens -we propose to leverage: (1) the out-link structure of Wikipedia, (2) the information of all the surface strings used to describe the main concept of a Wikipedia article. For the latter, we rely on the resource 1 described in <ref type="bibr" target="#b3">(Ghaddar and Langlais, 2016a)</ref>  resource lists proper names (e.g. Gonzales, Beck), nominal (e.g. the performer) and pronominal (e.g. he) mentions that refer to Chilly Gonzales. Our strategy for collecting extra annotations is a 4-step process, where:</p><p>1. We consider direct out-links of the target article. We search the titles of the articles we reach that way. We also search for their coreferences as listed in the resource of <ref type="bibr" target="#b3">(Ghaddar and Langlais, 2016a)</ref>. For instance, we search (exact match) Warner Bros. Records and its coreferences (e.g. Warner, Warner Bros.) in the target article.</p><p>2. We follow out-links of out-links, and search in the target article (by an exact string match) the titles of the articles reached. For instance, we search for the strings Europe, France, Napoleon, as well as other article titles from the out-link list of the article Paris.</p><p>3. For the titles matched during step 2, we also match their coreferent mentions. For instance, because France was matched in the previous step, we also search its coreferences as listed in the coreference table (CT of <ref type="figure">Figure 1</ref>).</p><p>4. Last, we adapt the multi-sieve rule-based coreference resolver of <ref type="bibr" target="#b8">(Raghunathan et al., 2010)</ref> to the specificity of Wikipedia in order to find the antecedent referents of a pronominal mention. The rules link a pronoun to its best antecedent mention based on attributes agreement (gender, number, entity type,...). We apply the pronoun coreference rules on each article, then discard all pronouns that do not refer to a Wikipedia entity mention.</p><p>During this process, some collisions may occur. We solve the issue of overlapping annotations by applying the steps exactly in the order presented above. Our steps have been ordered in such a way that the earlier the step, the more confidence we have in the strings matched at that step. It may also happen that two out-link articles contain the same mention (for instance Washington State and George Washington both contain the mention Washington), in which case we annotate this ambiguous mention with the type of the closest 2 unambiguous mention.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Manual Evaluation</head><p>Step 1 raises the coverage from less than 3% to 9.5%, step 2 further raises it to 11.5%, while step 3 and 4 increase it 2 Before or after the named-entity.</p><p>to 23% and 30% respectively. We assessed the annotation quality of a random subset of 1000 mentions. While we measure an accuracy of 92% and 88% for mentions detected during step 1 and 2 respectively, the accuracy decreases to 81% and 77% during step 3 and 4 respectively. We identified two main sources for errors in the coreferent mentions detection procedure.  One source of error comes from the resource used to identify the mentions of the main concept. We measured in a previous work <ref type="bibr" target="#b3">(Ghaddar and Langlais, 2016a)</ref>, that the process we rely on for this (a binary classifier) has an accuracy of 89%. Example (a) of <ref type="figure" target="#fig_1">Figure 3</ref> illustrates such a mistake where the family name Pope is wrongly assumed coreferent to the brewery Eldridge Pope. We also found that our 4-step process and the disambiguation rules fail in 15% of the cases. <ref type="figure" target="#fig_1">Figure 3 b</ref>) illustrates an example where we erroneously recognize the mention Toronto (referring to the town) as a coreferent of the (non ambiguous mention) Toronto FC, simply because the latter is close to the former.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3">Type Mapping</head><p>Following previous works, we map Freebase object type attributes of each entity mention detected to a set of fine-grained types. An entity mention is said to be clean if its labels belong to only a single path (not necessarly a leaf); otherwise, it is noisy. For example, the mentions France or Germany with labels /location and /location/country are considered clean. On the other hand, the entity mention Chilly Gonzales annotated with 5 labels (/person, /person/artist, /person/artist/musician, /person/artist/actor, and /person/artist /author) is considered noisy because only one of the last three types is qualified in a given context (see <ref type="figure" target="#fig_0">Fig. 2</ref>). We measured that 23% of mentions in WiFiNE that have two labels or more don't belong to a single path (noisy), and 47% of those have more than 2 noisy labels (e.g. Gonzales in <ref type="figure" target="#fig_0">Fig. 2)</ref>. We propose to eliminate noisy labels in WiFiNE using rules based on the high coverage of entity mentions, coupled with Freebase triples and the paragraph and section structure of Wikipedia:</p><p>1. Freebase Relation Type: We label the mention by the type indicated by the relation. A Freebase relation is a concatenation of a series of fragments. The first two fragments of the relation indicate the Freebase type of the subject, and the third fragment indicates the relation type. In example (a) of <ref type="figure" target="#fig_0">Fig. 2</ref>, the triple (arg1: Chilly Gonzales; rel: /people/person/place of birth; arg2: Montreal) found in Freebase indicates that only /person should apply to the Gonzales mention in this context.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">Common Attribute Sharing:</head><p>If a non-ambiguous mention (Jamie Lidell in example (b)) has a type set which is a subset of another mention with noisy labels (he, referent of Chilly Gonzales) occurs in the same sentence, we assign to the noisy mention the common labels between both mentions.</p><p>We first apply our rules at the sentence level, then at the paragraph and section level. Whenever we de-noise an entity mention in such a way, all its coreferent mentions (in the scope) receive the same type. We assessed the quality of our de-noising rules on 1000 randomly selected noisy mentions. <ref type="table">Table 1</ref> reports precision, recall and F1 scores on the ablation study of the proposed heuristics. We start with an accuracy of 48% when either rule is applied. We measure performance after removing labels identified as noisy by rule one, two and both. Also, we measure the accuracy when the rules are applied at sentence, paragraph and section levels. Results show that our rules greatly improve the annotation quality by roughly 32%. Also, we observe that the first rule is more important than the second, but both rules complement each other. As expected, applying the rules at paragraph and section levels further improve the performance. We identify two sources of errors: (1) pruning heuristics don't apply to 11% of mentions; (2) our rules failed to pick up the correct label in 9% of the cases. Example (a) of <ref type="figure" target="#fig_2">Figure 4</ref> illustrates such a mistake where Gonzales is labelled as musician rather than author because Feist is considered as musician in this context. In example (b), Gonzales is wrongly labelled as person thought that the relation /people/person/nationality exist between both entity but the sentence don't state it.   </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Heuristic</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.4">Corpus Statistics</head><p>WiFiNE is built from 3.2M Wikipedia articles, comprising more than 1.3G tokens accounting for 54M sentences, 41M of which contain at least one entity mention. Overall, it gathers 182.7M mentions: 95.1M proper, 62.4M nominal and 24.2M pronominal ones.  First, we note that the total number of mentions in FIGER and GILLICK is less than the total number of entity mentions. This is because: (a) we remove noisy mentions that our rules failed to disambiguate (11%), (b) some mentions cannot be mapped to either schemes (e.g. fictional characters). Second, we note that FIGER mentions out number those of GILLICK, simply because their scheme covers more types (112 vs 89).   Following the GILLICK scheme, each mention has 2 types on average, where 39% of them are of level 2, and 13% are of level 3. The distribution of level 2 and 3 labels in WiFiNE exceed its equivalent in the ONTONOTES <ref type="bibr" target="#b6">(Gillick et al., 2014)</ref> dataset (29% and 3% respectively). <ref type="figure" target="#fig_3">Figure 5</ref> illustrates the percentage of types that recieve a given number of mentions in WiFiNE. It shows that the majority of types have more than 100k mentions and roughly 25% (like city, company, date) exceeds 1M mentions. Also, we observe that 5% of the types have less than 10k mentions (e.g. /event/terrorist attack), and none of them has less than 1k mentions 3 .</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.">Evaluation on Entity Typing</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Reference System</head><p>In all experiments, we deploy the off the shelf neural network model of <ref type="bibr" target="#b10">(Shimaoka et al., 2017)</ref>. Given a mention in its context, the model uses three representations in order to associate the mention with the correct types.</p><p>• Mention representation: the average of the mention words embedding.</p><p>• Context representation: First, a Bi-LSTM model is applied on the left and right context of the mention, then an attention layer is placed on top of the model.</p><p>• Feature Representation: They learn the representations of hand-crafted features.</p><p>We trained the tagger on various subsets of WiFiNE as described in the next section. We use the default configuration of the tagger, except the batch size which we set to 100 rather than 1000 and the learning rate that we changed from 0.001 to 0.0005 4</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Datasets and Evaluation Metrics</head><p>We evaluate the model on two manually annotated benchmark: FIGER (GOLD) <ref type="bibr" target="#b7">(Ling and Weld, 2012)</ref> and ONTONOTES <ref type="bibr" target="#b6">(Gillick et al., 2014)</ref>. The first consist of 18 news reports annotated following FIGER scheme, while the second are 77 documents from the OntoNotes 5.0 <ref type="bibr" target="#b13">(Weischedel et al., 2013)</ref> test set annotated according to the GILLICK scheme. Following previous works, we used Strict, loose Macro-averaged, and loose Micro-averaged F1 scores as metrics for evaluation. Strict measures exact match, while losses metrics measure macro/micro partial matches between gold and system labels. Macro is the average of F1 scores on all types, while Micro is the harmonic mean. <ref type="table" target="#tab_10">Table 4</ref> and 6 compared the performance obtained by the resulting models with those of previous works on FIGER (GOLD) and ONTONOTES test set respectively. We perform an ablation test on our 4-step process of Section 3.1 by training the model on 7 variants of WiFiNE:</p><p>• Line 1-3: hyperlinks + proper name coreference mentions (step 1 and 2 of Section 3.1 )</p><p>• Line 4: hyperlinks + proper name + nominal coreference mentions (step 1-3 of Section 3.1).</p><p>• Line 5: hyperlinks + proper name + pronominal coreference mentions (step 1, 2 and 4 of Section 3.1).</p><p>• Line 6-7: hyperlinks + proper name + nominal + pronominal coreference mentions (all steps).</p><p>The goal is to validate if proper name, nominal and pronominal coreference mentions are necessary to finegrained entity tying performance. For each variant, we report the average score on 5 randomly generated subsets. To be comparable with previous works, we used training materiel up to 4 million mentions, and leave experiments on the usefulness of the full WiFiNE for future work.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3">Results on FIGER (GOLD)</head><p>Previous works trained their models on 2.6 million mentions obtained by mapping hyperlinks in Wikipedia articles to Freebase 5 .</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Models</head><p>Strict Macro Micro FIGER <ref type="bibr" target="#b7">(Ling and Weld, 2012)</ref> 52.30 69.90 69.30 FIGER+PLE <ref type="bibr" target="#b9">(Ren et al., 2016)</ref> 59.90 76.30 74.90 Attentive <ref type="bibr" target="#b10">(Shimaoka et al., 2017)</ref> 59.68 78.97 75.36 <ref type="bibr" target="#b0">(Abhishek et al., 2017)</ref> 65  Our model trained on 4M mention (line 7) outperforms the initial model of <ref type="bibr" target="#b10">(Shimaoka et al., 2017)</ref> by 6.2, 1.0 and 2.9 on strict, micro, macro F1 scores, and the state-of-the-art of <ref type="bibr" target="#b0">(Abhishek et al., 2017)</ref> by 0.3 and 0.9 strict and macro F1 scores. First, we observe that using hyperlinks and proper name mentions (line 3) for training improves the performance of the original model of <ref type="bibr" target="#b10">(Shimaoka et al., 2017)</ref> that <ref type="bibr">5</ref> The dataset is distributed by <ref type="bibr" target="#b9">(Ren et al., 2016)</ref> uses data driven from hyperlinks only. Second, we notice that models trained on a mix of proper name and nominal (line 4) or pronominal (line 5) coreference mentions outperform the model trained on proper name mentions (line 2) solely. Third, we observe that the combination of 3 mention types (line 6-7) is required in order to outperform the state-of-the-art, which validate our 4-step method of Section 3.1.   <ref type="table" target="#tab_12">Table 5</ref> shows the 5 most frequent types the FIGER (GOLD) test set compared to those in WiFiNE. FIGER (GOLD) is a small dataset, it contains only 523 mentions annotated with 41 different labels. We observe that the type distribution in this dataset follows a zipfian curve, while the distribution of types in WiFiNE is similar to a normal distribution ( <ref type="figure" target="#fig_3">Figure 5</ref>). <ref type="figure" target="#fig_4">Figure 6</ref> illustrates some errors committed on FIGER (GOLD) dataset. Error mostly occur on mentions with labels that don't belong to a single path (example a), and on ambiguous mentions (example b). </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.4">Results on OntoNotes</head><p>Ren et al. <ref type="formula">(2016)</ref>, <ref type="bibr" target="#b10">Shimaoka et al. (2017)</ref> and <ref type="bibr" target="#b0">Abhishek et al. (2017)</ref> trained their models on newswire documents present in OntoNotes <ref type="bibr" target="#b13">(Weischedel et al., 2013)</ref>, where entity mentions were automatically identified and linked to Freebase using DB-pedia Spotligh <ref type="bibr" target="#b2">(Daiber et al., 2013)</ref>. On the other hand, <ref type="bibr" target="#b6">Gillick et al. (2014)</ref> and <ref type="bibr" target="#b14">Yogatama et al. (2015)</ref> used an entity linker to automatically annotated 113k news documents. Results on the ONTONOTES dataset validate the observation we obtained on FIGER (GOLD). Models trained on proper names in addition to nominal (line 4 in <ref type="table" target="#tab_14">Table 6</ref>) or pronominal (line 5) coreference mentions is better than only training on proper names (line 2). In addition, training on the combination of all coreference mentions (line 6-7) systematically improves performances.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Models</head><p>Strict Macro Micro <ref type="bibr" target="#b6">(Gillick et al., 2014)</ref> N/A N/A 70.0 K-WASABIE <ref type="bibr" target="#b14">(Yogatama et al., 2015)</ref> N/A N/A 72.98 FIGER+PLE <ref type="bibr" target="#b9">(Ren et al., 2016)</ref> 57.20 71.50 66.10 Attentive <ref type="bibr" target="#b10">(Shimaoka et al., 2017)</ref> 51  We outperform best results reported by previous works on strict, macro F1 scores by 0.9 and 2.3 receptively. On the other hand, we underperform <ref type="bibr" target="#b6">(Gillick et al., 2014)</ref> and <ref type="bibr" target="#b14">(Yogatama et al., 2015)</ref> and by 3 and 5 point on the micro metric respectively. In <ref type="bibr" target="#b6">(Gillick et al., 2014;</ref><ref type="bibr" target="#b14">Yogatama et al., 2015)</ref>, the authors do not report results on strict and macro metrics and neither their models nor their training data are available. Consequently, we couldn't specify the cause of the gap on the micro metric, but we report some improvement over <ref type="bibr" target="#b10">(Shimaoka et al., 2017</ref>) model on the loose metrics. A potential reason behind this gap is that the text genre of their training data and that of ONTONOTES is the same (newswire). Our models were trained on randomly picked Wikipedia sentences (out of domain). Also, we note that in order to generate their corpus, <ref type="bibr" target="#b6">(Gillick et al., 2014;</ref><ref type="bibr" target="#b14">Yogatama et al., 2015)</ref> applied filtering rules that are responsible for the loss of 45% of the mentions. We have no such heuristic here, but we still observe competitive performances.   <ref type="table" target="#tab_16">Table 7</ref> shows the 5 most frequent types in the ONTONOTES dataset and in WiFiNE. Although ONTONOTES is much larger the FIGER (GOLD) 6 , we still observe that the distribution of types in this dataset is zipfian. We also note that the type /other is over-represented (44%) in this dataset, because <ref type="bibr" target="#b6">Gillick et al. (2014)</ref>   </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.">Conclusion</head><p>We built on the work of <ref type="bibr" target="#b5">(Ghaddar and Langlais, 2017)</ref> which developed WiNER, a coarse-grained entity type corpus made merly from English Wikipedia articles, and propose WiFiNE, a fine-grained entity type corpus annotated with nominal and pronominal coreference mentions. We evaluated the impact of our corpus on a neural network tagging system with 2 human made benchmarks. Experiments shows state-of-the-art performances on both benchmarks, when WiFiNE is used as training materiel. Our analysis on both datasets indicates the following observations. First, enriching Wikipedia articles with proper names, nominal and pronominal mentions systematically leads to better performances, which validate our 4-step approach. Second, the correlation between the train and test type distribution is an important factor to entity typing performance. Third, models could benefit from an example selection strategy based on the genre of the test set. As future work, we want to study the usefulness of WiFiNE on a NER in Tweets, and if models can benefits from the full corpus. WiFiNE is publicly available at http://rali.iro.umontreal.ca/rali/ en/wifiner-wikipedia-for-et. We hope this resource will foster further research on fine-grained entity type tagging.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.">Acknowledgements</head><p>This work has been founded by TRIBE, a Natural Sciences and Engineering Research Council of Canada (NSERC) Collaborative Research and Training Experience (CRE-ATE) Program. We gratefully acknowledge the support of NVIDIA Corporation with the donation of the Titan Xp GPU used for this research. We thank the anonymous reviewers for their insightful comments.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: Illustration of our de-noise heuristic rules. Spans in bold are entity mentions. Blue labels are relevant ones, while red ones are irrelevant.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: Examples of errors in our annotation pipeline. Faulty annotations are marked with a star.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 4 :</head><label>4</label><figDesc>Figure 4: Examples of errors in our de-noising rules. Faulty annotations are marked with a star.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 5 :</head><label>5</label><figDesc>Figure 5: Distribution of entity type labels according to the FIGER type hierarchy.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 6 :</head><label>6</label><figDesc>Figure 6: Examples of mentions erroneously classified in FIGER (GOLD) dataset.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0" validated="false"><head></head><label></label><figDesc>{Chilly Gonzales} (born {Jason Charles Beck}; 20 March 1972) is a [Canadian] musician who resided in [Paris], [France] for several years, and now lives in [Cologne], [Germany]. Though best known for {his} first MC [...], {he} is also a pianist, producer, and songwriter. {The performer} was signed to a three-album deal with Warner Music Canada in 1995, a sub- sidiary of [Warner Bros. Records] . . . While the album's production values were limited [Warner Bros.] simply . . .Illustration of the process with which we gather annotations into WiFiNE for the target page https://en. wikipedia.org/wiki/Chilly_Gonzales. Square Bracketed segments are the annotations; curly brackets indicate mentions from the resource of (Ghaddar and Langlais, 2016a); while underlined text are anchored texts in the corresponding Wikipedia page. OLT represents the out-link table (which is compiled from the Wikipedia out-link graph structure), and CT represents the coreference table we gathered from the resource.</figDesc><table>Paris 
+
+→ Europe, France, Napoleon, . . . 
+
+Cologne 
+
+→ Germany, Alsace, . . . 
+
+Warner Bros. Records 
+
+→ Warner, Warner Bros., the label, . . . 
+
+France 
+
+→ French Republic, the country. . . 
+
+OLT 
+
+CT 
+
+Figure 1: </table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1" validated="false"><head></head><label></label><figDesc>a) [Eldridge Pope] was a traditional brew- ery.....Sixteen years later the [Pope] brothers floated the business... b) Montreal Impact's biggest rival is [Toronto FC] because Canada's two largest cities have ri- valries in and out of sport. Montreal and [Toronto] professional soccer teams have com- peted against each other for over 40 years.</figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4" validated="false"><head>Table 2</head><label>2</label><figDesc>illustrates a randomly-picked selection of mentions annotated in WiFiNE, along with their type according to the GILLICK scheme. The last two examples illustrate noisy annotations. In the first one our process failed to distinguish between the company and its product. The second example is a mention detection error, we couldn't recognize Viitorul Homocea as an entity, because this soccer team does not have a page in Wikipedia or Freebase.</figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5" validated="false"><head>Table 3</head><label>3</label><figDesc>summarizes the men- tion statistics and label distribution over the number of lev- els of FIGER and GILLICK type hierarchies.</figDesc><table>FIGER 
+GILLICK 
+Total mentions 
+159.4 
+111.1 
+Proper mentions 
+82.5 (52%) 64.8 (58%) 
+Nominal mentions 
+55.9 (35%) 29.8 (27%) 
+Pronominal mentions 21.0 (13%) 16.5 (15%) 
+Total Labels 
+243.2 
+230.9 
+Level 1 
+153.8 (63%) 111.1 (48%) 
+Level 2 
+89.5 (37%) 90.0 (39%) 
+Level 3 
+-
+29.8 (13%) 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_6" validated="false"><head>Table 3 :</head><label>3</label><figDesc>Mention statistics and label distribution (in mil- lions and percentages) over the number of levels of FIGER and GILLICK type hierarchy.</figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_7" validated="false"><head></head><label></label><figDesc>The Cangrejal River or Río Cangrejal is a river that drains several mountain tributaries . . .The 1 -2 ton was a sailing event on the Sailing at the 1900 Summer Olympics program in Meulan .. . .He took part in the White Council after Sauron 's return.. . .</figDesc><table>Sentence 
+
+Labels 
+
+In Kent v. Dulles , 357 U.S. 116 ( 1958 ) , the Court held that the federal government . . . 
+/other 
+/other/event 
+
+/location 
+/location/geography 
+/location/geography/body of water 
+
+. . . editions of Millionaire to be aired between 7:00 and 7:30 pm 
+
+/other 
+/other/art 
+/other/art/broadcast 
+
+Mies Bouwman stopped her regular work after falling sick but has occasionally .. . . 
+/person 
+/person/artist 
+
+. . . to imprisoned Christians and niece of the Emperor Gallienus , found Anthimus in prison . 
+/person 
+/person/political figure 
+
+. . . of vinyl siding which does not weather as wood does . 
+/other 
+/other/product 
+
+The firm was the first state-owned rail vehicle in Argentina. . . 
+/organization 
+/organization/company 
+
+/other 
+/other/event 
+/other/event/sports event 
+
+/person 
+/person/artist 
+/person/artist/actor 
+
+Clove is Syzygium aromaticum and belongs to division of Magnoliophyta in the kingdom Plantae . 
+/other 
+/other/living thing 
+
+Pepsi also created a fellowship at Harvard University which enable students from. . . 
+/other 
+/other/food 
+
+. . . Viitorul Homocea , Siretul Suraia and Trotusul Ruginesti deducted 3 points . 
+/location 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_8" validated="false"><head>Table 2 :</head><label>2</label><figDesc>Random selection of annotations from WiFiNE following GILLICK type hierarchy. Faulty annotations are marked with a star.</figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_10" validated="false"><head>Table 4 :</head><label>4</label><figDesc></figDesc><table>Results of the reference system trained on various 
+subsets of WiFiNE, compared to other published results on 
+the FIGER (GOLD) test set. Training data (in millions) 
+include: proper name; nominal and pronominal mentions. 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_12" validated="false"><head>Table 5 :</head><label>5</label><figDesc></figDesc><table>Comparison of the distribution of the top 5 types 
+present in FIGER (GOLD) test set to that of WiFiNE. 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_14" validated="false"><head>Table 6 :</head><label>6</label><figDesc>Results of the reference system trained on various subsets of WiFiNE, compared to other published results on the ONTONOTES test set. Training data (in millions) in- cludes: proper name; nominal and pronominal mentions.</figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_16" validated="false"><head>Table 7 :</head><label>7</label><figDesc>Comparison of the distribution of the top 5 types present in ONTONOTES test set to that of WiFiNE.</figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_17" validated="false"><head></head><label></label><figDesc>annotated all non-entity mentions (examples 6 It contains roughly 9000 mentions annotated with 88 different types in table 8) as /other. We observe that 73% of the wrong decisions that our model made on ONTONOTES are committed on this type. In WiFiNE, /other always refers to an entity mention, and in most cases the mention has an additional level two and three labels.modest pretax gain the active role taken in the affairs of United quotas on various economic indicators the invitation of the Foreign Affairs Institute amounts related to areas where deposits are received</figDesc><table>trouble 
+addition 
+personal reasons 
+some complications 
+additional evidence 
+diplomatic relations 
+a </table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_18" validated="false"><head>Table 8 :</head><label>8</label><figDesc>Examples of non-entity mentions annotated as /other in the of OntoNotes test set.</figDesc><table></table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1">http://rali.iro.umontreal.ca/rali/en/ wikipedia-main-concept</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="3">A similar distribution is obtained with GILLICK type hierarchy.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="4">We observed better results on the held-out development set.</note>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">FineGrained Entity Type Classification by Jointly Learning Representations and Label Embeddings</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Abhishek</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Anand</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Awekar</forename></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 15th Conference of the European Chapter</title>
+		<meeting>the 15th Conference of the European Chapter<address><addrLine>Valencia, Spain</addrLine></address></meeting>
+		<imprint>
+			<publisher>Long Papers</publisher>
+			<date type="published" when="2017-04" />
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="797" to="807" />
+		</imprint>
+	</monogr>
+	<note>Association for Computational Linguistics</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Freebase: A Collaboratively Created Graph Database for Structuring Human Knowledge</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Bollacker</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Evans</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Paritosh</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Sturge</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Taylor</forename></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 2008 ACM SIGMOD International Conference on Management of Data, SIGMOD &apos;08</title>
+		<meeting>the 2008 ACM SIGMOD International Conference on Management of Data, SIGMOD &apos;08</meeting>
+		<imprint>
+			<date type="published" when="2008" />
+			<biblScope unit="page" from="1247" to="1250" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Improving Efficiency and Accuracy in Multilingual Entity Extraction</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Daiber</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Jakob</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Hokamp</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><forename type="middle">N</forename><surname>Mendes</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 9th International Conference on Semantic Systems (I-Semantics)</title>
+		<meeting>the 9th International Conference on Semantic Systems (I-Semantics)</meeting>
+		<imprint>
+			<date type="published" when="2013" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Coreference in Wikipedia: Main Concept Resolution</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Ghaddar</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Langlais</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CoNLL</title>
+		<imprint>
+			<date type="published" when="2016" />
+			<biblScope unit="page" from="229" to="238" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">WikiCoref: An English Coreference-annotated Corpus of Wikipedia Articles</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Ghaddar</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Langlais</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Tenth International Conference on Language Resources and Evaluation (LREC 2016)</title>
+		<meeting>the Tenth International Conference on Language Resources and Evaluation (LREC 2016)<address><addrLine>Portorož, Slovenia</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2016" />
+			<biblScope unit="page">5</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">WiNER: A Wikipedia Annotated Corpus for Named Entity Recognition</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Ghaddar</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Langlais</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Eighth International Joint Conference on Natural Language Processing</title>
+		<meeting>the Eighth International Joint Conference on Natural Language Processing</meeting>
+		<imprint>
+			<date type="published" when="2017" />
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="413" to="422" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title level="m" type="main">Context-dependent fine-grained entity type tagging</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Gillick</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">N</forename><surname>Lazic</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Ganchev</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Kirchner</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Huynh</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1412.1820</idno>
+		<imprint>
+			<date type="published" when="2014" />
+		</imprint>
+	</monogr>
+<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Fine-Grained Entity Recognition</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">X</forename><surname>Ling</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><forename type="middle">S</forename><surname>Weld</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">AAAI</title>
+		<imprint>
+			<date type="published" when="2012" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">A multi-pass sieve for coreference resolution</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Raghunathan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Rangarajan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">N</forename><surname>Chambers</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Surdeanu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Jurafsky</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Manning</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 2010 Conference on Empirical Methods in Natural Language Processing</title>
+		<meeting>the 2010 Conference on Empirical Methods in Natural Language Processing</meeting>
+		<imprint>
+			<date type="published" when="2010" />
+			<biblScope unit="page" from="492" to="501" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<monogr>
+				<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">X</forename><surname>Ren</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Qu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><forename type="middle">R</forename><surname>Voss</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><surname>Ji</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Han</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1602.05307</idno>
+		<title level="m">Label noise reduction in entity typing by heterogeneous partial-label embedding</title>
+		<imprint>
+			<date type="published" when="2016" />
+		</imprint>
+	</monogr>
+<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<title/>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Shimaoka</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Stenetorp</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Inui</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Riedel</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2017" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Neural Architectures for Fine-grained Entity Type Classification</title>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 15th Conference of the European Chapter</title>
+		<meeting>the 15th Conference of the European Chapter<address><addrLine>Valencia, Spain</addrLine></address></meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="1271" to="1280" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Introduction to the CoNLL-2003 shared task: Languageindependent named entity recognition</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Tjong</forename><surname>Kim Sang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><forename type="middle">F</forename><surname>De Meulder</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the seventh conference on Natural language learning at HLT-NAACL 2003</title>
+		<meeting>the seventh conference on Natural language learning at HLT-NAACL 2003</meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2003" />
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="page" from="142" to="147" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<monogr>
+				<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Weischedel</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Palmer</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Marcus</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><surname>Hovy</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Pradhan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">L</forename><surname>Ramshaw</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">N</forename><surname>Xue</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Taylor</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Kaufman</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Franchini</surname></persName>
+		</author>
+		<title level="m">Ontonotes release 5.0 ldc2013t19. Linguistic Data Consortium</title>
+		<meeting><address><addrLine>Philadelphia, PA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2013" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Embedding Methods for Fine Grained Entity Type Classification</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Yogatama</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Gillick</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">N</forename><surname>Lazic</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ACL (2)</title>
+		<imprint>
+			<date type="published" when="2015" />
+			<biblScope unit="page" from="291" to="296" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>
