@@ -109,7 +109,7 @@ public class WekaService {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
-        return -1;
+        return 0;
     }
 
     public void persistModel(LibSVM svm) {
