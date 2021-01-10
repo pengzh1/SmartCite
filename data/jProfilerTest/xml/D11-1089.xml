@@ -1,0 +1,797 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T11:32+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Splitting Noun Compounds via Monolingual and Bilingual Paraphrasing: A Study on Japanese Katakana Words</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher>Association for Computational Linguistics</publisher>
+				<availability status="unknown"><p>Copyright Association for Computational Linguistics</p>
+				</availability>
+				<date>July 27-31, 2011. 2011</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author role="corresp">
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Nobuhiro</forename><surname>Kaji</surname></persName>
+							<email>kaji@tkl.iis.u-tokyo.ac.jp</email>
+							<affiliation key="aff0">
+								<orgName type="department" key="dep1">Institute of Industrial Science</orgName>
+								<orgName type="department" key="dep2">Institute of Industrial Science</orgName>
+								<orgName type="institution">University of Tokyo</orgName>
+								<address>
+									<settlement>Tokyo</settlement>
+									<country key="JP">Japan</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Masaru</forename><surname>Kitsuregawa</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="institution">University of Tokyo</orgName>
+								<address>
+									<settlement>Tokyo</settlement>
+									<country key="JP">Japan</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Splitting Noun Compounds via Monolingual and Bilingual Paraphrasing: A Study on Japanese Katakana Words</title>
+					</analytic>
+					<monogr>
+						<title level="m">Proceedings of the 2011 Conference on Empirical Methods in Natural Language Processing</title>
+						<meeting>the 2011 Conference on Empirical Methods in Natural Language Processing <address><addrLine>Edinburgh, Scotland, UK</addrLine></address>
+						</meeting>
+						<imprint>
+							<publisher>Association for Computational Linguistics</publisher>
+							<biblScope unit="page" from="959" to="969"/>
+							<date type="published">July 27-31, 2011. 2011</date>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>Word boundaries within noun compounds are not marked by white spaces in a number of languages, unlike in English, and it is beneficial for various NLP applications to split such noun compounds. In the case of Japanese, noun compounds made up of katakana words (i.e., transliterated foreign words) are particularly difficult to split, because katakana words are highly productive and are often outof-vocabulary. To overcome this difficulty, we propose using monolingual and bilingual paraphrases of katakana noun compounds for identifying word boundaries. Experiments demonstrated that splitting accuracy is substantially improved by extracting such paraphrases from unlabeled textual data, the Web in our case, and then using that information for constructing splitting models.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.1">Japanese katakana words and noun compound splitting</head><p>Borrowing is a major type of word formation in Japanese, and numerous foreign words (proper names or neologisms etc.) are continuously being imported from other languages <ref type="bibr" target="#b27">(Tsujimura, 2006)</ref>. Most borrowed words in modern Japanese are transliterations 1 from English and they are referred to as katakana words because transliterated foreign words are primarily spelled by using katakana characters in the Japanese writing system. <ref type="bibr">2</ref> Compound-1 Some researchers use the term transcription rather than transliteration <ref type="bibr" target="#b7">(Breen, 2009</ref>). Our terminology is based on studies on machine transliteration <ref type="bibr" target="#b16">(Knight and Graehl, 1998)</ref>. <ref type="bibr">2</ref> The Japanese writing system has four character types: hiragana, katakana, kanji, and Latin alphabet.</p><p>ing is another type of word formation that is common in Japanese <ref type="bibr" target="#b27">(Tsujimura, 2006)</ref>. In particular, noun compounds are frequently produced by merging two or more nouns together. These two types of word formation yield a significant amount of katakana noun compounds, making Japanese a highly productive language.</p><p>In Japanese as well as some European and Asian languages (e.g., German, Dutch and Korean), constituent words of compounds are not separated by white spaces, unlike in English. In those languages, it is beneficial for various NLP applications to split such compounds. For example, compound splitting enables SMT systems to translate a compound on a word-by-word basis, even if the compound itself is not found in the translation table <ref type="bibr" target="#b17">(Koehn and Knight, 2003;</ref><ref type="bibr" target="#b11">Dyer, 2009</ref>). In the context of IR, decompounding has an analogous effect to stemming, and it significantly improves retrieval results <ref type="bibr" target="#b6">(Braschler and Ripplinger, 2004)</ref>. In abbreviation recognition, the definition of an abbreviation is often in the form of a noun compound, and most abbreviation recognition algorithms assume that the definition is properly segmented; see e.g., <ref type="bibr" target="#b26">(Schwartz and Hearst, 2003;</ref><ref type="bibr" target="#b24">Okazaki et al., 2008)</ref>.</p><p>This has led NLP researchers to explore methods for splitting compounds, especially noun compounds, in various languages <ref type="bibr" target="#b17">(Koehn and Knight, 2003;</ref><ref type="bibr" target="#b20">Nakazawa et al., 2005;</ref><ref type="bibr" target="#b0">Alfonseca et al., 2008a)</ref>. While many methods have been presented, they basically require expensive linguistic resources to achieve high enough accuracy. For example, <ref type="bibr" target="#b1">Alfonseca et al. (2008b)</ref> employed a word dictionary, which is obviously useful for this task. Other studies have suggested using bilingual resources such as parallel corpora <ref type="bibr" target="#b9">(Brown, 2002;</ref><ref type="bibr" target="#b17">Koehn and Knight, 2003;</ref><ref type="bibr" target="#b20">Nakazawa et al., 2005)</ref>. The idea behind those methods is that compounds are basically split into constituent words when they are translated into English, where the compounded words are separated by white spaces, and hence splitting rules can be learned by discovering word alignments in bilingual resources.</p><p>The largest obstacle that makes compound splitting difficult is the existence of out-of-vocabulary words, which are not found in the abovementioned linguistic resources. In the Japanese case, it is known that katakana words constitute a large source of out-of-vocabulary words <ref type="bibr" target="#b8">(Brill et al., 2001;</ref><ref type="bibr" target="#b20">Nakazawa et al., 2005;</ref><ref type="bibr" target="#b7">Breen, 2009</ref>). As we have discussed, katakana words are very productive, and thus we can no longer expect existent linguistic resources to have sufficient coverage. According to <ref type="bibr" target="#b7">(Breen, 2009)</ref>, as many as 20% of katakana words in news articles, which we think include less out-ofvocabulary words than Web and other noisy textual data, are out-of-vocabulary. Those katakana words often form noun compounds, and pose a substantial difficulty for Japanese text processing <ref type="bibr" target="#b20">(Nakazawa et al., 2005)</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.2">Paraphrases as implicit word boundaries</head><p>To alleviate the errors caused by out-of-vocabulary words, we explored the use of unlabeled textual data for splitting katakana noun compounds. Since the amount of unlabeled text available is generally much larger than word dictionaries and other expensive linguistic resources, it is crucial to establish a methodology for taking full advantage of such easily available textual data. While several approaches have already been proposed, their accuracies are still unsatisfactory (section 2.1).</p><p>From a broad perspective, our approach can be seen as using paraphrases of noun compounds. As we will see in section 4 and 5, katakana noun compounds can be paraphrased into various forms that strongly indicate word boundaries within the original noun compound. This paper empirically demonstrates that splitting accuracy can be significantly improved by extracting such paraphrases from unlabeled text, the Web in our case, and then using that information for constructing splitting models.</p><p>Specifically, two types of paraphrases are investigated in this paper. Section 4 explores monolingual paraphrases that can be generated by inserting certain linguistic markers between constituent words of katakana noun compounds. Section 5, in turn, explores bilingual paraphrases (specifically, backtransliteration). Since katakana words are basically transliterations from English, back-transliterating katakana noun compounds is also useful for splitting. To avoid terminological confusion, monolingual paraphrases are simply referred to as paraphrases and bilingual paraphrases are referred to as back-transliterations hereafter.</p><p>We did experiments to empirically evaluate our method. The results demonstrated that both paraphrase and back-transliteration substantially improved the performance in terms of F 1 -score, and the best performance was achieved when they were combined.</p><p>We also confirmed that our method outperforms the previously proposed splitting methods by a wide margin. All these results strongly suggest the effectiveness of paraphrasing and back-transliteration for identifying word boundaries within katakana noun compounds.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Related Work</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1">Compound splitting</head><p>A common approach to splitting compounds without expensive linguistic resources is an unsupervised method based on word or string frequencies estimated from unlabeled text <ref type="bibr" target="#b17">(Koehn and Knight, 2003;</ref><ref type="bibr" target="#b2">Ando and Lee, 2003;</ref><ref type="bibr" target="#b25">Schiller, 2005;</ref><ref type="bibr" target="#b20">Nakazawa et al., 2005;</ref><ref type="bibr" target="#b13">Holz and Biemann, 2008)</ref>. Amongst others, <ref type="bibr" target="#b20">Nakazawa et al. (2005)</ref> also investigated ways of splitting katakana noun compounds. Although the frequency-based method generally achieves high recall, its precision is not satisfactory <ref type="bibr" target="#b17">(Koehn and Knight, 2003;</ref><ref type="bibr" target="#b20">Nakazawa et al., 2005)</ref>. Our experiments empirically compared our method with the frequency-based methods, and the results demonstrate the advantage of our method.</p><p>Our approach can be seen as augmenting discriminative models of compound splitting with large external linguistic resources, i.e., textual data on the Web. In a similar spirit, <ref type="bibr" target="#b1">Alfonseca et al. (2008b)</ref> proposed the use of query logs for compound splitting. <ref type="bibr">3</ref> Their experimental results, however, did not clearly demonstrate their method's effectiveness. Without the query logs, the accuracy is reported to drop only slightly from 90.55% to 90.45%. In contrast, our experimental results showed statistically significant improvements as a result of using additional resources. Moreover, we used only textual data, which is easily available, unlike query logs. <ref type="bibr" target="#b13">Holz and Biemann (2008)</ref> proposed a method for splitting and paraphrasing German compounds. While their work is related to ours, their algorithm is a pipeline model and paraphrasing result is not employed during splitting.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2">Other research topics</head><p>Our study is closely related to word segmentation, which is an important research topic in Asian languages including Japanese. Although we can use existing word segmentation systems for splitting katakana noun compounds, it is difficult to reach the desired accuracy, as we will empirically demonstrate in section 6. One reason for this is that katakana noun compounds often include out-of-vocabulary words, which are difficult for the existing segmentation systems to deal with. See <ref type="bibr" target="#b20">(Nakazawa et al., 2005)</ref> for a discussion of this point. From a word segmentation perspective, our task can be seen as a case study focusing on a certain linguistic phenomenon of particular difficulty. More importantly, we are unaware of any attempts to use paraphrases or transliterations for word segmentation in the same way as we do.</p><p>Recent studies have explored using paraphrase statistics for parsing <ref type="bibr" target="#b21">(Nakov and Hearst, 2005a;</ref><ref type="bibr" target="#b22">Nakov and Hearst, 2005b;</ref><ref type="bibr" target="#b4">Bansal and Klein, 2011)</ref>. Although these studies successfully demonstrated the usefulness of paraphrases for improving parsers, the connection between paraphrases and word segmentation (or noun compound splitting) was not at all discussed.</p><p>Our method of using back-transliterations for splitting katakana noun compounds (section 5) is closely related to methods for mining transliteration from the Web text <ref type="bibr" target="#b8">(Brill et al., 2001;</ref><ref type="bibr" target="#b10">Cao et al., 2007;</ref><ref type="bibr" target="#b23">Oh and Isahara, 2008;</ref><ref type="bibr" target="#b28">Wu et al., 2009)</ref>. What most differentiates these studies from our work is that their primary goal is to build a machine transliteration system or to build a bilingual dictionary itself; none of them explored splitting compounds. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Supervised Approach</head><p>The task we examine in this paper is splitting a katakana noun compound x into its constituent words, y = (y 1 , y 2 . . . y |y| ). Note that the output can be a single word, i.e., |y| = 1. Since it is possible that the input is an out-of-vocabulary word, it is not at all trivial to identify a single word as such. A naive method would erroneously split an out-ofvocabulary word into multiple constituent words. We formalize our task as a structure prediction problem that, given a katakana noun compound x, predicts the most probable splitting y * .</p><formula xml:id="formula_0">y * = argmax y∈Y(x) w · φ(y),</formula><p>where Y(x) represents the set of all splitting options of x, φ(y) is a feature vector representation of y, and w is a weight vector to be estimated from labeled data. <ref type="table" target="#tab_0">Table 1</ref> summarizes our basic feature set. Features 1 and 2 are word 1-gram and 2-gram features, respectively. Feature 3 represents the length of the constituent word. LEN(y) returns the number of characters of y (1, 2, 3, 4, or ≥5). Feature 4 indicates whether the constituent word is registered in an external dictionary (see section 6.1). DICT(y) returns true if the word y is in the dictionary.</p><p>In addition to those basic features, we also employ paraphrases and back-transliterations of katakana noun compounds as features. The features are detailed in sections 4 and 5, respectively.</p><p>We can optimize the weight vector w using an arbitrary training algorithm. Here we adopt the averaged perceptron algorithm for the sake of time efficiency <ref type="bibr" target="#b12">(Freund and Schapire, 1999)</ref>. The perceptron offers efficient online training, and it performs comparatively well with batch algorithms such as SVMs. Since we use only factored features (see table 1, section 4 and section 5), dynamic programming can be used to locate y * . <ref type="table">Table 2</ref>: Paraphrase rules and examples. The first column represents the type of linguistic marker to be inserted, the second column shows the paraphrase rules, and the last column gives examples.</p><formula xml:id="formula_1">Type Rule Example Centered dot X1X2 → X1 · X2 (anchovy pasta) → (anchovy · pasta) Possessive marker X1X2 → X1 X2 (anchovy pasta) → (with anchovy) (pasta) Verbal suffix X1X2 → X1 X2 X1X2 → X1 X2 (download file) → (downloaded) (file) Adjectival suffix X1X2 → X1 X2 X1X2 → X1 X2 X1X2 → X1 X2 (surprise gift) → (surprising) (gift)</formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Paraphrasing</head><p>In this section, we argue that paraphrases of katakana noun compounds provides useful information on word boundaries. Consequently, we propose using paraphrase frequencies as features for training the discriminative model.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Paraphrasing noun compounds</head><p>A katakana noun compound can be paraphrased into various forms, some of which provide information on the word boundaries within the original compound.</p><p>(1) a.</p><p>(anchovy pasta) b.</p><p>(anchovy · pasta) c.</p><p>(with anchovy) (pasta)</p><p>These examples are paraphrases of each other. <ref type="formula">(1a)</ref> is in the form of a noun compound, within which the word boundary is ambiguous. In (1b), on the other hand, a centered dot is inserted between the constituent words. In the Japanese writing system, the centered dot is sometimes, but not always, used to separate long katakana compounds for the sake of readability. (1c) is the noun phrase generated from (1a) by inserting the possessive marker ' ', which can be translated as with in this context, between the constituent words. If we observe paraphrases of (1a) such as (1b) and (1c), we can guess that a word boundary exists between ' (anchovy) <ref type="bibr">' and '</ref> (pasta)'.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Paraphrase rules</head><p>The above discussion led us to use paraphrase frequencies estimated from Web text for splitting katakana noun compounds. For this purpose, we established the seven paraphrase rules illustrated in <ref type="table">Table 2</ref>. The rules are in the form of X 1 X 2 → X 1 MX 2 , where X 1 and X 2 represent nouns, and M is a certain linguistic marker (e.g., the possessive marker ' '). The left-hand term corresponds to a compound to be paraphrased and the right-hand term represents its paraphrase. For instance, X 1 = ' (anchovy)', X 2 = ' (pasta)', and M = ' '. The paraphrase rules we use are based on the rules proposed by <ref type="bibr" target="#b15">Kageura et al. (2004)</ref> for expanding complex terms, primarily noun compounds, into their variants.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3">Web-based frequency as features</head><p>We introduce a new feature using the paraphrase rules and Web text. As preprocessing, we use regular expressions to count the frequencies of all potential paraphrases of katakana noun compounds on the Web in advance.</p><formula xml:id="formula_2">(katakana)+ (katakana)+ (katakana)+ (katakana)+ (katakana)+ (katakana)+ . . .</formula><p>where (katakana) corresponds to one katakana character. Given a candidate segmentation y at test time, we generate paraphrases of the noun compound by setting X 1 = y i−1 and X 2 = y i , and applying the paraphrase rules. We then use log(F + 1), where F is the sum of the Web-based frequencies of the gen-erated paraphrases, as the feature of the boundary between y i−1 and y i .</p><p>As the feature value, we use the logarithmic frequency, rather than the raw frequency, for scaling. Since the other features have binary value, we found, in initial experiments, that the importance of this feature is overemphasized if we use the raw frequency. Note that we use log(F + 1) rather than log F so as to avoid the feature value being zero when F = 1.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Back-transliteration</head><p>Most katakana words are transliterations from English, where words are separated by white spaces. It is, therefore, reasonable to think that backtransliterating katakana noun compounds into English would provide information on word boundaries, in a similar way to paraphrasing.</p><p>This section presents a method for extracting back-transliterations of katakana words from monolingual Web text, and establishing word alignments between those katakana and English words <ref type="table" target="#tab_1">(Table  3)</ref>. In what follows, the pair of katakana words and its English back-transliteration is referred to as a transliteration pair. If the transliteration pair is annotated with word alignment information as in <ref type="table" target="#tab_1">Table  3</ref>, it is referred to as a word-aligned transliteration pair.</p><p>Using word-aligned transliteration pairs extracted from the Web text, we derive a binary feature indicating whether katakana word y i corresponds to a single English word. Additionally, we derive another feature indicating whether a katakana word 2-gram y i−1 y i corresponds to an English word 2-gram.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.1">Parenthetical expressions</head><p>In Japanese and other Asian languages, transliterated words are sometimes followed by their English back-transliterations inside parentheses:</p><p>(2) a. where the underline indicates the Japanese text that is followed by English back-transliteration. We extract word-aligned transliteration pairs from such parenthetical expressions by establishing the correspondences between pre-parenthesis and inparenthesis words.</p><p>To accomplish this, we have to resolve three problems: (a) English words inside parenthesis do not always provide a back-transliteration of the preparenthesis text, (b) the left boundary of the preparenthesis text, denoted as ' ' in the example, has to be identified, and (c) pre-parenthesis text, which is a katakana noun compound in our case, has to be segmented into words.</p><p>Although several studies have explored mining transliterations from such parenthetical expressions <ref type="bibr" target="#b10">(Cao et al., 2007;</ref><ref type="bibr" target="#b28">Wu et al., 2009)</ref>, the last problem has not been given much attention. In the past studies, the pre-parenthesis text is assumed to be correctly segmented by, typically, using existent word segmentation systems. This is, however, not appropriate for our purpose, because pre-parenthesis text is a katakana noun compound, which is hard for existing systems to handle, and hence the alignment quality is inevitably affected by segmentation errors.</p><p>To handle these three problems, we use the phonetic properties of the transliterations. For the purpose of explanation, we shall first focus on problem (c). Since transliterated katakana words preserve the pronunciation of the original English words to some extent <ref type="bibr" target="#b16">(Knight and Graehl, 1998)</ref>, we can discover the correspondences between substrings of the two languages based on phonetic similarity:</p><formula xml:id="formula_3">(3) a. [ ]1[ ]2[ ]3[ ]4 b. [jun]1[k]2 [foo]3[d]4</formula><p>Note that these are the pre-parenthesis and inparenthesis text in (2a). The substrings surrounded by square brackets with the same number correspond to each other. Given such a correspondence, we can segment the pre-parenthesis text (3a) according to its English counterpart (3b), in which words are separated by white space. We can recognize that the katakana string ' ', which is the concatenation of the first two substrings in (3a), forms a single word because it corresponds to the English word junk, and so on. Consequently, (3a) can be segmented into two words, ' (junk)' and ' (food)'. The word alignment is trivially established.</p><p>For problems (a) and (b), we can also use the phonetic similarity between pre-parenthesis and inparenthesis text. If the parenthetical expression does not provide the transliteration, or if the left boundary is erroneously identified, we can expect the phonetic similarity to become small. Such situations thus can be identified.</p><p>The remainder of this section details this approach. Section 5.2 presents a probabilistic model for discovering substring alignment such as (3). Section 5.3 shows how to extract word-aligned transliteration pairs by using the probabilistic model.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.2">Phonetic similarity model</head><p>To establish the substring alignment between katakana and Latin alphabet strings, we use the probabilistic model proposed by <ref type="bibr" target="#b14">(Jiampojamarn et al., 2007)</ref>. Let f and e be katakana and alphabet strings, and A be the substring alignment between them. More precisely, A is a set of corresponding substring pairs (f i , e i ) such that f = f 1 f 2 . . . f |A| and e = e 1 e 2 . . . e |A| . The probability of such alignment is defined as</p><formula xml:id="formula_4">log p(f, e, A) = (f i ,e i )∈A log p(f i , e i ).</formula><p>Since A is usually unobservable, it is treated as a hidden variable. <ref type="table" target="#tab_2">Table 4</ref> illustrates an example of the substring alignment between f ='</p><p>' and e ='junkfood', and the likelihood of each substring pair estimated in our experiment.</p><p>The model parameters are estimated from a set of transliteration pairs (f, e) using the EM algorithm.</p><p>In the E-step, we estimate p(A|f, e) based on the current parameters. In the parameter estimation, we restrict both f i and e i to be at most three characters long. Doing this not only makes the E-step computationally efficient but avoids over-fitting by forbidding too-long substrings to be aligned. In the Mstep, the parameter is re-estimated using the result of the E-step. We can accomplish this by using an extension of the forward-backward algorithm. See <ref type="bibr" target="#b14">(Jiampojamarn et al., 2007)</ref> for details.</p><p>Given a new transliteration pair (f, e), we can determine the substring alignment as</p><formula xml:id="formula_5">A * = argmax A log p(f, e, A).</formula><p>In finding the substring alignment, a white space on the English side is used as a constraint, so that the English substring e i does not span a white space.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.3">Extracting word-aligned transliteration pairs</head><p>The word-aligned transliteration pairs are extracted using the phonetic similarity model, as follows. First, candidate transliteration pairs (f, e) are extracted from the parenthetical expressions. This is done by extracting English words inside parentheses and pre-parenthesis text written in katakana. English words are normalized by lower-casing capital letters.</p><p>Second, we determine the left boundary by using the confidence score: 1 N log p(f, e, A * ), where N is the number of English words. The term 1 N prevents the score from being unreasonably small when there are many words. We truncate f by removing the leftmost characters one by one, until the confidence score exceeds a predefined threshold θ. If f becomes empty, the pair is regarded as a non-transliteration and discarded.</p><p>Finally, for the remaining pairs, the Japanese side is segmented and the word alignment is established according to A * . This results in a list of wordaligned transliteration pairs <ref type="table" target="#tab_1">(Table 3)</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Experiments and Discussion</head><p>We conducted experiments to investigate how the use of the paraphrasing and the back-transliteration improves the performance of the discriminative model.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.1">Experimental setting</head><p>To train the phonetic similarity model, we used a set of transliteration pairs extracted from the Wikipedia. <ref type="bibr">4</ref> Since person names are almost always transliterated when they are imported from English into Japanese, we made use of the Wikipedia articles that belong to the Living people category. From the titles of those articles, we automatically extracted person names written in katakana, together with their English counterparts obtainable via the multilingual links provided by the Wikipedia. This yielded 17,509 transliteration pairs for training. In performing the EM algorithm, we tried ten different initial parameters and selected the model that achieved the highest likelihood.</p><p>The data for training and testing the perceptron was built using a Japanese-English dictionary EDICT. <ref type="bibr">5</ref> We randomly extracted 5286 entries written in katakana from EDICT and manually annotated word boundaries by establishing word correspondences to their English transliterations. Since English transliterations are already provided by EDICT, the annotation can be trivially done by native speakers of Japanese. Using this data set, we performed 2-fold cross-validation for testing the perceptron. The number of iterations was set to 20 in all the experiments.</p><p>To compute the dictionary-based feature DICT(y) in our basic feature set, we used NAIST-jdic. <ref type="bibr">6</ref> It is the largest dictionary used for Japanese word segmentation, and it includes 19,885 katakana words.</p><p>As Web corpora, we used 1.7 G sentences of blog articles. From the corpora, we extracted 14,966,205 (potential) paraphrases of katakana noun compounds together with their frequencies. We also extracted 151,195 word-aligned transliteration pairs. In doing this, we ranged the threshold θ in {−10, −20, · · · − 150} and chose the value that performed the best (θ = −80).</p><p>The results were evaluated using precision, recall, F 1 -score, and accuracy. Precision is the number of correctly identified words divided by the number of all identified words, recall is the number of correctly identified words divided by the number of all oracle words, the F 1 -score is their harmonic mean, and accuracy is the number of correctly split katakana noun compounds divided by the number of all the katakana noun compounds.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.2">Baseline systems</head><p>We compared our system with three frequencybased baseline system, two supervised baselines, and two state-of-the-art word segmentation baselines. The first frequency-based baseline, UNI-GRAM, performs compound splitting based on a word 1-gram language model <ref type="bibr" target="#b25">(Schiller, 2005;</ref><ref type="bibr" target="#b1">Alfonseca et al., 2008b)</ref>:</p><formula xml:id="formula_6">y * = argmax y∈Y(x) i p(y i ),</formula><p>where p(y i ) represents the probability of y i . The second frequency-based baseline, GMF, outputs the splitting option with the highest geometric mean frequency of the constituent words <ref type="bibr" target="#b17">(Koehn and Knight, 2003)</ref>:</p><formula xml:id="formula_7">y * = argmax y∈Y(x) GMF(y) = argmax y∈Y(x) i f (y i ) 1/|y| ,</formula><p>where f (y i ) represents the frequency of y i . The third frequency-based baseline, GMF2, is a modification of GMF proposed by <ref type="bibr" target="#b20">Nakazawa et al. (2005)</ref>. It is based on the following score instead of GMF(y):</p><formula xml:id="formula_8">GMF2(y) = ⎧ ⎪ ⎨ ⎪ ⎩ GMF(y) (|y| = 1) GMF(y) C N l +α (|y| ≥ 2),</formula><p>where C, N , and α are hyperparameters and l is the average length of the constituent words. Following <ref type="bibr" target="#b20">(Nakazawa et al., 2005)</ref>, the hyperparameters were set as C = 2500, N = 4, and α = 0.7. We estimated p(y) and f (y) from the Web corpora. The first supervised baseline, AP, is the averaged perceptron model trained using only the basic feature set. The second supervised baseline, AP+GMF2 is a combination of AP and GMF2, which performed the best amongst the frequencybased baselines.</p><p>Following <ref type="bibr">(Alfonseca et al.,</ref>  2008b), GMF2 is integrated into AP as two binary features indicating whether GMF2(y) is larger than any other candidates, and whether GMF2(y) is larger than the non-split candidate. Although <ref type="bibr" target="#b1">Alfonseca et al. (2008b)</ref> also proposed using (the log of) the geometric mean frequency as a feature, doing so degraded performance in our experiment.</p><p>Regarding the two state-of-the-art word segmentation systems, one is JUMAN, 7 a rule-based word segmentation system <ref type="bibr" target="#b19">(Kurohashi and Nagao, 1994)</ref>, and the other is MECAB, 8 a supervised word segmentation system based on CRFs <ref type="bibr" target="#b18">(Kudo et al., 2004)</ref>. These two baselines were chosen in order to show how well existing word segmentation systems perform this task. Although the literature states that it is hard for existing systems to deal with katakana noun compounds <ref type="bibr" target="#b20">(Nakazawa et al., 2005)</ref>, no empirical data on this issue has been presented until now. <ref type="table" target="#tab_3">Table 5</ref> compares the performance of our system (PROPOSED) with the baseline systems. First of all, we can see that PROPOSED clearly improved the performance of AP, demonstrating the effectiveness of using paraphrases and back-transliterations.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.3">Splitting result</head><p>Our system also outperformed all the frequencybased baselines (UNIGRAM, GMF, and GMF2). This is not surprising, since the simple supervised baseline, AP, already outperformed the unsupervised frequency-based ones. Indeed similar experimental results were also reported by <ref type="bibr" target="#b0">Alfonseca (2008a)</ref>. An interesting observation here is the comparison between PROPOSED and AP+GMF2. It reveals that our approach improved the performance of AP more than the frequency-based method did. These results indicate that paraphrasing and back-transliteration are more informative clues than the simple frequency of constituent words. We would like to note that the higher accuracy of PROPOSED in comparison with the baselines is statistically significant (p &lt; 0.01, McNemar's test).</p><p>The performance of the two word segmentation baselines (JUMAN and MECAB) is significantly worse in our task than in the standard word segmentation task, where nearly 99% precision and recall are reported <ref type="bibr" target="#b18">(Kudo et al., 2004)</ref>. This demonstrates that splitting a katakana noun compound is not at all a trivial task to resolve, even for the state-of-theart word segmentation systems. On the other hand, PROPOSED outperformed both JUMAN and MECAB in this task, meaning that our technique can successfully complement the weaknesses of the existing word segmentation systems.</p><p>By analyzing the errors, we interestingly found that some of the erroneous splitting results are still acceptable to humans. For example, while ' (upload)' was annotated as a single word in the test data, our system split it into ' (up)' and ' (load)'. Although the latter splitting may be useful in some applications, it is judged as wrong in our evaluation framework. This implies the importance of evaluating the splitting results in some extrinsic tasks. We leave it to a future work.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.4">Investigation on out-of-vocabulary words</head><p>In our test data, 2681 out of the 5286 katakana noun compounds contained at least one out-of-vocabulary word that are not registered in NAIST-jdic. <ref type="table" target="#tab_4">Table 6</ref> illustrates the results of the supervised systems for those 2681 and the remaining 2605 katakana noun compounds (referred to as w/ OOV and w/o OOV data, respectively). While the accuracy exceeds 90% for w/o OOV data, it is substantially degraded for w/ OOV data. This is consistent with our claim that outof-vocabulary words are a major source of errors in splitting noun compounds.</p><p>The three supervised systems performed almost equally for w/o OOV data. This is because AP trivially performs very well on this subset, and it is difficult to get any further improvement. On the other hand, we can see that there are substantial performance gaps between the systems for w/ OOV data. This result reflects the effect of the additional fea- </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.5">Effect of the two new features</head><p>To see the effect of the new features in more detail, we looked at the performances of our system using different feature sets <ref type="table" target="#tab_5">(Table 7</ref>). The first column represents the feature set we used: BASIC, PARA, TRANS, and ALL represent the basic features, the paraphrase feature, the back-transliteration feature, and all the features. The results demonstrate that adding either of the new features improved the performance, and the best result was when they were used together. In all cases, the improvement over BASIC was statistically significant (p &lt; 0.01, McNemar's test).</p><p>Next, we investigated the coverage of the features. Our test data comprised 7709 constituent words, 4937 (64.0%) of which were covered by NAISTjdic. The coverage was significantly improved when using the back-transliteration feature. We observed that 6216 words (80.6%) are in NAIST-jdic or wordaligned transliteration pairs extracted from the Web text. This shows that the back-transliteration feature successfully reduced the number of out-ofvocabulary words. On the other hand, we observed that the paraphrase and back-transliteration features were activated for 79.5% (1926/2423) and 15.5% (376/2423) of the word boundaries in our test data.</p><p>Overall, we see that the coverage of these features is reasonably good, although there is still room for further improvement. It would be beneficial to use larger Web corpora or more paraphrase rules, for example, by having a system that automatically learns rules from the corpora <ref type="bibr" target="#b5">(Barzilay and McKeown, 2001;</ref><ref type="bibr" target="#b3">Bannard and Callison-Burch, 2005</ref>).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.6">Sensitivity on the threshold θ</head><p>Finally we investigated the influence of the threshold θ <ref type="figure">(Figure 1 and 2)</ref>. <ref type="figure">Figure 1</ref> illustrates the system performance in terms of F 1 -score for different values of θ. While the F 1 -score drops when the value of θ is too large (e.g., −20), the F 1 -score is otherwise almost constant. This demonstrates it is generally easy to set θ near the optimal value. More importantly, the F 1 -score is consistently higher than BASIC irrespective of the value of θ. <ref type="figure">Figure 2</ref> represents the number of distinct word-aligned transliteration pairs that were extracted from the Web corpora. We see that most of the extracted transliteration pairs have high confidence score.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7">Conclusion</head><p>In this paper, we explored the idea of using monolingual and bilingual paraphrases for splitting katakana noun compounds in Japanese. The experiments demonstrated that our method significantly improves the splitting accuracy by a large margin in comparison with the previously proposed methods. This means that paraphrasing provides a simple and effective way of using unlabeled textual data for identifying implicit word boundaries within katakana noun compounds. Although our investigation was restricted to katakana noun compounds, one might expect that a similar approach would be useful for splitting other types of noun compounds (e.g., German noun compounds), or for identifying general word boundaries, not limited to those between nouns, in Asian languages. We think these are research directions worth exploring in the future. </p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 1 :Figure 2 :</head><label>12</label><figDesc>Figure 1: Influence of the threshold θ (x-axis) on the F 1 -score (y-axis). The triangles and squares represent systems using the ALL and BASIC feature sets, respectively. 200000</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0" validated="true"><head>Table 1 :</head><label>1</label><figDesc>Basic features.</figDesc><table>ID Feature 
+Description 
+1 
+yi 
+constituent word 1-gram 
+2 
+yi−1yi 
+constituent word 2-gram 
+3 
+LEN(yi) 
+#characters of yi (1, 2, 3, 4, or ≥5) 
+4 
+DICT(yi) true ifyi is in the dictionary 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1" validated="true"><head>Table 3 :</head><label>3</label><figDesc>Word-aligned transliteration pairs. The number indicates the word alignment.</figDesc><table>Japanese 
+English 
+
+1 
+2 
+
+junk1 food2 
+
+3 
+
+spam3 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2" validated="true"><head>Table 4 :</head><label>4</label><figDesc>Example of the substring alignment A between f =' ' and e ='junkfood' (|A| = 4).</figDesc><table>(fi, ei) 
+l o gp(fi, ei) 
+
+( 
+, jun) 
+−10.767 
+( , k) 
+−5.319 
+( 
+, foo) 
+−11.755 
+( , d) 
+−5.178 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3" validated="true"><head>Table 5 :</head><label>5</label><figDesc>Comparison with baseline systems.</figDesc><table>Type 
+System 
+P 
+R 
+F1 
+Acc 
+Frequency 
+UNIGRAM 
+64.2 49.7 56.0 63.0 
+GMF 
+42.9 62.0 50.7 47.5 
+GMF2 
+67.4 76.0 71.5 72.5 
+Supervised AP 
+81.9 82.5 82.2 83.4 
+AP+GMF2 83.0 83.9 83.4 84.2 
+PROPOSED 86.4 87.4 87.1 87.6 
+Word seg. 
+JUMAN 
+71.4 60.1 65.3 69.8 
+MECAB 
+72.4 73.7 67.8 71.6 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4" validated="false"><head>Table 6 :</head><label>6</label><figDesc>Splitting results of the supervised systems for w/ OOV and w/o OOV data.AP+GMF2 69.7 73.7 71.6 75.2 95.2 92.4 93.7 93.6 PROPOSED 76.8 79.3 78.0 80.9 95.3 94.2 94.8 94.5 tures more directly than is shown in table 5.</figDesc><table>w/ OOV data 
+w/o OOV data 
+System 
+P 
+R 
+F1 
+Acc 
+P 
+R 
+F1 
+Acc 
+
+AP 
+66.9 69.9 68.3 72.8 95.4 93.2 94.3 94.2 
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5" validated="true"><head>Table 7 :</head><label>7</label><figDesc>Effectiveness of paraphrase (PARA) and back- transliteration feature (TRANS).</figDesc><table>Feature set 
+P 
+R 
+F1 
+Acc 
+BASIC 
+81.9 82.5 82.2 83.4 
+BASIC+PARA 
+85.1 85.3 85.2 85.9 
+BASIC+TRANS 85.1 86.3 85.7 86.5 
+ALL 
+86.4 87.4 87.1 87.6 
+
+</table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="3">Although they also proposed using anchor text, this slightly degraded the performance.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="4">http://ja.wikipedia.org/ 5 http://www.csse.monash.edu.au/˜jwb/edict doc.html 6 http://sourceforge.jp/projects/naist-jdic</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="7">http://nlp.kuee.kyoto-u.ac.jp/nl-resource/juman.html 8 http://sourceforge.net/projects/mecab</note>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Acknowledgement</head><p>This work was supported by the Multimedia Web Analysis Framework towards Development of Social Analysis Software program of the Ministry of Education, Culture, Sports, Science and Technology, Japan.</p></div>
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Decompoundig query keywords from compounding languages</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Enrique</forename><surname>Alfonseca</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Slaven</forename><surname>Bilac</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Stefan</forename><surname>Pharies</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of ACL, Short Papers</title>
+		<meeting>ACL, Short Papers</meeting>
+		<imprint>
+			<date type="published" when="2008" />
+			<biblScope unit="page" from="253" to="256" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">German decompounding in a difficult corpus</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Enrique</forename><surname>Alfonseca</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Slaven</forename><surname>Bilac</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Stefan</forename><surname>Pharies</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of CICLing</title>
+		<meeting>CICLing</meeting>
+		<imprint>
+			<date type="published" when="2008" />
+			<biblScope unit="page" from="128" to="139" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Mostlyunsupervised statistical segmentation of Japanese Kanji sequences</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Rie</forename><surname>Kubota Ando</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Lillian</forename><surname>Lee</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Natural Language Engineering</title>
+		<imprint>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="127" to="149" />
+			<date type="published" when="2003" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Paraphrasing with bilingual parallel corpora</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Colin</forename><surname>Bannard</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Chris</forename><surname>Callison-Burch</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of ACL</title>
+		<meeting>ACL</meeting>
+		<imprint>
+			<date type="published" when="2005" />
+			<biblScope unit="page" from="597" to="604" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Web-scale features for full-scale parsing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Mohit</forename><surname>Bansal</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Dan</forename><surname>Klein</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of ACL</title>
+		<meeting>ACL</meeting>
+		<imprint>
+			<date type="published" when="2011" />
+			<biblScope unit="page" from="693" to="702" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Extracting paraphrases from a parallel corpus</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Regina</forename><surname>Barzilay</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kathleen</forename><surname>Mckeown</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of ACL</title>
+		<meeting>ACL</meeting>
+		<imprint>
+			<date type="published" when="2001" />
+			<biblScope unit="page" from="50" to="57" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">How effective is stemming and decompounding for German text retrieval?</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Martin</forename><surname>Braschler</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Bärbel</forename><surname>Ripplinger</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Information Retrieval</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="page" from="291" to="316" />
+			<date type="published" when="2004" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Identification of neologisms in Japanese by corpus analysis</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jamese</forename><surname>Breen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of eLexicography in the 21st centry conference</title>
+		<meeting>eLexicography in the 21st centry conference</meeting>
+		<imprint>
+			<date type="published" when="2009" />
+			<biblScope unit="page" from="13" to="22" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Automatically harvesting katakana-English term pairs from search engine query logs</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Eric</forename><surname>Brill</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Gray</forename><surname>Kacmarcik</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Chris</forename><surname>Brockett</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of NL-PRS</title>
+		<meeting>NL-PRS</meeting>
+		<imprint>
+			<date type="published" when="2001" />
+			<biblScope unit="page" from="393" to="399" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Corpus-driven splitting of compound words</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ralf</forename><forename type="middle">D</forename><surname>Brown</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of TMI</title>
+		<meeting>TMI</meeting>
+		<imprint>
+			<date type="published" when="2002" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">A system to mine large-scale bilingual dictionaries from monolingual Web pages</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Guihong</forename><surname>Cao</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jianfeng</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jian-Yun</forename><surname>Nie</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of MT Summit</title>
+		<meeting>MT Summit</meeting>
+		<imprint>
+			<date type="published" when="2007" />
+			<biblScope unit="page" from="57" to="64" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Using a maximum entropy model to build segmentation lattices for MT</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Chris</forename><surname>Dyer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of NAACL</title>
+		<meeting>NAACL</meeting>
+		<imprint>
+			<date type="published" when="2009" />
+			<biblScope unit="page" from="406" to="414" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<monogr>
+		<title level="m" type="main">Large margin classification using the perceptron algorithm. Machine Learning</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Yoav</forename><surname>Freund</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Robert</forename><forename type="middle">E</forename><surname>Schapire</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1999" />
+			<biblScope unit="volume">37</biblScope>
+			<biblScope unit="page" from="277" to="296" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Unsupervised and knowledge-free learning of compound splits and periphrases</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Florian</forename><surname>Holz</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Chris</forename><surname>Biemann</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CICLing</title>
+		<imprint>
+			<date type="published" when="2008" />
+			<biblScope unit="page" from="117" to="127" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Applying many-to-many alignment and hidden Markov models to letter-to-phoneme conversion</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Grzegorz</forename><surname>Sittichai Jiampojamarn</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Tarek</forename><surname>Kondrak</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Sherif</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">HLT-NAACL</title>
+		<imprint>
+			<date type="published" when="2007" />
+			<biblScope unit="page" from="372" to="379" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Parallel bilingual paraphrase rules for noun compounds: Concepts and rules for exploring Web language resources</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kyo</forename><surname>Kageura</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Fuyuki</forename><surname>Yoshikane</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Takayuki</forename><surname>Nozawa</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Workshop on Asian Language Resources</title>
+		<meeting>Workshop on Asian Language Resources</meeting>
+		<imprint>
+			<date type="published" when="2004" />
+			<biblScope unit="page" from="54" to="61" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Machine transliteration</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kevin</forename><surname>Knight</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jonathan</forename><surname>Graehl</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">24</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="599" to="612" />
+			<date type="published" when="1998" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Empirical methods for compound splitting</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Philip</forename><surname>Koehn</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kevin</forename><surname>Knight</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of EACL</title>
+		<meeting>EACL</meeting>
+		<imprint>
+			<date type="published" when="2003" />
+			<biblScope unit="page" from="187" to="193" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Applying conditional random fields to Japanese morphological analysis</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Taku</forename><surname>Kudo</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kaoru</forename><surname>Yamamoto</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Yuji</forename><surname>Matsumoto</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of EMNLP</title>
+		<meeting>EMNLP</meeting>
+		<imprint>
+			<date type="published" when="2004" />
+			<biblScope unit="page" from="230" to="237" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Improvements of Japanese morphological analyzer JU-MAN</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sadao</forename><surname>Kurohashi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Makoto</forename><surname>Nagao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the International Workshop on Sharable Natural Language Resources</title>
+		<meeting>the International Workshop on Sharable Natural Language Resources</meeting>
+		<imprint>
+			<date type="published" when="1994" />
+			<biblScope unit="page" from="22" to="38" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Automatic acquisition of basic Katakana lexicon from a given corpus</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Toshiaki</forename><surname>Nakazawa</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Daisuke</forename><surname>Kawahara</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sadao</forename><surname>Kurohashi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of IJCNLP</title>
+		<meeting>IJCNLP</meeting>
+		<imprint>
+			<date type="published" when="2005" />
+			<biblScope unit="page" from="682" to="693" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Search engine statistics beyond the n-gram: Application to noun compound bracketing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Preslav</forename><surname>Nakov</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Marti</forename><surname>Hearst</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of CoNLL</title>
+		<meeting>CoNLL</meeting>
+		<imprint>
+			<date type="published" when="2005" />
+			<biblScope unit="page" from="17" to="24" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Using the Web as an implicit training set: Application to structural ambiguity resolution</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Preslav</forename><surname>Nakov</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Marti</forename><surname>Hearst</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of HLT/EMNLP</title>
+		<meeting>HLT/EMNLP</meeting>
+		<imprint>
+			<date type="published" when="2005" />
+			<biblScope unit="page" from="835" to="342" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Hypothesis selection in machine transliteration: A Web mining approach</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jong-Hoon</forename><surname>Oh</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hitoshi</forename><surname>Isahara</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of IJCNLP</title>
+		<meeting>IJCNLP</meeting>
+		<imprint>
+			<date type="published" when="2008" />
+			<biblScope unit="page" from="233" to="240" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">A discriminative alignment model for abbreviation recognition</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Naoaki</forename><surname>Okazaki</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sophia</forename><surname>Ananiadou</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jin&amp;apos;ichi</forename><surname>Tsujii</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of COLING</title>
+		<meeting>COLING</meeting>
+		<imprint>
+			<date type="published" when="2008" />
+			<biblScope unit="page" from="657" to="664" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">German compound analysis with wfsc</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Anne</forename><surname>Schiller</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Finite State Methods and Natural Language Processing</title>
+		<meeting>Finite State Methods and Natural Language Processing</meeting>
+		<imprint>
+			<date type="published" when="2005" />
+			<biblScope unit="page" from="239" to="246" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">A simple algorithm for identifying abbreviation definitions in biomedical text</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ariel</forename><forename type="middle">S</forename><surname>Schwartz</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Marti</forename><forename type="middle">A</forename><surname>Hearst</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of PSB</title>
+		<meeting>PSB</meeting>
+		<imprint>
+			<date type="published" when="2003" />
+			<biblScope unit="page" from="451" to="462" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<monogr>
+		<title level="m" type="main">An Introduction to Japanese Linguistics</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Natsuko</forename><surname>Tsujimura</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2006" />
+			<publisher>Wiley-Blackwell</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Semi-supervised lexicon mining from parenthetical expressions in monolingual Web pages</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Xianchao</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Naoaki</forename><surname>Okazaki</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jun&amp;apos;ichi</forename><surname>Tsujii</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of NAACL</title>
+		<meeting>NAACL</meeting>
+		<imprint>
+			<date type="published" when="2009" />
+			<biblScope unit="page" from="424" to="432" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

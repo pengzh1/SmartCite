@@ -1,0 +1,813 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T22:04+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Modeling Semantic Relations Expressed by Prepositions</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher>Noah Smith</publisher>
+				<availability status="unknown"><p>Copyright Noah Smith</p>
+				</availability>
+				<date type="published" when="2013">2013</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Vivek</forename><surname>Srikumar</surname></persName>
+							<email>vsrikum2@illinois.edu</email>
+							<affiliation key="aff0">
+								<orgName type="institution">University of Illinois</orgName>
+								<address>
+									<settlement>Urbana-Champaign</settlement>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Dan</forename><surname>Roth</surname></persName>
+							<email>danr@illinois.edu</email>
+							<affiliation key="aff0">
+								<orgName type="institution">University of Illinois</orgName>
+								<address>
+									<settlement>Urbana-Champaign</settlement>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Modeling Semantic Relations Expressed by Prepositions</title>
+					</analytic>
+					<monogr>
+						<title level="j" type="main">Transactions of the Association for Computational Linguistics</title>
+						<imprint>
+							<publisher>Noah Smith</publisher>
+							<biblScope unit="volume">1</biblScope>
+							<biblScope unit="page" from="231" to="242"/>
+							<date type="published" when="2013">2013</date>
+						</imprint>
+					</monogr>
+					<note type="submission">Submitted 11/2012; Revised 2/2013; Published 5/2013. c 2013 Association for Computational Linguistics.</note>
+					<note>Urbana, IL. 61801.</note>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>This paper introduces the problem of predicting semantic relations expressed by prepositions and develops statistical learning models for predicting the relations, their arguments and the semantic types of the arguments. We define an inventory of 32 relations, building on the word sense disambiguation task for prepositions and collapsing related senses across prepositions. Given a preposition in a sentence, our computational task to jointly model the preposition relation and its arguments along with their semantic types, as a way to support the relation prediction. The annotated data, however, only provides labels for the relation label, and not the arguments and types. We address this by presenting two models for preposition relation labeling. Our generalization of latent structure SVM gives close to 90% accuracy on relation labeling. Further, by jointly predicting the relation, arguments, and their types along with preposition sense, we show that we can not only improve the relation accuracy, but also significantly improve sense prediction accuracy.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>This paper addresses the problem of predicting semantic relations conveyed by prepositions in text. Prepositions express many semantic relations between their governor and object. Predicting these can help advancing text understanding tasks like question answering and textual entailment. Consider the sentence:</p><p>(1) The book of Prof. Alexander on primary school methods is a valuable teaching resource.</p><p>Here, the preposition on indicates that the book and primary school methods are connected by the relation Topic and of indicates the CreatorCreation relation between Prof. Alexander and the book. Predicting these relations can help answer questions about the subject of the book and also recognize the entailment of sentences like Prof. Alexander has written about primary school methods.</p><p>Being highly polysemous, the same preposition can indicate different kinds of relations, depending on its governor and object. Furthermore, several prepositions can indicate the same semantic relation. For example, consider the sentence:</p><p>(2) Poor care led to her death from pneumonia.</p><p>The preposition from in this sentence expresses the relation Cause(death, pneumonia). In a different context, it can denote other relations, as in the phrases copied from the film (Source) and recognized from the start (Temporal). On the other hand, the relation Cause can be expressed by several prepositions; for example, the following phrases express a Cause relation: died of pneumonia and tired after the surgery.</p><p>We characterize semantic relations expressed by transitive prepositions and develop accurate models for predicting the relations, identifying their arguments and recognizing the semantic types of the arguments. Building on the word sense disambiguation task for prepositions, we collapse semantically related senses across prepositions to derive our relation inventory. These relations act as predicates in a predicate-argument representation, where the arguments are the governor and the object of the preposition. While ascertaining the arguments is a largely syntactic decision, we point out that syntactic parsers do not always make this prediction correctly. However, as illustrated in the examples above, identifying the relation depends on the governor and object of the preposition.</p><p>Given a sentence and a preposition, our goal is to model the predicate (i.e. the preposition relation) and its arguments (i.e. the governor and object). Very often, the relation label is not influenced by the surface form of the arguments but rather by their semantic types. In sentence (2) above, we want the predicate to be Cause when the object of the preposition is any illness. We thus suggest to model the argument types along with the preposition relations and arguments, using different notions of types. These three related aspects of the relation prediction task are further explained in Section 3 leading up to the problem definition.</p><p>Though we wish to predict relations, arguments and types, there is no corpus which annotates all three. The SemEval 2007 shared task of word sense disambiguation for prepositions provides sense annotations for prepositions. We use this data to generate training and test corpora for the relation labels. In Section 4, we present two models for the prepositional relation identification problem. The first model considers all possible argument candidates from various sources along with all argument types to predict the preposition relation label. The second model treats the arguments and types as latent variables during learning using a generalization of the latent structural SVM of <ref type="bibr" target="#b29">(Yu and Joachims, 2009)</ref>. We show in Section 5 that this model not only predicts the arguments and types, but also improves relation prediction performance.</p><p>The primary contributions of this paper are:</p><p>1. We introduce a new inventory of preposition relations that covers the 34 prepositions that formed the basis of the SemEval 2007 task of preposition sense disambiguation.</p><p>2. We model preposition relations, arguments and their types jointly and propose a learning algorithm that learns to predict all three using training data that annotates only relation labels.</p><p>3. We show that jointly predicting relations with word sense not only improves the relation predictor, but also gives a significant improvement in sense prediction.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Prepositions &amp; Predicate-Argument Semantics</head><p>Semantic role labeling (cf. <ref type="bibr" target="#b9">(Gildea and Jurafsky, 2002;</ref><ref type="bibr" target="#b19">Palmer et al., 2010;</ref><ref type="bibr" target="#b20">Punyakanok et al., 2008)</ref> and others) is the task of converting text into a predicate-argument representation. Given a trigger word or phrase in a sentence, this task solves two related prediction problems: (a) identifying the relation label, and (b) identifying and labeling the arguments of the relation. This problem has been studied in the context of verb and nominal triggers using the PropBank <ref type="bibr" target="#b18">(Palmer et al., 2005)</ref> and NomBank <ref type="bibr" target="#b16">(Meyers et al., 2004)</ref> annotations over the Penn Treebank, and also using the FrameNet lexicon <ref type="bibr" target="#b8">(Fillmore et al., 2003)</ref>, which allows arbitrary words to trigger semantic frames.</p><p>This paper focuses on semantic relations expressed by transitive prepositions 1 . We can define the two prediction tasks for prepositions as follows: identifying the relation label for a preposition, and predicting the arguments of the relation. Prepositions can mark arguments (both core and adjunct) for verbal and nominal predicates. In addition, they can also trigger relations that are not part of other predicates. For example, in sentence (3) below, the prepositional phrase starting with to is an argument of the verb visit, but the in triggers an independent relation indicating the location of the aquarium.</p><p>(3) The children enjoyed the visit to the aquarium in Coney Island.</p><p>FrameNet covers some prepositional relations, but allows only temporal, locative and directional senses of prepositions to evoke frames, accounting for only 3% of the targets in the SemEval 2007 shared task of FrameNet parsing. In fact, the state-of-the-art FrameNet parser of <ref type="bibr" target="#b7">(Das et al., 2010)</ref> does not consider any frame inducing prepositions. <ref type="bibr" target="#b1">(Baldwin et al., 2009</ref>) highlights the importance of studying prepositions for a complete linguistic analysis of sentences and surveys work in the NLP literature that addresses the syntax and semantics of prepositions. One line of work <ref type="bibr" target="#b27">(Ye and Baldwin, 2006)</ref> addressed the problem of preposition semantic role labeling by considering prepositional phrases that act as arguments of verbs according to the PropBank annotation. They built a system that predicts the labels of these prepositional phrases alone. However, by definition, this covered only verb-attached prepositions. <ref type="bibr" target="#b30">(Zapirain et al., 2012)</ref> studied the impact of automatically learned selectional preferences for predicting arguments of verbs and showed that modeling prepositional phrases separately improves the performance of argument prediction.</p><p>Preposition semantics has also been studied via the Preposition Project <ref type="bibr" target="#b13">(Litkowski and Hargraves, 2005</ref>) and the related SemEval 2007 shared task of word sense disambiguation of prepositions <ref type="bibr" target="#b14">(Litkowski and Hargraves, 2007)</ref>. The Preposition Project identifies preposition senses based on their definitions in the Oxford Dictionary of English. There are 332 different labels to be predicted with a wide variance in the number of senses per preposition ranging from 2 (during and as) to 25 (on). For example, according to the preposition sense inventory, the preposition from in sentence (2) above will be labeled with the sense from:12(9) to indicate a cause. <ref type="bibr" target="#b6">(Dahlmeier et al., 2009</ref>) added sense annotation to seven prepositions in four sections of the Penn Treebank with the goal of studying their interaction with verb arguments.</p><p>Using the SemEval data, <ref type="bibr" target="#b24">(Tratz and Hovy, 2009</ref>) and <ref type="bibr" target="#b11">(Hovy et al., 2010)</ref> showed that the arguments offer an important cue to identify the sense of the preposition and <ref type="bibr" target="#b25">(Tratz, 2011)</ref> showed further improvements by refining the sense inventory. However, though these works used a dependency parser to identify arguments, in order to overcome parsing errors, they augment the parser's predictions using part-of-speech based heuristics.</p><p>We argue that, while disambiguating the sense of a preposition does indeed reveal nuances of its meaning, it leads to a proliferation of labels to be predicted. Most importantly, sense labels do not transfer to other prepositions that express the same meaning. For example, both finish lunch before noon and finish lunch by noon express a Temporal relation. According to the Preposition Project, the sense label for the first preposition is before:1(1), and that for the second is by:17(4). This both defeats the purpose of identifying the relations to aid natural language understanding and makes the prediction task harder than it should be: using the standard word sense classification approach, we need to train a separate classifier for each word because the labels are defined per-preposition. In other words, we cannot share features across the different prepositions. This motivates the need to combine such senses of prepositions into the same class label.</p><p>In this direction, (O'Hara and Wiebe, 2009) describes an inventory of preposition relations obtained using Penn Treebank function tags and frame elements from FrameNet. <ref type="bibr" target="#b23">(Srikumar and Roth, 2011)</ref> merged preposition senses of seven prepositions into relation labels. <ref type="bibr" target="#b15">(Litkowski, 2012</ref>) also suggests collapsing the definitions of prepositions into a smaller set of semantic classes. To aid better generalization and to reduce the label complexity, we follow this line of work to define a set of relation labels which abstract word senses across prepositions 2 .</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Preposition-triggered Relations</head><p>This section describes the inventory of preposition relations introduced in this paper, and then identifies the components of the preposition relation extraction problem.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Preposition Relation Inventory</head><p>We build our relation inventory using the sense annotation in the Preposition Project, focusing on the 34 prepositions 3 annotated for the SemEval-2007 shared task of preposition sense disambiguation.</p><p>As discussed in Section 2, we construct the inventory of preposition relations by collapsing semantically related preposition senses across differ-2 Since the preposition sense data is annotated over FrameNet sentences, sense annotation can be used to extend FrameNet <ref type="bibr" target="#b15">(Litkowski, 2012)</ref>. We believe that the abstract labels proposed in this paper can further help in this effort.ent prepositions. For each sense that is defined, the Preposition Project also specifies related prepositions. These definitions and related prepositions provide a starting point to identify senses that can be merged across prepositions. We followed this with a manual cleanup phase. Some senses do not cleanly align with a single relation because the definitions include idiomatic or figurative usage. For example, the sense in:7(5) of the preposition in, according to the definition, includes both spatial and figurative notions of the spatial sense (that is, both in London and in a film). In such cases, we sampled 20 examples from the SemEval 2007 training set and assigned the relation label based on majority.</p><p>If sufficient examples could not be sampled, these senses were added to the label Other, which is not a semantically coherent category and represents the 'overflow' case.</p><p>Overall, we have 32 labels, which are listed in <ref type="table" target="#tab_1">Table 1</ref> 4 . A companion publication (available on the authors' website) provides detailed definitions of each relation and the senses that were merged to create each label. Since we define relations to be groups of preposition sense labels, each sense can be uniquely mapped to a relation label. Hence, we can use the annotated sense data from SemEval 2007 to obtain a corpus of relation-labeled sentences.</p><p>To validate the labeling scheme, two native speakers of English annotated 200 sentences from the SemEval training corpus using only the definitions of the labels as the annotation guidelines. We measured Cohen's kappa coefficient <ref type="bibr" target="#b5">(Cohen, 1960)</ref> between the annotators to be 0.75 and also between each annotator and the original corpus to be 0.76 and 0.74 respectively.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Preposition Relation Extraction</head><p>The input to the prediction problem consists of a preposition in a sentence and the goal is to jointly model the following: (i) The relation expressed by the preposition, and (ii) The arguments of the relation, namely the governor and the object.</p><p>We use sentence (2) in the introduction as our running example the following discussion. In our run-  ning example, the relation label is Cause. We represent the predicted relation label by r.</p><p>Arguments The relation label crucially depends on correctly identifying the arguments of the preposition, which are death and pneumonia in our running example. While a parser can identify the arguments of a preposition, simply relying on the parser may impose an upper limit on the accuracy of relation prediction.</p><p>We build an oracle experiment to highlight this limitation. <ref type="table" target="#tab_3">Table 2</ref> shows the recall of the easy-first dependency parser of <ref type="bibr" target="#b10">(Goldberg and Elhadad, 2010)</ref> on Section 23 of the Penn Treebank for identifying the governor and object of prepositions.</p><p>We define heuristics that generate a candidate governors and objects for a preposition. For the gov-ernor, this set includes the previous verb or noun and for the object, it includes only the next noun. The row labeled Best(Parser, Heuristics) shows the performance of an oracle predictor which selects the true governor/object if present among the parser's prediction and the heuristics. We see that, even for the in-domain case, if we are able to re-rank the candidates, we could achieve a big improvement in argument identification.  To overcome erroneous parser decisions, we entertain governor and object candidates proposed both by the parser and the heuristics. In the following discussion, we denote the chosen governor and object by g and o respectively.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Recall</head><p>Argument types While the primary purpose of this work is to model preposition relations and their arguments, the relation prediction is strongly dependent on the semantic type of the arguments. To illustrate this, consider the following incomplete sentence: The message was delivered at · · · . This preposition can express both a Temporal or a Location relation depending on the object (for example, noon vs. the doorstep).</p><p>( <ref type="bibr" target="#b0">Agirre et al., 2008)</ref> shows that modeling the semantic type of the arguments jointly with attachment can improve PP attachment accuracy. In this work, we point out that argument types should be modeled jointly with both aspects of the problem of preposition relation labeling.</p><p>Types are an abstraction that capture common properties of groups of entities. For example, WordNet provides generalizations of words in the form of their hypernyms. In our running example, we wish to generalize the relation label for death from pneumonia to include cases such as suffering from flu. <ref type="figure" target="#fig_0">Figure 1</ref> shows the hypernym hierarchy for the word pneumonia. In this case, synsets in the hypernym hierarchy, like pathological state or physical condition, would also include ailments like flu.  We define a semantic type to be a cluster of words. In addition to WordNet hypernyms, we also cluster verbs, nouns and adjectives using the dependencybased word similarity of <ref type="bibr" target="#b12">(Lin, 1998)</ref> and treat cluster membership as types. These are described in detail in Section 5.1.</p><p>Relation prediction involves not only identifying the arguments, but also selecting the right semantic type for them, which together, help predicting the relation label. Given an argument candidate and a collection of possible types (given by WordNet or the similarity based clusters), we need to select one of the types. For example, in the WordNet case, we need to pick one of the hypernyms in the hypernym hierarchy. Thus, for the governor and object, we have a set of type labels, comprised of one element for each type category. We denote this by t g (governor type) and t o (object type) respectively.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3">Problem definition</head><p>The input to our prediction task is a preposition in a sentence. Our goal is to jointly model the relation it expresses, the governor and the object of the relation and the types of each argument (both WordNet hypernyms and cluster membership). We denote the input by x, which consists not only of the preposition but also a set of candidates for the governor and the object and, for each type category, the list of types for the governor and candidate.</p><p>The prediction, which we denote by y, consists of the relation r, which can be one of the valid relation labels in <ref type="table" target="#tab_1">Table 1</ref> and the governor and object, denoted by g and o, each of which is one of text segments proposed by the parser or the heuristics. Additionally, y also consists of type predictions for the governor and object, denoted by t g and t o respectively, each of which is a vector of labels, one for each type category. <ref type="table" target="#tab_5">Table 3</ref> summarizes the notation described above. We refer to the i th element of vectors using subscripts and use the superscript * to denote gold labels. Recall that we have gold labels only for the relation labels and not for arguments and their types.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Symbol Meaning</head><p>x Input (pre-processed sentence and preposition) r relation label for the preposition g, o governor and object of the relation</p><formula xml:id="formula_0">t g , t o</formula><p>vectors of type assignments for governor and object respectively y Full structure (r, g, o, t g , t o ) </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Learning preposition relations</head><p>A key challenge in modeling preposition relations is that our training data only annotates the relation labels and not the arguments and types. In this section, we introduce two approaches for predicting preposition relations using this data.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Feature Representation</head><p>We use the notation Φ(x, y) to indicate the feature function for an input x and the full output y. We build Φ using the features of the components of y:</p><p>1. Arguments: For g and o, which represent an assignment to the governor and object, we denote the features extracted from the arguments as φ A (x, g) and φ A (x, o) respectively.</p><p>2. Types: Given a type assignment t g i to the i th type category of the governor, we define features φ T (x, g, t g i ). Similarly, we define features φ T (x, o, t o i ) for the types of the object.</p><p>We combine the argument and their type features to define the features for classifying the relation, which we denote by φ(x, g, o, t g , t o ):</p><formula xml:id="formula_1">φ = a∈{g,o} φ A (x, a) + i φ T (x, a, t a i )<label>(1)</label></formula><p>Section 5 describes the actual features used in our experiments.</p><p>Observe that given the arguments and their types, the task of predicting relations is simply a multiclass classification problem. Thus, following the standard convention for multiclass classification, the overall feature representation for the relation and argument prediction is defined by conjoining the relation r with features for the corresponding arguments and types, φ. This gives us the full feature representation, Φ(x, y).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Model 1: Predicting only relations</head><p>The first model aims at predicting only the relation labels and not the arguments and types. This falls into the standard multiclass classification setting, where we wish to predict one of 32 labels. To do so, we sum over all the possible assignments to the rest of the structure and define features for the inputs asφ</p><formula xml:id="formula_2">(x) = g,o,t g ,t o φ(x, g, o, t g , t o )<label>(2)</label></formula><p>Effectively, doing so uses all the governor and object candidates and all their semantic types to get a feature representation for the relation classification problem. Once again, for a relation label r, the overall feature representation is defined by conjoining the relation r with the features for that relation φ, which we write as φ R (x, r). Note that this summation is computationally inexpensive in our case because the sum decomposes according to equation (1). With a learned weight vector w, the relation label is predicted as</p><formula xml:id="formula_3">r = arg max r w T φ R (x, r )<label>(3)</label></formula><p>We use a structural SVM <ref type="bibr" target="#b26">(Tsochantaridis et al., 2004)</ref> to train a weight vector w that predicts the relation label as above. The training is parameterized by C, which represents the tradeoff between generalization and the hinge loss.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3">Model 2: Learning from partial annotations</head><p>In the second model, even though our annotation does not provide gold labels for arguments and types, our goal is to predict them. At inference time, if we had a weight vector w, we could predict the full structure using inference as follows:</p><formula xml:id="formula_4">y = arg max y w T Φ(x, y)<label>(4)</label></formula><p>We propose an iterative learning algorithm to learn this weight vector. In the following discussion, for a labeled example (x, y * ), we refer to the missing part of its structure as h(y * ). That is, h(y * ) is the assignment to the arguments of the relation and their types. We use the notation r(y) to denote the relation label specified by a structure y.</p><p>Our learning algorithm is closely related to recently developed latent variable based frameworks <ref type="bibr" target="#b29">(Yu and Joachims, 2009;</ref><ref type="bibr" target="#b2">Chang et al., 2010a;</ref><ref type="bibr" target="#b3">Chang et al., 2010b)</ref>, where the supervision provides only partial annotation. We begin by defining two additional inference procedures:</p><p>1. Latent Inference: Given a weight vector w and a partially labeled example (x, y * ), we can 'complete' the rest of the structure by inferring the highest scoring assignment to the missing parts. In the algorithm, we call this procedure LatentInf (w, x, y * ), which solves the following maximization problem:</p><formula xml:id="formula_5">y = arg max y w T Φ(x, y),<label>(5)</label></formula><p>s.t. r(y) = r(y * ).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">Loss augmented inference:</head><p>This is a variant of the the standard loss augmented inference for structural SVMs, which solves the following maximization problem for a given x and fully labeled y * :</p><formula xml:id="formula_6">arg max y w T Φ(x, y) + ∆(y, y * )<label>(6)</label></formula><p>Here, ∆(y, y * ) denotes the loss function. In the standard structural SVMs, the loss is over the entire structure. In the Latent Structural SVM formulation of <ref type="bibr" target="#b29">(Yu and Joachims, 2009</ref>), the loss is defined only over the part of the structure with the gold label. In this work, we use the standard Hamming loss over the entire structure, but scale the loss for the elements of h(y) by a parameter α &lt; 1. This is a generalization of the latent structural SVM, which corresponds to the setting α = 0. The intuition behind having a non-zero α is that in addition to penalizing the learning algorithm if it violates the annotated part of the structure, we also incorporate a small penalty for the rest of the structure.</p><p>Using these two inference procedures, we define the learning algorithm as Algorithm 1. The weight vector is initialized using Model 1. The algorithm then finds the best arguments and types for all examples in the training set (steps 3-5). Doing so gives an estimate of the arguments and types for each example, giving us 'fully labeled' structured data. The algorithm then proceeds to use this data to train a new weight vector using the standard structural SVM with the loss augmented inference listed above (step 6). These two steps are repeated several times. Note that as with the summation in Model 1, solving the inference problems described above is computationally inexpensive.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Algorithm 1 Algorithm for learning Model 2</head><p>Input: Examples D = {x i , r(y * i )}, where examples are labeled only with the relation labels. 1: Initialize weight vector w using Model 1 2: for t = 1, 2, · · · do 3:</p><formula xml:id="formula_7">for (x i , y * i ) ∈ D do 4:ŷ i ← LatentInf (w, x i , y * i ) (Eq. 5) 5:</formula><p>end for</p><formula xml:id="formula_8">6:</formula><p>w ← LearnSSV M ({x i ,ŷ i }) with the loss augmented inference of Eq. 6 7: end for 8: return w Algorithm 1 is parameterized by C and α. The parameter α controls the extent to which the hypothesized labels according to the previous iteration's weight vector influence the learning.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.4">Joint inference between preposition senses and relations</head><p>By defining preposition relations as disjoint sets of preposition senses, we effectively have a hierarchical relationship between senses and relations. This suggests that joint inference can be employed between sense and relation predictions with a validity constraint connecting the two. The idea of employing inference to combine independently trained predictors to obtain a coherent output structure has been used for various NLP tasks in recent years, starting with the work of <ref type="bibr" target="#b21">(Roth and Yih, 2004;</ref><ref type="bibr" target="#b22">Roth and Yih, 2007)</ref>. We use the features defined by <ref type="bibr" target="#b11">(Hovy et al., 2010</ref>), which we write as φ s (x, s) for a given input x and sense label s, and train a separate preposition sense model on the SemEval data with features φ s (x, s) using the structural SVM algorithm. Thus, we have two weight vectors -the one for predicting preposition relations described earlier, and the preposition sense weight vector. At prediction time, for a given input, we find the highest scoring joint assignment to the relation, arguments and types and the sense, subject to the constraint that the sense and the relation agree according to the definition of the relations.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Experiments and Results</head><p>The primary research goal of our experiments is to evaluate the different models (Model 1, Model 2 and joint relation-sense inference) for predicting preposition relations. In additional analysis experiments, we also show that the definition of preposition relations indeed captures cross-preposition semantics by taking advantage of shared features and also highlight the need for going beyond the syntactic parser.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.1">Types and Features</head><p>Types As described in Section 3, we use WordNet hypernyms as one of the type categories. We use all hypernyms within four levels in the hypernym hierarchy for all senses.</p><p>The second type category is defined by wordsimilarity driven clusters. We briefly describe the clustering process here. The thesaurus of <ref type="bibr" target="#b12">(Lin, 1998)</ref> specifies similar lexical items for a given word along with a similarity score from 0 to 1. It treats nouns, verbs and adjectives separately. We use the score to cluster groups of similar words using a greedy set-covering approach. Specifically, we randomly select a word which is not yet in a cluster as the center of a new cluster and add all words whose score is greater than σ to it. We repeat this process till all words are in some cluster. A word can appear in more than one cluster because all words similar to the cluster center are added to the cluster. We repeat this process for σ ∈ {0.1, 0.125, 0.15, 0.175, 0.2, 0.25}. By increasing the value of σ, the clusters become more selective and hence smaller. <ref type="table">Table 4</ref> shows example noun clusters created using σ = 0.15. For a given word, identifiers for clusters to which the word belongs serve as type label candidates for this type category 5 .</p><p>Features Our argument features, denoted by φ A in Section 4.1, are derived from the preposition sense feature set of <ref type="bibr" target="#b11">(Hovy et al., 2010)</ref> and extract the following from the argument: 1. Word, part-ofspeech, lemma and capitalization indicator, 2. Conflated part-of-speech (one of Noun, Verb, Adjective, Adverb, and Other), 3. Indicator for existence in WordNet, 4. WordNet synsets for the first and all senses, 5. WordNet lemma, lexicographer file names and part, member and substance holonyms, 6. Roget thesaurus divisions for the word, 7. The first and last two and three letters, and 8. Indicators for known affixes. Our type features (φ T ) are simply indicators for the type label, conjoined with the type category.</p><p>One advantage of abstracting word senses into relations is that we can share features across different prepositions. The base feature set (for both types and arguments) defined above does not encode information about the preposition to be classified. We do so by conjoining the features with the preposition. In addition, since the relation labels are shared across all prepositions, we include the base features as a shared representation between prepositions.</p><p>We consider two variants of our feature sets. We refer to the features described above as the typed features.</p><p>In addition, we define the typed+gen features by conjoining argument and type features of typed with the name of the generator that proposes the argument. Recall that governor candidates are proposed by the dependency parser, or by the heuristics described earlier. Hence, for Jimmy Carter; Ronald Reagan; richard nixon; George Bush; Lyndon Johnson; Richard M. Nixon; Gerald Ford metalwork; porcelain; handicraft; jade; bronzeware; carving; pottery; ceramic; earthenware; jewelry; stoneware; lacquerware degradation; erosion; pollution; logging; desertification; siltation; urbanization; felling; poaching; soil erosion; depletion; water pollution; deforestation expert; Wall Street analyst; analyst; economist; telecommunications analyst; strategist; media analyst fox news channel; NBC News; MSNBC; Fox News; CNBC; CNNfn; C-Span Tuesdays; Wednesdays; weekday; Mondays; Fridays; Thursdays; sundays; Saturdays <ref type="table">Table 4</ref>: Examples of noun clusters generated using the set-covering approach for σ = 0.15 a governor, the typed+gen features would conjoin the corresponding typed features with one of parser, previous-verb, previous-noun, previous-adjective, or previous-word.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.2">Experimental setup and data</head><p>All our experiments are based on the SemEval 2007 data for preposition sense disambiguation <ref type="bibr" target="#b14">(Litkowski and Hargraves, 2007)</ref> comprising word sense annotation over 16176 training and 8058 examples of prepositions labeled with their senses. We pre-processed sentences with part-ofspeech tags using the Illinois POS tagger and dependency graphs using the parser of <ref type="bibr" target="#b10">(Goldberg and Elhadad, 2010)</ref> 6 . For the experiments described below, we used the relation-annotated training set to train the models and evaluate accuracy of prediction on the test set.</p><p>We chose the structural SVM parameter C using five-fold cross-validation on a 1000 random examples chosen from the training set. For Model 2, we picked α = 0.1 using a validation set consisting of a separate set of 1000 training examples. We ran Algorithm 1 for 20 rounds.</p><p>Predicting the most frequent relation for a preposition gives an accuracy of 21.18%. Even though the performance of the most-frequent relation label is poor, it does not represent the problem's difficulty and is not a good baseline. To compare, for preposition senses, using features from the neighboring words, <ref type="bibr" target="#b28">(Ye and Baldwin, 2007)</ref> obtained an accuracy of 69.3%, and with features designed for the preposition sense task, <ref type="bibr" target="#b11">(Hovy et al., 2010)</ref> get up to 84.8% accuracy for the task. Our re-implementation of the latter system using a different set of pre-processing tools gets an accuracy of 83.53%.</p><p>For preposition relations, our baseline system for relation labeling uses the typed feature set, but without any type information. This produces an accuracy of 88.01% with Model 1 and 88.64% with Model 2. We report statistical significance of results using our implementation of Dan Bikel's stratified-shuffling based statistical significance tester 7 .</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.3">Main results: Relation prediction</head><p>Our main result, presented in <ref type="table" target="#tab_7">Table 5</ref>, compares the baseline model (without types) against other systems, using both models described in Section 4. First, we see that adding type information (typed) improves performance over the baseline. Expanding the feature space (typed+gen) gives further improvements. Finally, jointly predicting the relations with preposition senses gives another improvement.  Results in bold are statistically significant (p &lt; 0.01) improvements over the system that is unaware of types. Superscripts * and † indicate significant improvements over typed and typed+gen respectively at p &lt; 0.01. For Model 2, the improvement of typed over the model without types is significant at p &lt; 0.05.</p><p>Our objective is not predicting preposition sense. However, we observe that with Model 2, jointly predicting the sense and relations improves not only the performance of relation identification, but via joint inference between relations and senses also leads to a large improvement in sense prediction accuracy. <ref type="table">Table 6</ref> shows the accuracy for sense prediction. We see that while Model 1 does not lead to a significant improvement in the accuracy, Model 2 gives an absolute improvement of over 1%.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Setting</head><p>Sense accuracy <ref type="bibr">Hovy (re-implementation)</ref> 83.53 Joint + Model 1 83.78 Joint + Model 2 84.78 * <ref type="table">Table 6</ref>: Sense prediction performance. Joint inference with Model 1, while improving relation performance, does not help sense accuracy in comparison to our reimplementation of the Hovy sense disambiguation system. However, with Model 2, the improvement is statistically significant at p &lt; 0.01.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.4">Ablation experiments</head><p>Feature sharing across prepositions In our first analysis experiment, we seek to highlight the utility of sharing features between different prepositions.</p><p>To do so, we compare the performance of a system trained without shared features against the typeindependent system, which uses shared features. To discount the influence of other factors, we use Model 1 in the typed setting without any types. <ref type="table">Table 7</ref> reports the accuracy of relation prediction for these two feature sets. We observed a similar improvement in performance even when type features are added or the setting is changed to typed+gen or with Model 2.</p><p>Setting Accuracy Independent 87.17 + Shared 88.01 <ref type="table">Table 7</ref>: Comparing the effect of feature sharing across prepositions. We see that having a shared representation that goes across prepositions improves accuracy of relation prediction (p &lt; 0.01).</p><p>Different argument candidate generators Our second ablation study looks at the effect of the various argument candidate generators. Recall that in addition to the dependency governor and object, our models also use the previous word, the previous noun, adjective and verb as governor candidates and the next noun as object candidate. We refer to the candidates generated by the parser as Parser only and the others as Heuristics only. <ref type="table" target="#tab_9">Table 8 compares</ref> the performance of these two argument candidate generators against the full set using Model 1 in both the typed and typed+gen settings. We see that the heuristics give a better accuracy than the parser based system. This is because the heuristics often contain the governor/object predicted by the dependency. This is not always the case, though, because using all generators gives a slightly better performing system (not statistically significant). In the overall system, we retain the dependency parser as one of the generators in order to capture long-range governor/object candidates that may not be in the set selected by the heuristics.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Discussion</head><p>There are two key differences between Model 1 and 2. First, the former predicts only the relation label, while the latter predicts the entire structure. <ref type="table" target="#tab_11">Table 9</ref> shows example predictions of Model 2 for relation label and WordNet argument types. These examples show how the argument types can be thought of as an explanation for the choice of relation label.  The main difference between the two models is in the treatment of the unlabeled (or latent) parts of the structure (namely, the arguments and the types) during training and inference. During training, for each example, Model 1 aggregates features from all governors and objects even if they are possibly irrelevant, which may lead to a much bigger model in terms of the number of active weights. On the other hand, for Model 2, Algorithm 1 uses the single highest scoring prediction of the latent variables, according to the current parameters, to refine the parameters. Indeed, in our experiments, we observed that the number of non-zero weights in the weight vector of Model 2 is much smaller than that of Model 1. For instance, in the typed setting, the weight vector for Model 1 had 2.57 million elements while that for Model 2 had only 1.0 million weights. Similarly, for the typed+gen setting, Model 1 had 5.41 million non-zero elements in the weight vector while Model 2 had only 2.21 million non-zero elements.</p><p>The learning algorithm itself is a generalization of the latent structural SVM of <ref type="bibr" target="#b29">(Yu and Joachims, 2009)</ref>. By setting α to zero, we get the latent structure SVM. However, we found via cross-validation that this is not the best setting of the parameter. A theoretical understanding of the sparsity of weights learned by the algorithm and a study of its convergence properties is an avenue of future research.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7">Conclusion</head><p>We addressed the problem of modeling semantic relations expressed by prepositions. We approached this task by defining a set of preposition relations that combine preposition senses across prepositions. Doing so allowed us to leverage existing annotated preposition sense data to induce a corpus for preposition labels. We modeled preposition relations in terms of its arguments, namely the governor and object of the preposition, and the semantic types of the arguments. Using a generalization of the latent structural SVM, we trained a relation, argument and type predictor using only annotated relation labels. This allowed us to get an accuracy of 89.43% on relation prediction. By employing joint inference with a preposition sense predictor, we further improved the relation accuracy to 90.23%.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 :</head><label>1</label><figDesc>Figure 1: Hypernym hierarchy for the word pneumonia</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1" validated="false"><head>Table 1 :</head><label>1</label><figDesc>List of preposition relations</figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3" validated="false"><head>Table 2 :</head><label>2</label><figDesc>Identifying governor and object of prepositions in the Penn Treebank data. Here, Best(Parser, Heuris- tics) reports the performance of an oracle that picks the true governor and object, if present among the candidates presented by the parser and the heuristic. This presents an in-domain upper bound for governor and object detec- tion. See text for further details.</figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5" validated="false"><head>Table 3 :</head><label>3</label><figDesc>Summary of notation</figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_6" validated="false"><head></head><label></label><figDesc>Joint typed+gen &amp; sense 89.99 * 90.26 * †</figDesc><table>Setting 
+Accuracy 
+Model 1 Model 2 
+No types 
+88.01 
+88.64 
+typed 
+88.77 
+89.14 
+typed+gen 
+89.90  *  
+89.43  *  
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_7" validated="false"><head>Table 5 :</head><label>5</label><figDesc>Main results: Accuracy of relation labeling.</figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_9" validated="false"><head>Table 8 :</head><label>8</label><figDesc>The performance of different argument candi- date generators. We see that considering a larger set of candidate generators gives a big accuracy improvement.</figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_11" validated="false"><head>Table 9 :</head><label>9</label><figDesc>Example predictions according to Model 2. The hypernyms column shows a representative of the synset chosen for the WordNet types. We see that in the com- bination of experience and disease suggests the relation Cause while the change and disease indicate the rela- tion StartState.</figDesc><table></table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1">By transitive prepositions we refer to the standard usage of prepositions that take an object. In particular, we do not consider prepositional particles in our analysis.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="3">We consider the following prepositions: about, above, across, after, against, along, among, around, as, at, before, behind, beneath, beside, between, by, down, during, for, from, in, inside, into, like, of, off, on, onto, over, round, through, to, towards, and with. This does not include multi-word prepositions such as because of and due to.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="4">Note that, even though we do not consider intransitive prepositions, the definitions of some relations in Table 1 could be extended apply to prepositional particles such drive down (Direction) and run about (Manner).</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="5">The clusters can be downloaded from the authors' website.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="6">We used the Curator (Clarke et al., 2012) for all preprocessing.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="7">http://www.cis.upenn.edu/ ∼ dbikel/software.html</note>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Acknowledgments</head><p>The authors wish to thank Martha Palmer, Nathan Schneider, the anonymous reviewers and the editor for their valuable feed- </p></div>
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Improving parsing and PP attachment performance with sense information</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><surname>Agirre</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Baldwin</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Martinez</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Annual Meeting of the Association for Computational Linguistics (ACL)</title>
+		<meeting>the Annual Meeting of the Association for Computational Linguistics (ACL)<address><addrLine>Columbus, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2008" />
+			<biblScope unit="page" from="317" to="325" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Prepositions in applications: A survey and introduction to the special issue</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Baldwin</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">V</forename><surname>Kordoni</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Villavicencio</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">35</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="119" to="149" />
+			<date type="published" when="2009" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Discriminative learning over constrained latent representations</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Chang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Goldwasser</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Roth</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">V</forename><surname>Srikumar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Annual Meeting of the North American Association of Computational Linguistics (NAACL)</title>
+		<meeting>the Annual Meeting of the North American Association of Computational Linguistics (NAACL)<address><addrLine>USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2010" />
+			<biblScope unit="page" from="429" to="437" />
+		</imprint>
+	</monogr>
+	<note>Los Angeles</note>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Structured output learning with indirect supervision</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Chang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">V</forename><surname>Srikumar</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Goldwasser</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Roth</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the International Conference on Machine Learning (ICML)</title>
+		<meeting>the International Conference on Machine Learning (ICML)<address><addrLine>Haifa, Israel</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2010" />
+			<biblScope unit="page" from="199" to="206" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">An NLP Curator (or: How I Learned to Stop Worrying and Love NLP Pipelines)</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">V</forename><surname>Clarke</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Srikumar</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Sammons</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Roth</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the International Conference on Language Resources and Evaluation (LREC)</title>
+		<meeting>the International Conference on Language Resources and Evaluation (LREC)<address><addrLine>Istanbul, Turkey</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2012" />
+			<biblScope unit="page" from="3276" to="3283" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">A coefficient of agreement for nominal scales</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Cohen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Educational and Psychological Measurement</title>
+		<imprint>
+			<biblScope unit="volume">20</biblScope>
+			<biblScope unit="page" from="37" to="46" />
+			<date type="published" when="1960" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Joint learning of preposition senses and semantic roles of prepositional phrases</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Dahlmeier</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><forename type="middle">T</forename><surname>Ng</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Schultz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Conference on Empirical Methods for Natural Language Processing (EMNLP)</title>
+		<meeting>the Conference on Empirical Methods for Natural Language Processing (EMNLP)<address><addrLine>Singapore</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2009" />
+			<biblScope unit="page" from="450" to="458" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Probabilistic frame-semantic parsing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">N</forename><surname>Das</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Schneider</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">N</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Smith</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Human Language Technologies: The 2010 Annual Conference of the North American Chapter of the Association for Computational Linguistics</title>
+		<meeting>Human Language Technologies: The 2010 Annual Conference of the North American Chapter of the Association for Computational Linguistics<address><addrLine>Los Angeles, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2010" />
+			<biblScope unit="page" from="948" to="956" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Background to FrameNet</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Fillmore</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Johnson</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Petruck</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">International Journal of Lexicography</title>
+		<imprint>
+			<biblScope unit="volume">16</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="235" to="250" />
+			<date type="published" when="2003" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Automatic labeling of semantic roles</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Gildea</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Jurafsky</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">28</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="245" to="288" />
+			<date type="published" when="2002" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">An efficient algorithm for easy-first non-directional dependency parsing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Goldberg</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Elhadad</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Human Language Technologies: The 2010 Annual Conference of the North American Chapter of the Association for Computational Linguistics</title>
+		<meeting>Human Language Technologies: The 2010 Annual Conference of the North American Chapter of the Association for Computational Linguistics<address><addrLine>Los Angeles, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2010" />
+			<biblScope unit="page" from="742" to="750" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">What&apos;s in a preposition? dimensions of sense disambiguation for an interesting word class</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Hovy</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Tratz</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><surname>Hovy</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Coling 2010: Posters</title>
+		<meeting><address><addrLine>Beijing, China</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2010" />
+			<biblScope unit="page" from="454" to="462" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Automatic retrieval and clustering of similar words</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Lin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Annual Meeting of the Association for Computational Linguistics (ACL)</title>
+		<meeting>the Annual Meeting of the Association for Computational Linguistics (ACL)<address><addrLine>Montreal, Canada</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="1998" />
+			<biblScope unit="page" from="768" to="774" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">The Preposition Project</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Litkowski</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">O</forename><surname>Hargraves</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ACL-SIGSEM Workshop on the Linguistic Dimensions of Prepositions and their Use in Computational Linguistics Formalisms and Applications</title>
+		<meeting><address><addrLine>Colchester, UK</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2005" />
+			<biblScope unit="page" from="171" to="179" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">SemEval-2007 Task 06: Word-Sense Disambiguation of Prepositions</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Litkowski</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">O</forename><surname>Hargraves</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Fourth International Workshop on Semantic Evaluations (SemEval-2007)</title>
+		<meeting>the Fourth International Workshop on Semantic Evaluations (SemEval-2007)<address><addrLine>Prague, Czech Republic</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2007" />
+			<biblScope unit="page" from="24" to="29" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+		<title level="m" type="main">Proposed Next Steps for The Preposition Project</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Litkowski</surname></persName>
+		</author>
+		<idno>12-01</idno>
+		<imprint>
+			<date type="published" when="2012" />
+		</imprint>
+		<respStmt>
+			<orgName>CL Research</orgName>
+		</respStmt>
+	</monogr>
+<note type="report_type">Technical Report</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">The NomBank project: An interim report</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Meyers</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Reeves</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Macleod</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Szekely</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">V</forename><surname>Zielinska</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Young</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Grishman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">HLT-NAACL 2004 Workshop: Frontiers in Corpus Annotation</title>
+		<meeting><address><addrLine>Boston, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2004" />
+			<biblScope unit="page" from="24" to="31" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Exploiting semantic role resources for preposition disambiguation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>O&amp;apos;hara</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Wiebe</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">35</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="151" to="184" />
+			<date type="published" when="2009" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">The Proposition Bank: An Annotated Corpus of Semantic Roles</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Palmer</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Gildea</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Kingsbury</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">31</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="71" to="106" />
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<monogr>
+		<title level="m" type="main">Semantic Role Labeling</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Palmer</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Gildea</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">N</forename><surname>Xue</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2010" />
+			<publisher>Morgan &amp; Claypool Publishers</publisher>
+			<biblScope unit="volume">3</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">The importance of syntactic parsing and inference in semantic role labeling</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">V</forename><surname>Punyakanok</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Roth</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><surname>Yih</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page">34</biblScope>
+			<date type="published" when="2008" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">A linear programming formulation for global inference in natural language tasks</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Roth</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><surname>Yih</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Annual Conference on Computational Natural Language Learning (CoNLL)</title>
+		<meeting>the Annual Conference on Computational Natural Language Learning (CoNLL)<address><addrLine>Boston, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2004" />
+			<biblScope unit="page" from="1" to="8" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<monogr>
+		<title level="m" type="main">Global inference for entity and relation identification via a linear programming formulation. Introduction to Statistical Relational Learning</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Roth</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><surname>Yih</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2007" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">A joint model for extended semantic role labeling</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">V</forename><surname>Srikumar</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Roth</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Conference on Empirical Methods in Natural Language Processing</title>
+		<meeting>the Conference on Empirical Methods in Natural Language Processing<address><addrLine>Edinburgh, Scotland</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2011" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Disambiguation of preposition sense using linguistically motivated features</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Tratz</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Hovy</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Human Language Technologies: The 2009 Annual Conference of the North American Chapter of the Association for Computational Linguistics, Companion Volume: Student Research Workshop and Doctoral Consortium</title>
+		<meeting>Human Language Technologies: The 2009 Annual Conference of the North American Chapter of the Association for Computational Linguistics, Companion Volume: Student Research Workshop and Doctoral Consortium<address><addrLine>Boulder, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2009" />
+			<biblScope unit="page" from="96" to="100" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<monogr>
+		<title level="m" type="main">Semantically-enriched Parsing for Natural Language Understanding</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Tratz</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2011" />
+		</imprint>
+		<respStmt>
+			<orgName>University of Southern California</orgName>
+		</respStmt>
+	</monogr>
+<note type="report_type">Ph.D. thesis</note>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Support vector machine learning for interdependent and structured output spaces</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">I</forename><surname>Tsochantaridis</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Hofmann</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Joachims</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Altun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the International Conference on Machine Learning (ICML)</title>
+		<meeting>the International Conference on Machine Learning (ICML)<address><addrLine>Banff, Canada</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2004" />
+			<biblScope unit="page" from="104" to="111" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Semantic role labeling of prepositional phrases</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Ye</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Baldwin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ACM Transactions on Asian Language Information Processing (TALIP)</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="228" to="244" />
+			<date type="published" when="2006" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">MELB-YB: Preposition sense disambiguation using rich semantic features</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Ye</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Baldwin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Fourth International Workshop on Semantic Evaluations (SemEval-2007)</title>
+		<meeting>the Fourth International Workshop on Semantic Evaluations (SemEval-2007)<address><addrLine>Prague, Czech Republic</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2007" />
+			<biblScope unit="page" from="241" to="244" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Learning structural SVMs with latent variables</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Joachims</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the International Conference on Machine Learning (ICML)</title>
+		<meeting>the International Conference on Machine Learning (ICML)<address><addrLine>Montreal, Canada</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2009" />
+			<biblScope unit="page" from="1" to="8" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Selectional preferences for semantic role classification</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Zapirain</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><surname>Agirre</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">L</forename><surname>Màrquez</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Surdeanu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Computational Linguistics</title>
+		<imprint>
+			<date type="published" when="2012" />
+			<biblScope unit="page" from="1" to="33" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

@@ -1,0 +1,730 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T19:38+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Unsupervised Topic Identification by Integrating Linguistic and Visual Information Based on Hidden Markov Models</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher>Association for Computational Linguistics</publisher>
+				<availability status="unknown"><p>Copyright Association for Computational Linguistics</p>
+				</availability>
+				<date type="published" when="2006-07">July 2006. 2006</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author role="corresp">
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Tomohide</forename><surname>Shibata</surname></persName>
+							<email>shibata@kc.t.u-tokyo.ac.jp</email>
+							<affiliation key="aff0">
+								<orgName type="department" key="dep1">Graduate School of Information Science and Technology</orgName>
+								<orgName type="department" key="dep2">Graduate School of Informatics</orgName>
+								<orgName type="institution">University of Tokyo</orgName>
+								<address>
+									<addrLine>7-3-1 Hongo, Bunkyo-ku, Kyoto University Yoshida-honmachi, Sakyo-ku</addrLine>
+									<postCode>113-8656, 606-8501</postCode>
+									<settlement>Tokyo, Kyoto</settlement>
+									<country>Japan, Japan</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sadao</forename><surname>Kurohashi</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department" key="dep1">Graduate School of Information Science and Technology</orgName>
+								<orgName type="department" key="dep2">Graduate School of Informatics</orgName>
+								<orgName type="institution">University of Tokyo</orgName>
+								<address>
+									<addrLine>7-3-1 Hongo, Bunkyo-ku, Kyoto University Yoshida-honmachi, Sakyo-ku</addrLine>
+									<postCode>113-8656, 606-8501</postCode>
+									<settlement>Tokyo, Kyoto</settlement>
+									<country>Japan, Japan</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Unsupervised Topic Identification by Integrating Linguistic and Visual Information Based on Hidden Markov Models</title>
+					</analytic>
+					<monogr>
+						<title level="m">Proceedings of the COLING/ACL 2006 Main Conference Poster Sessions</title>
+						<meeting>the COLING/ACL 2006 Main Conference Poster Sessions <address><addrLine>Sydney</addrLine></address>
+						</meeting>
+						<imprint>
+							<publisher>Association for Computational Linguistics</publisher>
+							<biblScope unit="page" from="755" to="762"/>
+							<date type="published" when="2006-07">July 2006. 2006</date>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>This paper presents an unsupervised topic identification method integrating linguistic and visual information based on Hidden Markov Models (HMMs). We employ HMMs for topic identification, wherein a state corresponds to a topic and various features including linguistic, visual and audio information are observed. Our experiments on two kinds of cooking TV programs show the effectiveness of our proposed method.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Recent years have seen the rapid increase of multimedia contents with the continuing advance of information technology. To make the best use of multimedia contents, it is necessary to segment them into meaningful segments and annotate them. Because manual annotation is extremely expensive and time consuming, automatic annotation technique is required.</p><p>In the field of video analysis, there have been a number of studies on shot analysis for video retrieval or summarization (highlight extraction) using Hidden Markov Models (HMMs) (e.g., <ref type="bibr" target="#b2">(Chang et al., 2002;</ref><ref type="bibr" target="#b14">Nguyen et al., 2005;</ref><ref type="bibr" target="#b15">Q.Phung et al., 2005)</ref>). These studies first segmented videos into shots, within which the camera motion is continuous, and extracted features such as color histograms and motion vectors. Then, they classified the shots based on HMMs into several classes (for baseball sports video, for example, pitch view, running overview or audience view). In these studies, to achieve high accuracy, they relied on handmade domain-specific knowledge or trained HMMs with manually labeled data. Therefore, they cannot be easily extended to new domains on a large scale. In addition, although linguistic information, such as narration, speech of characters, and commentary, is intuitively useful for shot analysis, it is not utilized by many of the previous studies. Although some studies attempted to utilize linguistic information <ref type="bibr" target="#b8">(Jasinschi et al., 2001;</ref><ref type="bibr" target="#b0">Babaguchi and Nitta, 2003)</ref>, it was just keywords.</p><p>In the field of Natural Language Processing, Barzilay and Lee have recently proposed a probabilistic content model for representing topics and topic shifts <ref type="bibr" target="#b1">(Barzilay and Lee, 2004</ref>). This content model is based on HMMs wherein a state corresponds to a topic and generates sentences relevant to that topic according to a state-specific language model, which are learned from raw texts via analysis of word distribution patterns.</p><p>In this paper, we describe an unsupervised topic identification method integrating linguistic and visual information using HMMs. Among several types of videos, in which instruction videos (howto videos) about sports, cooking, D.I.Y., and others are the most valuable, we focus on cooking TV programs. In an example shown in <ref type="figure" target="#fig_0">Figure 1</ref>, preparation, sauteing, and dishing up are automatically labeled in sequence. Identified topics lead to video segmentation and can be utilized for video summarization.</p><p>Inspired by Barzilay's work, we employ HMMs for topic identification, wherein a state corresponds to a topic, like preparation and frying, and various features, which include visual and audio information as well as linguistic information (instructor's utterances), are observed. This study considers a clause as an unit of analysis and the following eight topics as a set of states <ref type="bibr">: preparation, sauteing, frying, baking, simmering, boiling, dishing up, steaming</ref>  word distribution can be learned from raw texts, their model cannot utilize discourse features, such as cue phrases and lexical chains. We incorporate domain-independent discourse features such as cue phrases, noun/verb chaining, which indicate topic change/persistence, into the domain-specific word distribution. Our main claim is that we utilize visual and audio information to achieve robust topic identification. As for visual information, we can utilize background color distribution of the image. For example, frying and boiling are usually performed on a gas range and preparation and dishing up are usually performed on a cutting board. This information can be an aid to topic identification. As for audio information, silence can be utilized as a clue to a topic shift.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Related Work</head><p>In Natural Language Processing, text segmentation tasks have been actively studied for information retrieval and summarization. Hearst proposed a technique called TextTiling for subdividing texts into sub-topics <ref type="bibr" target="#b6">(Hearst.M, 1997</ref>). This method is based on lexical co-occurrence. Galley et al. presented a domain-independent topic segmentation algorithm for multi-party speech <ref type="bibr" target="#b3">(Galley et al., 2003)</ref>. This segmentation algorithm uses automatically induced decision rules to combine linguistic features (lexical cohesion and cue phrases) and speech features (silences, overlaps and speaker change). These studies aim just at segmenting a given text, not at identifying topics of segmented texts.</p><p>Marcu performed rhetorical parsing in the framework of Rhetorical Structure Theory (RST) based on a discourse-annotated corpus <ref type="bibr" target="#b13">(Marcu, 2000)</ref>. Although this model is suitable for analyzing local modification in a text, it is difficult for this model to capture the structure of topic transition in the whole text.</p><p>In contrast, Barzilay and Lee modeled a content structure of texts within specific domains, such as earthquake and finance <ref type="bibr" target="#b1">(Barzilay and Lee, 2004)</ref>. They used HMMs wherein each state corresponds to a distinct topic (e.g., in earthquake domain, earthquake magnitude or previous earthquake occurrences) and generates sentences relevant to that topic according to a state-specific language model. Their method first create clusters via complete-link clustering, measuring sentence similarity by the cosine metric using word bigrams as features.  and state-transition probability p(s j |s i ) from state s i to state s j . Then, they continue to estimate HMM parameters with the Viterbi algorithm until the clustering stabilizes. They applied the constructed content model to two tasks: information ordering and summarization. We differ from this study in that we utilize multimodal features and domain-independent discourse features to achieve robust topic identification. In the field of video analysis, there have been a number of studies on shot analysis with HMMs. Chang et al. described a method for classifying shots into several classes for highlight extraction in baseball games <ref type="bibr" target="#b2">(Chang et al., 2002)</ref>. Nguyen et al. proposed a robust statistical framework to extract highlights from a baseball video <ref type="bibr" target="#b14">(Nguyen et al., 2005)</ref>. They applied multi-stream HMMs to control the weight among different features, such as principal component features capturing color information and frame-difference features for moving objects. Phung et al. proposed a probabilistic framework to exploit hierarchy structure for topic transition detection in educational videos <ref type="bibr" target="#b15">(Q.Phung et al., 2005)</ref>.</p><p>Some studies attempted to utilize linguistic information in shot analysis <ref type="bibr" target="#b8">(Jasinschi et al., 2001;</ref><ref type="bibr" target="#b0">Babaguchi and Nitta, 2003)</ref>. For example, Babaguchi and Nitta segmented closed caption text into meaningful units and linked them to video streams in sports video. However, linguistic information they utilized was just keywords.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Features for Topic Identification</head><p>First, we'll describe the features that we use for topic identification, which are listed in <ref type="table" target="#tab_2">Table 1</ref>. They consist of three modalities: linguistic, visual and audio modality.</p><p>We utilize as linguistic information the instructor's utterances in video, which can be divided into various types such as actions, tips, and even small talk. Among them, actions, such as cut, peel and grease a pan, are dominant and supposed to be useful for topic identification and others can be noise.</p><p>In the case of analyzing utterances in video, it is natural to utilize visual information as well as linguistic information for robust analysis. We utilize background image as visual information. For example, frying and boiling are usually performed on a gas range and preparation and dishing up are usually performed on a cutting board.</p><p>Furthermore, we utilize cue phrases and silence as a clue to a topic shift, and noun/verb chaining as a clue to a topic persistence.</p><p>We describe these features in detail in the following sections.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Linguistic Features</head><p>Closed captions of Japanese cooking TV programs are used as a source for extracting linguistic fea-  tures. An example of closed captions is shown in <ref type="figure" target="#fig_1">Figure 2</ref>. We first process them with the Japanese morphological analyzer, JUMAN , and make syntactic/case analysis and anaphora resolution with the Japanese analyzer, KNP <ref type="bibr" target="#b11">(Kurohashi and Nagao, 1994)</ref>. Then, we perform the following process to extract linguistic features. 3.1.1 Extracting Utterances Referring to Actions Considering a clause as a basic unit, utterances referring to an action are extracted in the form of case frame, which is assigned by case analysis. This procedure is performed for generalization and word sense disambiguation. For example, "</p><p>(add salt)" and " (add sugar into a pan)" are assigned to case frame ireru:1 (add) and "</p><p>(carve with a knife)" is assigned to case frame ireru:2 (carve). We describe this procedure in detail below.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Utterance-type recognition</head><p>To extract utterances referring to actions, we classify utterances into several types listed in <ref type="table">Ta</ref> We make two exceptions to reduce noises. One is that clauses are not extracted from the sentence in which sentence-end clause's utterancetype is not recognized as an action. In the following example, " (simmer)" and " (cut)" are not extracted because the utterance type of [substitution] (It doesn't matter if you cut it after simmering.)</p><p>The other is that conditional/causal clauses are not extracted because they sometimes refer to the previous/next topic.</p><p>(3) (After we finish cutting it, we'll fry.) (4) (We cut in this cherry tomato, because we'll fry it in oil.)</p><p>Note that relations between clauses are recognized by clause-end patterns.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Verb sense disambiguation by assigning to a case frame</head><p>In general, a verb has multiple meanings/usages. For example, " " has multiple usages, " (add salt)" and " (carve with a knife)" , which appear in different topics. We do not extract a surface form of verb but a case frame, which is assigned by case analysis. Case frames are automatically constructed from Web cooking texts (12 million sentences) by clustering similar verb usages <ref type="bibr" target="#b9">(Kawahara and Kurohashi, 2002</ref>). An example of the automatically constructed case frame is shown in <ref type="table" target="#tab_5">Table 3</ref>. For example, " (add salt)" is assigned to ireru:1 (add) and " (carve with a knife)" is assigned to case frame ireru:2 (carve).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1.2">Cue phrases</head><p>As Grosz and Sidner (Grosz and Sidner, 1986) pointed out, cue phrases such as now and well serve to indicate a topic change. We use approximately 20 domain-independent cue phrases, such as " (then)", " (next)" and " (then)".</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1.3">Noun Chaining</head><p>In text segmentation algorithms such as TextTiling <ref type="bibr" target="#b6">(Hearst.M, 1997)</ref>, lexical chains are widely utilized for detecting a topic shift. We utilize such a feature as a clue to topic persistence.</p><p>When two continuous actions are performed to the same ingredient, their topics are often identical. For example, because " (grate)" and " (raise)" are performed to the same ingredient " (turnip)" , the topics (in this instance, preparation) in the two utterances are identical.</p><p>(5) a.</p><p>(We'll grate a turnip.) b.</p><p>(Raise this turnip on this basket.)</p><p>However, in the case of spoken language, because there exist many omissions, it is often the case that noun chaining cannot be detected with surface word matching. Therefore, we detect noun chaining by using the anaphora resolution result 2 of verbs (ex.(6)) and nouns (ex. <ref type="formula">(7)</ref>). The verb, noun anaphora resolution is conducted by the method proposed by , <ref type="bibr" target="#b16">(Sasano et al., 2004)</ref>, respectively.</p><p>(6) a.</p><p>(Cut a cabbage.) b.</p><p>[ ] (Wash it once.) (7) a.</p><p>(Slice a carrot into 4-cm pieces.) b. [ ] (Peel its skin.)</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1.4">Verb Chaining</head><p>When a verb of a clause is identical with that of the previous clause, they are likely to have the same topic. We utilize the fact that the adjoining two clauses contain an identical verbs or not as an observed feature. (Add chicken wings.)</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Image Features</head><p>It is difficult for the current image processing technique to extract what object appears or what action is performing in video unless a detailed object/action model for a specific domain is constructed by hand. Therefore, referring to <ref type="bibr" target="#b5">(Hamada et al., 2000)</ref>, we focus our attention on color distribution at the bottom of the image, which is comparatively easy to exploit. As shown in <ref type="figure" target="#fig_0">Figure 1</ref>, we utilize the mass point of RGB in the bottom of the image at each clause.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3">Audio Features</head><p>A cooking video contains various types of audio information, such as instructor's speech, cutting sounds and frizzling sound. If cutting sound or frizzling sound could be distinguished from other sounds, they could be an aid to topic identification, but it is difficult to recognize them.</p><p>As Galley et al. <ref type="bibr" target="#b3">(Galley et al., 2003)</ref> pointed out, a longer silence often appears when topic changes, and we can utilize it as a clue to topic change. In this study, silence is automatically extracted by finding duration below a certain amplitude level which lasts more than one second.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Topic Identification based on HMMs</head><p>We employ HMMs for topic identification, where a hidden state corresponds to a topic and various features described in Section 3 are observed. In our model, considering the case frame as a basic unit, the case frame and background image are observed from the state, and discourse features indicating to topic shift/persistence (cue phrases, noun/verb chaining and silence) are observed when the state transits.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Parameters HMM parameters are as follows:</head><p>• initial state distribution π i : the probability that state s i is a start state.</p><p>• state transition probability a ij : the probability that state s i transits to state s j .</p><p>• observation probability b ij (o t ) : the probability that symbol o t is emitted when state s i transits to state s j . This probability is given by the following equation:</p><formula xml:id="formula_0">b ij (o t ) = b j (cf k ) · b j (R, G, B) · b ij (discourse f eatures)<label>(1)</label></formula><p>-case frame b j (cf k ): the probability that case frame cf k is emitted by state s j .</p><p>-background image b j (R, G, B): the probability that background image b j (R, G, B) is emitted by state s j . The emission probability is modeled by a single Gaussian distribution with mean (R j ,G j ,B j ) and variance σ j .</p><p>-discourse features : the probability that discourse features are emitted when state s i transits to state s j . This probability is defined as multiplication of the observation probability of each feature (cue phrase, noun chaining, verb chaining, silence). The observation probability of each feature does not depend on state s i and s j , but on whether s i and s j are the same or different. For example, in the case of cue phrase (c), the probability is given by the following equation:</p><formula xml:id="formula_1">b ij (c) = p same (c)(i = j) p dif f (c)(i = j)<label>(2)</label></formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Parameters Estimation</head><p>We apply the Baum-Welch algorithm for estimating these parameters. To achieve high accuracy with the Baum-Welch algorithm, which is an unsupervised learning method, some labeled data have been required or proper initial parameters have been set depending on domain-specific knowledge. These requirements, however, make it difficult to extend to other domains. We automatically extract "pseudo-labeled" data focusing on the following linguistic expressions: if a clause has the utterance-type [action declaration] and an original form of its verb corresponds to a topic, its topic is set to that topic. Remind that [action declaration] is a kind of declaration of starting a series of actions. For example, in <ref type="figure" target="#fig_0">Figure 1</ref>, the topic of the clause "We'll saute." is set to sauteing because its utterance-type is recognized as [action declaration] and the original form of its verb is topic sauteing. By using a small amounts of "pseudo-labeled" data as well as unlabeled data, we train the HMM parameters. Once the HMM parameters are trained, the topic identification is performed using the standard Viterbi algorithm.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Experiments and Discussion</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.1">Data</head><p>To demonstrate the effectiveness of our proposed method, we made experiments on two kinds of cooking TV programs: NHK "Today's Cooking"  and NTV "Kewpie 3-Min Cooking". <ref type="table" target="#tab_7">Table 4</ref> presents the characteristics of the two programs. Note that time stamps of closed captions synchronize themselves with the video stream. Extracted "pseudo-labeled" data by the expression mentioned in Section 4.2 are 525 clauses out of 13564 (3.87%) in "Today's Cooking", and 107 clauses out of 1865 (5.74%) in "Kewpie 3-Min Cooking".</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.2">Experiments and Discussion</head><p>We conducted the experiment of the topic identification. We first trained HMM parameters for each program, and then applied the trained model to five videos each, in which, we manually assigned appropriate topics to clauses. <ref type="table" target="#tab_6">Table 5</ref> gives the evaluation results. The unit of evaluation was a clause. The accuracy was improved by integrating linguistic and visual information compared to using linguistic / visual information alone. (Note that "visual information" uses pseudo-labeled data.) In addition, the accuracy was improved by using various discourse features. The reason why silence did not contribute to accuracy improvement is supposed to be that closed captions and video streams were not synchronized precisely due to time lagging of closed captions.</p><p>To deal with this problem, an automatic closed caption alignment technique <ref type="bibr" target="#b7">(Huang et al., 2003)</ref> will be applied or automatic speech recognition will be used as texts instead of closed captions with the advance of speech recognition technology. <ref type="figure" target="#fig_3">Figure 3</ref> illustrates an improved example by adding visual information. In the case of using only linguistic information, this topic was rec- ognized as sauteing, but this topic was actually preparation, which referred to the next topic. By using the visual information that background color was white, this topic was correctly recognized as preparation.</p><p>We conducted another experiment to demonstrate the validity of several linguistic processes, such as utterance-type recognition and word sense disambiguation with case frames, for extracting linguistic information from closed captions described in Section 3.1.1. We compared our method to three methods: a method that does not perform word sense disambiguation with case frames (w/o cf), a method that does not perform utterancetype recognition for extracting actions (uses all utterance-type texts) (w/o utype), a method, in which a sentence is emitted according to a statespecific language model (bigram) as Barzilay and Lee adopted (bigram). <ref type="figure">Figure 6</ref> gives the experimental result, which demonstrates our method is appropriate.</p><p>One cause of errors in topic identification is that some case frames are incorrectly constructed. For example, kiru:1 (cut) contains " (cut a vegetable)" and " (drain oil)". This leads to incorrect parameter training. Other cause is that some verbs are assigned to an inaccurate case frame by the failure of case analysis.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Conclusions</head><p>This paper has described an unsupervised topic identification method integrating linguistic and visual information based on Hidden Markov Mod- els. Our experiments on the two kinds of cooking TV programs showed the effectiveness of integration of linguistic and visual information and incorporation of domain-independent discourse features to domain-dependent features (case frame and background image). We are planning to perform object recognition using the automatically-constructed object model and utilize the object recognition results as a feature for HMM-based topic identification.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 :</head><label>1</label><figDesc>Figure 1: Topic identification with Hidden Markov Models.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: An example of closed captions. (The phrase sandwiched by a square bracket means an utterance type and the word surrounded by a rectangle means an extracted utterance referring to an action. The bold word means a case frame assigned to the verb.)</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: An improved example by adding visual information.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0" validated="false"><head></head><label></label><figDesc>.</figDesc><table>In Barzilay's model, although domain-specific cut:1 
+
+saute:1 
+add:3 
+put:2 
+
+preparation 
+sauteing 
+dishing up 
+
+‥‥ 
+‥‥ 
+‥‥ 
+‥‥ 
+
+preparation 
+
+sauteing 
+
+dishing up 
+
+silence 
+cue phrase 
+"then" 
+
+t 
+
+Cut an avocado. 
+We'll saute. 
+Add spices. 
+
+identified 
+topic: 
+
+hidden 
+states 
+
+observed 
+data 
+
+utterance 
+
+case frame 
+
+image 
+
+Put cheese between 
+slices of bread. 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1" validated="false"><head></head><label></label><figDesc>They calculate initial proba- bilities: state s i specific language model p s i (w |w) 小松菜を切ります。 (Cut a Chinese cabbage.) 根元を切り落とし、一度洗います。 (Cut off its root and wash it.) 代わりに大根もおいしいです。 (A Japanese radish would taste delicious.)</figDesc><table>縦に3等分に切ります。 (Divide it into three equal parts.) 
+
+では炒めていきます。 (Now, we'll saute.) 
+
+‥‥ 
+
+[individual action] 
+
+[individual action] 
+[individual action] 
+
+[substitution] 
+
+[individual action] 
+
+[action declaration] 
+
+あと少しですからここだけ頑張って下さい。 (Just a little more and go for it!) 
+
+[small talk] 
+[small talk] 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2" validated="true"><head>Table 1 :</head><label>1</label><figDesc>Features for topic identification.</figDesc><table>Modality 
+Feature 
+Domain dependent 
+Domain independent 
+linguistic case frame 
+utterance generalization 
+cue phrases 
+topic change 
+noun chaining 
+topic persistence 
+verb chaining 
+topic persistence 
+visual 
+background image 
+bottom of image 
+audio 
+silence 
+topic change 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3" validated="true"><head>Table 2 :</head><label>2</label><figDesc>Utterance-type classification. (An underlined phrase means a pattern for recognizing utterance type.)</figDesc><table>[action declaration] 
+ex. 
+(Then, we 'll cook a steak) 
+(OK, we'll fry.) 
+[individual action] 
+ex. 
+(Cut off a step of this eggplant.) 
+(Pour water into a pan.) 
+[food state] 
+ex. 
+(There is no water in the carrot.) 
+[note] 
+ex. 
+(Don't cut this core off.) 
+[substitution] 
+ex. 
+(You may use a leek.) 
+[food/tool presentation] 
+ex. 
+Today, we use this handy mixer.) 
+[small talk] 
+ex. 
+(Hello.) 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4" validated="false"><head></head><label></label><figDesc>- ble 2 1 . Note that actions are supposed to have two levels: [action declaration] means a declaration of beginning a series of actions and [individual ac- tion] means an action that is the finest one.In this paper, [ ] means an utterance type. Input sentences are first segmented into clauses and their utterance type is recognized. Among several utterance types, [individual ac- tion], [food/tool presentation], [substitution], [note], and [small talk] can be recognized by clause-end patterns. We prepare approximately 500 patterns for recognizing the utterance type. As for [individual action] and [food state], consider- ing the portability of our system, we use general rules regarding intransitive verbs or adjective + "</figDesc><table>1 (become)" as [food state], and others as [in-
+dividual action]. 
+Action extraction 
+We extract utterances whose utterance type is 
+recognized as action ([action declaration] or [indi-
+vidual action]). For example, " 
+(peel)" and " 
+(cut)" are extracted from the following sen-
+tence. 
+
+(1) 
+[individual action] 
+[individual action] (We 
+peel this carrot and cut it in half.) 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5" validated="true"><head>Table 3 :</head><label>3</label><figDesc>An example of the automatically con- structed case frame.</figDesc><table>Verb 
+Case 
+marker 
+Examples 
+
+kiru:1 
+ga 
+&lt;agent&gt; 
+(cut) 
+wo 
+pork, carrot, vegetable, · · · 
+ni 
+rectangle, diamonds, · · · 
+kiru:2 
+ga 
+&lt;agent&gt; 
+(drain) 
+wo 
+damp · · · 
+no 
+eggplant, bean curd, · · · 
+ireru:1 
+ga 
+&lt;agent&gt; 
+(add) 
+wo 
+salt, oil, vegetable, · · · 
+ni 
+pan, bowl, · · · 
+ireru:2 
+ga 
+&lt;agent&gt; 
+(carve) 
+wo 
+knife · · · 
+ni 
+fish · · · 
+
+the sentence-end clause is recognized as [substi-
+tution]. 
+
+(2) 
+[individual action] 
+[indi-
+vidual action] 
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_6" validated="true"><head>Table 5 :</head><label>5</label><figDesc>Experimental result of topic identification.</figDesc><table>Features 
+Accuracy 
+case frame background image discourse features silence "Today's Cooking" "Kewpie 3-Min Cooking" 
+√ 
+61.7% 
+66.4% 
+√ 
+56.8% 
+72.9% 
+√ 
+√ 
+69.9% 
+77.1% 
+√ 
+√ 
+√ 
+70.5% 
+82.9% 
+√ 
+√ 
+√ 
+√ 
+70.5% 
+82.9% 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_7" validated="true"><head>Table 4 :</head><label>4</label><figDesc>Characteristics of the two cooking pro- grams we used for our experiments.</figDesc><table>Program 
+Today's Cooking Kewpie 3-Min Cooking 
+Videos 
+200 
+70 
+Duration 
+25min 
+10min 
+# of utterances 
+per video 
+249.4 
+183.4 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_8" validated="false"><head>Table 6 :</head><label>6</label><figDesc>Results of the experiment that compares our method to three methods.Today's Cooking" "Kewpie 3-Min Cooking"</figDesc><table>Method 
+Accuracy 
+"proposed method 
+61.7% 
+66.4% 
+w/o cf 
+57.1% 
+60.0% 
+w/o utype 
+61.7% 
+62.1% 
+bigram 
+54.7% 
+59.3% 
+
+</table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="2">[ ] indicates an element complemented with anaphora resolution.</note>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Intermodal collaboration: A strategy for semantic content analysis for broadcasted sports video</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Noboru</forename><surname>Babaguchi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Naoko</forename><surname>Nitta</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of IEEE International Conference on Image Processing(ICIP2003)</title>
+		<meeting>IEEE International Conference on Image Processing(ICIP2003)</meeting>
+		<imprint>
+			<date type="published" when="2003" />
+			<biblScope unit="page" from="13" to="16" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Catching the drift: Probabilistic content models, with applications to generation and summarization</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Regina</forename><surname>Barzilay</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Lillian</forename><surname>Lee</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the NAACL/HLT</title>
+		<meeting>the NAACL/HLT</meeting>
+		<imprint>
+			<date type="published" when="2004" />
+			<biblScope unit="page" from="113" to="120" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Extract highlights from baseball game video with hidden markov models</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Peng</forename><surname>Chang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Mei</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Yihong</forename><surname>Gong</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the International Conference on Image Processing 2002(ICIP2002)</title>
+		<meeting>the International Conference on Image Processing 2002(ICIP2002)</meeting>
+		<imprint>
+			<date type="published" when="2002" />
+			<biblScope unit="page" from="609" to="612" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Discourse segmentation of multi-party conversation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Michel</forename><surname>Galley</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kathleen</forename><surname>Mckeown</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Eric</forename><surname>Foslerlussier</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hongyan</forename><surname>Jing</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 41st Annual Meeting of the Association for Computational Linguistics</title>
+		<meeting>the 41st Annual Meeting of the Association for Computational Linguistics</meeting>
+		<imprint>
+			<date type="published" when="2003" />
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="page" from="562" to="569" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Attention, intentions, and the structure of discourse</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Barbara</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Candace</forename><forename type="middle">L</forename><surname>Grosz</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Sidner</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistic</title>
+		<imprint>
+			<biblScope unit="volume">12</biblScope>
+			<biblScope unit="page" from="175" to="204" />
+			<date type="published" when="1986" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Associating cooking video with related textbook</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Reiko</forename><surname>Hamada</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ichiro</forename><surname>Ide</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Shuichi</forename><surname>Sakai</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hidehiko</forename><surname>Tanaka</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of ACM Multimedia 2000 workshops</title>
+		<meeting>ACM Multimedia 2000 workshops</meeting>
+		<imprint>
+			<date type="published" when="2000" />
+			<biblScope unit="page" from="237" to="241" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">TextTiling: Segmenting text into multi-paragraph subtopic passages</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="middle">M</forename><surname>Hearst</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">23</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="33" to="64" />
+			<date type="published" when="1997-03" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">Automatic closed caption alignment based on speech recognition transcripts</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Chih-Wei</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Winston</forename><surname>Hsu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Shin-Fu</forename><surname>Chang</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2003" />
+			<pubPlace>Columbia ADVENT</pubPlace>
+		</imprint>
+	</monogr>
+<note type="report_type">Technical report</note>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Integrated multimedia processing for topic segmentation and classification</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Radu</forename><surname>Jasinschi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Nevenka</forename><surname>Dimitrova</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Thomas</forename><surname>Mcgee</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Lalitha</forename><surname>Agnihotri</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">John</forename><surname>Zimmerman</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Dongge</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of IEEE International Conference on Image Processing(ICIP2003)</title>
+		<meeting>IEEE International Conference on Image Processing(ICIP2003)</meeting>
+		<imprint>
+			<date type="published" when="2001" />
+			<biblScope unit="page" from="366" to="369" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Fertilization of case frame dictionary for robust japanese case analysis</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Daisuke</forename><surname>Kawahara</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sadao</forename><surname>Kurohashi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of 19th COLING (COLING02)</title>
+		<meeting>19th COLING (COLING02)</meeting>
+		<imprint>
+			<date type="published" when="2002" />
+			<biblScope unit="page" from="425" to="431" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Zero pronoun resolution based on automatically constructed case frames and structural preference of antecedents</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Daisuke</forename><surname>Kawahara</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sadao</forename><surname>Kurohashi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of The 1st International Joint Conference on Natural Language Processing</title>
+		<meeting>The 1st International Joint Conference on Natural Language Processing</meeting>
+		<imprint>
+			<date type="published" when="2004" />
+			<biblScope unit="page" from="334" to="341" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">A syntactic analysis method of long japanese sentences based on the detection of conjunctive structures</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sadao</forename><surname>Kurohashi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Makoto</forename><surname>Nagao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">20</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<date type="published" when="1994" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Improvements of Japanese morphological analyzer JUMAN</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sadao</forename><surname>Kurohashi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Toshihisa</forename><surname>Nakamura</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the International Workshop on Sharable Natural Language</title>
+		<meeting>the International Workshop on Sharable Natural Language</meeting>
+		<imprint>
+			<date type="published" when="1994" />
+			<biblScope unit="page" from="22" to="28" />
+		</imprint>
+	</monogr>
+	<note>Yuji Matsumoto, and Makoto Nagao</note>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">The rhetorical parsing of unrestricted texts: A surface-based approach</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Daniel</forename><surname>Marcu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">26</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="395" to="448" />
+			<date type="published" when="2000" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Robust highlight extraction using multistream hidden markov models for baseball video</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Koichi</forename><surname>Huu Bach Nguyen</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sadaoki</forename><surname>Shinoda</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Furui</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the International Conference on Image Processing 2005(ICIP2005)</title>
+		<meeting>the International Conference on Image Processing 2005(ICIP2005)</meeting>
+		<imprint>
+			<date type="published" when="2005" />
+			<biblScope unit="page" from="173" to="176" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Topic transition detection using hierarchical hidden markov and semi-markov models</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Q</forename><surname>Dinh</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Thi</forename><forename type="middle">V</forename><surname>Phung</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hung</forename><forename type="middle">H</forename><surname>Duong</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Bui</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Venkatesh</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of ACM International Conference on Multimedia(ACM-MM05)</title>
+		<meeting>ACM International Conference on Multimedia(ACM-MM05)</meeting>
+		<imprint>
+			<date type="published" when="2005" />
+			<biblScope unit="page" from="6" to="11" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Automatic construction of nominal case frames and its application to indirect anaphora resolution</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ryohei</forename><surname>Sasano</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Daisuke</forename><surname>Kawahara</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sadao</forename><surname>Kurohashi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 20th International Conference on Computational Linguistics</title>
+		<meeting>the 20th International Conference on Computational Linguistics</meeting>
+		<imprint>
+			<date type="published" when="2004" />
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="page" from="1201" to="1207" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

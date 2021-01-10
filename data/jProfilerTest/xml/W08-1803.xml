@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-08T01:30+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Simple is Best: Experiments with Different Document Segmentation Strategies for Passage Retrieval</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+				<date type="published" when="2008-08">2008. August 2008</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jörg</forename><surname>Tiedemann</surname></persName>
+							<email>j.tiedemann@rug.nl</email>
+							<affiliation key="aff0">
+								<orgName type="department">Information Science</orgName>
+								<orgName type="institution" key="instit1">Information Science University of Groningen</orgName>
+								<orgName type="institution" key="instit2">University of Groningen</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jori</forename><surname>Mur</surname></persName>
+							<email>j.mur@rug.nl</email>
+							<affiliation key="aff0">
+								<orgName type="department">Information Science</orgName>
+								<orgName type="institution" key="instit1">Information Science University of Groningen</orgName>
+								<orgName type="institution" key="instit2">University of Groningen</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Simple is Best: Experiments with Different Document Segmentation Strategies for Passage Retrieval</title>
+					</analytic>
+					<monogr>
+						<title level="j" type="main">Coling</title>
+						<meeting>the 2nd workshop on Information Retrieval for Question Answering (IR4QA) <address><addrLine>Manchester, UK</addrLine></address>
+						</meeting>
+						<imprint>
+							<biblScope unit="page" from="17" to="25"/>
+							<date type="published" when="2008-08">2008. August 2008</date>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>Passage retrieval is used in QA to filter large document collections in order to find text units relevant for answering given questions. In our QA system we apply standard IR techniques and index-time passaging in the retrieval component. In this paper we investigate several ways of dividing documents into passages. In particular we look at semantically motivated approaches (using coreference chains and discourse clues) compared with simple window-based techniques. We evaluate retrieval performance and the overall QA performance in order to study the impact of the different segmentation approaches. From our experiments we can conclude that the simple techniques using fixedsized windows clearly outperform the semantically motivated approaches, which indicates that uniformity in size seems to be more important than semantic coherence in our setup.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Passage retrieval in question answering is different from information retrieval in general. Extracting relevant passages from large document collections is only one step in answering a natural language question. There are two main differences: i) Passage retrieval queries are generated from complete sentences (questions) compared to bag-of-keyword queries usually used in IR. ii) Retrieved passages have to be processed further in or- der to extract concrete answers to the given question. Hence, the size of the passages retrieved is important and smaller units are preferred. Here, the division of documents into passages is crucial. The textual units have to be big enough to ensure IR works properly and they have to be small enough to enable efficient and accurate QA. In this study we investigate whether semantically motivated passages in the retrieval component lead to better QA performance compared to the use of document retrieval and window-based segmentation approaches.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.1">Index-time versus Search-time Passaging</head><p>In this paper, we experiment with various possibilities of dividing documents into passages before indexing them. This is also called index-time passaging and refers to a one-step process of retrieving appropriate textual units for subsequent answer extraction modules <ref type="bibr" target="#b11">(Roberts and Gaizauskas, 2004;</ref><ref type="bibr" target="#b1">Greenwood, 2004)</ref>. This is in contrast to other strategies using a two-step procedure consisting of document retrieval and search-time passaging thereafter. Here, we can distinguish between approaches that only return one passage per relevant document (see, for example, <ref type="bibr" target="#b12">(Robertson et al., 1992)</ref>) and the ones that allow multiple passages per document (see, for example <ref type="bibr" target="#b9">(Moldovan et al., 2000)</ref>). In general, allowing multiple passages per document is preferable for QA as possible answers can be contained at various positions in a document <ref type="bibr" target="#b11">(Roberts and Gaizauskas, 2004)</ref>. For this, an index-time approach has the advantage that the retrieval of multiple passages per documents is straightforward because all of them compete which each other in the same index using the same metric for ranking.</p><p>A comparison between index-time and search-time passaging has been carried out in <ref type="bibr" target="#b11">(Roberts and Gaizauskas, 2004)</ref>. In their experiments, index-time passaging performs similarly to searchtime passaging in terms of coverage and redundancy (measures which have been introduced in the same paper; see section 4.2 for more information). Significant differences between the various approaches can only be observed in redundancy on higher ranks (above 50). However, as we will see later in our experiments (section 4.2), redundancy is not as important as coverage for our QA system . Furthermore, retrieving more than about 40 passages does not produce significant improvements of the QA system anymore but slows down the processing time substantially.</p><p>Another argument for our focus on a one-step retrieval procedure can be taken from <ref type="bibr" target="#b13">(Tellex et al., 2003)</ref>. In this paper, the authors do not actually use any index-time passaging approach but compare various search-time passage retrieval algorithms. However, they obtain a huge performance difference when applying an oracle document retriever (only returning relevant documents in the first retrieval step) instead of a standard IR engine. Compared to this, the differences between the various passage retrieval approaches tested is very small. From this we can conclude that much improvement can be gained by improving the initial retrieval step, which seems to be the bottleneck in the entire process. Unfortunately, the authors do not compare their results with index-time approaches. However, looking at the potential gain in document retrieval and keeping in mind that the performance of index-time and search-time approaches is rather similar (as we have discussed earlier) we believe that the index-time approach is preferable.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.2">Passages in IR</head><p>Certainly, IR performance is effected by changing the size of the units to be indexed. The task in document segmentation for our index-time passaging approach is to find the proper division of documents into text passages which optimize the retrieval in terms of overall QA performance.</p><p>The general advantages of passage retrieval over full-text document retrieval has been investigated in various studies, e.g., <ref type="bibr" target="#b6">(Kaszkiel and Zobel, 2001;</ref><ref type="bibr" target="#b0">Callan, 1994;</ref><ref type="bibr" target="#b2">Hearst and Plaunt, 1993;</ref><ref type="bibr" target="#b5">Kaszkiel and Zobel, 1997)</ref>. Besides the argument of decreasing the search space for subsequent answer extraction modules in QA, passage retrieval also improves standard IR techniques by "normalizing" textual units in terms of size which is especially important in cases where documents come from very diverse sources. IR is based on similarity measures between documents and queries and standard approaches have shortcomings when applying them to documents of various sizes and text types. Often there is a bias for certain types raising problems of discrimination between documents of different lengths and content densities. Passages on the other hand provide convenient units to be returned to the user avoiding such ranking difficulties <ref type="bibr" target="#b6">(Kaszkiel and Zobel, 2001)</ref>. For IR, passagelevel evidence may be incorporated into document retrieval <ref type="bibr" target="#b0">(Callan, 1994;</ref><ref type="bibr" target="#b2">Hearst and Plaunt, 1993)</ref> or passages may be used directly as retrieval unit <ref type="bibr" target="#b6">(Kaszkiel and Zobel, 2001;</ref><ref type="bibr" target="#b5">Kaszkiel and Zobel, 1997)</ref>. For QA only the latter is interesting and will be applied in our experiments.</p><p>Passages can be defined in various ways. The most obvious way is to use existing markup (explicit discourse information) to divide documents into smaller units. Unfortunately, such markup is not always available or ambiguous with other types of separators. For example, headers, list elements or table cells might be separated in the same way (for example using an empty line) as discourse related paragraphs. Also, the division into paragraphs may differ a lot depending on the source of the document. For example, Wikipedia entries are divided on various levels into rather small units whereas newspaper articles often include very long paragraphs.</p><p>There are several ways of automatically dividing documents into passages without relying on existing markup. One way is to search for linguistic clues that indicate a separation of consecutive text blocks. These clues may include lexical patterns and relations. We refer to such approaches as semantically motivated document segmentation. Another approach is to cut documents into arbitrary pieces ignoring any other type of information. For example, we can use fixed-sized windows to divide documents into passages of similar size. Such windows can be defined in terms of words and characters <ref type="bibr" target="#b6">(Kaszkiel and Zobel, 2001;</ref><ref type="bibr" target="#b10">Monz, 2003)</ref> or sentences and paragraphs <ref type="bibr" target="#b17">(Zobel et al., 1995;</ref><ref type="bibr" target="#b8">Llopis et al., 2002)</ref>. It is also possible to allow varying window sizes and overlapping sections to be indexed <ref type="bibr" target="#b6">(Kaszkiel and Zobel, 2001;</ref><ref type="bibr" target="#b10">Monz, 2003)</ref>. In this case it is up to the IR engine to decide which of the competing window types is preferred and it may even return overlapping sections multiple times.</p><p>In the following sections we will discuss two techniques of semantically motivated document segmentation and compare them to simple window-based techniques in terms of passage retrieval and QA performance.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Passage Retrieval in our QA system</head><p>Our QA system is an open-domain question answering system for Dutch.</p><p>It includes two strategies: (1) A table-lookup strategy using fact databases that have been created off-line, and, <ref type="formula">(2)</ref> an "on-line" answer extraction strategy with passage retrieval and subsequent answer identification and ranking modules. We will only look at the second strategy as we are interested in the passage retrieval component and its impact on QA performance.</p><p>The passage retrieval component is implemented as an interface to several open-source IR engines. The query is generated from the given natural language question after question analysis. Keywords are sent to the IR engine(s) and results (in form of sentence IDs) are returned to the QA system.</p><p>In the experiments described here, we apply Zettair <ref type="bibr" target="#b7">(Lester et al., 2006)</ref>, an open-source IR engine developed by the search engine group at the RMIT University in Melbourne, Australia. It implements a very efficient standard IR engine with high retrieval performance according to our experiments with various alternative systems. Zettair is optimized for speed and is very efficient in both indexing and retrieval. The outstanding speed in indexing is very fortunate for our experiments in which we had to create various indexes with different document segmentation strategies.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Document Segmentation</head><p>We now discuss the different methods for document segmentation, starting with the semantically motivated ones and then looking at the windowbased techniques.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Using Coreference Chains</head><p>Coreference is the relation which holds between two NPs both of which are interpreted as referring to the same unique referent in the context in which they occur <ref type="bibr" target="#b14">((Van Deemter and Kibble, 2000)</ref>). Since the coreference relation is an equivalence relation and consequently a transitive relation chains of coreferring entities can be detected in arbitrary documents. We can use these coreference chains to demarcate passages in the text. The assumption in this approach is that coreference chains mark semantically coherent passages, which are good candidates for splitting up documents. <ref type="figure" target="#fig_1">Figure 1</ref> illustrates chains detected by a resolution system in five successive sentences.  The coreferential units can then be used to form passages consisting of all sentences the coreference chain spans over, i.e. the boundaries of passages are sentences containing the first occurrence of the referent and the last occurrence of a referent. Thus, in the example in figure 1 we obtain four passages: 1) sentence one to sentence five, 2) sentence two, 3) sentence three to five, and, 4) sentence three and four. Note that such passages can be included in others and may overlap with yet others. Furthermore, there might be sentences which are not included in any chain which have to be handled by some other techniques.</p><p>For our purposes we used our own coreference resolution system which is based on information derived from Alpino, a wide-coverage dependency parser for Dutch <ref type="bibr" target="#b15">(van Noord, 2006)</ref>. We approached the task of coreference resolution as a clustering-based ranking task. Some NP pairs are more likely to be coreferent than others. The system ranks possible antecedents for each anaphor considering syntactic features, semantic features and surface structure features from the anaphor and the candidate itself, as well as features from the cluster to which the candidate belongs. It picks the most likely candidate as the coreferring antecedent.</p><p>References relations are detected between pronouns, common nouns and named entities. The resolution system yields a precision of 67.9% and a recall of 45.6% (F-score = 54.5%) using MUC scores <ref type="bibr" target="#b16">(Vilain et al., 1993)</ref> on the annotated test corpus developed by <ref type="bibr" target="#b4">(Hoste, 2005)</ref> which consist of articles taken from KNACK, a Flemish weekly news magazine.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">TextTiling</head><p>TextTiling is a well-known algorithm for segmenting texts into subtopic passages <ref type="bibr" target="#b3">(Hearst, 1997)</ref>. It is based on the assumption that a significant portion of a set of lexical items in use during the course of a given subtopic discussion changes when that subtopic in the text changes.</p><p>Topic shifts are found by searching for lexical co-occurrence patterns and comparing adjacent blocks. First the text is subdivided into pseudo-sentences of a predefined size rather than using syntactically-determined sentences. These pseudo-sentences are called token-sequences by Hearst.</p><p>The algorithm identifies discourse boundaries by calculating a score for each token-sequence gap.</p><p>This score is based on two methods, block comparison and vocabulary introduction. The block comparison method compares adjacent blocks of text to see how similar they are according to how many words the adjacent blocks have in common. The vocabulary introduction method is based on how many new words were seen in the interval in which the token-sequence gap is the midpoint.</p><p>The boundaries are assumed to occur at the largest valleys in the graph that results from plotting the token-sequences against their scores. In this way the algorithm produces a flat subtopic structure from a given document.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3">Window-based</head><p>The simplest way of dividing documents into passages is to use a fixed-sized window. Here we do not take any discourse information nor semantic clue into account but split documents at arbitrary positions. Windows can be defined in various ways, in terms of characters, words or sentences. In our case it is important to keep sentences together because of the answer extraction component in our QA system that works on that level and expects complete sentences. Window-based segmentation techniques may be applied with various amounts of overlaps. The simplest method is to split documents into passages in a greedy way, starting a new passage immediately after the previous one (and starting the entire process at the beginning of each document) 1 . Another method is to allow some overlap between consecutive passages, i.e. starting a new passage at some position within the previous one. If we use the maximum possible overlap such an approach is usually called a "sliding window" in which the difference between two consecutive passages is only two basic units (sentences) -the first and the last one.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Experiments</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Setup</head><p>For our experiments we applied the Dutch newspaper corpus used at the QA track at CLEF, the cross-language evaluation forum. It contains about 190,000 documents consisting of about 4,000,000 sentences (roughly 80 million words). As mentioned earlier, we applied the open-source IR engine, Zettair, in our experiments and used a language modeling metric with Dirichlet smoothing, which is implemented in the system.</p><p>The evaluation is based on 778 Dutch CLEF questions from the QA tracks in the years <ref type="bibr">2003 -2005</ref> which are annotated with their answers. We use simple matching of possible answer strings to determine if a passage is relevant for finding an accepted answer or not. Similarly, answer string matching is applied to evaluate the output of the entire QA system; i.e. an answer by the system is counted as correct if it is identical to one of the accepted answer strings without looking at the supporting sentence/passage. For evaluation we used the standard measure of M RR which is defined as follows:</p><formula xml:id="formula_0">M RR QA = 1 N N 1 1 rank(first correct answer)</formula><p>Using the string matching strategy for evaluation this corresponds to the lenient MRR measures frequently used in the literature. Strict MRR scores (requiring a match with supporting documents) is less appropriate for our data coming from the CLEF QA tracks. In CLEF there are usually only a few participants and, therefore, only a small fraction of relevant documents are known for the given questions.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Evaluation of Passage Retrieval</head><p>There are various metrics that can be employed for evaluating passage retrieval. Commonly it is argued that passage retrieval for QA is merely a filtering task and ranking (precision) is less important than recall. Therefore, the measure of redundancy has been introduced which is defined as the average number of relevant passages retrieved per question (independent of any ranking). Passage retrieval is, of course, a bottleneck in QA systems that make use of such a component. The system has no chance to find an answer if the retrieval engine fails to return relevant passages. Therefore, another measure, coverage is often used in combination with redundancy. It is defined as the proportion of questions for which at least one relevant passage is found. In order to validate the use of these measures in our setup we experimented with retrieving various amounts of paragraphs. <ref type="figure" target="#fig_2">Figure 2</ref> illustrates the relation of coverage and redundancy scores compared to the overall QA performance measured in terms of M RR scores.</p><p>From the figure we can conclude that coverage is more important than redundancy in our system. In other words, our QA system is quite good in finding appropriate answers if there is at least one relevant passage in the set of retrieved ones. Redundancy on the other hand does not seem to provide valuable insides for the end-to-end performance of our QA system. However, our system also uses the passage retrieval score (and, hence, the ranking) as a clue for answer extraction. Therefore, other standard IR measures might be interesting for our investigations as well. The following three metrics are common in the IR literature. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Mean average precision (MAP):</head><p>Average of precision scores for top k documents; MAP is the mean of these averages over all the N queries.</p><formula xml:id="formula_1">M AP = 1 N N n=1 1 K K k=1 P n (1..k) (P n (1..k)</formula><p>is the precision of the top k documents retrieved for query q n )</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Uninterpolated average precision (UAP):</head><p>Average of precision scores at each relevant document retrieved; UAP is the mean of these averages over the N queries.</p><formula xml:id="formula_2">U AP = 1 N N n=1 1 |D n r | k:d k ∈D n r P n (1..k)</formula><p>(D n r is the set of relevant documents among the ones retrieved for question n)</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Mean reciprocal ranks:</head><p>The mean of the reciprocal rank of the first relevant passage retrieved.</p><formula xml:id="formula_3">M RR IR = 1 N N 1 1 rank(first relevant passage)</formula><p>In figure 3 the correlation of these measures with the overall QA performance is illustrated. From the picture we can clearly see that the M RR IR scores correlate the most with the QA evaluation scores when retrieving different numbers of paragraphs. This, again, confirms the importance of coverage as the M RR IR score only takes the first relevant passage into account and ignores the fact that there might be more answers to be found in lower ranked passages. Hence, M RR IR seems to be a good measure that combines coverage with an evaluation of the ranking and, therefore, we will use it as our main IR evaluation metric instead of coverage, redundancy, MAP &amp; UAP.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3">Baselines</head><p>The CLEF newspaper corpus comes with paragraph markup which can easily be used as the segmentation granularity for passage retrieval. <ref type="table">Table  1</ref> shows the scores obtained by different baseline retrieval approaches using either sentences, paragraphs or documents as base units.</p><p>We can see from the results that document retrieval (used for QA) is clearly outperformed by both sentence and paragraph retrieval. Surprisingly, sentence retrieval works even better than paragraph retrieval when looking at the QA performance even though all IR evaluation measures (cov, red, M RR IR ) suggest a lower score. Note that M RR IR is almost as good as M RR QA for sentence retrieval whereas the difference between them is quite large for the other settings. This indicates the importance of narrowing down the search space for the answer extraction modules. The  <ref type="table">Table 1</ref>: Baselines with sentence (sent), paragraph (par) and document (doc) retrieval (20 units). M RR QA is measured on the top 5 answers retrieved. CLEF is the accuracy of the QA system measured on the top answer provided by the system. cov refers to coverage and red refers to redundancy. #sent gives the total number of sentences included in the retrieved text units to give an impression about the amount of text to be processed by subsequent answer extraction modules.</p><p>amount of data to be processed is much smaller for sentence retrieval than for the other two while coverage is still reasonably high. The CLEF scores (accuracy measured on the top answer provided by the system) follow the same pattern. Here, the difference between sentence retrieval and document retrieval is even more apparent. Certainly, the success of the retrieval component depends on the metric used for ranking documents as implemented in the IR engine. In order to verify the importance of document segmentation in a QA setting we also ran experiments with another standard metric implemented in Zettair, the Okapi BM-25 metric <ref type="bibr" target="#b12">(Robertson et al., 1992)</ref>. Similar to the previous setting using the LM metric, QA with paragraph retrieval (now yielding M RR QA = 0.460) outperforms QA with document retrieval (M RR QA = 0.449). However, sentence retrieval does not perform as well (M RR QA = 0.420) which suggests that the Okapi metric is not suited for very small retrieval units. Still, the success of paragraph retrieval supports the advantage of passage retrieval compared to document retrieval and suggests potential QA performance gains with improved document segmentation strategies. In the remaining we only report results using the LM metric for retrieval due to its superior performance.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.4">Semantically Motivated Passages</head><p>As described earlier, coreference chains can be used to extract semantically coherent passages from textual documents. In our experiments we used several settings for the integration of such passages in the retrieval engine. First of all, coref-erence chains have been used as the only way of forming passages. Sentences which are not included in any passage are included as singlesentence passages. This settings is referred to as sent/coref.</p><p>In the second setting we restrict the passages in length. Coreference chains can be arbitrary long and, as we can see in the results in table 2, the IR engine tends to prefer long passages which is not desirable in the QA setting. Hence, we define the constraint that passages have to be longer than 200 characters and shorter than 1000. This setup is referred to as sent/coref .</p><p>In the third setting we combine paragraphs (using existing markup) and coreference chain passages including the length restriction. This is mainly to get rid of the single-sentence passages included in the previous settings. Note that all paragraphs are used even if all sentences within them are included in coreferential passages. Note also that in all settings passages may refer to overlapping text units as coreference chains may stretch over various overlapping passages of a document.</p><p>We did not perform an exhaustive optimization of the length restriction. However, we experimented with various settings and 200-1000 was the best performing one in our experiments. For illustration we include one additional experiment using a slightly different length constraint (200-400) in table 2.</p><p>For the document segmentation strategy using TextTiling we used a freely available implementation of that algorithm (the Perl Module Lingua::EN::Segmenter::TextTiling available at CPAN). Note that we do not include other passages in this approach (paragraphs using existing markup nor single-sentence passages). <ref type="table" target="#tab_3">Table 2</ref> summarizes the scores obtained by the various settings when applied for passage retrieval and when embedded into the QA system.</p><p>It is worth noting that including coreferential chains without length restriction forced the retrieval engine to return a lot of very long passages which resulted in a degraded QA performance (also in terms of processing time which is not shown here). The combination of paragraphs and coreferential passages with length restrictions produced M RR QA scores above the baseline. However, these improvements are not statistically significant according to the Wilcoxon matched-pair  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.5">Window-based Passages</head><p>In comparison to the semantically motivated passages discussed above we also looked at simple window-based passages as described earlier.</p><p>Here we do not consider any linguistic clues for dividing the documents besides the sentence and document boundaries.  Surprisingly, we can see that window-based segmentation approaches with small sizes between 2 and 7 sentences yield improved scores compared to the baseline. Two of the improvements (using 2-sentence passages and 4-sentence passages) are statistically significant. Three settings also out-perform the best semantically motivated segmentation approach. This result was unexpected especially considering the naive way of splitting documents into parts disregarding any discourse structure (besides document boundaries) and other semantic clues.</p><p>We did another experiment using window-based segmentation and a sliding window approach. Here, fixed-sized passages are included starting at every point in the document and, hence, various overlapping passages are included in the index. In this way we split documents at various points and leave it to the IR engine to select the most appropriate ones for a given query. The results are shown in  <ref type="table" target="#tab_6">Table 4</ref>: Passage retrieval with window-based document segmentation and a sliding window Again, we see a significant improvement with 2-sentence passages (the overall best score so far) but the performance degrades when increasing the window size. Note that the number of sentences retrieved is growing very slowly for larger windows. This is because more and more of the overlapping regions are retrieved and, hence, the total number of unique sentences does not grow with the size of the window as we have seen in the non-sliding approach.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Discussion &amp; Conclusions</head><p>Our experiments show that passage retrieval is indeed different to general document retrieval. Improved retrieval scores do not necessarily lead to better QA performance. Important for QA is to reduce the search space for subsequent answer extraction modules and, hence, passage retrieval has to balance retrieval accuracy and retrieval size. In our setup it seems to be preferable to return very small units with a reasonable coverage. For this, index-time passaging is very effective.</p><p>In this study we were especially interested in semantically motivated approaches to document segmentation. In particular, two techniques have been investigated, one using the well-known TextTiling algorithm and one using coreference chains for passage boundary detection. We compared them to simple window-based techniques using various sizes. From our experiments we can conclude that simple document segmentation techniques using small fixed-sized windows work best among the ones tested here. Semantically motivated passages in the retrieval component helped to slightly improve QA performance but do not justify the effort spent in producing them. One of the main reasons for the failure of using coreference chains for segmentation might be the fact that this approach produces many overlapping passages which does not seem to be favorable for passage retrieval. This can also be seen in the sliding window approach which did not perform as well as the one without overlapping units (except for two-sentence passages).</p><p>In conclusion, uniformity in terms of length and uniqueness (in terms of non-overlapping contents) seem to be more important than semantic coherence for one-step passage retrieval in QA. A future direction could be to test an approach that balances both a uniform document segmentation and semantic coherence.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>c 2008 .</head><label>2008</label><figDesc>Licensed under the Creative Commons Attribution-Noncommercial-Share Alike 3.0 Unported li- cense (http://creativecommons.org/licenses/by-nc-sa/3.0/). Some rights reserved.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 1 :</head><label>1</label><figDesc>Figure 1: Example of coreference chains used for document segmentation</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: The correlation between coverage and redundancy and M RR QA with varying numbers of paragraphs retrieved. Note that redundancy and coverage use different scales on the y-axis which makes them not directly comparable. The intention of this plot is to illustrate the tendency of both measures in comparison with QA performance.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: The correlation between IR evaluation measures (M AP , U AP and M RR IR ) and QA evaluation scores (M RR QA ) with varying numbers of paragraphs retrieved.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3" validated="false"><head>Table 2 :</head><label>2</label><figDesc>Passage retrieval with document segmen- tation using coreference chains and TextTiling (re- trieving a maximum of 20 passages; △ means sig- nificant with p &lt; 0.05 and Wilcoxon Matched-pair Signed-Ranks Test compared to paragraph base- line -only tested for M RR QA ) signed-ranks test and looking at the corresponding CLEF scores we can even see a slight drop in per- formance. Applying TextTiling yielded improved scores in both passage retrieval and QA perfor- mance (M RR QA and CLEF). The M RR QA im- provement is statistically significant according to the same test.</figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4" validated="true"><head>Table 3</head><label>3</label><figDesc>summarizes the results obtained for various fixed-sized windows used for document segmentation.</figDesc><table>M RR 
+#sent 
+IR 
+QA CLEF 
+2 sentences 
+33468 0.545 △ 0.506 
+0.443 
+3 sentences 
+50190 0.554 
+0.504 
+0.436 
+4 sentences 
+66800 0.581 △ 0.512 
+0.447 
+5 sentences 
+83575 0.588 
+0.493 
+0.422 
+6 sentences 
+100110 0.583 
+0.489 
+0.423 
+7 sentences 
+116872 0.572 
+0.491 
+0.422 
+8 sentences 
+133504 0.577 
+0.481 
+0.409 
+9 sentences 
+150156 0.578 
+0.475 
+0.405 
+10 sentences 166810 0.596 
+0.470 
+0.396 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5" validated="false"><head>Table 3 :</head><label>3</label><figDesc>Passage retrieval with window-based doc- ument segmentation (△ means significant with p &lt; 0.05 and Wilcoxon Matched-pair Signed- Ranks Test)</figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_6" validated="true"><head>table 4 .</head><label>4</label><figDesc></figDesc><table>M RR 
+#sent 
+IR 
+QA CLEF 
+2 sent (sliding) 
+29095 0.548 △ 0.516 
+0.456 
+3 sent (sliding) 
+36415 0.549 
+0.484 
+0.411 
+4 sent (sliding) 
+41565 0.546 
+0.476 
+0.409 
+5 sent (sliding) 
+45737 0.534 
+0.465 
+0.403 
+6 sent (sliding) 
+49091 0.528 
+0.454 
+0.390 
+7 sent (sliding) 
+51823 0.529 
+0.439 
+0.372 
+8 sent (sliding) 
+54600 0.535 
+0.428 
+0.360 
+9 sent (sliding) 
+57071 0.531 
+0.420 
+0.351 
+10 sent (sliding) 59352 0.542 
+0.420 
+0.354 
+
+</table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1">Note that in our approach we still keep the document boundaries intact, i.e. the segmentation ends at the end of each document and starts from scratch at the beginning of the next document. In this way, the last passage in a document may be smaller than the pre-defined fixed size.</note>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Passage-level evidence in document retrieval</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">James</forename><forename type="middle">P</forename><surname>Callan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">SIGIR &apos;94: Proceedings of the 17th annual international ACM SIGIR conference on Research and development in information retrieval</title>
+		<meeting><address><addrLine>New York, NY, USA; New York, Inc</addrLine></address></meeting>
+		<imprint>
+			<publisher>SpringerVerlag</publisher>
+			<date type="published" when="1994" />
+			<biblScope unit="page" from="302" to="310" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Using pertainyms to improve passage retrieval for questions requesting information about a location</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Mark</forename><forename type="middle">A</forename><surname>Greenwood</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Workshop on Information Retrieval for Question Answering</title>
+		<meeting>the Workshop on Information Retrieval for Question Answering<address><addrLine>Sheffield, UK</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2004" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Subtopic structuring for full-length document access</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Marti</forename><forename type="middle">A</forename><surname>Hearst</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Christian</forename><surname>Plaunt</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Research and Development in Information Retrieval</title>
+		<imprint>
+			<date type="published" when="1993" />
+			<biblScope unit="page" from="59" to="68" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Texttiling: Segmenting text into multi-paragraph subtopic passages</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Marti</forename><forename type="middle">A</forename><surname>Hearst</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">23</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="33" to="64" />
+			<date type="published" when="1997" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<title level="m" type="main">Optimization Issues in Machine Learning of Coreference Resolution</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">V</forename><surname>Hoste</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2005" />
+		</imprint>
+		<respStmt>
+			<orgName>University of Antwerp</orgName>
+		</respStmt>
+	</monogr>
+<note type="report_type">Ph.D. thesis</note>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Passage retrieval revisited</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Marcin</forename><surname>Kaszkiel</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Justin</forename><surname>Zobel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">SIGIR &apos;97: Proceedings of the 20th annual international ACM SIGIR conference on Research and development in information retrieval</title>
+		<meeting><address><addrLine>New York, NY, USA</addrLine></address></meeting>
+		<imprint>
+			<publisher>ACM Press</publisher>
+			<date type="published" when="1997" />
+			<biblScope unit="page" from="178" to="185" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Effective ranking with arbitrary passages</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Marcin</forename><surname>Kaszkiel</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Justin</forename><surname>Zobel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of the American Society of Information Science</title>
+		<imprint>
+			<biblScope unit="volume">52</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="344" to="364" />
+			<date type="published" when="2001" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">The Zettair search engine</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Nicholas</forename><surname>Lester</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hugh</forename><surname>Williams</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Justin</forename><surname>Zobel</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Falk</forename><surname>Scholer</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Dirk</forename><surname>Bahle</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">John</forename><surname>Yiannis</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2006" />
+			<pubPlace>Bodo von Billerbeck, Steven Garcia</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Passage selection to improve question answering</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Llopis</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Vicedo</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Ferrández</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the COLING 2002 Workshop on Multilingual Summarization and Question Answering</title>
+		<meeting>the COLING 2002 Workshop on Multilingual Summarization and Question Answering</meeting>
+		<imprint>
+			<date type="published" when="2002" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<monogr>
+		<title level="m" type="main">The structure and performance of an open-domain question answering system</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Moldovan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Harabagiu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Pasca</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Mihalcea</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Girju</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Goodrum</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">V</forename><surname>Rus</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2000" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<title level="m" type="main">From Document Retrieval to Question Answering</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Christof</forename><surname>Monz</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2003" />
+		</imprint>
+		<respStmt>
+			<orgName>University of Amsterdam</orgName>
+		</respStmt>
+	</monogr>
+<note type="report_type">Ph.D. thesis</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Evaluating passage retrieval approaches for question answering</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ian</forename><surname>Roberts</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Robert</forename><surname>Gaizauskas</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of 26th European Conference on Information Retrieval</title>
+		<meeting>26th European Conference on Information Retrieval</meeting>
+		<imprint>
+			<date type="published" when="2004" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Okapi at TREC-3</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Stephen</forename><forename type="middle">E</forename><surname>Robertson</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Steve</forename><surname>Walker</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Micheline</forename><surname>Hancock-Beaulieu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Aarron</forename><surname>Gull</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Marianna</forename><surname>Lau</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Text REtrieval Conference</title>
+		<imprint>
+			<date type="published" when="1992" />
+			<biblScope unit="page" from="21" to="30" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Quantitative evaluation of passage retrieval algorithms for question answering</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Tellex</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Katz</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Fernandes</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Marton</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the SIGIR conference on Research and development in informaion retrieval</title>
+		<meeting>the SIGIR conference on Research and development in informaion retrieval</meeting>
+		<imprint>
+			<publisher>ACM Press</publisher>
+			<date type="published" when="2003" />
+			<biblScope unit="page" from="41" to="47" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">On coreferring: Coreference in muc and related annotation schemes</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Van Deemter</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Kibble</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">26</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="629" to="637" />
+			<date type="published" when="2000" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">At Last Parsing Is Now Operational</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Van Noord</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Gertjan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">TALN 2006 Verbum Ex Machina, Actes De La 13e Conference sur Le Traitement Automatique des Langues naturelles</title>
+		<meeting><address><addrLine>Leuven</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2006" />
+			<biblScope unit="page" from="20" to="42" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">A model-theoretic coreference scoring scheme</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Vilain</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Burger</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Aberdeen</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Connolly</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">L</forename><surname>Hirschman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 6th conference on Message understanding (MUC 6)</title>
+		<meeting>the 6th conference on Message understanding (MUC 6)</meeting>
+		<imprint>
+			<date type="published" when="1993" />
+			<biblScope unit="page" from="45" to="52" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<monogr>
+		<title level="m" type="main">Efficient retrieval of partial documents. Information Processing and Management</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Justin</forename><surname>Zobel</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alistair</forename><surname>Moffat</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ross</forename><surname>Wilkinson</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ron</forename><surname>Sacks-Davis</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1995" />
+			<biblScope unit="volume">31</biblScope>
+			<biblScope unit="page" from="361" to="377" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

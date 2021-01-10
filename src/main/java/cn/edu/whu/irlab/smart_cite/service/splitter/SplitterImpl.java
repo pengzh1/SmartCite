@@ -1,17 +1,10 @@
 package cn.edu.whu.irlab.smart_cite.service.splitter;
 
-import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
 import org.jdom2.Content;
 import org.jdom2.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.NUMBERED;
 
 /**
  * @author gcr19
@@ -45,27 +38,26 @@ public abstract class SplitterImpl {
                 //残余句子
                 String residualSentence = sentence;
 
-
-                while (residualSentence.contains(elements.get(0).getAttributeValue("localizer"))) {
-                    //     System.out.println(elements.get(0).getAttributeValue("localizer"));
-
-                    Element sub = elements.remove(0).detach();
-
-
-                    int end = Integer.parseInt(sub.getAttributeValue("coordinate")) - positionCoordinate;
-
-                    sentenceElement.addContent(residualSentence.substring(0, end));
-                    //  System.out.println(residualSentence+"  "+(end+sub.getValue().length())+"  "+residualSentence.length());
-                    sub.removeAttribute("coordinate");
-                    sub.removeAttribute("localizer");
-                    sentenceElement.addContent(sub);
-                    positionCoordinate += end + sub.getValue().length();
-
-                    residualSentence = residualSentence.substring(end + sub.getValue().length());
-                    //    System.out.println(residualSentence);
-                    if (elements.isEmpty()) break;
+                try {
+                    while (residualSentence.contains(elements.get(0).getAttributeValue("localizer"))) {
+                        //     System.out.println(elements.get(0).getAttributeValue("localizer"));
+                        Element sub = elements.remove(0).detach();
+                        int end = Integer.parseInt(sub.getAttributeValue("coordinate")) - positionCoordinate;
+                        sentenceElement.addContent(residualSentence.substring(0, end));
+                        //  System.out.println(residualSentence+"  "+(end+sub.getValue().length())+"  "+residualSentence.length());
+                        sub.removeAttribute("coordinate");
+                        sub.removeAttribute("localizer");
+                        sentenceElement.addContent(sub);
+                        residualSentence = residualSentence.substring(end + sub.getValue().length());
+                        positionCoordinate += end + sub.getValue().length();
+                        //    System.out.println(residualSentence);
+                        if (elements.isEmpty()) break;
+                    }
+                    sentenceElement.addContent(residualSentence);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                sentenceElement.addContent(residualSentence);
+
                 positionCoordinate += residualSentence.length() + 1;
             }
             sentenceElements.add(sentenceElement);

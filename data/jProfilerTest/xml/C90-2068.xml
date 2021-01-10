@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T10:50+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">FR EE ADJUNCTS NATURAL LANGUAGE INSTRUCTIONS*</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Bonnie</forename><forename type="middle">Lynn</forename><surname>Webber</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Computer and Information Science</orgName>
+								<orgName type="institution">University of Pennsylvania Philadelphia PA</orgName>
+								<address>
+									<postCode>19104-6389</postCode>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Barbara</forename><surname>Di</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Computer and Information Science</orgName>
+								<orgName type="institution">University of Pennsylvania Philadelphia PA</orgName>
+								<address>
+									<postCode>19104-6389</postCode>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Eugenio</forename></persName>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Computer and Information Science</orgName>
+								<orgName type="institution">University of Pennsylvania Philadelphia PA</orgName>
+								<address>
+									<postCode>19104-6389</postCode>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">FR EE ADJUNCTS NATURAL LANGUAGE INSTRUCTIONS*</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+					<note>ABSTll.ACT In thi,~ paper, we give a brief account of our project Animation from Instructions, the view of instructions it reflects, and the semantics of one construction -the free adjunct -that is common in Natural Language instructions.</note>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract/>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Introduction</head><p>Over the past few years, we have been developing a system for creating animated simulations from Natural Language instructions. When the system is complete, E;hese animated simulations will combine:</p><p>® animated agents which demonstrate the instructions being carried out in a specified environment;</p><p>o Natural Language narration which explains what is being done and why.</p><p>Such narrated simulations can then be used in instruct° ing agents ot' varying capacities in how to perform tasks with varying demands in workplaces of varying layout.</p><p>In <ref type="bibr" target="#b1">[2]</ref>, we argue that the only way to create such blarrated simulations is to drive both animation and bmrration fl'om a common representation that embodies the same conceptualization of tasks and actions as Natural Language itself. 1 Wc also argue the difficulty of hand-tooling such a representation for each task to be demonstrated and explained. Instead, we argue for enabling a system to create these representations for itself, from Natural Language Instructions. In fact, we make the stronger claim that creating task animation from anything but direct graphical manipulation jorces one to Natural Language as the only instruction ~ource accessible to users other than manually skilled (or programming-wise) animators.</p><p>Creating task animations from Natural Language in~tructions forces us to understand instructions compurationally. Instructions as a type of text have not been *We thank Mark Steedman, Hans Karlgren and Breck Baldwin for comments and advice. They are not to blame for any er-~-ors in the translation of their advice into the present form. The ,:esem'ch was supported by DARPA grant no. N0014-85-K0018, and ARO grant no. DAAL03-89-C0031.</p><p>1Tiffs is not to suggest that animation can be driven solely from that common representation: other types of knowledge axe clearly needed as well -including knowledge of motor skills and other performance characteristics. studied as much as narratives as a way of describing tasks, but it is clear that they differ: when a na'~'catire describes a task, it tells what happened when the task was performed in a particular circumstance. Instructions, on the other hand, commonly specify how to perform the task in a wide range of circumstances that may change during the course of performance in quite different ways. This has at least two consequences: <ref type="bibr" target="#b0">(1)</ref> to understand instructions, one has to understand how instructions relate to intended behavior, and (2) in processing instructions, one has to deal with constructions that either only rarely appear in narrative or play different roles than they do in narrative.</p><p>In this paper, we start by presenting what we take to be the relationship between instructions and behavior, and then explore one construction often found in instructions -free adjuncts -explaining them in light of this relationship.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Instructions</head><p>Our view of instructions derives from a view of plans variously advocated in Pollack <ref type="bibr" target="#b6">[7,</ref><ref type="bibr" target="#b7">8]</ref>, Suchman <ref type="bibr" target="#b10">[11]</ref>, and Agre and Chapman <ref type="bibr" target="#b0">[1]</ref>.</p><p>Pollack contrasts two views of plan: plan as data structure and plan as mental phenomenon. (The former appears to be the same view of plans that Agre and Chapman have called plan as program.) Plans produced by Sacerdoti's NOAH system <ref type="bibr" target="#b8">[9]</ref> are a clear example of this plan as data structure view. Given a goal to achieve (i.e., a partial state description), NOAH uses its knowledge of actions to create a data structure (a directed acyclic graph) whose nodes represent goals or actions and whose arcs represent temporal ordering, elaboration, or entailment relations between nodes. This data structure represents NOAH's plan to achieve the given goal.</p><p>As Suchman points out <ref type="bibr" target="#b10">[11]</ref>, NOAH's original intent was to provide support for novice human agents in carrying out their tasks. Given a goal that an apprentice was tasked with achieving, NOAH was meant to form a plan and then use it to direct the apprentice in what to do next. To do this, it was meant to generate a Natural Language instruction corresponding to the action associated with the "current" node of the graph. If the apprentice indicated that he didn't understand the 1 395</p><p>instruction or couldn't perform the prescribed action, NOAH was meant to "move down" the graph to direct the apprentice through the more basic actions whose performance would entail that of the original. The result is a sequence of instructions that corresponds directly to the sequence of nodes encountered on a particular graph traversal. Pollack contrasts the above with a plan as mental phenomenon view, in which having a plan to do some action/? corresponds roughly to * a constellation of beliefs about actions and their relationships;</p><p>* beliefs that their performance, possibly in some constrained order, both entails the performance of /? and plays some role in its performance;</p><p>• an intention on the part of the agent to act in accordance with those beliefs in order to perform/?. At one extreme is a direct relationship, as in the game "Simon Says", where each command ("Simon says put your hands on your ears") is meant to evoke particular behavior on the part of the player. That is,</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Instruction =# Behavior</head><p>The fact that such instructions are given in Natural Language is almost irrelevant. We have already demonstrated <ref type="bibr" target="#b3">[4]</ref> that they can be used to drive animated simulations. Key frames from such a demonstration of two agents (John and Jane) at a control panel following instructions that begin John, look at switch twf-1. John, turn twf-1 to state 4. Jane, look at twf-3. Jane, look at tglJ-1. Jane, turn tglJ-1 on.</p><p>are shown in <ref type="figure" target="#fig_0">Figure 1</ref>.</p><p>In contrast, instructions can depart from this simple direct relation in many ways: Left out the door, down to the end of the street, cross straight over Essex then left up the hill, take the first right and it'll be on your left.</p><p>While the action description "[go] left up the hill" has an intrinsic culmination (i.e., when the agent gets to the top of the hill), it is not the intended termination of the action in the context of these instructions. Its intended termination is the point at which the action of "taking the first right" commences -that is, when the agent recognizes that s/he has reached the first right. In Section 3, we will provide many more examples of this feature of instructions.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">Instructions may describe a range of behavior ap-</head><p>propriate under different circumstances. The agent is 2This is not the case in "Simon Says" type instructions, where each action description contains an intrinsic culmination <ref type="bibr" target="#b5">[6]</ref>. Diverter spout is provided with insert for 1/2" pipe threads. If supply pipe is larger (3/4"), unscrew insert and use spout without it.</p><p>Here, the relevant situational features can be determined prior to installing the spout. In other cases, they may only be evident during performance. For example, the following are part of instructions for filling holes in plaster over wood lath:</p><p>If a third coat is necessary, use prepared joint compound from a hardware store.</p><p>Here, the agent will not know if a third coat is necessary until s/he sees whether the first two coats have produced a smooth level surface.</p><p>3. As in the plan as data structure model, instructions may delineate actions at several levels of detail or in several ways. For example, the following are part of instructions for filling holes in plaster where the lath has disintegrated as well as the plaster:</p><p>Clear away loose plaster. Make a new lath backing with metal lath, hardware cloth, or, for small holes, screen. Cut the mesh in a rectangle or square larger than the hole. Thread a 4-to 5-inch length of heavy twine through the center of the mesh. Knot the ends together. Slip the new lath patch into the hole ...</p><p>Here the second utterance prescribes an action at a gross level, with subsequent utterances specifying it in more detail.</p><p>4. Instructions may only provide circumstantial constraints on behavior but not specify when those circumstances will arise. For example, the following comes from instructions for installing wood paneling:</p><p>When you have to cut a sheet [of paneling], try to produce as smooth an edge as possible. If you're using a handsaw, saw from the face side; if you're using a power saw, saw from the back side. Otherwise you'll produce ragged edges on the face because a handsaw cuts down and a power saw cuts up.</p><p>Such cases as these illustrate an indirect relation between instructions and behavior through the intermediary of an agent's beliefs and evolving plan. That is, Instructions ==~ Beliefs ¢=~ Plan ¢=~ Behavior</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Free Adjuncts</head><p>In the previous section, we noted that multiple clauses may be involved in specifying an intended action, using this as evidence for our view of an indirect relationship between instructions and behavior. Here, we discuss one multiple-clause construct in more detailthe free adjunct -since it also provides evidence for our claim that the representation driving narrated animations should embody the same conceptualization of tasks, actions and events as Natural Language itself.</p><p>A free adjunct is defined as a nonfinile predicative phrase with the function of an adverbial subordinate clause <ref type="bibr" target="#b9">[10]</ref>. It may be headed by a noun, adjective, prepositional phrase, or verb 3. Here we focus on free adjuncts headed by progressive gerundives, as they are quite common in instructions -e.g., the underlined clause in Ex. 1:</p><p>Ex. 1 Pour mixture over cheese in casserole, .slgreading evenly.</p><p>Stump notes of free adjuncts that their logical connection with the clause they modify is not overtly specified <ref type="bibr" target="#b9">[10]</ref> 4. Here we argue that (1) instructions exploit three 3Constructions headed by subordinating conjunctions and containing a nonfmite verb, such as while fightin9 in France, he wan $aken prisoner are not considered to be free adjuncts by <ref type="bibr">Stump [10]</ref>, who calls them augmented adjuncts.</p><p>4Free adjuncts are just one kind of a larger class of syntactic forms, absolute constructions, that have this property: for a more thorough discussion, see <ref type="bibr" target="#b9">[10]</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">397</head><p>logical connections between a gerundive adjunct and its matrix clause; and (2) to represent these relations requires a representation with a temporal ontology at least as rich as that proposed in <ref type="bibr" target="#b5">[6]</ref>, as well as support for generation relations <ref type="bibr" target="#b4">[5]</ref> (defined below) and abstraction. We conclude by showing that the role adjuncts play in instructions differs from the role they play in narratives.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Data Analysis</head><p>We collected 97 consecutive instances of gerundive adjuncts (here called simply "adjuncts") in instructionsfl The syntactic structure of sentences containing these adjuncts is generally limited to a main clause, preceded and/or followed by an adjunct. The main clause describes an action, which we call amain; #a~ will refer to the semantic content of the adjunct. We found that our corpus divided into three classes, depending on the logical connection between the adjunct and amain:</p><p>1. it may augment the description of amain;</p><p>2. it may describe a second action aa~0 that generates or is generated by amain;</p><p>3. it may describe an independent action aa~ that should be performed simultaneously with areal,.</p><p>It is important to remember, in the following discussion, that (following Pollack <ref type="bibr" target="#b6">[7,</ref><ref type="bibr" target="#b7">8]</ref>) an action, like an act-type, is a descripiion, not something in the world.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>3.1.~ Augmentation</head><p>About half the adjuncts in our corpus supply features of amain, such as its starting point; necessary tool(s) or material(s); objects tha~ amain may create, etc. Thus, Cemain is a less specific version (i.e., an abstraction) of the intended action c~ that results from combining C~main and #and. For example, in Ex 2, the adjunct specifies the tool to use:</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Ex. 2 Using a coping or back saw, carefully cut all pieces to the dimensions given in the materials list.</head><p>Alternatively, the adjunct can provide features of the world that have to either remain or become true after executing amain.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Ex. 3 Sew the head front to back, leaving the neck edge open.</head><p>The adjunct can alternatively specify a constraint on the execution of amain , including:</p><p>• a manner constraint, that amain be executed in such a way that a state is brought about which continues to hold during its execution. In the following example, while the agent executes the cutting action, s/he has to stay to the outside of the line:</p><p>5Data were collected from five magazines -two of which describe wood projects, and the other three, "crafts" -and one chapter of a "how to" book on installing wall coverings. The need to represent the result of augmentation and the relation between amain and a is one reason for requiring our system to have a representational capacity at least rich enough to represent partial descriptions of actions and an abstraction relation between them.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Ex. 4 Transfer pattern to top back board</head><p>Partial description is not meant to imply partial with respect to some fully specified description. On the contrary, we do not assume that there is an a priori fixed set of features belonging to an action. To say that an adjunct conveys additional features of amain, does not mean that one can specify beforehand what all those features might be.</p><p>To a first approximation, the relation between descriptions could be stated in terms of the amount of information that a description conveys. Note that this does not have to be new information: in Ex 2, the inforomation conveyed to an expert carpenter by the adjunct is probably redundant, given that he knows what kinds of saws to use.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>~.1o~ Generation</head><p>Goldman <ref type="bibr" target="#b4">[5]</ref> defines generation as that relation between actions intbrmally conveyed by the preposition by in expressions such as "agent G does fl by doing 3'" -e.g., "John turns on the light by flipping the switch". Free adjuncts can specify a generation relation between actions amai,~ and an4/ in either direction, without an overt by -for example, [amain <ref type="bibr">GEN aa~]</ref> In the case of generation, only one action is executed per se, generating the other as a result.</p><p>One natural question to ask is why two different descriptions are given of the same action. The reasons are the same as in any text: to make explicit the purpose of ~Jt action or a salient feature. For example, in Ex. 6, clean provides a unifying description for the two actions expressed in the adjuncts, and by doing so, indicates their purpose. In Ex. 7, the result of amain (the two triangles) is mentioned explicitly, in order to introduce these new referents in the agent's discourse model. In Ex. 8, the description a long rectangle provides a visual clue to the result to be achieved. (This may be an additional purpose for the generate relation in Ex. 7 as well.)</p><p>Again, Ex. 6 shows the need for abstraction in our representation, in the form of one or more abstraction hierarchies of action descriptions: to understand this example, we need to know that both vacuum and wipe are specializations of clean.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1.3">Simultaneity</head><p>If the adjunct describes an action oza4/ that is independent of oqnai,, it is meant that both are to be executed simultaneously:</p><p>Ex. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Aspect and Event Structure</head><p>Earlier, we claimed that the representation driving narrated animations should en'lbody the same conceptualization of ~asks, actions and events as Natural Language itself. We take the conceptualization of actions and ¢;vents to be the tripartite event structure described by Moens and Steedman (hereafter, M~S) in <ref type="bibr" target="#b5">[6]</ref>. The goal in <ref type="bibr" target="#b5">[6]</ref> is to provide a single explanation of aspectual profiles, of changes in aspectual profile related to the use of adverbial and prepositional modifiers, and of the purported temporal "ambiguity" of when-clauses. The explanation makes use of a tripartite event structure which M~S call a nucleus. A nucleus consists of a preparatory process, a culmination and a consequent state. Within this framework, an event de-.'~cription interpreted as a PROCESS corresponds simo ply to a preparatory process, while a CULMINATED PROCESS corresponds to an entire nucleus. CULMI-NATIONS (Vendler's achievements <ref type="bibr" target="#b11">[12]</ref>) correspond to a culmination followed by its consequent state.</p><p>Within this framework, M~S attribute changes in ~!~spectual profile brought about by modifiers (viewed as functions from event description to event description) to two factors: (1) The modifier, viewed as a function, may have a different output type than its input type. The modified form will thus have the same aspectual type as the function's output. (2) When a function demands a different aspectual type for its input than it has been given, a mechanism called coercion maps the input to the needed type. This may change semantic features of the input, before function application.</p><p>What we shall show here (rather briefly) is that this same tripartite nucleus can ground the possible interpretations of augmentation (Section 3.1.1) and simultaneity (Section 3.1.3), and in fact, account for ambiguities in interpretation. We start with the following minimal pair:</p><p>Ex. The second sentence mentions two independent actions -twining the vines into a wreath (amain) and fastening (aa~/). In M~cS's framework, the action amain can be taken to be a CULMINATED PROCESS in two different ways: a single homogeneous twining process, which culminates when one has used up all the vines, or (as above) an iteration of individual twinings, cuhninating for the same reason. In the first case, fastening happens at the single point of culmination -its purpose being to prevent the two ends of the wreath from coming apart. In the second, fastening happens at the end of each iteration -its purpose being to keep the strands together. To capture both these interpretations (and decide between them) requires a representation such as M~S's rich enough to capture the required event structure.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3">Relation to Previous Work</head><p>The most extensive analysis of the semantics of free adjuncts (in English) that we are aware of is that done by Greg Stump <ref type="bibr" target="#b9">[10]</ref>. However, all his examples come from narrative text, and as a result, he focusses on their truth-conditional properties. For example, he draws a distinction between strong and weak adjuncts: Stump calls the adjuncts in both a sentences strong, because their actual truth is uniformly entailed. He calls those in the b sentences weak, because their actual truth can fail to be entailed. Related to this, Stump also notes a Causal flavor in strong adjuncts. Consider the adjuncts in the a sentences in both Exs. 14 and 15. The sense is that in both cases, the main clause assertion is true because the adjunct is. Weak adjuncts, on the other hand, have a conditional sense: it is (only) when the condition described in the adjunct is true that the main clause assertion is true.</p><p>While these observations appear to be both correct and relevant in narratives, this strong/weak distinction appears :irrelevant for instructions, which do not concern themselves with truth conditions in the same way as narratives. The only thing in instructions that comes close to the conditional sense of weak adjuncts is the perfective gerundive adjunct, as in Ex. <ref type="bibr">16</ref> Having..basted the seams, check again for fit.</p><p>Such adjuncts do convey a similar sense that it (only) when the action described in the adjunct is complete that the main clause command is relevant.</p><p>In Section 3.1, we essentially tried to show that in instructions, gerundive adjuncts play a role in further specifying intended action. They may do this through augmenting amain, through providing an alternative description of Otrnai n through generation, or through specifying another (independent) action that must be performed simultaneously with Otmainin some way. Thus we conclude that gerundive adjuncts (if not all free adjuncts) play a different role in instructions than they do in narrative text. This emphasizes the importance of analysing constructions in situ, rather than assuming that conclusions based on narrative text will hold equally of instructions.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Summary</head><p>In this paper, we have given a brief account of our project Animation from Instructions, the view of instructions it reflects, and the semantics of one particular construction that occurs often in the type of instructions we will be handling. The project is proceeding on several fronts, including the following: (1) Similar analyses are being done of other constructions that commonly occur in instructions <ref type="bibr" target="#b2">[3]</ref>; <ref type="bibr" target="#b1">(2)</ref> we are starting to develop a representation that embodies both the temporal ontology <ref type="bibr" target="#b5">[6]</ref> that grounds the semantics of these constructions and an abstraction mechanism-notice that when we talk about abstraction we do not limit ourselves to abstraction hierarchies: we intend abstraction as a general relation between more and less specific descriptions of actions; and (3) translation processes are being expanded for mapping that representation into forms that our simulation system <ref type="bibr" target="#b3">[4]</ref> can deal with. More detailed description of the system as a whole is given in <ref type="bibr" target="#b1">[2]</ref>.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>1 .</head><label>1</label><figDesc>Multiple clauses may be involved in specifying the scope or manner of an intended action. For example, the intended culmination of an action may not be what is intrinsic to that action, but rather what is taken to be the start of the action prescribed next. 2 Consider the following instructions that Agre [1] gave to several friends for getting to the Washington Street Subway Station.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure</head><label></label><figDesc>Figure h Control Panel Animation</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head></head><label></label><figDesc>Ex. 14 a) Having unusually long arms, John can touch the ceiling. b) Standing on the chair, John can touch the ceiling. Ex. 15 a) Being a businessman, Bill smokes cigars. b) Lying on, the beach_, Bill smokes cigars.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0" validated="false"><head></head><label></label><figDesc>With respect to such beliefs, Pollack draws a three- way distinction between act-types, actions (or acts) and occurrences. Act-types are, intuitively, types of actions like playing a chord, playing a D-major chord, playing a chord on a guitar, etc. Act-types, as these exam- ples show, can be more or less abstract. Actions can be thought of as triples of act-types, agents, and times (relative or absolute intervals) like Mark playing a D- major chord last Sunday afternoon on his Epiphone. Because it is useful to distinguish an action from its occurrence in order to talk about intentions to act that may never be realized, Pollack introduces a separate ontological type occurrence that corresponds to the re- alization of an action. (Pollack represents an occurrence as OCCUR(/?), where/? is an action. Thus an occur- fence inherits its time from the associated time of its argument.) Agents can hold beliefs about entities of any of these three types:act-types -An agent may believe that playing a D- major chord involves playing three notes (D,F~ and A) simultaneously, or that s/he does not know how to perform the act-type playing a D-major chord on a guitar, etc. Any or all of these beliefs can, of course, be wrong.</figDesc><table>• 
+
+• actions -An agent may believe that some action 
+oe 1 must be performed before some other action 
+a2 in order to do action /71 or that a2 must be 
+performed before c~1 in order to do/?~. Here too, 
+the agent's beliefs can be wrong. (It was to allow 
+for such errors in beliefs and the Natural Language 
+questions they could lead to that led Pollack to this 
+Plan as Mental Phenomenon approach.) 
+
+• occurrences-An agent may believe that what put 
+the cat to sleep last Sunday afternoon was an over-
+dose of catnip. S/he may also have misconceptions 
+about what has happened. 
+
+Therefore one can take the view that instructions are 
+given to an agent in order that s/he develops appro-
+priate beliefs, which s/he may then draw upon in at-
+tempting to "do /?". Depending on the evolving cir-
+cumstances, different beliefs may become salient. This 
+appears to be involved in what Agre and Chapman [1] 
+and what Suchman [11] mean by using plans as a re-
+source. Beliefs are a resource an agent can draw upon 
+in deciding what to do next. 
+Given this view of plan as mental phenomenon, we 
+can now consider possible relationships between in-
+structions and behavior. </table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1" validated="false"><head></head><label></label><figDesc>A and using a jig or a scroll saw carefully cut out pattern staying to the outside of the line. a side-effect constraint, that a possible side effect of amain should be avoided. Verbs like take care, be careful, make sure etc. followed by not to ..., are often used: Ex. 5 Cut under eaves of cabin 'with chisel, b.ein~ care[ul not to chip ,,oo~</figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2" validated="false"><head></head><label></label><figDesc>Ex. 6 As you work, clean the surface thoroughly each time you change grits, vacuum!n 9 off all.t.h.e _dust and wiping the wood with a rag dampened with .turpentine or paint .thinner.</figDesc><table>[aa~ GEN amain] 
+
+Ex. 7 Cut one 7xT-inch square from foil. Fold cor-
+ners to center of square; cut in half on the diagonal 
+creating two triangles. 
+
+[amain GEN aa~/] 
+
+Ex. 8 Sew bottom canvas bag to bottom of front 
+and back, makin~l a long rectanfle. 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4" validated="false"><head></head><label></label><figDesc>11 Starting with this mark, make another mark, leaving exactly P inches between marks.Ex. 13 Wire vines together at one end.</figDesc><table>Ex. 12 Starting with this mark, make a series of 
+marks, ~c_tly_ 
+2 i nche_s between marks. 
+
+In M&amp;S's framework, making a (single) mark (Exam-
+ple 11) could be considered a CULMINATION. The 
+plural "series of marks" in Example 12 would then map 
+this singular interpretation to a CULMINATED PRO-
+CESS through iterating mark-making. (Iterated mark-
+making culminates when there is no more room to make 
+marks.) The augmentation in Example 11 constrains 
+the distance between the single pair of marks, that in 
+Example 12, the distance between each pair of marks 
+produced during the iteration. 
+Now consider the following example of simultaneity: 
+
+Twine vines 
+into 
+an 
+8.inch 
+diameter 
+wreath, 
+fastening 
+with wire to hold. 
+
+</table></figure>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<title level="m" type="main">What are Plans For? A.I. Memo 1050a, Artificial Intelligence Laboratory, MIT</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Phillip</forename><surname>Agre</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">David</forename><surname>Chapman</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1989-10" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<title level="m" type="main">Animation from Instructions. Making Them Move: Mechanics, Control and Animation of Articulated Figures</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Norman</forename><surname>Badler</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Bonnie</forename><surname>Webber</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jeff</forename><surname>Esakov</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jugal</forename><surname>Kalita</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1990" />
+			<publisher>Morgan-Kaufmann</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title level="m" type="main">Ac~ tion Specifications in Natural Language Instructions</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Barbara</forename><forename type="middle">Di</forename></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Eugenio</forename></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Bonnie</forename><surname>Webber</surname></persName>
+		</author>
+		<imprint/>
+		<respStmt>
+			<orgName>Dept. of Computer Information Science, University of Pennsylvania, Philadelphia PA. Forthcoming</orgName>
+		</respStmt>
+	</monogr>
+<note type="report_type">Technical Report</note>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<monogr>
+		<title level="m" type="main">An Architecture for Human Task Animation Control</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jeffrey</forename><surname>Esakov</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Norman</forename><forename type="middle">I</forename><surname>Badler</surname></persName>
+		</author>
+		<editor>Knowledge-Based Simulation: Methodology and Applications P.A. Fishwick and R.S. Modjeski</editor>
+		<imprint>
+			<date type="published" when="1989" />
+			<publisher>Springer Verlag</publisher>
+			<pubPlace>New York</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<title level="m" type="main">A Theory of Human Action</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alvin</forename><surname>Goldman</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1970" />
+			<publisher>Prentice-Hall</publisher>
+			<pubPlace>New York</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title/>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Marc</forename><surname>Moens</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Mark</forename><surname>Steedman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Temporal Ontology and Temporal Reference. Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">14</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="15" to="28" />
+			<date type="published" when="1988" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title level="m" type="main">Inferring Domain Plans in Question-Answering</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Martha</forename><surname>Pollack</surname></persName>
+		</author>
+		<idno>MS-CIS-86-40</idno>
+		<imprint>
+			<date type="published" when="1986-05" />
+		</imprint>
+		<respStmt>
+			<orgName>Dept. of Computer and Information Science, University of Pennsylvania ; University of Pennsylvania</orgName>
+		</respStmt>
+	</monogr>
+<note type="report_type">Technical Report</note>
+	<note>Philadelphia PA. (Available as</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">Plans as complex mental attitudes. In Intentions in Communication</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Martha</forename><surname>Pollack</surname></persName>
+		</author>
+		<editor>J. M. P. Cohen and M. Pollack</editor>
+		<imprint>
+			<date type="published" when="1990" />
+			<publisher>MIT Press</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<monogr>
+		<title level="m" type="main">A Structure for Plans and Behavior</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Earl</forename><surname>Sacerdoti</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1977" />
+			<publisher>Elsevier</publisher>
+			<pubPlace>New York</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">The Semantic Variability of Absolute Constructions</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Greg</forename><surname>Stump</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Dordrecht: D. Reidel</title>
+		<imprint>
+			<date type="published" when="1985" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<title level="m" type="main">Plans and Situated Actions: The problem of human machine communication</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Lucy</forename><surname>Suchman</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1987" />
+			<publisher>Cambridge University Press</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title/>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Zeno</forename><surname>Vendler</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Linguistics and Philosophy</title>
+		<imprint>
+			<date type="published" when="1967" />
+			<publisher>Cornell University Press</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

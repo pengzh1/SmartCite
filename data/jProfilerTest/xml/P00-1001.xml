@@ -1,0 +1,812 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T19:11+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Processes that Shape Conversation and their Implications for Computational Linguistics</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author role="corresp">
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Susan</forename><forename type="middle">E</forename><surname>Brennan</surname></persName>
+							<email>susan.brennan@sunysb.edu</email>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Psychology State</orgName>
+								<orgName type="institution">University of New York Stony Brook</orgName>
+								<address>
+									<postCode>11794-2500</postCode>
+									<region>NY, US</region>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Processes that Shape Conversation and their Implications for Computational Linguistics</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>Experimental studies of interactive language use have shed light on the cognitive and interpersonal processes that shape conversation; corpora are the emergent products of these processes. I will survey studies that focus on under-modelled aspects of interactive language use, including the processing of spontaneous speech and disfluencies; metalinguistic displays such as hedges; interactive processes that affect choices of referring expressions; and how communication media shape conversations. The findings suggest some agendas for computational linguistics.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Introduction</head><p>Language is shaped not only by grammar, but also by the cognitive processing of speakers and addressees, and by the medium in which it is used. These forces have, until recently, received little attention, having been originally consigned to "performance" by Chomsky, and considered to be of secondary importance by many others. But as anyone who has listened to a tape of herself lecturing surely knows, spoken language is formally quite different from written language. And as those who have transcribed conversation are excruciatingly aware, interactive, spontaneous speech is especially messy and disfluent. This fact is rarely acknowledged by psychological theories of comprehension and production (although see <ref type="bibr">Brennan &amp; Schober, in press;</ref><ref type="bibr" target="#b10">Clark, 1994</ref><ref type="bibr" target="#b11">Clark, , 1997</ref><ref type="bibr" target="#b17">Fox Tree, 1995)</ref>. In fact, experimental psycholinguists still make up most of their materials, so that much of what we know about sentence processing is based on a sanitized, ideal form of language that no one actually speaks.</p><p>But the field of computational linguistics has taken an interesting turn:</p><p>Linguists and computational linguists who formerly used made-up sentences are now using naturally-and experimentally-generated corpora on which to base and test their theories. One of the most exciting developments since the early 1990s has been the focus on corpus data. Organized efforts such as LDC and ELRA have assembled large and varied corpora of speech and text, making them widely available to researchers and creators of natural language and speech recognition systems. Finally, Internet usage has generated huge corpora of interactive spontaneous text or "visible conversations" that little resemble edited texts.</p><p>Of course, ethnographers and sociolinguists who practice conversation analysis (e.g., <ref type="bibr" target="#b28">Sacks, Schegloff, &amp; Jefferson, 1974;</ref><ref type="bibr" target="#b18">Goodwin, 1981)</ref> have known for a long time that spontaneous interaction is interesting in its own right, and that although conversation seems messy at first glance, it is actually orderly.</p><p>Conversation analysts have demonstrated that speakers coordinate with each other such feats as achieving a joint focus of attention, producing closely timed turn exchanges, and finishing each another's utterances. These demonstrations have been compelling enough to inspire researchers from psychology, linguistics, computer science, and human-computer interaction to turn their attention to naturalistic language data.</p><p>But it is important to keep in mind that a corpus is, after all, only an artifact-a product that emerges from the processes that occur between and within speakers and addressees. Researchers who analyze the textual records of conversation are only overhearers, and there is ample evidence that overhearers experience a conversation quite differently from addressees and from side participants <ref type="bibr" target="#b29">(Schober &amp; Clark, 1989;</ref><ref type="bibr" target="#b36">Wilkes-Gibbs &amp; Clark, 1992)</ref>. With a corpus alone, there is no independent evidence of what people actually intend or understand at different points in a conversation, or why they make the choices they do. Conversation experiments that provide partners with a task to do have much to offer, such as independent measures of communicative success as well as evidence of precisely when one partner is confused or has reached a hypothesis about the other's beliefs or intentions. Task-oriented corpora in combination with information about how they were generated are important for discourse studies.</p><p>We still don't know nearly enough about the cognitive and interpersonal processes that underlie spontaneous language use-how speaking and listening are coordinated between individuals as well as within the mind of someone who is switching speaking and listening roles in rapid succession. Hence, determining what information needs to be represented moment by moment in a dialog model, as well as how and when it should be updated and used, is still an open frontier. In this paper I start with an example and identify some distinctive features of spoken language interchanges. Then I describe several experiments aimed at understanding the processes that generate them. I conclude by proposing some desiderata for a dialog model.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Two people in search of a perspective</head><p>To begin, consider the following conversational interchange from a laboratory experiment on referential communication. A director and a matcher who could not see each another were trying to get identical sets of picture cards lined up in the same order.</p><p>(  <ref type="bibr" target="#b34">(Stellmann &amp; Brennan, 1993)</ref> Several things are apparent from this exchange. First, it contains several disfluencies or interruptions in fluent speech. The director restarts her first turn twice and her second turn once. She delivers a description in a series of installments, with backchannels from the matcher to confirm them. She seasons her speech with fillers like uh, pauses occasionally, and displays her commitment (or lack thereof) to what she is saying with displays like ah boy this one ah boy and I don't know what that is. Even though she is the one who knows what the target picture is, it is the matcher who ends up proposing the description that they both end up ratifying: like a monk praying or something. Once the director has ratified this proposal, they have succeeded in establishing a conceptual pact (see <ref type="bibr" target="#b5">Brennan &amp; Clark, 1996)</ref>. En route, both partners hedged their descriptions liberally, marking them as provisional, pending evidence of acceptance from the other. This example is typical; in fact, 24 pairs of partners who discussed this object ended up synthesizing nearly 24 different but mutually agreed-upon perspectives. Finally, the disfluencies, hedges, and turns would have been distributed quite differently if this conversation had been conducted over a different medium-through instant messaging, or if the partners had had visual contact. Next I will consider the proceses that underlie these aspects of interactive spoken communication.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>1</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Speech is disfluent, and disfluencies bear information</head><p>The implicit assumptions of psychological and computational theories that ignore disfluencies must be either that people aren't disfluent, or that disfluencies make processing more difficult, and so theories of fluent speech processing should be developed before the research agenda turns to disfluent speech processing. The first assumption is clearly false; disfluency rates in spontaneous speech are estimated by Fox Tree (1995) and by <ref type="bibr" target="#b3">Bortfeld, Leon, Bloom, Schober, and Brennan (2000)</ref> to be about 6 disfluencies per 100 words, not including silent pauses. The rate is lower for speech to machines <ref type="bibr" target="#b27">(Oviatt, 1995;</ref><ref type="bibr" target="#b30">Shriberg, 1996)</ref>, due in part to utterance length; that is, disfluency rates are higher in longer utterances, where planning is more difficult, and utterances addressed to machines tend to be shorter than those addressed to people, often because dialogue interfaces are designed to take on more initiative. The average speaker may believe, quite rightly, that machines are imperfect speech processors, and plan their utterances to machines more carefully. The good news is that speakers can adapt to machines; the bad news is that they do so by recruiting limited cognitive resources that could otherwise be focused on the task itself. As for the second assumption, if the goal is to eventually process unrestricted, natural human speech, then committing to an early and exclusive focus on processing fluent utterances is risky. In humans, speech production and speech processing are done incrementally, using contextual information from the earliest moments of processing (see, e.g., <ref type="bibr" target="#b35">Tanenhaus et al. 1995)</ref>. This sort of processing requires quite a different architecture and different mechanisms for ambiguity resolution than one that begins processing only at the end of a complete and well-formed utterance. Few approaches to parsing have tried to handle disfluent utterances (notable exceptions are <ref type="bibr" target="#b16">Core &amp; Schubert, 1999;</ref><ref type="bibr" target="#b19">Hindle, 1983;</ref><ref type="bibr" target="#b23">Nakatani &amp; Hirschberg, 1994;</ref><ref type="bibr" target="#b31">Shriberg, Bear, &amp; Dowding, 1992)</ref>.</p><p>The few psycholinguistic experiments that have examined human processing of disfluent speech also throw into question the assumption that disfluent speech is harder to process than fluent speech. <ref type="bibr" target="#b22">Lickley and Bard (1996)</ref> found evidence that listeners may be relatively deaf to the words in a reparandum (the part that would need to be excised in order for the utterance to be fluent), and <ref type="bibr" target="#b32">Shriberg and Lickley (1993)</ref> found that fillers such as um or uh may be produced with a distinctive intonation that helps listeners distinguish them from the rest of the utterance. Fox <ref type="bibr" target="#b17">Tree (1995)</ref> found that while previous restarts in an utterance may slow a listener's monitoring for a particular word, repetitions don't seem to hurt, and some fillers, such as uh, seem to actually speed monitoring for a subsequent word.</p><p>What information exists in disfluencies, and how might speakers use it? Speech production processes can be broken into three phases: a message or semantic process, a formulation process in which a syntactic frame is chosen and words are filled in, and an articulation process <ref type="bibr" target="#b0">(Bock, 1986;</ref><ref type="bibr" target="#b1">Bock &amp; Levelt, 1994;</ref><ref type="bibr" target="#b21">Levelt, 1989)</ref>. Speakers monitor their speech both internally and externally; that is, they can make covert repairs at the point when an internal monitoring loop checks the output of the formulation phase before articulation begins, or overt repairs when a problem is discovered after the articulation phase via the speaker's external monitor-the point at which listeners also have access to the signal <ref type="bibr" target="#b21">(Levelt, 1989)</ref>. According to <ref type="bibr" target="#b24">Nooteboom's (1980)</ref> Main Interruption Rule, speakers tend to halt speaking as soon as they detect a problem. Production data from <ref type="bibr" target="#b20">Levelt's (1983)</ref> corpus supported this rule; speakers interrupted themselves within or right after a problem word 69% of the time.</p><p>How are regularities in disfluencies exploited by listeners? We have looked at the comprehension of simple fluent and disfluent instructions in a constrained situation where the listener had the opportunity to develop expectations about what the speaker would say <ref type="bibr">(Brennan &amp; Schober,</ref> in press). We tested two hypotheses drawn from some suggestions of <ref type="bibr" target="#b21">Levelt's (1989)</ref>: that "by interrupting a word, a speaker signals to the addressee that the word is an error," and that an editing expression like er or uh may "warn the addressee that the current message is to be replaced," as with Move to the ye-uh, orange square. We collected naturally fluent and disfluent utterances by having a speaker watch a display of objects; when one was highlighted he issued a command about it, like "move to the yellow square." Sometimes the highlight changed suddenly; this sometimes caused the speaker to produce disfluencies. We recorded enough tokens of simple disfluencies to compare the impact of three ways in which speakers interrupt themselves: immediately after a problem word, within a problem word, or within a problem word and with the filler uh.</p><p>We reasoned that if a disfluency indeed bears useful information, then we should be able to find a situation where a target word is faster to comprehend in a disfluent utterance than in a fluent one. Imagine a situation in which a listener expects a speaker to refer to one of two objects. If the speaker begins to name one and then stops and names the other, the way in which she interrupts the utterance might be an early clue as to her intentions. So the listener may be faster to recognize her intentions relative to a target word in a disfluent utterance than in an utterance in which disfluencies are absent. We compared the following types of utterances: Utterances c, d, and e were spontaneous disfluencies, and f, g, and h were edited versions that replaced the removed material with pauses of equal length to control for timing. In utterances c-h, the reparandum began after the word the and continued until the interruption site (after the unintended color word, color word fragment, or location where this information had been edited out). The edit interval in c-h began with the interruption site, included silence or a filler, and ended with the onset of the repair color word. Response times were calculated relative to the onset of the repair, orange.</p><p>The results were that listeners made fewer errors, the less incorrect information they heard in the reparandum (that is, the shorter the reparandum), and they were faster to respond to the target word when the edit interval before the repair was longer. They comprehended target words after mid-word interruptions with fillers faster than they did after mid-word interruptions without fillers (since a filler makes the edit interval longer), and faster than they did when the disfluency was replaced by a pause of equal length. This filler advantage did not occur at the expense of accuracy-unlike with disfluent utterances without fillers, listeners made no more errors on disfluent utterances with fillers than they did on fluent utterances. These findings highlight the importance of timing in speech recognition and utterance interpretation. The form and length of the reparandum and edit interval bear consequences for how quickly a disfluent utterance is processed as well as for whether the listener makes a commitment to an interpretation the speaker does not intend.</p><p>Listeners respond to pauses and fillers on other levels as well, such as to make inferences about speakers' alignment to their utterances. People coordinate both the content and the process of conversation; fillers, pauses, and self-speech can serve as displays by speakers that provide an account to listeners for difficulties or delays in speaking <ref type="bibr" target="#b10">(Clark, 1994;</ref><ref type="bibr" target="#b11">Clark, 1997;</ref><ref type="bibr" target="#b12">Clark &amp; Brennan, 1991)</ref>. Speakers signal their Feeling-of-Knowing (FOK) when answering a question by the displays they put on right before the answer (or right before they respond with I don't know) <ref type="bibr" target="#b8">(Brennan &amp; Williams, 1995;</ref><ref type="bibr" target="#b33">Smith &amp; Clark, 1993)</ref>. In these experiments, longer latencies, especially ones that contained fillers, were associated with answers produced with a lower FOK and that turned out to be incorrect. Thus in the following example, A1 displayed a lower FOK than A2: Likewise, non-answers (e.g., I don't know) after a filler or a long latency were produced by speakers who were more likely to recognize the correct answers later on a multiple choice test; those who produced a non-answer immediately did not know the answers. Not only do speakers display their difficulties and metalinguistic knowledge using such devices, but listeners can process this information to produce an accurate Feeling-of-Another's-Knowing, or estimate of the speaker's likelihood of knowing the correct answer <ref type="bibr" target="#b8">(Brennan &amp; Williams, 1995)</ref>.</p><formula xml:id="formula_0">Q:</formula><p>These programs of experiments hold implications for both the generation and interpretation of spoken utterances. A system could indicate its confidence in its message with silent pauses, fillers, and intonation, and users should be able to interpret this information accurately. If machine speech recognition were conducted in a fashion more like human speech recognition, timing would be a critical cue and incremental parses would be continually made and unmade. Although this approach would be computationally expensive, it might produce better results with spontaneous speech.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Referring expressions are provisional until ratified by addressees.</head><p>Consider again the exchange in Example (1). After some work, the director and matcher eventually settled on a mutual perspective. When they finished matching the set of 12 picture cards, the cards were shuffled and the task was repeated several more times. In the very next round, the conversation went like this: <ref type="bibr">(2)</ref> B: nine is that monk praying A: yup Later on, referring was even more efficient:</p><formula xml:id="formula_1">(3)</formula><p>A: three is the monk B: ok A and B, who switched roles on each round, marked the fact that they had achieved a mutual perspective by reusing the same term, monk, in repeated references to the same object. These references tend to shorten over time. In <ref type="bibr" target="#b5">Brennan and Clark (1996)</ref>, we showed that once people coordinate a perspective on an object, they tend to continue to use the same terms that mark that shared perspective (e.g., the man's pennyloafer), even when they could use an even shorter basiclevel term (e.g., the shoe, when the set of objects has changed such that it no longer needs to be distinguished from other shoes in the set). This process of conceptual entrainment appears to be partner-specific-upon repeated referring to the same object but with a new partner, speakers were more likely to revert to the basic level term, due in part to the feedback they received from their partners <ref type="bibr" target="#b5">(Brennan &amp; Clark, 1996)</ref>. These examples depict the interpersonal processes that lead to conceptual entrainment. The director and matcher used many hedges in their initial proposals and counter-proposals (e.g., it's almost like a person kind of in a weird way, and yeah like like a monk praying or something). Hedges dropped out upon repeated referring. We have proposed <ref type="bibr" target="#b5">(Brennan &amp; Clark, 1996)</ref> that hedges are devices for signaling a speaker's commitment to the perspective she is proposing. Hedges serve social needs as well, by inviting counter-proposals from the addressee without risking loss of face due to overt disagreements <ref type="bibr" target="#b6">(Brennan &amp; Ohaeri, 1999)</ref>.</p><p>It is worth noting that people's referring expressions converge not only with those of their human partners, but also with those of computer partners <ref type="bibr" target="#b25">Ohaeri, 1995)</ref>. In our text and spoken dialogue Wizardof-Oz studies, when simulated computer partners used deliberately different terms than the ones people first presented to them, people tended to adopt the computers' terms, even though the computers had apparently "understood" the terms people had first produced <ref type="bibr" target="#b25">Ohaeri, 1995)</ref>.</p><p>The impetus toward conceptual entrainment marked by repeated referring expressions appears to be so compelling that native speakers of English will even produce non-idiomatic referring expressions (e.g., the chair in which I shake my body, referring to a rocking chair) in order to ratify a mutuallyachieved perspective with non-native speakers <ref type="bibr">(Bortfeld &amp; Brennan, 1987)</ref>.</p><p>Such findings hold many implications for utterance generation and the design of dialogue models. Spoken and text dialogue interfaces of the future should include resources for collaboration, including those for negotiating meanings, modeling context, recognizing which referring expressions are likely to index a particular conceptualization, keeping track of the referring expressions used by a partner so far, and reusing those expressions. This would help solve the "vocabulary problem" in humancomputer interaction <ref type="bibr">(Brennan, to appear)</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Grounding varies with the medium</head><p>Grounding is the process by which people coordinate their conversational activities, establishing, for instance, that they understand one another well enough for current purposes.</p><p>There are many activities to coordinate in conversation, each with its own cost, including:</p><p>• getting an addressee's attention in order to begin the conversation • planning utterances the addressee is likely to understand • producing utterances • recognizing when the addressee does not understand • initiating and managing repairs • determining what inferences to make when there is a delay • receiving utterances • recognizing the intention behind an utterance • displaying or acknowledging this understanding • keeping track of what has been discussed so far (common ground due to linguistic co-presence) • determining when to take a turn • monitoring and furthering the main purposes or tasks at hand</p><p>• serving other important social needs, such as face-management (adapted from <ref type="bibr" target="#b12">Clark &amp; Brennan, 1991</ref>) Most of these activities are relatively easy to do when interaction is face-to-face. However, the affordances of different media affect the costs of coordinating these activities. The actual forms of speech and text corpora are shaped by how people balance and trade off these costs in the context of communication.</p><p>In a referential communication study, I compared task-oriented conversations in which one person either had or didn't have visual evidence about the other's progress <ref type="bibr" target="#b3">(Brennan, 1990)</ref>. Pairs of people discussed many different locations on identical maps displayed on networked computer screens in adjoining cubicles. The task was for the matcher to get his car icon parked in the same spot as the car displayed on only the director's screen. In one condition, Visual Evidence, the director could see the matcher's car icon and its movements. In the other, Verbal-Only Evidence, she could not. In both conditions, they could talk freely.</p><p>Language-action transcripts were produced for a randomly chosen 10% of 480 transcribed interchanges. During each trial, the x and y coordinates of the matcher's icon were recorded and time-stamped, as a moment-bymoment estimate of where the matcher thought the target location was. For the sample of 48 trials, I plotted the distance between the matchers' icon and the target (the director's icon) over time, to provide a visible display of how their beliefs about the target location converged.</p><p>Sample time-distance plots are shown in <ref type="figure">Figures 1 and 2</ref>. Matchers' icons got closer to the target over time, but not at a steady rate. Typically, distance diminished relatively steeply early in the trial, while the matcher interpreted the director's initial description and rapidly moved his icon toward the target location. Many of the plots then showed a distinct elbow followed by a nearly horizontal region, meaning that the matcher then paused or moved away only slightly before returning to park his car icon. This suggests that it wasn't sufficient for the matcher to develop a reasonable hypothesis about what the director meant by the description she presented, but that they also had to ground their understanding, or exchange sufficient evidence in order to establish mutual belief. The region after the elbow appears to correspond to the acceptance phase proposed by <ref type="bibr" target="#b14">Clark &amp; Schaefer (1989)</ref>; the figures show that it was much shorter when directors had visual evidence than when they did not. The accompanying speech transcripts, when synchronized with the time-distance plots, showed that matchers gave verbal acknowledgements when directors did not have visual evidence and withheld them when directors did have visual evidence. Matchers made this adjustment to directors even though the information on the matchers' own screen was the same for both conditions, which alternated after every 10 locations for a total of 80 locations discussed by each pair. These results document the grounding process and the time course of how directors' and matchers' hypotheses converge. The process is a flexible one; partners shift the responsibility to whomever can pay a particular cost most easily, expending the least collaborative effort <ref type="bibr" target="#b15">(Clark &amp; Wilkes-Gibbs, 1986)</ref>.</p><p>In another study of how media affect conversation <ref type="bibr" target="#b6">(Brennan &amp; Ohaeri, 1999;</ref><ref type="bibr" target="#b26">Ohaeri, 1998)</ref> we looked at how grounding shapes conversation held face-to-face vs. via chat windows in which people sent text messages that appeared immediately on their partners' screens. Three-person groups had to reach a consensus account of a complex movie clip they had viewed together. We examined the costs of serving face-management needs (politeness) and Time (seconds) looked at devices that serve these needs by giving a partner options or seeking their input. The devices counted were hedges and questions. Although both kinds of groups recalled the events equally well, they produced only half as many words typing as speaking. There were much lower rates of hedging (per 100 words) in the text conversations than face-to-face, but the same rates of questions. We explained these findings by appealing to the costs of grounding over different media: Hedging requires using additional words, and therefore is more costly in typed than spoken utterances. Questions, on the other hand, require only different intonation or punctuation, and so are equally easy, regardless of medium. The fact that people used just as many questions in both kinds of conversations suggests that people in electronic or remote groups don't cease to care about facemanagement needs, as some have suggested; it's just harder to meet these needs when the medium makes the primary task more difficult.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Desiderata for a Dialogue Model</head><p>Findings such as these hold a number of implications for both computational linguistics and human-computer interaction. First is a methodological point: corpus data and dialogue feature coding are particularly useful when they include systematic information about the tasks conversants were engaged in.</p><p>Second, there is a large body of evidence that people accomplish utterance production and interpretation incrementally, using information from all available sources in parallel. If computational language systems are ever to approach the power, error recovery ability, and flexibility of human language processing, then more research needs to be done using architectures that can support incremental processing. Architectures should not be based on assumptions that utterances are complete and well-formed, and that processing is modular.</p><p>A related issue is that timing is critically important in interactive systems. Many models of language processing focus on the propositional content of speech with little attention to "performance" or "surface" features such as timing. (Other non-propositional aspects such as intonation are important as well.)</p><p>Computational dialogue systems (both text and spoken) should include resources for collaboration. When a new referring expression is introduced, it could be marked as provisional. Fillers can be used to display trouble, and hedges, to invite input. Dialogue models should track the forms of referring expressions used in a discourse so far, enabling agents to use the same terms consistently to refer to the same things.</p><p>Because communication media shape conversations and their emergent corpora, minor differences in features of a dialogue interface can have major impact on the form of the language that is generated, as well as on coordination costs that language users pay.</p><p>Finally, dialogue models should keep a structured record of jointly achieved contributions that is updated and revised incrementally. No agent is omniscient; a dialogue model represents only one agent's estimate of the common ground so far (see <ref type="bibr" target="#b9">Cahn &amp; Brennan, 1999)</ref>. There are many open and interesting questions about how to best structure the contributions from interacting partners into a dialogue model, as well as how such a model can be used to support incremental processes of generation, interpretation, and repair.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 :Figure 2 :</head><label>12</label><figDesc>Figure 1: Time-Distance Plot of Matcher-Director Convergence, Without Visual Evidence of the Matcher's Progress</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0" validated="false"><head></head><label></label><figDesc>1) D:ah boy this one ah boy</figDesc><table>all right it looks kinda like-
+on the right top there's a square that looks 
+diagonal 
+M: uh huh 
+D: and you have sort of another like rectangle 
+shape, the-
+like a triangle, angled, and on the bottom it's uh 
+I don't know what that is, glass shaped 
+M: all right I think I got it 
+D: it's almost like a person kind of in a weird way 
+M: yeah like like a monk praying or something 
+D: right yeah good great 
+M: all right I got it 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1" validated="false"><head>a .</head><label>a</label><figDesc>Move to the orange square</figDesc><table>(naturally fluent) 
+b. Move to the |orange square (disfluency excised) 
+c. Move to the yellow-orange square 
+d. Move to the ye-
+orange square 
+e. Move to the ye-
+uh, orange square 
+f. Move to the 
+orange square 
+g. Move to the ye-
+orange square 
+h. Move to the 
+uh, orange square 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2" validated="false"><head></head><label></label><figDesc>Who founded the American Red Cross? A1: .....um......... Florence Nightingale? A2: ......... Clara Barton.</figDesc><table></table></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Acknowledgements</head><p>This material is based upon work supported by the National Science Foundation under Grants No. IRI9402167, IRI9711974, and IRI9980013. I thank Michael Schober for helpful comments.</p></div>
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Meaning, sound, and syntax: Lexical priming in sentence production</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><forename type="middle">K</forename><surname>Bock</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">J. of Experimental Psychology: Learning, Memory, &amp; Cognition</title>
+		<imprint>
+			<biblScope unit="volume">12</biblScope>
+			<biblScope unit="page" from="575" to="586" />
+			<date type="published" when="1986" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Language production: Grammatical encoding</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Bock</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><forename type="middle">J M</forename><surname>Levelt</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Handbook of psycholinguistics</title>
+		<editor>M.A. Gernsbacher</editor>
+		<meeting><address><addrLine>London</addrLine></address></meeting>
+		<imprint>
+			<publisher>Academic Press</publisher>
+			<date type="published" when="1994" />
+			<biblScope unit="page" from="945" to="984" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Use and acquisition of idiomatic expressions in referring by native and non-native speakers</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><surname>Bortfeld</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><forename type="middle">E</forename><surname>Brennan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Discourse Processes</title>
+		<imprint>
+			<date type="published" when="1997" />
+			<biblScope unit="volume">23</biblScope>
+			<biblScope unit="page" from="119" to="147" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Disfluency rates in spontaneous speech: Effects of age, relationship, topic, role, and gender. Manuscript under review</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><surname>Bortfeld</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><forename type="middle">D</forename><surname>Leon</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><forename type="middle">E</forename><surname>Bloom</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><forename type="middle">F</forename><surname>Schober</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><forename type="middle">E</forename><surname>Brennan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><forename type="middle">E</forename><surname>Brennan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. 1996 International Symposium on Spoken Dialogue</title>
+		<editor>Stanford University. Brennan, S. E.</editor>
+		<meeting>1996 International Symposium on Spoken Dialogue</meeting>
+		<imprint>
+			<date type="published" when="1990" />
+			<biblScope unit="page">41</biblScope>
+		</imprint>
+	</monogr>
+	<note>Lexical entrainment in spontaneous dialog. ISSD-96) (pp</note>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">The vocabulary problem in spoken dialog systems</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><forename type="middle">E</forename><surname>Brennan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Automated Spoken Dialog Systems</title>
+		<editor>S. Luperfoy</editor>
+		<meeting><address><addrLine>Cambridge, MA</addrLine></address></meeting>
+		<imprint>
+			<publisher>MIT Press</publisher>
+		</imprint>
+	</monogr>
+	<note>to appear</note>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Conceptual pacts and lexical choice in conversation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><forename type="middle">E</forename><surname>Brennan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><forename type="middle">H</forename><surname>Clark</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">J. of Experimental Psychology: Learning, Memory, &amp; Cognition</title>
+		<imprint>
+			<biblScope unit="volume">22</biblScope>
+			<biblScope unit="page" from="1482" to="1493" />
+			<date type="published" when="1996" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Why do electronic conversations seem less polite? The costs and benefits of hedging</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><forename type="middle">E</forename><surname>Brennan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><forename type="middle">O</forename><surname>Ohaeri</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. Int. Joint Conference on Work Activities, Coordination, and Collaboration (WACC &apos;99)</title>
+		<meeting>Int. Joint Conference on Work Activities, Coordination, and Collaboration (WACC &apos;99)<address><addrLine>San Francisco, CA</addrLine></address></meeting>
+		<imprint>
+			<publisher>ACM</publisher>
+			<date type="published" when="1999" />
+			<biblScope unit="page" from="227" to="235" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">How listeners compensate for disfluencies in spontaneous speech</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><forename type="middle">E</forename><surname>Brennan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><forename type="middle">F</forename><surname>Schober</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">J. of Memory &amp; Language</title>
+		<imprint/>
+	</monogr>
+	<note>in press</note>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">The feeling of another&apos;s knowing: Prosody and filled pauses as cues to listeners about the metacognitive states of speakers</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><forename type="middle">E</forename><surname>Brennan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Williams</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">J. of Memory &amp; Language</title>
+		<imprint>
+			<biblScope unit="volume">34</biblScope>
+			<biblScope unit="page" from="383" to="398" />
+			<date type="published" when="1995" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">A psychological model of grounding and repair in dialog</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><forename type="middle">E</forename><surname>Cahn</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><forename type="middle">E</forename><surname>Brennan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. AAAI Fall Symposium on Psychological Models of Communication in Collaborative Systems</title>
+		<meeting>AAAI Fall Symposium on Psychological Models of Communication in Collaborative Systems<address><addrLine>North Falmouth, MA</addrLine></address></meeting>
+		<imprint>
+			<publisher>AAAI</publisher>
+			<date type="published" when="1999" />
+			<biblScope unit="page" from="25" to="33" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Managing problems in speaking</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><forename type="middle">H</forename><surname>Clark</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Speech Communication</title>
+		<imprint>
+			<biblScope unit="volume">15</biblScope>
+			<biblScope unit="page" from="243" to="250" />
+			<date type="published" when="1994" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Dogmas of understanding</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><forename type="middle">H</forename><surname>Clark</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Discourse Processes</title>
+		<imprint>
+			<date type="published" when="1997" />
+			<biblScope unit="volume">23</biblScope>
+			<biblScope unit="page" from="567" to="598" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<monogr>
+		<title level="m" type="main">Grounding in communication</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><forename type="middle">H</forename><surname>Clark</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><forename type="middle">E</forename><surname>Brennan</surname></persName>
+		</author>
+		<editor>L. B. Resnick, J. Levine, &amp; S</editor>
+		<imprint>
+			<date type="published" when="1991" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<monogr>
+				<title level="m">Perspectives on socially shared cognition</title>
+		<editor>D. Teasley</editor>
+		<imprint>
+			<biblScope unit="page" from="127" to="149" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Contributing to discourse</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><forename type="middle">H</forename><surname>Clark</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><forename type="middle">F</forename><surname>Schaefer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Cognitive Science</title>
+		<imprint>
+			<biblScope unit="volume">13</biblScope>
+			<biblScope unit="page" from="259" to="294" />
+			<date type="published" when="1989" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Referring as a collaborative process</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><forename type="middle">H</forename><surname>Clark</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Wilkes-Gibbs</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Cognition</title>
+		<imprint>
+			<biblScope unit="volume">22</biblScope>
+			<biblScope unit="page" from="1" to="39" />
+			<date type="published" when="1986" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">A model of speech repairs and other disruptions</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><forename type="middle">G</forename><surname>Core</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">L</forename><forename type="middle">K</forename><surname>Schubert</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. AAAI Fall Symposium on Psychological Models of Communication in Collaborative Systems</title>
+		<meeting>AAAI Fall Symposium on Psychological Models of Communication in Collaborative Systems<address><addrLine>North Falmouth, MA</addrLine></address></meeting>
+		<imprint>
+			<publisher>AAAI</publisher>
+			<date type="published" when="1999" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">The effects of false starts and repetitions on the processing of subsequent words in spontaneous speech</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><forename type="middle">E</forename><surname>Fox Tree</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">J. of Memory &amp; Language</title>
+		<imprint>
+			<biblScope unit="volume">34</biblScope>
+			<biblScope unit="page" from="709" to="738" />
+			<date type="published" when="1995" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<monogr>
+		<title level="m" type="main">Conversational Organization: Interaction between speakers and hearers</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Goodwin</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1981" />
+			<publisher>Academic Press</publisher>
+			<pubPlace>New York</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Deterministic parsing of syntactic non-fluencies</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Hindle</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. of the 21st Annual Meeting</title>
+		<meeting>of the 21st Annual Meeting<address><addrLine>Cambridge, MA</addrLine></address></meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="1983" />
+			<biblScope unit="page" from="123" to="128" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Monitoring and self-repair in speech</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><forename type="middle">J M</forename><surname>Levelt</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Cognition</title>
+		<imprint>
+			<biblScope unit="volume">14</biblScope>
+			<biblScope unit="page" from="41" to="104" />
+			<date type="published" when="1983" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<monogr>
+		<title level="m" type="main">Speaking: From intention to articulation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><surname>Levelt</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1989" />
+			<publisher>MIT Press</publisher>
+			<pubPlace>Cambridge, MA</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">On not recognizing disfluencies in dialog</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Lickley</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><surname>Bard</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. International Conference on Spoken Language Processing (ICSLIP &apos;96)</title>
+		<meeting>International Conference on Spoken Language essing (ICSLIP &apos;96)<address><addrLine>Philadelphia</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="1996" />
+			<biblScope unit="page" from="1876" to="1879" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">A corpusbased study of repair cues in spontaneous speech</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><forename type="middle">H</forename><surname>Nakatani</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Hirschberg</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">J of the Acoustical Society of America</title>
+		<imprint>
+			<biblScope unit="volume">95</biblScope>
+			<biblScope unit="page" from="1603" to="1616" />
+			<date type="published" when="1994" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Speaking and unspeaking: Detection and correction of phonological and lexical errors in spontaneous speech</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><forename type="middle">G</forename><surname>Nooteboom</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Errors in linguistic performance</title>
+		<editor>V. A. Fromkin</editor>
+		<meeting><address><addrLine>New York</addrLine></address></meeting>
+		<imprint>
+			<publisher>Academic Press</publisher>
+			<date type="published" when="1980" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<monogr>
+		<title level="m" type="main">Lexical convergence with human and computer partners: Same cognitive process? Unpub. Master&apos;s thesis. SUNY</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><forename type="middle">O</forename><surname>Ohaeri</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1995" />
+			<pubPlace>Stony Brook, NY</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<monogr>
+		<title level="m" type="main">Group processes and the collaborative remembering of stories. Unpublished doctoral dissertation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><forename type="middle">O</forename><surname>Ohaeri</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1998" />
+			<pubPlace>SUNY, Stony Brook, NY</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Predicting spoken disfluencies during human-computer interaction</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Oviatt</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computer Speech and Language</title>
+		<imprint>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="page" from="19" to="35" />
+			<date type="published" when="1995" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">A simplest systematics for the organization of turntaking in conversation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><surname>Sacks</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><surname>Schegloff</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Jefferson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Language</title>
+		<imprint>
+			<biblScope unit="volume">50</biblScope>
+			<biblScope unit="page" from="696" to="735" />
+			<date type="published" when="1974" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Understanding by addressees and overhearers</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><forename type="middle">F</forename><surname>Schober</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><forename type="middle">H</forename><surname>Clark</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Cognitive Psychology</title>
+		<imprint>
+			<biblScope unit="volume">21</biblScope>
+			<biblScope unit="page" from="211" to="232" />
+			<date type="published" when="1989" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Disfluencies in Switchboard</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><surname>Shriberg</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings, International Conference on Spoken Language Processing</title>
+		<meeting>International Conference on Spoken Language Processing<address><addrLine>Philadelphia, PA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="1996-10" />
+			<biblScope unit="volume">Addendum</biblScope>
+			<biblScope unit="page" from="3" to="6" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Automatic detection and correction of repairs in human-computer dialog</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><surname>Shriberg</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Bear</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Dowding</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc DARPA Speech and Natural Language Workshop</title>
+		<editor>M. Marcus</editor>
+		<meeting>DARPA Speech and Natural Language Workshop</meeting>
+		<imprint>
+			<publisher>Morgan Kaufmann</publisher>
+			<date type="published" when="1992" />
+			<biblScope unit="page" from="419" to="424" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Intonation of clause-internal filled pauses</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><forename type="middle">E</forename><surname>Shriberg</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><forename type="middle">J</forename><surname>Lickley</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Phonetica</title>
+		<imprint>
+			<biblScope unit="volume">50</biblScope>
+			<biblScope unit="page" from="172" to="179" />
+			<date type="published" when="1993" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">On the course of answering questions</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">V</forename><surname>Smith</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><forename type="middle">H</forename><surname>Clark</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">J. of Memory and Language</title>
+		<imprint>
+			<biblScope unit="volume">32</biblScope>
+			<biblScope unit="page" from="25" to="38" />
+			<date type="published" when="1993" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Flexible perspective-setting in conversation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Stellmann</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><forename type="middle">E</forename><surname>Brennan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">34th Annual Meeting</title>
+		<meeting><address><addrLine>Washington, DC</addrLine></address></meeting>
+		<imprint>
+			<publisher>Abstracts of the Psychonomic Society</publisher>
+			<date type="published" when="1993" />
+			<biblScope unit="page">20</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Integration of visual and linguistic information in spoken language comprehension</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><forename type="middle">K</forename><surname>Tanenhaus</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><forename type="middle">J</forename><surname>Spivey-Knowlton</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><forename type="middle">M</forename><surname>Eberhard</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Sedivy</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Science</title>
+		<imprint>
+			<biblScope unit="volume">268</biblScope>
+			<biblScope unit="page" from="1632" to="1634" />
+			<date type="published" when="1995" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<analytic>
+		<title level="a" type="main">Coordinating beliefs in conversation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Wilkes-Gibbs</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><forename type="middle">H</forename><surname>Clark</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Memory and Language</title>
+		<imprint>
+			<biblScope unit="volume">31</biblScope>
+			<biblScope unit="page" from="183" to="194" />
+			<date type="published" when="1992" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

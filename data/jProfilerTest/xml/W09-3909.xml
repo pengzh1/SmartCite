@@ -1,0 +1,783 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-08T02:01+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Genre-Based Paragraph Classification for Sentiment Analysis</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher>Association for Computational Linguistics</publisher>
+				<availability status="unknown"><p>Copyright Association for Computational Linguistics</p>
+				</availability>
+				<date type="published" when="2009-09">September 2009. 2009</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Maite</forename><surname>Taboada</surname></persName>
+							<email>mtaboada@sfu.ca</email>
+							<affiliation key="aff0">
+								<orgName type="department" key="dep1">Department of Linguistics</orgName>
+								<orgName type="department" key="dep2">Department of Computer Science</orgName>
+								<orgName type="institution">Simon Fraser University Burnaby</orgName>
+								<address>
+									<region>BC</region>
+									<country key="CA">Canada</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Julian</forename><surname>Brooke</surname></persName>
+							<email>jbrooke@cs.toronto.edu</email>
+							<affiliation key="aff1">
+								<orgName type="department">Institute of Linguistics</orgName>
+								<orgName type="institution">University of Toronto Toronto</orgName>
+								<address>
+									<region>ON</region>
+									<country key="CA">Canada</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Manfred</forename><surname>Stede</surname></persName>
+							<email>stede@ling.uni-potsdam.de</email>
+							<affiliation key="aff2">
+								<orgName type="institution">University of Potsdam</orgName>
+								<address>
+									<settlement>Potsdam</settlement>
+									<country key="DE">Germany</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Genre-Based Paragraph Classification for Sentiment Analysis</title>
+					</analytic>
+					<monogr>
+						<title level="m">Proceedings of SIGDIAL 2009: the 10th Annual Meeting of the Special Interest Group in Discourse and Dialogue</title>
+						<meeting>SIGDIAL 2009: the 10th Annual Meeting of the Special Interest Group in Discourse and Dialogue						</meeting>
+						<imprint>
+							<publisher>Association for Computational Linguistics</publisher>
+							<biblScope unit="page" from="62" to="70"/>
+							<date type="published" when="2009-09">September 2009. 2009</date>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>We present a taxonomy and classification system for distinguishing between different types of paragraphs in movie reviews: formal vs. functional paragraphs and, within the latter, between description and comment. The classification is used for sentiment extraction, achieving improvement over a baseline without paragraph classification.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Much of the recent explosion in sentimentrelated research has focused on finding low-level features that will help predict the polarity of a phrase, sentence or text. Features, widely understood, may be individual words that tend to express sentiment, or other features that indicate not only sentiment, but also polarity. The two main approaches to sentiment extraction, the semantic or lexicon-based, and the machine learning or corpus-based approach, both attempt to identify low-level features that convey opinion. In the semantic approach, the features are lists of words and their prior polarity, (e.g., the adjective terrible will have a negative polarity, and maybe intensity, represented as -4; the noun masterpiece may be a 5). Our approach is lexicon-based, but we make use of information derived from machine learning classifiers.</p><p>Beyond the prior polarity of a word, its local context obviously plays an important role in conveying sentiment. <ref type="bibr" target="#b18">Polanyi and Zaenen (2006)</ref> use the term 'contextual valence shifters' to refer to expressions in the local context that may change a word's polarity, such as intensifiers, modal verbs, connectives, and of course negation.</p><p>Further beyond the local context, the overall structure and organization of the text, influenced by its genre, can help the reader determine how the evaluation is expressed, and where it lies. <ref type="bibr" target="#b18">Polanyi and Zaenen (2006)</ref> also cite genre constraints as relevant factors in calculating sentiment.</p><p>Among the many definitions of genre, we take the view of Systemic Functional Linguistics that genres are purposeful activities that develop in stages, or parts <ref type="bibr" target="#b7">(Eggins and Martin, 1997)</ref>, which can be identified by lexicogrammatical properties <ref type="bibr" target="#b8">(Eggins and Slade, 1997)</ref>. Our proposal is that, once we have identified different stages in a text, the stages can be factored in the calculation of sentiment, by weighing more heavily those that are more likely to contain evaluation, an approach also pursued in automatic summarization <ref type="bibr" target="#b19">(Seki et al., 2006)</ref>.</p><p>To test this hypothesis, we created a taxonomy of stages specific to the genre of movie reviews, and annotated a set of texts. We then trained various classifiers to differentiate the stages. Having identified the stages, we lowered the weight of those that contained mostly description. Our results show that we can achieve improvement over a baseline when classifying the polarity of texts, even with a classifier that can stand to improve (at 71.1% accuracy). The best performance comes from weights derived from the output of a linear regression classifier.</p><p>We first describe our inventory of stages and the manual annotation (Section 2), and in Section 3 turn to automatic stage classification. After describing our approach to sentiment classification of texts in Section 4, we describe experiments to improve its performance with the information on stages in Section 5. Section 6 dis-cusses related work, and Section 7 provides conclusions.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Stages in movie reviews</head><p>Within the larger review genre, we focus on movie reviews. Movie reviews are particularly difficult to classify <ref type="bibr" target="#b23">(Turney, 2002)</ref>, because large portions of the review contain description of the plot, the characters, actors, director, etc., or background information about the film.</p><p>Our approach is based on the work of <ref type="bibr" target="#b3">Bieler et al. (2007)</ref>, who identify formal and functional zones (stages) within German movie reviews. Formal zones are parts of the text that contribute factual information about the cast and the credits, and also about the review itself (author, date of publication and the reviewer's rating of the movie). Functional zones contain the main gist of the review, and can be divided roughly into description and comment. <ref type="bibr">Bieler et al.</ref> showed that functional zones could be identified using 5-gram SVM classifiers built from an annotated German corpus.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1">Taxonomy</head><p>In addition to the basic Describe/Comment distinction in Bieler et al., we use a Describe+Comment label, as in our data it is often the case that both description and comment are present in the same paragraph. We decided that a paragraph could be labeled as Describe+Comment when it contained at least a clause of each, and when the comment part could be assigned a polarity (i.e., it was not only subjective, but also clearly positive or negative).</p><p>Each of the three high-level tags has a subtag, a feature also present in Bieler et al.'s manual annotation. The five subtags are: overall, plot, actors/characters, specific and general. 'Specific' refers to one particular aspect of the movie (not plot or characters), whereas 'general' refers to multiple topics in the same stage (special effects and cinematography at the same time). Outside the Comment/Describe scale, we also include tags such as Background (discussion of other movies or events outside the movie being reviewed), Interpretation (subjective but not opinionated or polar), and Quotes. Altogether, the annotation system includes 40 tags, with 22 formal and 18 functional zones. Full lists of zone/stage labels are provided in Appendix A.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2">Manual annotation</head><p>We collected 100 texts from rottentomatoes.com, trying to include one positive and one negative review for the same movie. The reviews are part of the "Top Critics" section of the site, all of them published in newspapers or on-line magazines. We restricted the texts to "Top Critics" because we wanted well-structured, polished texts, unlike those found in some on-line review sites. Future work will address those more informal reviews.</p><p>The 100 reviews contain 83,275 words and 1,542 paragraphs. The annotation was performed at the paragraph level. Although stages may span across paragraphs, and paragraphs may contain more than one stage, there is a close relationship between paragraphs and stages. The restriction also resulted in a more reliable annotation, performed with the PALinkA annotation tool <ref type="bibr" target="#b15">(Orasan, 2003)</ref>.</p><p>The annotation was performed by one of the authors, and we carried out reliability tests with two other annotators, one another one of the authors, who helped develop the taxonomy, and the third one a project member who read the annotation guidelines 1 , and received a few hours' training in the labels and software. We used Fleiss' kappa <ref type="bibr" target="#b10">(Fleiss, 1971)</ref>, which extends easily to the case of multiple raters (Di <ref type="bibr" target="#b6">Eugenio and Glass, 2004)</ref>. We all annotated four texts. The results of the reliability tests show a reasonable agreement level for the distinction between formal and functional zones (.84 for the 3-rater kappa). The lowest reliability was for the 3-way distinction in the functional zones (.68 for the first two raters, and .54 for the three raters). The full kappa values for all the distinctions are provided in Appendix B. After the reliability test, one of the authors performed the full annotation for all 100 texts. <ref type="table">Table 1</ref> shows the breakdown of high-level stages for the 100 texts. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Stage</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Classifying stages</head><p>Our first classification task aims at distinguishing the two main types of functional zones, Comment and Describe, vs. Formal zones.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Features</head><p>We test two different sets of features. The first, following <ref type="bibr" target="#b3">Bieler et al. (2007)</ref>, consists of 5-grams (including unigrams, bigrams, 3-grams and 4-grams), although we note in our case that there was essentially no performance benefit beyond 3-grams. We limited the size of our feature set to n-grams that appeared at least 4 times in our training corpus. For the 2 class task (no formal zones), this resulted in 8,092 binary features, and for the 3 and 4 class task there were 9,357 binary n-gram features.</p><p>The second set of features captures different aspects of genre and evaluation, and can in turn be divided into four different types, according to source. With two exceptions (features indicating whether a paragraph was the first or last paragraph in text), the features were numerical (frequency) and normalized to the length of the paragraph.</p><p>The first group of genre features comes from <ref type="bibr" target="#b2">Biber (1988)</ref>, who attempted to characterize dimensions of genre. The features here include frequency of first, second and third person pronouns; demonstrative pronouns; place and time adverbials; intensifiers; and modals, among a number of others.</p><p>The second category of genre features includes discourse markers, primarily from <ref type="bibr" target="#b12">Knott (1996)</ref>, that indicate contrast, comparison, causation, evidence, condition, and similar relations.</p><p>The third type of genre features was a list of 500 adjectives classified in terms of Appraisal <ref type="bibr" target="#b13">(Martin and White, 2005)</ref> as indicating Appreciation, Judgment or Affect. Appraisal categories have been shown to be useful in improving the performance of polarity classifiers <ref type="bibr" target="#b25">(Whitelaw et al., 2005)</ref>.</p><p>Finally, we also include text statistics as features, such as average length of words and sentences and position of paragraphs in the text.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Classifiers</head><p>To classify paragraphs in the text, we use the WEKA suite <ref type="bibr" target="#b27">(Witten and Frank, 2005)</ref>, testing three popular machine learning algorithms: Naïve Bayes, Support Vector Machine, and Linear Regression (preliminary testing with Decision Trees suggests that it is not appropriate for this task). Training parameters were set to default values.</p><p>In order to use Linear Regression, which provides a numerical output based on feature values and derived feature weights, we have to conceive of Comment/Describe/Describe+Comment not as nominal (or ordinal) classes, but rather as corresponding to a Comment/Describe ratio, with "pure" Describe at one end and "pure" Comment at the other. For training, we assign a 0 value (a Comment ratio) to all paragraphs tagged Describe and a 1 to all Comment paragraphs; for Describe+Comment, various options (including omission of this data) were tested. The time required to train a linear regression classifier on a large feature set proved to be prohibitive, and performance with smaller sets of features generally quite poor, so for the linear regression classifier we present results only for our compact set of genre features. <ref type="table">Table 2</ref> shows the performance of classifier/feature-set combinations for the 2-, 3-, and 4-class tasks on the 100-text training set, with 10-fold cross-validation, in terms of precision (P), recall (R) and F-measure 2 . SVM and Naïve Bayes provide comparable performance, although there is considerable variation, particularly with respect to the feature set; the SVM is a significantly (p&lt;0.05) better choice for our genre features 3 , while for the n-gram features the Bayes classification is generally preferred. The SVM-genre classifier significantly outperforms the other classifiers in the 2-class task; these genre features, however, are not as useful as 5-grams at identifying Formal zones (the n-gram classifier, by contrast, can make use of words such as cast). In general, formal zone classification is fairly straightforward, whereas identification of Describe+Comment is quite difficult, and the SVM-genre classifier, which is more sensitive to frequency bias, elects to (essentially) ignore this category in order to boost overall accuracy.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3">Performance</head><p>To evaluate a linear regression (LR) classifier, we calculate correlation coefficient ρ, which reflects the goodness of fit of the line to the data. The drop in correlation when more extreme values are assigned to Describe+Comment suggests that Describe+Comment paragraphs do indeed belong in the middle of the Comment spectrum. Since there is a good deal of variation in the amount of comment across Describe+Comment paragraphs, the best correlation comes with complete removal of these somewhat unreliable paragraphs. Overall, these numbers indicate that variations in relevant features are able to predict roughly 50% of the variation in Comment ratio, which is fairly good considering the small number and simplistic nature of the features involved.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Sentiment detection: SO-CAL</head><p>In this section, we outline our semantic orientation calculator, SO-CAL. SO-CAL extracts words from a text, and aggregates their semantic orientation value, which is in turn extracted from a set of dictionaries. SO-CAL uses five dictionaries: four lexical dictionaries with 2,257 adjectives, 1,142 nouns, 903 verbs, and 745 adverbs, and a fifth dictionary containing 177 intensifying expressions. Although the majority of the entries are single words, the calculator also allows for multiword entries written in regular expressionlike language.</p><p>The SO-carrying words in these dictionaries were taken from a variety of sources, the three largest a corpus of 400 reviews from Epinions.com, first used by <ref type="bibr" target="#b22">Taboada and Grieve (2004)</ref>, a 100 text subset of the 2,000 movie reviews in the Polarity Dataset <ref type="bibr" target="#b16">(Pang and Lee, 2004)</ref>, and words from the General Inquirer dictionary <ref type="bibr" target="#b20">(Stone, 1997)</ref>. Each of the open-class words were given a hand-ranked SO value between 5 and -5 (neutral or zero-value words are not included in the dictionary) by a native English speaker. The numerical values were chosen to reflect both the prior polarity and strength of the word, averaged across likely interpretations. For example, the word phenomenal is a 5, nicely a 2, disgust a -3, and monstrosity a -5. The dictionary was later reviewed by a committee of three other researchers in order to minimize the subjectivity of ranking SO by hand.</p><p>Our calculator moves beyond simple averaging of each word's semantic orientation value, and implements and expands on the insights of <ref type="bibr" target="#b18">Polanyi and Zaenen (2006)</ref> with respect to contextual valence shifters. We implement negation by shifting the SO value of a word towards the opposite polarity (not terrible, for instance, is calculated as -5+4 = -1). Intensification is modeled using percentage modifiers (very engaging: 4x125% = 5). We also ignore words appearing within the scope of irrealis markers such as certain verbs, modals, and punctuation, and decrease the weight of words which appear often in the text. In order to counter positive linguistic bias <ref type="bibr" target="#b5">(Boucher and Osgood, 1969)</ref>, a problem for lexicon-based sentiment classifiers <ref type="bibr" target="#b11">(Kennedy and Inkpen, 2006)</ref>, we increase the final SO of any negative expression appearing in the text.</p><p>The performance of SO-CAL tends to be in the 76-81% range. We have tested on informal movie, book and product reviews and on the Polarity Dataset <ref type="bibr" target="#b16">(Pang and Lee, 2004)</ref>. The performance on movie reviews tends to be on the lower end of the scale. Our baseline for movies, described in Section 5, is 77.7%. We believe that we have reached a ceiling in terms of word-and phrase-level performance, and most future improvements need to come from discourse features. The stage classification described in this paper is one of them.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Results</head><p>The final goal of a stage classifier is to use the information about different stages in sentiment classification. Our assumption is that descriptive paragraphs contain less evaluative content about the movie being reviewed, and they may include noise, such as evaluative words describing the plot or the characters. Once the paragraph classifier had assigned labels we used those labels to weigh paragraphs.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.1">Classification with manual tags</head><p>Before moving on to automatic paragraph classification, we used the 100 annotated texts to see the general effect of weighting paragraphs with the "perfect" human annotated tags on sentiment detection, in order to show the potential improvements that can be gained from this approach.</p><p>Our baseline polarity detection performance on the 100 annotated texts is 65%, which is very low, even for movie reviews. We posit that formal movie reviews might be particularly difficult because full plot descriptions are more common and the language used to express opinion less straightforward (metaphors are common). However, if we lower the weight on non-Comment and mixed Comment paragraphs (to 0, except for Describe+Comment, which is maximized by a 0.1 weight), we are able to boost performance to 77%, an improvement which is significant at the p&lt;0.05 level. Most of the improvement (7%) is due to disregarding Describe paragraphs, but 2% comes from Describe+Comment, and 1% each from Background, Interpretation, and (all) Formal tags. There is no performance gain, however, from the use of aspect tags (e.g., by increasing the weight on Overall paragraphs), justifying our decision to ignore subtags for text-level polarity classification.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.2">Categorical classification</head><p>We evaluated all the classifiers from <ref type="table">Table 2</ref>, but we omit discussion of the worst performing. The evaluation was performed on the Polarity Dataset <ref type="bibr" target="#b16">(Pang and Lee, 2004)</ref>, a collection of 2,000 online movie reviews, balanced for polarity. The SO performance for the categorical classifiers is given in <ref type="figure" target="#fig_0">Figure 1</ref>. When applicable, we always gave Formal Zones (which <ref type="table">Table 2</ref> indicates are fairly easy to identify) a weight of 0, however for Describe paragraphs we tested at 0.1 intervals between 0 and 1. Testing all possible values of Describe+Comment was not feasible, so we set the weights of those to a value halfway between the weight of Comment paragraphs (1) and the weight of the Describe paragraph.</p><p>Most of the classifiers were able to improve performance beyond the 77.7% (unweighted) baseline. The best performing model (the 2-class-genre-SVM) reached a polarity identification accuracy of 79.05%, while the second best (the 3-class 5-gram-SVM) topped out at 78.9%. Many of the classifiers showed a similar pattern with respect to the weight on Describe, increasing linearly as weight on Describe was decreased before hitting a maximum in the 0.4-0.1 range, and then dropping afterwards (often precipitously). Only the classifiers which were more conservative with respect to Describe, such as the 4-class-5-gram-Bayes, avoided the drop, which can be attributed to low precision Describe identification: At some point, the cost associated with disregarding paragraphs which have been mistagged as Describe becomes greater that the benefit of disregarding correctly-labeled ones. Indeed, the best performing classifier for each class option is exactly the one that has the highest precision for identification of Describe, regardless of other factors. This suggests that improving precision is key, and, in lieu of that, weighting is a better strategy than simply removing parts of the text.</p><p>In general, increasing the complexity of the task (increasing the number of classes) decreases performance. One clear problem is that the identification of Formal zones, which are much more common in our training corpus than our test corpus, does not add important information, since most Formal zones have no SO valued words. The delineation of an independent Describe+Comment class is mostly ineffective, We can further confirm that our classifier is properly distinguishing Describe and Comment by discounting Comment paragraphs rather than Describe paragraphs (following <ref type="bibr" target="#b16">Pang and Lee 2004)</ref>. When Comment paragraphs tagged by the best performing classifier are ignored, SO-CAL's accuracy drops to 56.65%, just barely above chance. <ref type="table">Table 4</ref> gives the results for the linear regression classifier, which assigns a Comment ratio to each paragraph used for weighting.  <ref type="table">Table 4</ref>. SO Performance with linear regression The linear regression model trained with a 0.25 comment ratio on Describe+Comment paragraphs provides the best performance of all classifiers we tested (an improvement of 1.65% from baseline). The correlation coefficients noted in <ref type="table">Table 4</ref> are reflected in these results, but the spike at C = 0.25 is most likely related to a general preference for low (but non-zero) weights on Describe+Comment paragraphs also noted when weights were applied using the manual tags; these paragraphs are unreliable (as compared to pure Comment), but cannot be completely discounted. There were some texts which had only Describe+Comment paragraphs.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.3">Continuous classification</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Model</head><p>Almost a third of the tags assigned by the 2-class genre feature classifier were different than the corresponding n-gram classifier, suggesting the two classifiers might have different strengths. However, initial attempts to integrate the various high performing classifiers-including collapsing of feature sets, metaclassifiers, and double tagging of paragraphs-resulted in similar or worse performance. We have not tested all possible options (there are simply too many), but we think it unlikely that additional gains will be made with these simple, surface feature sets. Although our testing with human annotated texts and the large performance gap between movie reviews and other consumer reviews both suggest there is more potential for improvement, it will probably require more sophisticated and precise models.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Related work</head><p>The bulk of the work in sentiment analysis has focused on classification at either the sentence level, e.g., the subjectivity/polarity detection of <ref type="bibr" target="#b26">Wiebe and Riloff (2005)</ref>  <ref type="bibr" target="#b17">(Pang et al., 2002)</ref>, and the use of sentiment dictionaries <ref type="bibr" target="#b9">(Esuli and Sebastiani, 2006;</ref><ref type="bibr" target="#b21">Taboada et al., 2006)</ref>. Support Vector Machine (SVM) classifiers have been shown to out-perform lexicon-based models within a single domain <ref type="bibr" target="#b11">(Kennedy and Inkpen, 2006)</ref>; however they have trouble with cross-domain tasks <ref type="bibr" target="#b1">(Aue and Gamon, 2005)</ref>, and some researchers have argued for hybrid classifiers <ref type="bibr" target="#b0">(Andreevskaia and Bergler, 2008)</ref>. <ref type="bibr" target="#b16">Pang and Lee (2004)</ref> attempted to improve the performance of an SVM classifier by identifying and removing objective sentences from the texts. Results were mixed: The improvement was minimal for the SVM classifier (though the performance of a naïve Bayes classifier was significantly boosted), however testing with parts of the text classified as subjective showed that the eliminated parts were indeed irrelevant. In contrast to our findings, they reported a drop in performance when paragraphs were taken as the only possible boundary between subjective and objective text spans.</p><p>Other research that has dealt with identifying more or less relevant parts of the text for the purposes of sentiment analysis include <ref type="bibr" target="#b22">Taboada and Grieve (2004)</ref>, who improved the performance of a lexicon-based model by weighing words towards the end of the text; <ref type="bibr" target="#b14">Nigam and Hurst (2006)</ref>, who detect polar expressions in topic sentences; and <ref type="bibr" target="#b24">Voll and Taboada (2007)</ref>, who used a topic classifier and discourse parser to eliminate potentially off-topic or less important sentences.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7">Conclusions</head><p>We have described a genre-based taxonomy for classifying paragraphs in movie reviews, with the main classification being a distinction between formal and functional stages, and, within those, between mainly descriptive vs. comment stages. The taxonomy was used to annotate 100 movie reviews, as the basis for building classifiers.</p><p>We tested a number of different classifiers. Our results suggest that a simple, two-way or continuous classification using a small set of linguistically-motivated features is the best for our purposes; a more complex system is feasible, but comes at the cost of precision, which seems to be the key variable in improving sentiment analysis.</p><p>Ultimately, the goal of the classification was to improve the accuracy of SO-CAL, our semantic orientation calculator. Using the manual annotations, we manage to boost performance by 12% over the baseline. With the best automatic classifier, we still show consistent improvement over the baseline. Given the relatively low accuracy of the classifiers, the crucial factor involves using fine-grained weights on paragraphs, rather than simply ignoring Describe-labeled paragraphs, as <ref type="bibr" target="#b16">Pang and Lee (2004)</ref> did for objective sentences.</p><p>An obvious expansion to this work would involve a larger dataset on which to train, to improve the performance of the classifier(s). We would also like to focus on the syntactic patterns and verb class properties of narration, aspects that are not captured with simply using words and POS labels. Connectives in particular are good indicators of the difference between narration (temporal connectives) and opinion (contrastive connectives). There may also be benefit to combining paragraph-and sentence-based approaches. Finally, we would like to identify common sequences of stages, such as plot and character descriptions appearing together, and before evaluation stages. This generic structure has been extensively studied for many genres <ref type="bibr" target="#b8">(Eggins and Slade, 1997)</ref>.</p><p>Beyond sentiment extraction, our taxonomy and classifiers can be used for searching and information retrieval. One could, for instance, extract paragraphs that include mostly comment or description. Using the more fine-grained labels, searches for comment/description on actors, directors, or other aspects of the movie are possible.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 .</head><label>1</label><figDesc>Figure 1. SO Performance with various paragraph tagging classifiers, by weight on Describe</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head></head><label></label><figDesc>, or alternatively at the level of the entire text. With regards to the latter, two major approaches have emerged: the use of machine learning classifiers trained on n</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1" validated="false"><head>Table 3</head><label>3</label><figDesc>shows values for the classifiers built from the corpus, with various Comment ratios</figDesc><table>Classifier 
+
+Comment 
+Describe 
+Formal 
+Desc+Comm 
+Overall 
+Accuracy 
+P 
+R 
+F 
+P 
+R 
+F 
+P 
+R 
+F 
+P 
+R 
+F 
+2-class-5-gram-Bayes 
+.66 .79 .72 .70 .55 .62 -
+-
+-
+-
+-
+-
+68.0 
+2-class-5-gram-SVM 
+.53 .63 .64 .68 .69 .69 -
+-
+-
+-
+-
+-
+66.8 
+2-class-genre-Bayes 
+.66 .75 .70 .67 .57 .61 -
+-
+-
+-
+-
+-
+66.2 
+2-class-genre-SVM 
+.71 .76 .74 .71 .65 .68 -
+-
+-
+-
+-
+-
+71.1 
+3-class-5-gram-Bayes 
+.69 .49 .57 .66 .78 .71 .92 .97 .95 -
+-
+-
+78.1 
+3-class-5-gram-SVM 
+.64 .63 .63 .68 .65 .65 .91 .97 .94 -
+-
+-
+77.2 
+3-class-genre-Bayes 
+.68 .68 .66 .67 .46 .55 .84 .96 .90 -
+-
+-
+74.0 
+3-class-genre-SVM 
+.66 .71 .68 .67 .56 .61 .90 .94 .92 -
+-
+-
+76.8 
+4-class-5-gram-Bayes 
+.46 .35 .38 .69 .47 .56 .92 .97 .95 .42 .64 .51 
+69.0 
+4-class-5-gram-SVM 
+.43 .41 .44 .59 .62 .60 .91 .97 .94 .45 .41 .42 
+69.6 
+4-class-genre-Bayes 
+.38 .31 .34 .66 .30 .41 .86 .97 .90 .33 .60 .42 
+62.3 
+4-class-genre-SVM 
+.46 .32 .38 .53 .82 .65 .87 .94 .90 .26 .03 .06 
+67.4 
+Table 2. Stage identification performance of various categorical classifiers 
+
+(C) assigned to paragraphs with the De-
+scribe+Comment 
+tag, 
+and 
+with 
+De-
+scribe+Comment paragraphs removed from con-
+sideration. 
+
+Classifier 
+ρ 
+LR, Des+Com C = 0 
+.37 
+LR, Des+Com C = 0.25 
+.44 
+LR, Des+Com C = 0.5 
+.47 
+LR, Des+Com C = 0.75 
+.46 
+LR, Des+Com C = 1 
+.43 
+LR, No Des+Com 
+.50 
+Table 3. Correlation coefficients for LR 
+classifiers 
+
+</table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1">Available from http://www.sfu.ca/~mtaboada/nsercproject.html</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="2">For the 2-and 3-way classifiers, Describe+Comment paragraphs are treated as Comment. This balances the numbers of each class, ultimately improving performance. 3 All significance tests use chi-square (χ 2 ).</note>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Acknowledgements</head><p>This work was supported by SSHRC (410-2006-1009)  and NSERC (261104-2008)  grants to Maite Taboada.</p></div>
+			</div>
+
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0" />			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">When specialists and generalists work together: Domain dependence in sentiment tagging</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alina &amp;amp; Sabine</forename><surname>Andreevskaia</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Bergler</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of 46th Annual Meeting of the Association for Computational Linguistics</title>
+		<meeting>46th Annual Meeting of the Association for Computational Linguistics<address><addrLine>Columbus, OH</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2008" />
+			<biblScope unit="page" from="290" to="298" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Customizing sentiment classifiers to new domains: A case study</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Anthony &amp;amp; Michael</forename><surname>Aue</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Gamon</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the International Conference on Recent Advances in Natural Language Processing</title>
+		<meeting>the International Conference on Recent Advances in Natural Language Processing<address><addrLine>Borovets, Bulgaria</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+				<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Douglas</forename><surname>Biber</surname></persName>
+		</author>
+		<title level="m">Variation across Speech and Writing</title>
+		<meeting><address><addrLine>Cambridge</addrLine></address></meeting>
+		<imprint>
+			<publisher>Cambridge University Press</publisher>
+			<date type="published" when="1988" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Identifying formal and functional zones in film reviews</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Heike</forename><surname>Bieler</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Stefanie</forename><surname>Dipper &amp;amp; Manfred Stede</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 8th SIGdial Workshop on Discourse and Dialogue</title>
+		<meeting>the 8th SIGdial Workshop on Discourse and Dialogue</meeting>
+		<imprint>
+			<date type="published" when="2007" />
+			<biblScope unit="page" from="75" to="78" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<title/>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Belgium</forename><surname>Antwerp</surname></persName>
+		</author>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">The Pollyanna hypothesis</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jerry</forename><forename type="middle">D</forename><surname>Boucher</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><surname>Charles</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Osgood</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Verbal Learning and Verbal Behaviour</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="page" from="1" to="8" />
+			<date type="published" when="1969" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">The kappa statistic: A second look</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Di</forename><surname>Eugenio</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Barbara &amp;amp; Michael</forename><surname>Glass</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">30</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="95" to="101" />
+			<date type="published" when="2004" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Genres and registers of discourse</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Suzanne</forename><forename type="middle">&amp;amp;</forename><surname>Eggins</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>James</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Martin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Discourse as Structure and Process. Discourse Studies: A Multidisciplinary Introduction</title>
+		<editor>Teun A. van Dijk</editor>
+		<meeting><address><addrLine>London</addrLine></address></meeting>
+		<imprint>
+			<publisher>Sage</publisher>
+			<date type="published" when="1997" />
+			<biblScope unit="page" from="230" to="256" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<monogr>
+		<title level="m" type="main">Analysing Casual Conversation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Suzanne &amp;amp; Diana</forename><surname>Eggins</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Slade</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1997" />
+			<publisher>Cassell</publisher>
+			<pubPlace>London</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">SentiWordNet: A publicly available lexical resource for opinion mining</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Andrea &amp;amp; Fabrizio</forename><surname>Esuli</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Sebastiani</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of 5th International Conference on Language Resources and Evaluation (LREC)</title>
+		<meeting>5th International Conference on Language Resources and Evaluation (LREC)<address><addrLine>Genoa, Italy</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2006" />
+			<biblScope unit="page" from="417" to="422" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Measuring nominal scale agreement among many raters</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Joseph</forename><forename type="middle">L</forename><surname>Fleiss</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Psychological Bulletin</title>
+		<imprint>
+			<biblScope unit="volume">76</biblScope>
+			<biblScope unit="page" from="378" to="382" />
+			<date type="published" when="1971" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Sentiment classification of movie and product reviews using contextual valence shifters</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alistair &amp;amp; Diana</forename><surname>Kennedy</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Inkpen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Intelligence</title>
+		<imprint>
+			<biblScope unit="volume">22</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="110" to="125" />
+			<date type="published" when="2006" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">A Data-Driven Methodology for Motivating a Set of Coherence Relations</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alistair</forename><surname>Knott</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Edinburgh</title>
+		<imprint>
+			<date type="published" when="1996" />
+		</imprint>
+		<respStmt>
+			<orgName>UK: University of EdinburghThesis Type</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<monogr>
+		<title level="m" type="main">The Language of Evaluation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">James</forename><forename type="middle">R</forename><surname>Martin</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Peter White</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2005" />
+			<publisher>Palgrave</publisher>
+			<pubPlace>New York</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Towards a robust metric of polarity</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kamal &amp;amp; Matthew</forename><surname>Nigam</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Hurst</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Computing Attitude and Affect in Text: Theory and Applications</title>
+		<editor>Janyce Wiebe</editor>
+		<meeting><address><addrLine>Dordrecht</addrLine></address></meeting>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2006" />
+			<biblScope unit="page" from="265" to="279" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">PALinkA: A highly customizable tool for discourse annotation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Constantin</forename><surname>Orasan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of 4th SIGdial Workshop on Discourse and Dialog</title>
+		<meeting>4th SIGdial Workshop on Discourse and Dialog<address><addrLine>Sapporo, Japan</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2003" />
+			<biblScope unit="page" from="39" to="43" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">A sentimental education: Sentiment analysis using subjectivity summarization based on minimum cuts</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Bo &amp;amp; Lillian</forename><surname>Pang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Lee</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of 42nd Meeting of the Association for Computational Linguistics</title>
+		<meeting>42nd Meeting of the Association for Computational Linguistics<address><addrLine>Barcelona, Spain</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2004" />
+			<biblScope unit="page" from="271" to="278" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Thumbs up? Sentiment classification using Machine Learning techniques</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Bo</forename><surname>Pang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Lillian</forename><surname>Lee &amp;amp; Shivakumar</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Vaithyanathan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Conference on Empirical Methods in NLP</title>
+		<meeting>Conference on Empirical Methods in NLP</meeting>
+		<imprint>
+			<date type="published" when="2002" />
+			<biblScope unit="page" from="79" to="86" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Contextual valence shifters</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Livia &amp;amp; Annie</forename><surname>Polanyi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Zaenen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Computing Attitude and Affect in Text: Theory and Applications</title>
+		<editor>James G. Shanahan, Yan Qu &amp; Janyce Wiebe</editor>
+		<meeting><address><addrLine>Dordrecht</addrLine></address></meeting>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2006" />
+			<biblScope unit="page" from="1" to="10" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Multi-document viewpoint summarization focused on facts, opinion and knowledge</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Yohei</forename><surname>Seki</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Koji</forename><surname>Eguchi &amp;amp; Noriko</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Kando</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Computing Attitude and Affect in Text: Theory and Applications</title>
+		<editor>Janyce Wiebe</editor>
+		<meeting><address><addrLine>Dordrecht</addrLine></address></meeting>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2006" />
+			<biblScope unit="page" from="317" to="336" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Thematic text analysis: New agendas for analyzing text content</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Philip</forename><forename type="middle">J</forename><surname>Stone</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Text Analysis for the Social Sciences. Mahwah</title>
+		<editor>Carl Roberts</editor>
+		<meeting><address><addrLine>NJ</addrLine></address></meeting>
+		<imprint>
+			<publisher>Lawrence Erlbaum</publisher>
+			<date type="published" when="1997" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Creating semantic orientation dictionaries</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Taboada</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of 5th International Conference on Language Resources and Evaluation (LREC)</title>
+		<meeting>5th International Conference on Language Resources and Evaluation (LREC)<address><addrLine>Maite, Caroline Anthony &amp; Kimberly Voll; Genoa, Italy</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2006" />
+			<biblScope unit="page" from="427" to="432" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Analyzing appraisal automatically</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Maite &amp;amp; Jack</forename><surname>Taboada</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Grieve</surname></persName>
+		</author>
+		<idno>SS-04-07</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of AAAI Spring Symposium on Exploring Attitude and Affect in Text (AAAI</title>
+		<meeting>AAAI Spring Symposium on Exploring Attitude and Affect in Text (AAAI<address><addrLine>Stanford University, CA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2004" />
+			<biblScope unit="page" from="158" to="161" />
+		</imprint>
+	</monogr>
+<note type="report_type">Technical Report</note>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Thumbs up or thumbs down? Semantic orientation applied to unsupervised classification of reviews</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Peter</forename><surname>Turney</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of 40th Meeting of the Association for Computational Linguistics</title>
+		<meeting>40th Meeting of the Association for Computational Linguistics</meeting>
+		<imprint>
+			<date type="published" when="2002" />
+			<biblScope unit="page" from="417" to="424" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Not all words are created equal: Extracting semantic orientation as a function of adjective relevance</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kimberly &amp;amp; Maite</forename><surname>Voll</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Taboada</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 20th Australian Joint Conference on Artificial Intelligence</title>
+		<meeting>the 20th Australian Joint Conference on Artificial Intelligence<address><addrLine>Gold Coast, Australia</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2007" />
+			<biblScope unit="page" from="337" to="346" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Using Appraisal groups for sentiment analysis</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Casey</forename><surname>Whitelaw</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Navendu</forename><surname>Garg &amp;amp; Shlomo Argamon</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of ACM SIGIR Conference on Information and Knowledge Management (CIKM 2005)</title>
+		<meeting>ACM SIGIR Conference on Information and Knowledge Management (CIKM 2005)<address><addrLine>Bremen, Germany</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2005" />
+			<biblScope unit="page" from="625" to="631" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Creating subjective and objective sentence classifiers from unannotated texts</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Janyce &amp;amp; Ellen</forename><surname>Wiebe</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Riloff</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Sixth International Conference on Intelligent Text Processing and Computational Linguistics (CICLing-2005). Mexico City</title>
+		<meeting>Sixth International Conference on Intelligent Text Processing and Computational Linguistics (CICLing-2005). Mexico City<address><addrLine>Mexico</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Tagline Structure Off-topic Title, Title+year, Runtime, Country+year, Director, Genre, Audience-restriction, Cast, Credits, Show-Loc+date</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ian</forename><forename type="middle">H</forename><surname>Witten</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Frank</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Data Mining: Practical Machine Learning Tools and Techniques</title>
+		<meeting><address><addrLine>San Francisco</addrLine></address></meeting>
+		<imprint>
+			<publisher>Morgan Kaufmann</publisher>
+			<date type="published" when="2005" />
+		</imprint>
+		<respStmt>
+			<orgName>Misc-Movie-Info Source, Author, Author-Bio, Place, Date, Legal-Notice, Misc-Review-Info</orgName>
+		</respStmt>
+	</monogr>
+	<note>2nd edn.. Rating</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T13:01+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Composing extended top-down tree transducers</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher>Association for Computational Linguistics</publisher>
+				<availability status="unknown"><p>Copyright Association for Computational Linguistics</p>
+				</availability>
+				<date>April 23 -27 2012. 2012</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Fabienne</forename><surname>Braune</surname></persName>
+							<email>braunefe@ims.uni-stuttgart.de</email>
+							<affiliation key="aff0">
+								<orgName type="department" key="dep1">Département Informatique</orgName>
+								<orgName type="department" key="dep2">Institute for Natural Language Processing</orgName>
+								<orgName type="institution" key="instit1">Aurélie Lagoutté Ecole normale supérieure de Cachan</orgName>
+								<orgName type="institution" key="instit2">University of Stuttgart</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Daniel</forename><surname>Quernheim</surname></persName>
+							<email>daniel@ims.uni-stuttgart.de</email>
+							<affiliation key="aff0">
+								<orgName type="department" key="dep1">Département Informatique</orgName>
+								<orgName type="department" key="dep2">Institute for Natural Language Processing</orgName>
+								<orgName type="institution" key="instit1">Aurélie Lagoutté Ecole normale supérieure de Cachan</orgName>
+								<orgName type="institution" key="instit2">University of Stuttgart</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Andreas</forename><surname>Maletti</surname></persName>
+							<email>maletti@ims.uni-stuttgart.de</email>
+							<affiliation key="aff0">
+								<orgName type="department" key="dep1">Département Informatique</orgName>
+								<orgName type="department" key="dep2">Institute for Natural Language Processing</orgName>
+								<orgName type="institution" key="instit1">Aurélie Lagoutté Ecole normale supérieure de Cachan</orgName>
+								<orgName type="institution" key="instit2">University of Stuttgart</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Composing extended top-down tree transducers</title>
+					</analytic>
+					<monogr>
+						<title level="m">Proceedings of the 13th Conference of the European Chapter of the Association for Computational Linguistics</title>
+						<meeting>the 13th Conference of the European Chapter of the Association for Computational Linguistics <address><addrLine>Avignon, France</addrLine></address>
+						</meeting>
+						<imprint>
+							<publisher>Association for Computational Linguistics</publisher>
+							<biblScope unit="page" from="808" to="817"/>
+							<date type="published">April 23 -27 2012. 2012</date>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>A composition procedure for linear and nondeleting extended top-down tree transducers is presented. It is demonstrated that the new procedure is more widely applicable than the existing methods. In general, the result of the composition is an extended top-down tree transducer that is no longer linear or nondeleting, but in a number of cases these properties can easily be recovered by a post-processing step.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Tree-based translation models such as synchronous tree substitution grammars <ref type="bibr" target="#b2">(Eisner, 2003;</ref><ref type="bibr" target="#b20">Shieber, 2004)</ref> or multi bottom-up tree transducers <ref type="bibr" target="#b10">(Lilin, 1978;</ref><ref type="bibr" target="#b3">Engelfriet et al., 2009;</ref><ref type="bibr" target="#b12">Maletti, 2010;</ref><ref type="bibr" target="#b13">Maletti, 2011)</ref> are used for several aspects of syntax-based machine translation <ref type="bibr" target="#b8">(Knight and Graehl, 2005)</ref>. Here we consider the extended top-down tree transducer (XTOP), which was studied in <ref type="bibr" target="#b0">(Arnold and Dauchet, 1982;</ref><ref type="bibr" target="#b9">Knight, 2007;</ref><ref type="bibr" target="#b6">Graehl et al., 2008;</ref><ref type="bibr" target="#b7">Graehl et al., 2009</ref>) and implemented in the toolkit TIBURON <ref type="bibr" target="#b15">(May and Knight, 2006;</ref><ref type="bibr" target="#b17">May, 2010)</ref>. Specifically, we investigate compositions of linear and nondeleting XTOPs (ln-XTOP). <ref type="bibr" target="#b0">Arnold and Dauchet (1982)</ref> showed that ln-XTOPs compute a class of transformations that is not closed under composition, so we cannot compose two arbitrary ln-XTOPs into a single ln-XTOP. However, we will show that ln-XTOPs can be composed into a (not necessarily linear or nondeleting) XTOP. To illustrate the use of ln-XTOPs in machine translation, we consider the following English sentence together with a German reference translation: * All authors were financially supported by the EMMY NOETHER project MA / 4959 / 1-1 of the German Research Foundation (DFG). The newswire reported yesterday that the Serbs have completed the negotiations. The relation between them can be described <ref type="bibr" target="#b22">(Yamada and Knight, 2001</ref>) by three operations: drop of the relative pronoun, movement of the participle to end of the clause, and word-to-word translation. <ref type="figure" target="#fig_0">Figure 1</ref> shows the first two operations, and <ref type="figure" target="#fig_1">Figure 2</ref> shows ln-XTOP rules performing them. Let us now informally describe the execution of an ln-XTOP on the top rule ρ of <ref type="figure" target="#fig_1">Figure 2</ref>. In general, ln-XTOPs process an input tree from the root towards the leaves using a set of rules and states. The state p in the lefthand side of ρ controls the particular operation of <ref type="figure" target="#fig_0">Figure 1</ref> [top]. Once the operation has been performed, control is passed to states p NP and p VP , which use their own rules to process the remaining input subtree governed by the variable below them (see <ref type="figure" target="#fig_1">Figure 2</ref>). In the same fashion, an ln-XTOP containing the bottom rule of <ref type="figure" target="#fig_1">Figure 2</ref> reorders the English verbal complex.</p><p>In this way we model the word drop by an ln-XTOP M and reordering by an ln-XTOP N . The syntactic properties of linearity and nondeletion yield nice algorithmic properties, and the mod- ular approach is desirable for better design and parametrization of the translation model <ref type="bibr" target="#b17">(May et al., 2010)</ref>. Composition allows us to recombine those parts into one device modeling the whole translation. In particular, it gives all parts the chance to vote at the same time. This is especially important if pruning is used because it might otherwise exclude candidates that score low in one part but well in others .</p><p>Because ln-XTOP is not closed under composition, the composition of M and N might be outside ln-XTOP. These cases have been identified by <ref type="bibr" target="#b0">Arnold and Dauchet (1982)</ref> as infinitely "overlapping cuts", which occur when the right-hand sides of M and the left-hand sides of N are unboundedly overlapping. This can be purely syntactic (for a given ln-XTOP) or semantic (inherent in all ln-XTOPs for a given transformation). Despite the general impossibility, several strategies have been developed: (i) Extension of the model <ref type="bibr" target="#b12">(Maletti, 2010;</ref><ref type="bibr" target="#b13">Maletti, 2011)</ref>, (ii) online composition , and (iii) restriction of the model, which we follow. Compositions of subclasses in which the XTOP N has at most one input symbol in its left-hand sides have already been studied in <ref type="bibr" target="#b4">(Engelfriet, 1975;</ref><ref type="bibr" target="#b1">Baker, 1979;</ref><ref type="bibr" target="#b11">Maletti and Vogler, 2010)</ref>. Such compositions are implemented in the toolkit TIBURON. However, there are translation tasks in which the used XTOPs do not fulfill this requirement. Suppose that we simply want to compose the rules of <ref type="figure" target="#fig_1">Figure 2</ref>, The bottom rule does not satisfy the requirement that there is at most one input symbol in the left-hand side.</p><p>We will demonstrate how to compose two linear and nondeleting XTOPs into a single XTOP, which might however no longer be linear or nondeleting. However, when the syntactic form of</p><formula xml:id="formula_0">δ (ε) q (1) x (11) 1 σ (2) α (21) q (22) x (221) 2 γ (3) γ (31) p (311) x (3111) 3 δ q x 1 α γ γ p x 3</formula><p>Figure 3: Linear normalized tree t ∈ T Σ (Q(X)) <ref type="bibr">[left]</ref> and t[α] 2 [right] with var(t) = {x 1 , x 2 , x 3 }. The positions are indicated in t as superscripts. The subtree t| 2 is σ(α, q(x 2 )).</p><p>the composed XTOP has only bounded overlapping cuts, post-processing will get rid of them and restore an ln-XTOP. In the remaining cases, in which unbounded overlapping is necessary or occurs in the syntactic form but would not be necessary, we will compute an XTOP. This is still an improvement on the existing methods that just fail. Since general XTOPs are implemented in TIBURON and the new composition covers (essentially) all cases currently possible, our new composition procedure could replace the existing one in TIBURON. Our approach to composition is the same as in <ref type="bibr" target="#b4">(Engelfriet, 1975;</ref><ref type="bibr" target="#b1">Baker, 1979;</ref><ref type="bibr" target="#b11">Maletti and Vogler, 2010)</ref>: We simply parse the righthand sides of the XTOP M with the left-hand sides of the XTOP N . However, to facilitate this approach we have to adjust the XTOPs M and N in two pre-processing steps. In a first step we cut left-hand sides of rules of N into smaller pieces, which might introduce non-linearity and deletion into N . In certain cases, this can also introduce finite look-ahead <ref type="bibr" target="#b5">(Engelfriet, 1977;</ref><ref type="bibr" target="#b7">Graehl et al., 2009</ref>). To compensate, we expand the rules of M slightly. Section 4 explains those preparations. Next, we compose the prepared XTOPs as usual and obtain a single XTOP computing the composition of the transformations computed by M and N (see Section 5). Finally, we apply a post-processing step to expand rules to reobtain linearity and nondeletion. Clearly, this cannot be successful in all cases, but often removes the nonlinearity introduced in the pre-processing step.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Preliminaries</head><p>Our trees have labels taken from an alphabet Σ of symbols, and in addition, leaves might be labeled by elements of the countably infinite set X = {x 1 , x 2 , . . . } of formal variables. Formally, for every V ⊆ X the set T Σ (V ) of Σ-trees with V -leaves is the smallest set such that V ⊆ T Σ (V ) and σ(t 1 , . . . , t k ) ∈ T Σ (V ) for all k ∈ N, σ ∈ Σ, and t 1 , . . . , t k ∈ T Σ (V ). To avoid excessive universal quantifications, we drop them if they are obvious from the context.</p><p>For each tree t ∈ T Σ (X) we identify nodes by positions. The root of t has position ε and the position iw with i ∈ N and w ∈ N * addresses the position w in the i-th direct subtree at the root. The set of all positions in t is pos(t). We write t(w) for the label (taken from Σ ∪ X) of t at position w ∈ pos(t). Similarly, we use</p><p>• t| w to address the subtree of t that is rooted in position w, and • t <ref type="bibr">[u]</ref> w to represent the tree that is obtained from replacing the subtree t| w at w by u ∈ T Σ (X). For a given set L ⊆ Σ ∪ X of labels, we let pos L (t) = {w ∈ pos(t) | t(w) ∈ L} be the set of all positions whose label belongs to L. We also write pos l (t) instead of pos {l} (t). The tree t ∈ T Σ (V ) is linear if |pos x (t)| ≤ 1 for every x ∈ X. Moreover, var(t) = {x ∈ X | pos x (t) = ∅} collects all variables that occur in t. If the variables occur in the order x 1 , x 2 , . . . in a pre-order traversal of the tree t, then t is normalized. Given a finite set Q, we write Q(T ) with T ⊆ T Σ (X) for the set {q(t) | q ∈ Q, t ∈ T }. We will treat elements of Q(T ) as special trees of T Σ∪Q (X). The previous notions are illustrated in <ref type="figure" target="#fig_6">Figure 3</ref>.</p><p>A substitution θ is a mapping θ : X → T Σ (X). When applied to a tree t ∈ T Σ (X), it will return the tree tθ, which is obtained from t by replacing all occurrences of x ∈ X (in parallel) by θ(x). This can be defined recursively by xθ = θ(x) for all x ∈ X and σ(t 1 , . . . ,</p><formula xml:id="formula_1">t k )θ = σ(t 1 θ, . . . , t k θ) q S S x 1 VP x 2 x 3 → S' q V x 2 q NP x 1 q NP x 1 t q S S t 1 VP t 2 t 3 ⇒ t S' q V t 2 q NP t 1 q NP t 1</formula><p>Figure 5: Rule and its use in a derivation step.</p><p>for all σ ∈ Σ and t 1 , . . . , t k ∈ T Σ (X). The effect of a substitution is displayed in <ref type="figure" target="#fig_2">Figure 4</ref>. Two substitutions θ, θ : X → T Σ (X) can be composed to form a substitution θθ :</p><formula xml:id="formula_2">X → T Σ (X) such that θθ (x) = θ(x)θ for every x ∈ X.</formula><p>Next, we define two notions of compatibility for trees. Let t, t ∈ T Σ (X) be two trees. If there exists a substitution θ such that t = tθ, then t is an instance of t. Note that this relation is not symmetric. A unifier θ for t and t is a substitution θ such that tθ = t θ. The unifier θ is a most general unifier (short: mgu) for t and t if for every unifier θ for t and t there exists a substitution θ such that θθ = θ . The set mgu(t, t ) is the set of all mgus for t and t . Most general unifiers can be computed efficiently <ref type="bibr" target="#b18">(Robinson, 1965;</ref><ref type="bibr" target="#b14">Martelli and Montanari, 1982)</ref> and all mgus for t and t are equal up to a variable renaming. </p><formula xml:id="formula_3">Example 1. Let t = σ(x 1 , γ(δ(β, β, x 2 ))) and t = σ(α, x 3 ). Then mgu(t, t ) contains θ such that θ(x 1 ) = α and θ(x 3 ) = γ(δ(β, β, x 2 )).</formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">The model</head><p>The discussed model in this contribution is an extension of the classical top-down tree transducer, which was introduced by <ref type="bibr" target="#b19">Rounds (1970)</ref> and <ref type="bibr" target="#b21">Thatcher (1970)</ref>. The extended top-down tree transducer with finite look-ahead or just XTOP F and its variations were studied in <ref type="bibr" target="#b0">(Arnold and Dauchet, 1982;</ref><ref type="bibr" target="#b8">Knight and Graehl, 2005</ref>;  <ref type="bibr" target="#b9">Knight, 2007;</ref><ref type="bibr" target="#b6">Graehl et al., 2008;</ref><ref type="bibr" target="#b7">Graehl et al., 2009)</ref>. Formally, an extended top-down tree transducer with finite look-ahead (XTOP F ) is a system M = (Q, Σ, ∆, I, R, c) where</p><formula xml:id="formula_4">q S S x 1 VP x 2 x 3 S' q V x 2 q NP x 1 q NP x 3 → q S S' x 2 x 1 x 3 S q NP x 1 VP q V x 2 q NP x 3 → Figure 6:</formula><p>• Q is a finite set of states,</p><p>• Σ and ∆ are alphabets of input and output symbols, respectively, • I ⊆ Q is a set of initial states, • R is a finite set of (rewrite) rules of the form → r where ∈ Q(T Σ (X)) is linear and r ∈ T ∆ (Q(var( ))), and</p><formula xml:id="formula_5">• c : R × X → T Σ (X) assigns a look-ahead</formula><p>restriction to each rule and variable such that c(ρ, x) is linear for each ρ ∈ R and x ∈ X. The XTOP F M is linear (respectively, nondeleting) if r is linear (respectively, var(r) = var( )) for every rule → r ∈ R. It has no look-ahead (or it is an XTOP) if c(ρ, x) ∈ X for all rules ρ ∈ R and x ∈ X. In this case, we drop the lookahead component c from the description. A rule → r ∈ R is consuming (respectively, producing) if pos Σ ( ) = ∅ (respectively, pos ∆ (r) = ∅). We let Lhs(M ) = {l | ∃q, r : q(l) → r ∈ R}.</p><p>Let M = (Q, Σ, ∆, I, R, c) be an XTOP F . In order to facilitate composition, we define sentential forms more generally than immediately necessary. Let Σ and ∆ be such that Σ ⊆ Σ and ∆ ⊆ ∆ . To keep the presentation simple, we assume that Q ∩ (Σ ∪ ∆ ) = ∅. A sentential form of M (using Σ and ∆ ) is a tree of SF(M ) = T ∆ (Q(T Σ )). For every ξ, ζ ∈ SF(M ), we write ξ ⇒ M ζ if there exist a position w ∈ pos Q (ξ), a rule ρ = → r ∈ R, and a substitution θ : X → T Σ such that θ(x) is an instance of c(ρ, x) for every x ∈ X and ξ = ξ[ θ] w and ζ = ξ[rθ] w . If the applicable rules are restricted to a certain subset R ⊆ R, then we also write ξ ⇒ R ζ. <ref type="figure">Figure 5</ref> illustrates a derivation step. The tree transformation computed by M is</p><formula xml:id="formula_6">τ M = {(t, u) ∈ T Σ × T ∆ | ∃q ∈ I : q(t) ⇒ * M u}</formula><p>where ⇒ * M is the reflexive, transitive closure of ⇒ M . It can easily be verified that the definition of τ M is independent of the choice of Σ and ∆ . Moreover, it is known <ref type="bibr" target="#b7">(Graehl et al., 2009</ref>) that each XTOP F can be transformed into an equivalent XTOP preserving both linearity and nondeletion. However, the notion of XTOP F will be convenient in our composition construction. A detailed exposition to XTOPs is presented by <ref type="bibr" target="#b0">Arnold and Dauchet (1982)</ref> and <ref type="bibr" target="#b7">Graehl et al. (2009)</ref>.</p><p>A linear and nondeleting XTOP M with rules R can easily be reversed to obtain a linear and nondeleting XTOP M −1 with rules R −1 , which computes the inverse transfor-</p><formula xml:id="formula_7">mation τ M −1 = τ −1</formula><p>M , by reversing all its rules. A (suitable) rule is reversed by exchanging the locations of the states. More precisely, given a rule q(l) → r ∈ R, we obtain the rule q(r ) → l of R −1 , where l = lθ and r is the unique tree such that there exists a substitution θ : X → Q(X) with θ(x) ∈ Q({x}) for every x ∈ X and r = r θ. <ref type="figure">Figure 6</ref> displays a rule and its corresponding reversed rule. The reversed form of the XTOP rule modeling the insertion operation in <ref type="figure" target="#fig_1">Figure 2</ref> is displayed in <ref type="figure" target="#fig_4">Figure 7</ref>.</p><p>Finally, let us formally define composition. The XTOP M computes the tree transformation τ M ⊆ T Σ × T ∆ . Given another XTOP N that computes a tree transformation τ N ⊆ T ∆ × T Γ , we might be interested in the tree transformation computed by the composition of M and N (i.e., running M first and then N ). Formally, the composition τ M ; τ N of the tree transformations τ M and τ N is defined by</p><formula xml:id="formula_8">τ M ; τ N = {(s, u) | ∃t : (s, t) ∈ τ M , (t, u) ∈ τ N }</formula><p>and we often also use the notion 'composition' for XTOP with the expectation that the composition of M and N computes exactly τ M ; τ N .</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Pre-processing</head><p>We want to compose two linear and nondeleting XTOPs M = (P, Σ, ∆, I M , R M ) and</p><formula xml:id="formula_9">LHS(M −1 ) LHS(N ) C y 1 y 2 C z 1 VP z 2 z 3 z 4</formula><p>Figure 8: Incompatible left-hand sides of Example 3. N = (Q, ∆, Γ, I N , R N ). Before we actually perform the composition, we will prepare M and N in two pre-processing steps. After these two steps, the composition is very simple. To avoid complications, we assume that (i) all rules of M are producing and (ii) all rules of N are consuming. For convenience, we also assume that the XTOPs M and N only use variables of the disjoint sets Y ⊆ X and Z ⊆ X, respectively.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Compatibility</head><p>In the existing composition results for subclasses of XTOPs <ref type="bibr" target="#b4">(Engelfriet, 1975;</ref><ref type="bibr" target="#b1">Baker, 1979;</ref><ref type="bibr" target="#b11">Maletti and Vogler, 2010)</ref> the XTOP N has at most one input symbol in its left-hand sides. This restriction allows us to match rule applications of N to positions in the right-hand sides of M . Namely, for each output symbol in a right-hand side of M , we can select a rule of N that can consume that output symbol. To achieve a similar decomposition strategy in our more general setup, we introduce a compatibility requirement on right-hand sides of M and left-hand sides of N . Roughly speaking, we require that the left-hand sides of N are small enough to completely process righthand sides of M . However, a comparison of left-and right-hand sides is complicated by the fact that their shape is different (left-hand sides have a state at the root, whereas right-hand sides have states in front of the variables). We avoid these complications by considering reversed rules of M . Thus, an original right-hand side of M is now a left-hand side in the reversed rules and thus has the right format for a comparison. Recall that Lhs(N ) contains all left-hand sides of the rules of N , in which the state at the root was removed.</p><p>Definition 2. The XTOP N is compatible to M if θ(Y ) ⊆ X for all unifiers θ ∈ mgu(l 1 | w , l 2 ) between a subtree at a ∆-labeled position w ∈ pos ∆ (l 1 ) in a left-hand side l 1 ∈ Lhs(M −1 ) and a left-hand side l 2 ∈ Lhs(N ). Intuitively, for every ∆-labeled position w in a right-hand side r 1 of M and any left-hand side l 2 of N , we require (ignoring the states) that either (i) r 1 | w and l 2 are not unifiable or (ii) r 1 | w is an instance of l 2 .  Proof. We achieve compatibility by cutting offending rules of the XTOP N into smaller pieces. Unfortunately, both linearity and nondeletion of N might be lost in the process. We first let N = (Q, ∆, Γ, I N , R N , c N ) be the XTOP F such that c N (ρ, x) = x for every ρ ∈ R N and x ∈ X.</p><p>If N is compatible with M , then we are done. Otherwise, let l 1 ∈ Lhs(M −1 ) be a left-hand side, q(l 2 ) → r 2 ∈ R N be a rule, and w ∈ pos ∆ (l 1 ) be a position such that θ(y) / ∈ X for some θ ∈ mgu(l 1 | w , l 2 ) and y ∈ Y . Let v ∈ pos y (l 1 | w ) be the unique position of y in l 1 | w . Now we have to distinguish two cases: (i) Either var(l 2 | v ) = ∅ and there is no leaf in r 2 labeled by a symbol from Γ. In this case, we have to introduce deletion and look-ahead into N . We replace the old rule ρ = q(l 2 ) → r 2 by the new rule ρ = q(l 2 [z] v ) → r 2 , where z ∈ X \ var(l 2 ) is a variable that does not appear in l 2 . In addition, we let c N (ρ , z) = l 2 | v and c N (ρ , x) = c N (ρ, x) for all x ∈ X \ {z}.</p><p>(ii) Otherwise, let V ⊆ var(l 2 | v ) be a maximal set such that there exists a minimal (with respect to the prefix order) position w ∈ pos(r 2 ) with var(r 2 | w ) ⊆ var(l 2 | v ) and var(r 2 [β] w )∩V = ∅, where β ∈ Γ is arbitrary. Let z ∈ X \ var(l 2 ) be a fresh variable, q be a new state of N , and V = var(l 2 | v ) \ V . We replace the rule ρ = q(l 2 ) → r 2 of R N by</p><formula xml:id="formula_10">ρ 1 = q(l 2 [z] v ) → trans(r 2 )[q (z)] w ρ 2 = q (l 2 | v ) → r 2 | w .</formula><p>The look-ahead for z is trivial and otherwise we simply copy the old look-ahead, so</p><formula xml:id="formula_11">c N (ρ 1 , z) = z and c N (ρ 1 , x) = c N (ρ, x) for all x ∈ X \ {z}. Moreover, c N (ρ 2 , x) = c N (ρ, x)</formula><p>for all x ∈ X. The mapping 'trans' is given for t = γ(t 1 , . . . , t k ) and q (z ) ∈ Q(Z) by</p><formula xml:id="formula_12">trans(t) = γ(trans(t 1 ), . . . , trans(t k )) trans(q (z )) = l 2 | v , q , v (z) if z ∈ V q (z ) otherwise, where v = pos z (l 2 | v ).</formula><p>Finally, we collect all newly generated states of the form l, q, v in Q l and for every such state with l = δ(l 1 , . . . , l k ) and v = iw, let l = δ(z 1 , . . . , z k ) and</p><formula xml:id="formula_13">l, q, v (l ) → q(z i ) if w = ε l i , q, w (z i ) otherwise</formula><p>be a new rule of N without look-ahead.</p><p>Overall, we run the procedure until N is compatible with M . The procedure eventually terminates since the left-hand sides of the newly added rules are always smaller than the replaced rules. Moreover, each step preserves the semantics of N , which completes the proof.</p><p>We note that the look-ahead of N after the construction used in the proof of Theorem 4 is either trivial (i.e., a variable) or a ground tree (i.e., a tree without variables). Let us illustrate the construction used in the proof of Theorem 4. Example 5. Let us consider the rules illustrated in <ref type="figure" target="#fig_5">Figure 9</ref>. We might first note that y 1 has to be unified with β. Since β does not contain any variables and the right-hand side of the rule of N does not contain any non-variable leaves, we are in case (i) in the proof of Theorem 4. Consequently, the displayed rule of N is replaced by a variant, in which β is replaced by a new variable z with look-ahead β.</p><p>Secondly, with this new rule there is an mgu, in which y 2 is mapped to σ(z 1 , z 2 ). Clearly, we are now in case (ii). Furthermore, we can select the set V = {z 1 , z 2 } and position w = . Correspondingly, the following two new rules for N replace the old rule:</p><formula xml:id="formula_14">q(σ(z, z )) → q (z ) q (σ(z 1 , z 2 )) → σ(q 1 (z 1 ), q 2 (z 2 )) ,</formula><p>where the look-ahead for z remains β.</p><p>Figure 10 displays another rule of N . There is an mgu, in which y 2 is mapped to σ(z 2 , z 3 ). Thus, we end up in case (ii) again and we can select the set V = {z 2 } and position w = 2. Thus, we replace the rule of <ref type="figure" target="#fig_0">Figure 10</ref> by the new rules</p><formula xml:id="formula_15">q(σ(z 1 , z)) → δ(q 1 (z 1 ), q (z), q 3 (z)) ( ) q (σ(z 2 , z 3 )) → q 2 (z 2 ) q 3 (σ(z 1 , z 2 )) → q 3 (z 2 ) ,</formula><p>where q 3 = σ(z 2 , z 3 ), q 3 , 2 .</p><p>Let us use the construction in the proof of Theorem 4 to resolve the incompatibility (see Example 3) between the XTOPs presented in the Introduction. Fortunately, the incompatibility can be resolved easily by cutting the rule of N (see <ref type="figure" target="#fig_4">Figure 7)</ref> into the rules of <ref type="figure" target="#fig_0">Figure 11</ref>. In this example, linearity and nondeletion are preserved.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Local determinism</head><p>After the first pre-processing step, we have the original linear and nondeleting XTOP M and an XTOP F N = (Q , ∆, Γ, I N , R N , c N ) that is equivalent to N and compatible with M . However, in the first pre-processing step we might have introduced some non-linear (copying) rules in N (see rule ( ) in Example 5), and it is known that "nondeterminism [in M ] followed by copying [in N ]" is a feature that prevents composition to work <ref type="bibr" target="#b4">(Engelfriet, 1975;</ref><ref type="bibr" target="#b1">Baker, 1979)</ref>. However, our copying is very local and the copies are only used to project to different subtrees. Nevertheless, during those projection steps, we need to make sure that the processing in M proceeds deterministically. We immediately note that all but one copy are processed by states of the form l, q, v ∈ Q l . These states basically process (part of) the tree l and project (with state q) to the subtree at position v. It is guaranteed that each such subtree (indicated by v) is reached only once. Thus, the copying is "resolved" once the states of the form l, q, v are left. To keep the presentation simple, we just add expanded rules to M such that any rule that can produce a part of a tree l immediately produces the whole tree. A similar strategy is used to handle the look-ahead of N . Any right-hand side of a rule of M that produces part of a left-hand side of a rule of N with look-ahead is expanded to produce the required look-ahead immediately.</p><p>Let L ⊆ T ∆ (Z) be the set of trees l such that • l, q, v appears as a state of Q l , or • l = l 2 θ for some ρ 2 = q(l 2 ) → r 2 ∈ R N of N with non-trivial look-ahead (i.e., c N (ρ 2 , z) / ∈ X for some z ∈ X), where θ(x) = c N (ρ 2 , x) for every x ∈ X. To keep the presentation uniform, we assume that for every l ∈ L, there exists a state of the form l, q, v ∈ Q . If this is not already the case, then we can simply add useless states without rules for them. In other words, we assume that the first case applies to each l ∈ L.</p><p>Next, we add two sets of rules to R M , which will not change the semantics but prove to be useful in the composition construction. First, for every tree t ∈ L, let R t contain all the rules p(l) → r, where p = p(l) → r is a new state with p ∈ P , minimal normalized tree l ∈ T Σ (X), and an instance r ∈ T ∆ (P (X)) of t such that p(l) ⇒ * M ξ ⇒ M r for some ξ that is not an instance of t. In other words, we construct each rule of R t by applying existing rules of R M in sequence to generate a (minimal) right-hand side that is an instance of t. We thus potentially make the right-hand sides of M bigger by joining several existing rules into a single rule. Note that this affects neither compatibility nor the semantics. In the second step, we add pure ε-rules that allow us to change the state to one that we constructed in the previous step. For every new</p><formula xml:id="formula_16">statep = p(l) → r, let base(p) = p. Then R M = R M ∪ R L ∪ R E and P = P ∪ t∈L P t where R L = t∈L R t and P t = { (ε) | → r ∈ R t } R E = {base(p)(x 1 ) →p(x 1 ) |p ∈ t∈L P t } .</formula><p>Clearly, this does not change the semantics because each rule of R M can be simulated by a chain of rules of R M . Let us now do a full example for the pre-processing step. We consider a nondeterministic variant of the classical example by <ref type="bibr" target="#b0">Arnold and Dauchet (1982)</ref>. Example 6. Let M = (P, Σ, Σ, {p}, R M ) be the linear and nondeleting XTOP such that P = {p, p α , p β }, Σ = {δ, σ, α, β, }, and R M contains the following rules</p><formula xml:id="formula_17">p(σ(y 1 , y 2 )) → σ(p s (y 1 ), p(y 2 )) ( †) p(δ(y 1 , y 2 , y 3 )) → σ(p s (y 1 ), σ(p s (y 2 ), p(y 3 ))) p(δ(y 1 , y 2 , y 3 )) → σ(p s (y 1 ), σ(p s (y 2 ), p α (y 3 ))) p s (s (y 1 )) → s(p s (y 1 )) p s ( ) →</formula><p>for every s, s ∈ {α, β}. Similarly, we let N = (Q, Σ, Σ, {q}, R N ) be the linear and nondeleting XTOP such that Q = {q, i} and R N contains the following rules</p><formula xml:id="formula_18">q(σ(z 1 , z 2 )) → σ(i(z 1 ), i(z 2 )) q(σ(z 1 , σ(z 2 , z 3 ))) → δ(i(z 1 ), i(z 2 ), q(z 3 )) ( ‡) i(s(z 1 )) → s(i(z 1 )) i( ) →</formula><p>for all s ∈ {α, β}. It can easily be verified that M and N meet our requirements. However, N is not yet compatible with M because an mgu between rules ( †) of M and ( ‡) of N might map y 2 to σ(z 2 , z 3 ). Thus, we decompose ( ‡) into</p><formula xml:id="formula_19">q(σ(z 1 , z)) → δ(i(z 1 ), q(z), q (z)) q (σ(z 2 , z 3 )) → q(z 3 ) q(σ(z 1 , z 2 )) → i(z 1 )</formula><p>where q = σ(z 2 , z 3 ), i, 1 . This newly obtained XTOP N is compatible with M . In addition, we only have one special tree σ(z 2 , z 3 ) that occurs in states of the form l, q, v . Thus, we need to compute all minimal derivations whose output trees are instances of σ(z 2 , z 3 ). This is again simple since the first three rule schemes ρ s , ρ s,s , and ρ s,s of M create such instances, so we simply create copies of them:</p><formula xml:id="formula_20">ρ s (σ(y 1 , y 2 )) → σ(p s (y 1 ), p(y 2 )) ρ s,s (δ(y 1 , y 2 , y 3 )) → σ(p s (y 1 ), σ(p s (y 2 ), p(y 3 ))) ρ s,s (δ(y 1 , y 2 , y 3 )) → σ(p s (y 1 ), σ(p s (y 2 ), p α (y 3 )))</formula><p>for all s, s ∈ {α, β}. These are all the rules of R σ(z 2 ,z 3 ) . In addition, we create the following rules of R E :</p><formula xml:id="formula_21">p(x 1 ) → ρ s (x 1 ) p(x 1 ) → ρ s,s (x 1 ) p(x 1 ) → ρ s,s (x 1 )</formula><p>for all s, s ∈ {α, β}. Especially after reading the example it might seem useless to create the rule copies in R l [in Example 6 for l = σ(z 2 , z 3 )]. However, each such rule has a distinct state at the root of the left-hand side, which can be used to trigger only this rule. In this way, the state selects the next rule to apply, which yields the desired local determinism. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Composition</head><p>Now we are ready for the actual composition. For space efficiency reasons we reuse the notations used in Section 4. Moreover, we identify trees of T Γ (Q (P (X))) with trees of T Γ ((Q × P )(X)). In other words, when meeting a subtree q(p(x)) with q ∈ Q , p ∈ P , and x ∈ X, then we also view this equivalently as the tree q, p (x), which could be part of a rule of our composed XTOP. However, not all combinations of states will be allowed in our composed XTOP, so some combinations will never yield valid rules.</p><p>Generally, we construct a rule of M ; N by applying a single rule of M followed by any number of pure ε-rules of R E , which can turn states base(p) into p. Then we apply any number of rules of N and try to obtain a sentential form that has the required shape of a rule of M ; N . Definition 7. Let M = (P , Σ, ∆, I M , R M ) and N = (Q , ∆, Γ, I N , R N ) be the XTOPs constructed in Section 4, where l∈L P l ⊆ P and</p><formula xml:id="formula_22">l∈L Q l ⊆ Q . Let Q = Q \ l∈L Q l . We con- struct the XTOP M ; N = (S, Σ, Γ, I N × I M , R) where S = l∈L (Q l × P l ) ∪ (Q × P )</formula><p>and R contains all normalized rules → r (of the required shape) such that</p><formula xml:id="formula_23">⇒ M ξ ⇒ * R E ζ ⇒ * N r for some ξ, ζ ∈ T Γ (Q (T ∆ (P (X)))).</formula><p>The required rule shape is given by the definition of an XTOP. Most importantly, we must have that ∈ S(T Σ (X)), which we identify with a certain subset of Q (P (T Σ (X))), and r ∈ T Γ (S(X)), which similarly corresponds to a subset of T Γ (Q (P (X))). The states are simply combinations of the states of M and N , of which however the combinations of a state q ∈ Q l with a state p / ∈ P l are forbidden. This reflects the intuition of the previous section. If we entered a special state of the form l, q, v , then we should use a corresponding state p ∈ P l of M , which only has rules producing instances of l. We note that look-ahead of N is checked normally in the derivation process. Example 8. Now let us illustrate the composition on Example 6. Let us start with rule ( †) of M .</p><formula xml:id="formula_24">q(p(σ(x 1 , x 2 ))) ⇒ M q(σ(p s (x 1 ), p(x 2 ))) ⇒ R E q(σ(p s (x 1 ), ρ s ,s (x 2 ))) ⇒ N δ(i(p s (x 1 )), q(ρ s ,s (x 2 )), q (ρ s ,s (x 2 )))</formula><p>is a rule of M ; N for every s, s , s ∈ {α, β}. Note if we had not applied the R E -step, then we would not have obtained a rule of M ; N (because we would have obtained the state combination q, p instead of q, ρ s ,s , and q, p is not a state of M ; N ). Let us also construct a rule for the state combination q, ρ s ,s . q(ρ s ,s (δ(x 1 , x 2 , x 3 ))) ⇒ M q(σ(p s (x 1 ), σ(p s (x 2 ), p(x 3 ))))</p><formula xml:id="formula_25">⇒ N q (p s (x 1 ))</formula><p>Finally, let us construct a rule for the state combination q , ρ s ,s . q (ρ s ,s (δ(x 1 , x 2 , x 3 ))) ⇒ M q(σ(p s (x 1 ), σ(p s (x 2 ), p(x 3 )))) ⇒ R E q(σ(p s (x 1 ), σ(p s (x 2 ), ρ s (x 3 )))) ⇒ N q(σ(p s (x 2 ), ρ s (x 3 ))) ⇒ N δ(q (p s (x 1 )), q(ρ s (x 2 )), q (ρ s (x 2 ))) for every s ∈ {α, β}.</p><p>After having pre-processed the XTOPs in our introductory example, the devices M and N can be composed into M ; N . One rule of the composed XTOP is illustrated in <ref type="figure" target="#fig_0">Figure 13</ref>. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Post-processing</head><p>Finally, we will compose rules again in an effort to restore linearity (and nondeletion). Since the composition of two linear and nondeleting XTOPs cannot always be computed by a single XTOP <ref type="bibr" target="#b0">(Arnold and Dauchet, 1982)</ref>, this method can fail to return such an XTOP. The presented method is not a characterization, which means it might even fail to return a linear and nondeleting XTOP although an equivalent linear and nondeleting XTOP exists. However, in a significant number of examples, the recombination succeeds to rebuild a linear (and nondeleting) XTOP.</p><p>Let M ; N = (S, Σ, Γ, I, R) be the composed XTOP constructed in Section 5. We simply inspect each non-linear rule (i.e., each rule with a non-linear right-hand side) and expand it by all rule options at the copied variables. Since the method is pretty standard and variants have already been used in the pre-processing steps, we only illustrate it on the rules of <ref type="figure" target="#fig_0">Figure 12</ref>.</p><p>Example 9. The first (top row, left-most) rule of <ref type="figure" target="#fig_0">Figure 12</ref> is non-linear in the variable y 2 . Thus, we expand the calls q, ρ (y 2 ) and q , ρ (y 2 ). If ρ = ρ s for some s ∈ {α, β}, then the next rules are uniquely determined and we obtain the rule displayed in <ref type="figure" target="#fig_0">Figure 14</ref>. Here the expansion was successful and we could delete the original rule for ρ = ρ s and replace it by the displayed expanded rule. However, if ρ = ρ s ,s , then we can also expand the rule to obtain the rule displayed in <ref type="figure" target="#fig_0">Figure 15</ref>. It is still copying and we could repeat the process of expansion here, but we cannot get rid of all copying rules using this approach (as expected since there is no linear XTOP computing the same tree transformation).</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 :</head><label>1</label><figDesc>Figure 1: Word drop [top] and reordering [bottom].</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: XTOP rules for the operations of Figure 1.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 4 :</head><label>4</label><figDesc>Figure 4: Substitution where θ(x 1 ) = α, θ(x 2 ) = x 2 , and θ(x 3 ) = γ(δ(β, β, x 2 )).</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head></head><label></label><figDesc>Fig- ure 4 illustrates the unification.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 7 :</head><label>7</label><figDesc>Figure 7: Top rule of Figure 2 reversed.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Figure 9 :</head><label>9</label><figDesc>Figure 9: Rules used in Example 5.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Example 3 .</head><label>3</label><figDesc>The XTOPs for the English-to- German translation task in the Introduction are not compatible. This can be observed on the left-hand side l 1 ∈ Lhs(M −1 ) of Figure 7 and the left-hand side l 2 ∈ Lhs(N ) of Fig- ure 2[bottom]. These two left-hand sides are il- lustrated in Figure 8. Between them there is an mgu such that θ(Y ) ⊆ X (e.g., θ(y 1 ) = z 1 and θ(y 2 ) = VP(z 2 , z 3 , z 4 ) is such an mgu).</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Theorem 4 .</head><label>4</label><figDesc>There exists an XTOP F N that is equivalent to N and compatible with M .</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head>Figure 10 :</head><label>10</label><figDesc>Figure 10: Additional rule used in Example 5.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_9"><head>Figure 11 :</head><label>11</label><figDesc>Figure 11: Rules replacing the rule in Figure 7.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_10"><head>Figure 12 :</head><label>12</label><figDesc>Figure 12: Useful rules for the composition M ; N of Example 8, where s, s ∈ {α, β} and ρ ∈ P σ(z2,z3) .</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_11"><head>Figure 13 :</head><label>13</label><figDesc>Figure 13: Composed rule created from the rule of Figure 7 and the rules of N displayed in Figure 11.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_12"><head>Figure 14 :</head><label>14</label><figDesc>Figure 14: Successfully expanded rule from Example 9.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_13"><head>Figure 15 :</head><label>15</label><figDesc>Figure 15: Expanded rule that remains copying (see Example 9).</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0" validated="false"><head></head><label></label><figDesc>Gestern [Yesterday] berichtete [reported] die [the] Nachrichtenagentur [newswire] die [the] Serben [Serbs] hätten [would have] die [the] Verhandlungen [negotiations] beendet [completed].</figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1" validated="false"><head></head><label></label><figDesc>Rule [left] and reversed rule [right].</figDesc><table></table></figure>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Morphismes et bimorphismes d&apos;arbres</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">André</forename><surname>Arnold</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Max</forename><surname>Dauchet</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Theoretical Computer Science</title>
+		<imprint>
+			<biblScope unit="volume">20</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="33" to="93" />
+			<date type="published" when="1982" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Composition of top-down and bottom-up tree transductions</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Brenda</forename><forename type="middle">S</forename><surname>Baker</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Information and Control</title>
+		<imprint>
+			<biblScope unit="volume">41</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="186" to="213" />
+			<date type="published" when="1979" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Learning non-isomorphic tree mappings for machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jason</forename><surname>Eisner</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Association for Computational Linguistics</title>
+		<imprint>
+			<date type="published" when="2003" />
+			<biblScope unit="page" from="205" to="208" />
+		</imprint>
+	</monogr>
+	<note>Proc. ACL</note>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Composition and decomposition of extended multi bottom-up tree transducers</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Joost</forename><surname>Engelfriet</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Eric</forename><surname>Lilin</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Andreas</forename><surname>Maletti</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Acta Informatica</title>
+		<imprint>
+			<biblScope unit="volume">46</biblScope>
+			<biblScope unit="issue">8</biblScope>
+			<biblScope unit="page" from="561" to="590" />
+			<date type="published" when="2009" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Bottom-up and top-down tree transformations-A comparison</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Joost</forename><surname>Engelfriet</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Mathematical Systems Theory</title>
+		<imprint>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="198" to="231" />
+			<date type="published" when="1975" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Top-down tree transducers with regular look-ahead</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Joost</forename><surname>Engelfriet</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Mathematical Systems Theory</title>
+		<imprint>
+			<biblScope unit="volume">10</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="289" to="303" />
+			<date type="published" when="1977" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Training tree transducers</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jonathan</forename><surname>Graehl</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kevin</forename><surname>Knight</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jonathan</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">34</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="391" to="427" />
+			<date type="published" when="2008-05" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">The power of extended topdown tree transducers</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jonathan</forename><surname>Graehl</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Mark</forename><surname>Hopkins</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kevin</forename><surname>Knight</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Andreas</forename><surname>Maletti</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">SIAM Journal on Computing</title>
+		<imprint>
+			<biblScope unit="volume">39</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="410" to="430" />
+			<date type="published" when="2009" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">An overview of probabilistic tree transducers for natural language processing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kevin</forename><surname>Knight</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jonathan</forename><surname>Graehl</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. CICLing</title>
+		<meeting>CICLing</meeting>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2005" />
+			<biblScope unit="volume">3406</biblScope>
+			<biblScope unit="page" from="1" to="24" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Capturing practical natural language transformations</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kevin</forename><surname>Knight</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Machine Translation</title>
+		<imprint>
+			<date type="published" when="2007" />
+			<biblScope unit="volume">21</biblScope>
+			<biblScope unit="page" from="121" to="133" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<title level="m" type="main">Une généralisation des transducteurs d&apos;états finis d&apos;arbres: les S-transducteurs</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Eric</forename><surname>Lilin</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1978" />
+		</imprint>
+		<respStmt>
+			<orgName>Thèse 3ème cycle, Université de Lille</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Compositions of top-down tree transducers with ε-rules</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Andreas</forename><surname>Maletti</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Heiko</forename><surname>Vogler</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. FSMNLP</title>
+		<meeting>FSMNLP</meeting>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2010" />
+			<biblScope unit="volume">6062</biblScope>
+			<biblScope unit="page" from="69" to="80" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Why synchronous tree substitution grammars?</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Andreas</forename><surname>Maletti</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. HLT-NAACL</title>
+		<meeting>HLT-NAACL</meeting>
+		<imprint>
+			<date type="published" when="2010" />
+			<biblScope unit="page" from="876" to="884" />
+		</imprint>
+	</monogr>
+	<note>Association for Computational Linguistics</note>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<monogr>
+		<title level="m" type="main">An alternative to synchronous tree substitution grammars. Natural Language Engineering</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Andreas</forename><surname>Maletti</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2011" />
+			<biblScope unit="volume">17</biblScope>
+			<biblScope unit="page" from="221" to="242" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">An efficient unification algorithm</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alberto</forename><surname>Martelli</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ugo</forename><surname>Montanari</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ACM Transactions on Programming Languages and Systems</title>
+		<imprint>
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="258" to="282" />
+			<date type="published" when="1982" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Tiburon: A weighted tree automata toolkit</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jonathan</forename><surname>May</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kevin</forename><surname>Knight</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. CIAA</title>
+		<meeting>CIAA</meeting>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2006" />
+			<biblScope unit="page" from="102" to="113" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Efficient inference through cascades of weighted tree transducers</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jonathan</forename><surname>May</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kevin</forename><surname>Knight</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Heiko</forename><surname>Vogler</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. ACL</title>
+		<meeting>ACL</meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2010" />
+			<biblScope unit="page" from="1058" to="1066" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<monogr>
+		<title level="m" type="main">Weighted Tree Automata and Transducers for Syntactic Natural Language Processing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jonathan</forename><forename type="middle">May</forename></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2010" />
+			<pubPlace>Los Angeles</pubPlace>
+		</imprint>
+		<respStmt>
+			<orgName>University of Southern California</orgName>
+		</respStmt>
+	</monogr>
+<note type="report_type">Ph.D. thesis</note>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">A machine-oriented logic based on the resolution principle</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Robinson</forename><surname>John Alan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of the ACM</title>
+		<imprint>
+			<biblScope unit="volume">12</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="23" to="41" />
+			<date type="published" when="1965" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Mappings and grammars on trees</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>William</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Rounds</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Mathematical Systems Theory</title>
+		<imprint>
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="257" to="287" />
+			<date type="published" when="1970" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Synchronous grammars as tree transducers</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Stuart</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Shieber</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. TAG+7</title>
+		<meeting>TAG+7</meeting>
+		<imprint>
+			<date type="published" when="2004" />
+			<biblScope unit="page" from="88" to="95" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Generalized 2 sequential machine maps</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">James</forename><forename type="middle">W</forename><surname>Thatcher</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Computer and System Sciences</title>
+		<imprint>
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="339" to="367" />
+			<date type="published" when="1970" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">A syntaxbased statistical translation model</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kenji</forename><surname>Yamada</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kevin</forename><surname>Knight</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Association for Computational Linguistics</title>
+		<imprint>
+			<date type="published" when="2001" />
+			<biblScope unit="page" from="523" to="530" />
+		</imprint>
+	</monogr>
+	<note>Proc. ACL</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

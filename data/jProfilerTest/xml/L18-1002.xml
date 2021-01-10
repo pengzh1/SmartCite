@@ -1,0 +1,1267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T16:38+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Evaluating Domain Adaptation for Machine Translation Across Scenarios</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Thierry</forename><surname>Etchegoyhen</surname></persName>
+							<affiliation key="aff0">
+								<address>
+									<settlement>Vicomtech, Donostia / San Sebastián</settlement>
+									<country key="ES">Spain</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Anna</forename><surname>Fernández Torné</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="institution">Universitat Autònoma de Barcelona</orgName>
+								<address>
+									<settlement>Barcelona</settlement>
+									<country key="ES">Spain</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Andoni</forename><surname>Azpeitia</surname></persName>
+							<affiliation key="aff0">
+								<address>
+									<settlement>Vicomtech, Donostia / San Sebastián</settlement>
+									<country key="ES">Spain</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Eva</forename><forename type="middle">Martínez</forename><surname>Garcia</surname></persName>
+							<affiliation key="aff0">
+								<address>
+									<settlement>Vicomtech, Donostia / San Sebastián</settlement>
+									<country key="ES">Spain</country>
+								</address>
+							</affiliation>
+						</author>
+						<author role="corresp">
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Anna</forename><surname>Matamala</surname></persName>
+							<email>anna.matamala@uab.cat</email>
+							<affiliation key="aff1">
+								<orgName type="institution">Universitat Autònoma de Barcelona</orgName>
+								<address>
+									<settlement>Barcelona</settlement>
+									<country key="ES">Spain</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Evaluating Domain Adaptation for Machine Translation Across Scenarios</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>Machine Translation</term>
+					<term>Domain Adaptation</term>
+					<term>Quality Evaluation</term>
+					<term>Productivity Evaluation</term>
+					<term>Subjective Evaluation</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>We present an evaluation of the benefits of domain adaptation for machine translation, on three separate domains and language pairs, with varying degrees of domain specificity and amounts of available training data. Domain-adapted statistical and neural machine translation systems are compared to each other and to generic online systems, thus providing an evaluation of the main options in terms of machine translation. Alongside automated translation metrics, we present experimental results involving professional translators, in terms of quality assessment, subjective evaluations of the task and post-editing productivity measurements. The results we present quantify the clear advantages of domain adaptation for machine translation, with marked impacts for domains with higher specificity. Additionally, the results of the experiments show domain-adapted neural machine translation systems to be the optimal choice overall.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.">Introduction</head><p>Statistical machine translation (SMT) <ref type="bibr" target="#b6">(Brown et al., 1990)</ref> has been the dominant approach to automated translation for the last two decades, with neural machine translation (NMT) <ref type="bibr" target="#b2">(Bahdanau et al., 2015)</ref> quickly becoming the new main paradigm in academic research and the industry, on the basis of the improvements it provides across the board <ref type="bibr" target="#b33">(Toral and Sánchez-Cartagena, 2017)</ref>. The data-driven nature of both approaches conditions the quality of their output to the availability of large volumes of adequate training resources for a given domain. However, domain-specific resources are usually scarce, thus making proper domain adaptation as much a challenge as it is a goal in developing accurate machine translation (MT) systems. Domain adaptation has been extensively explored within SMT, with numerous studies focusing on the selection of supplementary data <ref type="bibr" target="#b0">(Axelrod et al., 2011;</ref><ref type="bibr" target="#b17">Gascó et al., 2012;</ref><ref type="bibr" target="#b11">Eetemadi et al., 2015)</ref>, translation model combination <ref type="bibr" target="#b15">(Foster and Kuhn, 2007;</ref><ref type="bibr" target="#b30">Sennrich, 2012)</ref> or the integration of external information <ref type="bibr" target="#b4">(Bisazza et al., 2011)</ref>, to cite only a few. In NMT, domain adaptation is a more recent endeavour, with fine tuning currently the main method to gear generic translation networks towards specific domains <ref type="bibr" target="#b26">(Luong and Manning, 2015;</ref><ref type="bibr" target="#b16">Freitag and Al-Onaizan, 2016;</ref><ref type="bibr" target="#b10">Crego et al., 2016)</ref>. Progress in machine translation technology has also given rise to large generic machine translation systems, many of which are freely available online. The increasing translation quality they provide, in part due to growing user feedback and training data covering multiple domains, has made them popular alternatives even in cases where domain-adapted systems might be better suited, although this specific aspect has not been fully evaluated yet. So far, large online translation systems have been essentially compared to academic systems for news-related translation (see, e.g., <ref type="bibr" target="#b34">(Toral et al., 2011;</ref><ref type="bibr" target="#b5">Bojar et al., 2016)</ref>), rather than to systems tuned for the kind of specific domains that are more typical in the translation industry. Machine translation quality and usefulness can be evaluated under various modalities. Quality can be measured via automated metrics such as BLEU <ref type="bibr" target="#b27">(Papineni et al., 2002)</ref> or TER <ref type="bibr" target="#b31">(Snover et al., 2006)</ref>, among others. Additionally, or alternatively, direct assessments of translation quality can be made by professional translators or native speakers, and usefulness can be assessed via measurements of productivity gains and losses when post-editing machinetranslated text. Over the years, human evaluations along these lines have shown the usefulness of machine translation in various scenarios <ref type="bibr" target="#b29">(Plitt and Masselot, 2010;</ref><ref type="bibr" target="#b28">Pinnis et al., 2013;</ref><ref type="bibr" target="#b13">Etchegoyhen et al., 2014;</ref><ref type="bibr" target="#b20">Koehn and Germann, 2014)</ref>. With the rise of neural machine translation, recent studies have also centred on comparing statistical and neural machine translation in different scenarios <ref type="bibr" target="#b36">(Zoph et al., 2016;</ref><ref type="bibr" target="#b9">Castilho et al., 2017b)</ref>. In this paper, we focus on evaluating the benefits of domain adaptation in three distinct scenarios involving different domains and language pairs, with varying degrees of domain specificity and available in-domain resources. Domain-adapted statistical and neural machine translation systems are compared to each other and to generic online systems, thus providing an evaluation of the main options in terms of automated translations. Alongside automated translation metrics, we present experimental results involving professional translators in terms of quality assessment, subjective evaluations of the task and post-editing productivity measurements. In the remainder of this paper, we describe the corpora and machine translation systems that were prepared, the design of the human quality and productivity evaluations, and the results in terms of automated metrics, human subjective assessments on a wide range of aspects, and objective analyses of post-editing results on the tasks carried by professional translators.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">Domain Adaptation Scenarios</head><p>In order to evaluate different real-life scenarios for machine-translated content, we selected the three domains described below for our experiments:  <ref type="table">Table 2</ref>: Out-of-domain corpora statistics (number of parallel segments)</p><p>• MTOOL: Industrial documentation of machine tool components and processes.</p><p>• ELEV: Installation and maintenance documentation of elevators.</p><p>• INTORG: Reports and press releases of international non-profit organisms.</p><p>All three domains are representative of the various domains typically handled by translation services providers, each one being characterized by its own specialised vocabulary and constructions, which range from highly specific, as is the case for the MTOOL domain, to more general, as with the INTORG domain. In addition to choosing markedly distinct domains, we selected different language pairs for each evaluation scenario: Spanish-German for MTOOL, Spanish-French for ELEV, and English-Spanish for INTORG. The INTORG scenario is meant to evaluate domain adaptation in the least favourable case, i.e. where freely available training resources are abundant: the topics and language found in the texts of international organisms are rather close to those available in the United Nations and Europarl corpora <ref type="bibr" target="#b12">(Eisele and Chen, 2010;</ref><ref type="bibr" target="#b24">Koehn, 2005)</ref>, for instance; English-Spanish is also the language pair with the most abundant available parallel corpora, see, e.g., the resources in the OPUS repository <ref type="bibr" target="#b32">(Tiedemann, 2012)</ref>. The other two scenarios and language pairs were chosen as representative of cases with strong demand in terms of internationalisation and relatively limited training resources, which represents a rather typical state of affairs in the translation services industry. Finally, the three selected domains vary in terms of volumes of available corpora, both in-domain and related outof-domain. These disparities in terms of amounts of training data are rather typical in the development of domainadapted machine translation systems, with scarce resources for highly specific domains a particularly common scenario. Additionally, out-of-domain data that could complement scarce in-domain data might be limited in volume for highly specific domains. The task of domain adaptation is thus dependent on both the available in-domain data and the amounts of exploitable out-of-domain data for a given domain. The corpora collected for the domains at hand are described in more detail in the next section.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.">Corpora</head><p>In-domain data were provided in the form of translation memories for all three domains, with an additional collection of Spanish technical manuals previously translated into French for the ELEV domain. Since the documents provided in the latter case were unpaired, document alignment was performed using an in-house file name matcher, exploiting strong file naming consistency, and sentences were then aligned with Hunalign <ref type="bibr" target="#b35">(Varga et al., 2005)</ref>. As shown in <ref type="table">Table 1</ref>, training data were particularly scarce for the MTOOL and INTORG domains, with at most 25 thousand unique parallel segments.</p><p>From the original data, we extracted around 2000 segments as development sets per domain, to serve as either tuning sets for SMT systems or validation sets for NMT systems. As test sets, for each domain we extracted 3 sets of 50 sentence pairs which had to be representative of the domain in terms of average sentence length and vocabulary, and be coherent in sequence, i.e., sampling was not performed randomly on a per sentence basis. These conditions were meant to allow for human quality and productivity evaluations that centred on realistic translation scenarios, as described in Section 5.. To complement the scarce in-domain datasets, we compiled the out-of-domain data described in <ref type="table">Table 2</ref>. 1 Distinct freely available corpora were selected depending on the language pair and domain. The Generic datasets were prepared mainly to serve as basis for the NMT models, to be further fine-tuned with in-domain data for domain adaptation. For each corpus selected to compose the generic multi-domain corpus, parallel sentence pairs were first sorted by increasing perplexity scores according to language models trained on the entire monolingual sides of each parallel corpus, where the score was taken to be the arithmetic mean of source and target perplexities. Subsets of the ranked corpora were then selected to compose the final corpus, with an upper selection bound taken to be either the median average perplexity score or the top n pairs if selecting up to median perplexity would result in over representing the corpus.</p><p>For ES-FR, we also included a small corpus, WCrawl, created from Wikipedia with an in-house crawler targeting domain terminology and the STACC w comparable sentence aligner . Finally, for EN-ES, we prepared a data pool based on the concatenation of all corpora relevant to the domain of international news and regulations.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.">Models</head><p>As mentioned in Section 1., we aimed to evaluate the benefits of domain adaptation in various scenarios. With the aforementioned paradigm shift towards neural machine translation, it became necessary to further evaluate the potential differences between domain-adapted SMT and NMT machine translation systems. Thus, for each domain adaptation scenario described in Section 2. we trained two such domain-adapted systems. Statistical MT systems were standard phrase-based models built with the Moses toolkit <ref type="bibr" target="#b22">(Koehn et al., 2007)</ref>, with phrases of maximum length 5 and n-gram language models of order 5 built with KenLM <ref type="bibr" target="#b18">(Heafield, 2011)</ref>. Neural MT systems follow the attentionbased encoder-decoder approach <ref type="bibr" target="#b2">(Bahdanau et al., 2015)</ref> and were built with the OpenNMT toolkit <ref type="bibr" target="#b19">(Klein et al., 2017)</ref>. Generic translations were obtained from Google Translate in June 2017, where, to the best of our knowledge, ES-EN translations were generated by their NMT system and by their phrase-based SMT engines for the other two language pairs.</p><p>Several techniques are available to perform domain adaptation in SMT and we selected the method that gave the best results on the evaluation sets for each scenario.</p><p>For the INTORG domain, the optimal approach involved ranking the out-of-domain Pool dataset using the relative frequency ratio approach (RFR) of  and selecting the best 1,000,000 sentence pairs as supplementary data. A phrase table was then created from the selected data and combined with the in-domain phrase table with the fill-up method of <ref type="bibr" target="#b4">(Bisazza et al., 2011)</ref>. In the ELEV domain, a similar approach was used, applying RFR ranking on the Generic dataset merged with the crawled data and selecting the best 98,845 sentence pairs, corresponding approximately to the size of the in-domain. Since manually revised domain-specific terms were available for this domain, we also included 162 phrasal term translations as favoured translation options using the XMLmarkup functionality in Moses, a domain adaptation technique readily available for SMT modelling. Finally, for the MTOOL domain we combined the phrases from the entire Generic dataset, via fill-up as well.</p><p>For all of our NMT models, domain adaptation was performed via fine-tuning <ref type="bibr" target="#b26">(Luong and Manning, 2015;</ref><ref type="bibr" target="#b16">Freitag and Al-Onaizan, 2016;</ref><ref type="bibr" target="#b10">Crego et al., 2016)</ref>, i.e. by further training the generic networks on the in-domain data.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.">Human Evaluation</head><p>A field quasi-experiment, for which no random assignment of participants to treatment groups was applied, was conducted with 15 professional translators for the INTORG and ELEV domains, and 22 for the MTOOL domain. Participants performed the assigned tasks in a real-world environment, thus favouring external validity. Following an approved ethical procedure, the experiment consisted of a remunerated assignment and a volunteer, optional part. The evaluation aimed to compare the three machine translation systems in the three domains previously described, and was performed taking three different aspects into account: quality, post-editing (PE) productivity, and attitude. We describe each aspect in turn below.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.1.">Quality Assessment</head><p>Quality was first assessed at the segment level. The quality of the raw MT segments was assessed by scoring their fluency and adequacy on a scale from 1 to 4 using the TAUS DQF on-line tool.</p><p>2 Fluency conveyed to what extent the translated segment flowed naturally with no grammatical or spelling mistakes and was considered genuine language by native speakers <ref type="bibr" target="#b21">(Koehn and Monz, 2006)</ref>. In turn, adequacy assessed the amount of information of the source segment that was actually present in the target one <ref type="bibr" target="#b25">(Koponen, 2010)</ref>. Comparing the three different translated versions of each source segment was also considered a valuable quality indicator, so that a ranking task was also conducted. Quality was also measured at the document level, by means of post-questionnaires where participants were asked to give their subjective global perception of the texts in terms of the aforementioned fluency and adequacy, as well as PE necessity, PE easiness and PE effort, as defined below:</p><p>• FLUENCY: the overall level of fluency of the machinetranslated text.</p><p>• ADEQUACY: the overall level of adequacy of the machine-translated text.</p><p>• NECESSITY: the need for post-editing, i.e. whether the machine-translated text required many modifications overall.</p><p>• EASINESS: the easiness of the post-editing task, i.e. whether the necessary edits were technically simple overall.</p><p>• EFFORT: the mental effort required by the post-editing task, i.e. whether the necessary edits were cognitively difficult overall.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.2.">Post-editing Productivity Measurement</head><p>While conducting the post-editing task, the TAUS DQF tool automatically calculated the time to edit, i.e. "the average number of words processed by the post-editor in a given timespan" (SPEED from now onwards) and the post-editing effort (hereafter, WORK), namely "the average percentage of word changes applied by the post-editor on the MT output provided" (TAUS, n.d.). SPEED and WORK were considered two relevant indicators of post-editing productivity.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.3.">Attitude Evaluation</head><p>Using scales from 1 to 10, participants were also asked to give their opinions on seven ratings in relation to their attitude towards MT and PE, namely the quality of raw machine-translated texts, the usefulness of MT for translators, their inclination to use MT as a text to depart from, their interest in PE, the boredom and the mental effort involved in PE, and the quality of post-edited machine-translated texts. These questions were presented twice, both before and after the PE task via pre-and postquestionnaires. This was aimed to see whether the actual post-editing task had in any way influenced their previous attitudes.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.4.">Experiment Execution</head><p>The experiment was divided in two parts to be performed at the participants' best convenience, as its expected length according to the pilot test was around 4 hours. Participants were informed via e-mail of the tasks to be carried out in each part. The instructions for the first part were to fill in a questionnaire on participant demographics and previous professional experience, and a pre-questionnaire on their attitude towards MT and PE. Then, they were required to post-edit three texts. The order was balanced to minimise the fatigue and order-ofpresentation effects, and was indicated individually to each participant on a separate email. After post-editing each text, they were requested to fill in the corresponding quality assessment post-questionnaire. As a last step, they were asked to fill in a post-questionnaire on their attitude containing the same questions as the prequestionnaire. Once they had finished the first part, they were asked to perform the fluency and adequacy evaluation tasks, and the rank comparison task (see Section 5.1.) for the same 150 segments. The overall process is summarised in <ref type="figure">Figure 1</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.5.">Participants</head><p>Participants were selected following an a priori nonprobabilistic purpose sampling <ref type="bibr" target="#b7">(Bryman, 2012)</ref> based on subjects who met the following criteria: they had to be professional translators in the considered specific language pair and also native speakers of the target language. A total of 52 participants took part in the experiment, distributed as follows: 11 female and 4 male EN-ES professional translators whose age ranged from 26 to 48 in the INTORG domain, 17 female and 5 male ES-DE professional translators ranging from 33 to 67 years old in the MTOOL domain, and 14 female and 1 male ES-FR professional translators whose ages ranged from 27 to 64 in the ELEV domain. Data from one participant in the MTOOL domain were not recorded due to technical problems. All participants but one in the MTOOL experiment had reached first cycle university studies.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.">Results</head><p>We first present results in terms of automated metrics, followed by a condensed representation of the human evaluation outcomes. A summary of all results is then added and discussed.   </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.1.">Automated metrics</head><p>We computed the performance of each model on the same test sets used for the human evaluations, in terms of BLEU <ref type="bibr" target="#b27">(Papineni et al., 2002)</ref>, METEOR <ref type="bibr" target="#b3">(Banerjee and Lavie, 2005)</ref> and TER <ref type="bibr" target="#b31">(Snover et al., 2006)</ref>. For a closer comparison between automated and human evaluations, all machine-translated files were evaluated on cased detokenised output. Results are shown in <ref type="table" target="#tab_2">Table 3</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>3</head><p>The first noticeable result is the strong benefit of domain adaptation for the MTOOL and ELEV domains, with large scoring differences on all metrics using either an SMT or an NMT domain-adapted system over generic GT engines. The only scenario where this result is not confirmed involves the INTORG domain. In this case, as previously described, the domain is the least restricted of the three, covering world news and events for which large amounts of training data are freely available. This wide scope domain demonstrates the convergence of various systems when in-domain data is not a marked provider of the most relevant information.</p><p>Results from this domain also show the competitive scores achievable with comparatively small amounts of training data when compared to generic engines trained on significantly larger amounts of data. Overall, domain adaptation appears to be a necessary step to optimise translation quality, despite recent progress in the development of large 3 Statistical significance was computed for the BLEU metric on the merged files for each domain via bootstrap resampling <ref type="bibr" target="#b23">(Koehn, 2004)</ref>. † indicates statistical significance, at p &lt; 0.05, between NMT and GT; ‡ between SMT and GT; and * between NMT and SMT.</p><p>generic natural machine translation systems. A second important result is the effectiveness of current neural machine translation for narrow domains. Recent work had shown the need of large amounts of training data for NMT modelling, showing that SMT performed comparatively better in low resource scenarios <ref type="bibr" target="#b36">(Zoph et al., 2016)</ref>. Our experiments feature two narrow domains, with low amounts of parallel training data and high domain specificity, for which fine-tuned NMT models achieved the best results. <ref type="bibr">4</ref> This outcome was obtained using simple fine tuning over generic models, an approach which has some inherent limitations such as need to restrict the adapted models to the vocabulary of the existing generic network. Domain modelling is thus limited in this approach, with domain-specific vocabulary handled via additional mechanisms such as unknown source word copies. Improved methods of domain adaptation for NMT are thus likely to provide gains to an already strong baseline for narrow domains. Finally, in terms of automated metrics, <ref type="bibr">SMT</ref>   </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.2.">Human evaluation</head><p>In this section, we first present the results in terms of metrics, both objective and subjective, and then summarise the eventual changes in perception of MT and PE for the translators who participated in the evaluation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.2.1.">Metrics</head><p>A statistical analysis was carried out using IBM SPSS V. 20, setting the significance level at 0.05. For qualitative data such as adequacy, fluency and ranking at segment level, chi-square tests were used to compare the distribution of the assessments by language pair. Data relating to textual quality were considered discrete numerical variables, so that a Mann-Whitney U test was used for the comparison of groups. For the continuous numerical variables PE speed and work, normality of distributions was assessed by using the Shapiro-Wilk test. As data were not normally distributed, the Bonferroni-corrected Mann-Whitney U test was used for multiple comparisons. Intra-class correlation coefficient (ICC) estimates and their 95% confidence intervals were used as inter-rater reliability indexes, which for all three domains resulted in excellent levels of reliability (all above 0.92) for the quality assessment variables at the segment level.</p><p>In the INTORG domain, the means of all aspects assessed in the case of GT indicated better results than those obtained with either NMT or SMT. Thus, the means were lower in ranking, necessity, effort and work, and higher in the other categories where higher scores indicate better results. In turn, all NMT means but one (effort) showed better results than those of SMT, as shown in <ref type="table" target="#tab_4">Table 4</ref>. Examining post-editing edit distances, shown in <ref type="figure" target="#fig_0">Figure 2(a)</ref>, confirms the ranking of the systems in this domain. Thus, in the case of GT more than 37% of the segments had an edit distance of 0 and 22% an edit distance of 1. For these same two distances, SMT featured 11.5% and 18.8% of the segments, respectively, whereas for NMT the proportions were 19.9% and 24.3%, respectively. Additionally, GT exhibits a gradual reduction in the percentage of segments as the number of edits increases, whereas for NMT the number of segments increases between distances of 0 and 1, and SMT has a higher percentage of segments with an edit distance of 2, beyond 20%. The conclusions are different in the MTOOL domain. As shown in <ref type="table" target="#tab_5">Table 5</ref>, the leading position for all means in this case was for NMT, with GT and SMT presenting very close means in all items assessed. The distribution of results in terms of edit distances, shown in <ref type="figure" target="#fig_0">Figure 2</ref>(b), illustrates the differences between systems in this narrow domain. The first noticeable result is the extremely large difference for edit distances of 0, with 34.42% for NMT as opposed to 9.56% for GT and 11.43% for SMT. The NMT system cumulates more than 60% of the segments in the lowest edit distances, from 0 to 2, as opposed to 27% for GT and 25% for SMT. In terms of human evaluation, domain-adapted NMT was thus the optimal system in the MTOOL domain, with GT and ST showing comparable results. In the ELEV domain, NMT had the lead again, as shown in <ref type="table" target="#tab_7">Table 6</ref>. However, in this case SMT means were closer to NMT's means, which left GT as the worst performing system. This ranking of the systems is again illustrated by the distribution of edits shown in <ref type="figure" target="#fig_0">Figure 2</ref>(c). For both SMT and NMT, the dominant edit distance was 0, with 45.9% and 46.5%, respectively, whereas for GT the most frequent edit distances were 5 and 6, with 17.7% and 18.5%, respectively. In this domain, which exhibits a comparable domain-specificity to MTOOL but larger amounts of indomain data, domain adaptation with NMT appears to be the optimal option, but the SMT system shows a comparable strong performance, with only the generic GT system performing markedly worse on all metrics.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.2.2.">Attitude</head><p>We now summarise the results regarding the translators' changes in attitude before and after completing the tasks. For INTORG, there was a positive evolution regarding aspects such as quality and utility of machine translation, as well as inclination towards using machine-translated texts as a starting point for translation. On the other hand, interest in post-editing lowered slightly, while boredom and    In the MTOOL domain, the attitudes evolved negatively in all aspects except usefulness of machine translation and interest in post-editing. Perception of the quality of machine translation lowered, as did the interest in using machinetranslated texts as input for translation. Results were statistically significant only in the case of perception of cognitive effort, which increased after completion of the task. Finally, for the ELEV domain all positive attitude indicators increased, except for quality of post-edited texts, which maintained the same score, and boredom, which also increased. Thus, after completion of the task, the perception of quality of machine translation increased, as did its perceived usefulness and the interest in using it as input. The required mental effort was also perceived as lower after completion of the task. The changes were not statistically significant in any of the aspects, though, with p-values above 0.05. Although attitude changes were not statistically significant in most cases, they are in line with the results on the previously discussed metrics, with an overall increase in positive perception of the post-editing task in the domain with markedly better translations, namely ELEV, and mixed results for the other two domains.</p><formula xml:id="formula_0">3 † 1 ‡ 2 * 3 † 1 2 * 1 † 2 ‡ 3 * FLUENCY 3 † 1 ‡ 2 * 2 † 1 ‡ 3 * 1 † 2 ‡ 3 * RANKING 3 † 1 ‡ 1 * 2 † 1 ‡ 3 * 1 † 2 ‡ 3 * DOCUMENT-LEVEL QUALITY FLUENCY 3 † 1 ‡ 2 * 2 † 1 3 * 1 † 2 ‡ 3 * ADEQUACY 3 † 1 ‡ 1 3 † 1 2 1 † 2 3 NECESSITY 3 † 1 ‡ 2 3 † 1 2 1 2 ‡ 3 EASINESS 3 1 1 2 1 3 1 2 3 EFFORT 3 2 ‡ 1 2 1 3 1 3 2 PRODUCTIVITY SPEED 3 † 2 ‡ 1 2 1 3 1 2 ‡ 3 WORK 3 † 2 ‡ 1 3 † 1 2 * 1 † 2 ‡ 3 * AUTOMATED METRICS BLEU 3 † 1 ‡ 2 * 3 † 1 2</formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.3.">Summary</head><p>As shown in <ref type="table" target="#tab_8">Table 7</ref>, there are relevant correlations between segment-level BLEU and the human assessments for fluency, ranking and WORK, particularly in the ELEV domain. Thus, the higher the fluency and ranking results and the lower the WORK, the higher the BLEU metric obtained. Although BLEU usually shows higher correlations with human judgements at the document level than at the segment level, in these experiments the correlations were significant. Results in terms of both automated metrics and human assessments show an almost perfect match, as seen in <ref type="table" target="#tab_10">Table 8</ref>, which includes the position each engine occupies taking into account every aspect assessed and the statistical significance of the differences observed between each pair of systems. Thus, in the INTORG domain GT is almost unanimously considered the best system by all items assessed, while SMT is deemed the worst performing one. Likewise, NMT is the system obtaining the best results in the MTOOL scenario, while GT and SMT vie for the last position. In the ELEV domain, NMT obtains again the best results, although closely followed by SMT, which clearly leaves GT as the worst classified system. Considering the different domains selected for the experiments, their specificity as well as the amount of available in-domain data, the results were not unexpected but the experiments performed provide a quantified view of the impact of domain adaptation. Thus, for the two domains that were more specific, domain-adapted systems in one form or another provided clear advantages that are reflected in all metrics, automated, based on human subjective evaluation, or based on objective post-editing metrics.</p><p>Overall, adapting neural machine translation systems to a specific domain proved the optimal approach, performing better where domain-specificity was higher, and competing with a large state-of-the-art generic translation system while being trained on only a relatively small amount of data overall. This result shows the progress of NMT in general, as it performed better than statistical machine translation systems even in the case of highly specific domains. Note also that the NMT systems performed better overall than the SMT ones in terms of adequacy as well, in contrast with the results described in <ref type="bibr" target="#b8">(Castilho et al., 2017a)</ref>, where neural models performed better than statistical ones in terms of fluency, but not always in terms of adequacy. It is worth noting also that, as shown by the ELEV domain, SMT systems could remain competitive in domain adaptation scenarios, although it is likely that future more sophisticated domain-adaptation methods for NMT will likely extend the gap between the approaches.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.">Conclusions</head><p>We have described the evaluation of the benefits of domain adaptation for machine translation under different scenarios that involve unrelated domains and language pairs, with varying degrees of domain specificity and amounts of training data. Our protocols include domain-adapted statistical and neural machine translation systems, as well as a large generic online system, thus addressing the main options currently available in terms of automated translation. The human evaluation, which involved professional translators, covered quality assessments, post-editing productivity measurements, as well as attitude evaluations. An in-depth statistical analysis of the results was provided, along with an evaluation of eventual changes in perception of the task by the participants. Overall, results in terms of both automated metrics and human assessments show the benefits of domain adaptation, with marked gains across the board for domain-adapted systems on all metrics for the more specific domains. Although not unexpected, given that domain-specific knowledge could be expected to positively impact data-driven translation systems, these results have been substantiated on a wide range of aspects. Finally, the reported experiments show the comparative effectiveness of domain-adapted neural machine translation across the board, confirming that the paradigm shift that has taken place in the field towards neural machine translation can be considered adequate as well for the highly-specific scenarios that are common in the translation industry.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.">Acknowledgements</head><p>This work was partially funded by the Spanish Ministry of Economy and Competitiveness via the AdapTA project <ref type="bibr">(RTC-2015-3627-7)</ref>. We would like to thank MondragonLingua Translation &amp; Communication as coordinator of the project, the anonymous LREC reviewers for their helpful feedback and suggestions, and the translators who participated in the experiments. Anna Matamala is a member of Transmedia Catalonia, a research group funded by the Catalan government under SGR call (2017SGR113).</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: Edit distances per domain</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2" validated="false"><head>Table 3 :</head><label>3</label><figDesc>Results on automated machine translation metrics</figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4" validated="true"><head>Table 4 :</head><label>4</label><figDesc>INTORG mean results and standard deviations for all human assessments</figDesc><table>TASK 
+MEASURE 
+GT 
+NMT 
+SMT 
+
+SEGMENT-LEVEL QUALITY 
+
+ADEQUACY 
+
+2.55 ±0.96 
+3.25 ±0.86  †  *  
+2.56 ±1.02 
+
+FLUENCY 
+
+1.91 ±0.91 
+2.92 ±0.96  †  *  
+1.91 ±1.06 
+
+RANKING 
+
+2.04 ±0.72  ‡ 
+1.49 ±0.72  †  *  
+2.14 ±0.76 
+
+DOCUMENT-LEVEL QUALITY 
+
+FLUENCY 
+
+3.33 ±1.15 
+5.00 ±1.65  †  *  
+3.31 ±2.17 
+
+ADEQUACY 
+
+4.83 ±2.21 
+6.92 ±1.44  † 
+5.54 ±2.54 
+
+NECESSITY 
+
+8.67 ±0.78 
+7.08 ±1.98  † 
+8.46 ±1.45 
+
+EASINESS 
+
+4.92 ±2.97 
+5.25 ±2.67 
+4.62 ±3.07 
+
+EFFORT 
+
+8.25 ±2.18 
+7.41 ±2.19 
+8.31 ±1.89 
+
+PRODUCTIVITY 
+SPEED 
+
+1018 ±500.40 1207 ±630.81 
+996 ±483.26 
+
+WORK 
+
+37.56 ±21.51 20.49 ±20.82  †  *  37.14 ±20.21  ‡ 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5" validated="false"><head>Table 5 :</head><label>5</label><figDesc>MTOOL mean results and standard deviations for all human assessments</figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_6" validated="false"><head></head><label></label><figDesc>performed well in two out of three domains, reaching statistically com- parable results to the ones obtained with domain-adapted</figDesc><table>TASK 
+
+MEASURE 
+GT 
+NMT 
+SMT 
+
+SEGMENT-LEVEL QUALITY 
+
+ADEQUACY 
+
+2.40 ±0.96 
+3.56 ±0.68  † 
+3.43 ±0.77  ‡ 
+
+FLUENCY 
+
+1.99 ±1.06 
+3.06 ±0.90  † 
+2.91 ±0.98  ‡ 
+
+RANKING 
+
+2.33 ±0.68 
+1.47 ±0.63  † 
+1.47 ±0.68  ‡ 
+
+DOCUMENT-LEVEL QUALITY 
+
+FLUENCY 
+
+2.90 ±1.83 
+7.40 ±1.74  † 
+7.10 ±1.83  ‡ 
+
+ADEQUACY 
+
+5.10 ±2.42 
+8.10 ±0.93  † 
+8.10 ±0.93  ‡ 
+
+NECESSITY 
+
+8.60 ±1.88 
+5.40 ±2.60  † 
+5.60 ±2.74  ‡ 
+
+EASINESS 
+
+5.20 ±2.49 
+7.00 ±2.12 
+6.10 ±1.62 
+
+EFFORT 
+
+8.10 ±1.27 
+7.10 ±2.47 
+5.80 ±2.22  ‡ 
+
+PRODUCTIVITY 
+SPEED 
+
+881 ±294.85 1462 ±582.93  † 1477 ±485.63  ‡ 
+
+WORK 
+
+39.44 ±21.02 11.12 ±13.56  † 10.72 ±13.54  ‡ 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_7" validated="true"><head>Table 6 :</head><label>6</label><figDesc>ELEV mean results and standard deviations for all human assessments</figDesc><table>NMT, although with absolute scores consistently below 
+those achieved with NMT. It is worth noting that the SMT 
+results were obtained with domain adaptation techniques 
+that have been extensively researched and time-tested over 
+the years. Thus, it is unlikely that different domain adapta-
+tion methods for statistical machine translation would pro-
+vide significant gains overall, which in turn places domain-
+adapted NMT as the currently optimal approach in terms of 
+automated metrics. 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_8" validated="true"><head>Table 7 :</head><label>7</label><figDesc>Correlations between BLEU and human assessments</figDesc><table>TASK 
+MEASURE 
+DOMAIN 
+
+ELEV 
+MTOOL 
+INTORG 
+
+GT 
+NMT 
+SMT 
+GT 
+NMT 
+SMT 
+GT 
+NMT 
+SMT 
+
+SEGMENT-LEVEL QUALITY 
+
+ADEQUACY 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_10" validated="false"><head>Table 8 :</head><label>8</label><figDesc></figDesc><table>Summary of comparative results </table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1">Unless described otherwise, all corpora were downloaded from the OPUS website (op. cit.).</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="2">https://dqf.taus.net/</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="4">Note that, for the INTORG and ELEV domains, our NMT models were trained on more data than their SMT counterparts, the latter being built following a standard set-up where in-domain and out-of-domain data are not merged and only a portion of the outof-domain data is selected. Additional experiments not reported here showed that using the entire out-of-domain dataset for SMT did not provide significant improvements over the approach reported here.</note>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Domain adaptation via pseudo in-domain data selection</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Axelrod</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">X</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Gao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Conference on Empirical Methods in Natural Language Processing</title>
+		<meeting>the Conference on Empirical Methods in Natural Language Processing</meeting>
+		<imprint>
+			<date type="published" when="2011" />
+			<biblScope unit="page" from="355" to="362" />
+		</imprint>
+	</monogr>
+	<note>Association for Computational Linguistics</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Weighted set-theoretic alignment of comparable sentences</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Azpeitia</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Etchegoyhen</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Martinez</forename><surname>García</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 10th Workshop on Building and Using Comparable Corpora</title>
+		<meeting>the 10th Workshop on Building and Using Comparable Corpora</meeting>
+		<imprint>
+			<date type="published" when="2017" />
+			<biblScope unit="page" from="41" to="45" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Neural machine translation by jointly learning to align and translate</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Bahdanau</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Cho</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Bengio</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the International Conference on Learning Representations</title>
+		<meeting>the International Conference on Learning Representations</meeting>
+		<imprint>
+			<date type="published" when="2015" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">METEOR: An automatic metric for MT evaluation with improved correlation with human judgments</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Banerjee</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Lavie</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the ACL workshop on intrinsic and extrinsic evaluation measures for machine translation and/or summarization</title>
+		<meeting>the ACL workshop on intrinsic and extrinsic evaluation measures for machine translation and/or summarization<address><addrLine>Ann Arbor, Michigan</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2005" />
+			<biblScope unit="volume">29</biblScope>
+			<biblScope unit="page" from="65" to="72" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Fill-up versus interpolation methods for phrasebased smt adaptation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Bisazza</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">N</forename><surname>Ruiz</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Federico</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F.-F</forename><forename type="middle">B</forename><surname>Kessler</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the International Workshop on Spoken Language Translation</title>
+		<meeting>the International Workshop on Spoken Language Translation</meeting>
+		<imprint>
+			<date type="published" when="2011" />
+			<biblScope unit="page" from="136" to="143" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Findings of the 2016 conference on machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">O</forename><surname>Bojar</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Chatterjee</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Federmann</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Graham</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Haddow</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Huck</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><forename type="middle">J</forename><surname>Yepes</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Koehn</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">V</forename><surname>Logacheva</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Monz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the First Conference on Machine Translation</title>
+		<meeting>the First Conference on Machine Translation</meeting>
+		<imprint>
+			<date type="published" when="2016" />
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page" from="131" to="198" />
+		</imprint>
+	</monogr>
+	<note>Shared Task Papers</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">A statistical approach to machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><forename type="middle">F</forename><surname>Brown</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Cocke</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><forename type="middle">A D</forename><surname>Pietra</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">V</forename><forename type="middle">J D</forename><surname>Pietra</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Jelinek</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><forename type="middle">D</forename><surname>Lafferty</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><forename type="middle">L</forename><surname>Mercer</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><forename type="middle">S</forename><surname>Roossin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational linguistics</title>
+		<imprint>
+			<biblScope unit="volume">16</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="79" to="85" />
+			<date type="published" when="1990" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+				<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Bryman</surname></persName>
+		</author>
+		<title level="m">Social Research Methods</title>
+		<meeting><address><addrLine>Oxford</addrLine></address></meeting>
+		<imprint>
+			<publisher>Oxford University Press</publisher>
+			<date type="published" when="2012" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<monogr>
+				<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Castilho</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Moorkens</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Gaspari</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">I</forename><surname>Calixto</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Tinsley</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Way</forename></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename></persName>
+		</author>
+		<title level="m">Is neural machine translation the new state of the art? The Prague Bulletin of Mathematical Linguistics</title>
+		<imprint>
+			<date type="published" when="2017" />
+			<biblScope unit="volume">108</biblScope>
+			<biblScope unit="page" from="109" to="120" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">A Comparative Quality Evaluation of PBSMT and NMT using Professional Translators</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Castilho</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Moorkens</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Gaspari</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Sennrich</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">V</forename><surname>Sosoni</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Georgakopoulou</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Lohar</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Way</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><forename type="middle">V</forename><surname>Miceli Barone</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Gialama</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Machine Translation Summit XVI</title>
+		<meeting>Machine Translation Summit XVI<address><addrLine>Nagoya, Japan</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2017" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<title level="m" type="main">Systran&apos;s pure neural machine translation systems</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Crego</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Klein</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Rebollo</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Senellart</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><surname>Akhanov</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Brunelle</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Coquard</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Deng</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1610.05540</idno>
+		<imprint>
+			<date type="published" when="2016" />
+		</imprint>
+	</monogr>
+<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Survey of data-selection methods in statistical machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Eetemadi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><surname>Lewis</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Toutanova</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><surname>Radha</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Machine Translation</title>
+		<imprint>
+			<biblScope unit="volume">29</biblScope>
+			<biblScope unit="issue">3-4</biblScope>
+			<biblScope unit="page" from="189" to="223" />
+			<date type="published" when="2015" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">MultiUN: A Multilingual Corpus from United Nation Documents</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Eisele</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Chen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Seventh International Conference on Language Resources and Evaluation</title>
+		<meeting>the Seventh International Conference on Language Resources and Evaluation</meeting>
+		<imprint>
+			<date type="published" when="2010" />
+			<biblScope unit="page">5</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Machine translation for subtitling: A large-scale evaluation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Etchegoyhen</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">L</forename><surname>Bywood</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Fishel</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Georgakopoulou</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Van Loenhout</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Del Pozo</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><forename type="middle">S</forename><surname>Maucec</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Turner</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Volk</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Ninth International Conference on Language Resources and Evaluation (LREC 2014)</title>
+		<meeting>the Ninth International Conference on Language Resources and Evaluation (LREC 2014)</meeting>
+		<imprint>
+			<date type="published" when="2014" />
+			<biblScope unit="page" from="46" to="53" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Exploiting Relative Frequencies for Data Selection</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Etchegoyhen</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Azpeitia</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Martinez</forename><surname>García</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 16th Machine Translation Summit</title>
+		<meeting>the 16th Machine Translation Summit</meeting>
+		<imprint>
+			<publisher>Long Papers</publisher>
+			<date type="published" when="2017" />
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="170" to="184" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Mixture-model adaptation for SMT</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Foster</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Kuhn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Second Workshop on Statistical Machine Translation, StatMT &apos;07</title>
+		<meeting>the Second Workshop on Statistical Machine Translation, StatMT &apos;07<address><addrLine>Stroudsburg, PA, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2007" />
+			<biblScope unit="page" from="128" to="135" />
+		</imprint>
+	</monogr>
+	<note>Association for Computational Linguistics</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<title level="m" type="main">Fast domain adaptation for neural machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Freitag</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Al-Onaizan</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1612.06897</idno>
+		<imprint>
+			<date type="published" when="2016" />
+		</imprint>
+	</monogr>
+<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Does more data always yield better translations?</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Gascó</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M.-A</forename><surname>Rocha</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Sanchis-Trilles</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Andrés-Ferrer</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Casacuberta</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 13th Conference of the European Chapter of the Association for Computational Linguistics</title>
+		<meeting>the 13th Conference of the European Chapter of the Association for Computational Linguistics</meeting>
+		<imprint>
+			<date type="published" when="2012" />
+			<biblScope unit="page">12</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Kenlm: Faster and smaller language model queries</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Heafield</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Sixth Workshop on Statistical Machine Translation, WMT &apos;11</title>
+		<meeting>the Sixth Workshop on Statistical Machine Translation, WMT &apos;11<address><addrLine>Stroudsburg, PA, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2011" />
+			<biblScope unit="page" from="187" to="197" />
+		</imprint>
+	</monogr>
+	<note>Association for Computational Linguistics</note>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Opennmt: Open-source toolkit for neural machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Klein</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Deng</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Senellart</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><forename type="middle">M</forename><surname>Rush</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 20th Annual Conference of the European Association for Machine Translation</title>
+		<meeting>the 20th Annual Conference of the European Association for Machine Translation</meeting>
+		<imprint>
+			<date type="published" when="2017" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">The impact of machine translation quality on human post-editing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Koehn</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">U</forename><surname>Germann</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedingds of the Workshop on Humans and ComputerAssisted Translation</title>
+		<meeting>eedingds of the Workshop on Humans and ComputerAssisted Translation</meeting>
+		<imprint>
+			<date type="published" when="2014" />
+			<biblScope unit="page" from="38" to="46" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Manual and automatic evaluation of machine translation between european languages</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Koehn</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Monz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Workshop on Statistical Machine Translation</title>
+		<meeting>the Workshop on Statistical Machine Translation</meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2006" />
+			<biblScope unit="page" from="102" to="121" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Moses: Open source toolkit for statistical machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Koehn</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><surname>Hoang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Birch</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Callison-Burch</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Federico</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">N</forename><surname>Bertoldi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Cowan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><surname>Shen</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Moran</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Zens</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 45th Annual Meeting of the ACL</title>
+		<meeting>the 45th Annual Meeting of the ACL</meeting>
+		<imprint>
+			<date type="published" when="2007" />
+			<biblScope unit="page" from="177" to="180" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Statistical significance tests for machine translation evaluation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Koehn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Conference on Empirical Methods in Natural Language Processing</title>
+		<meeting>the Conference on Empirical Methods in Natural Language Processing</meeting>
+		<imprint>
+			<date type="published" when="2004" />
+			<biblScope unit="page" from="388" to="395" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Europarl: A Parallel Corpus for Statistical Machine Translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Koehn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 10th Machine Translation Summit</title>
+		<meeting>the 10th Machine Translation Summit</meeting>
+		<imprint>
+			<date type="published" when="2005" />
+			<biblScope unit="page" from="79" to="86" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Assessing machine translation quality with error analysis</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Koponen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Electronic proceedings of the KäTu symposium on translation and interpreting studies</title>
+		<imprint>
+			<date type="published" when="2010" />
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="page" from="1" to="12" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Stanford neural machine translation systems for spoken language domains</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M.-T</forename><surname>Luong</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><forename type="middle">D</forename><surname>Manning</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the International Workshop on Spoken Language Translation</title>
+		<meeting>the International Workshop on Spoken Language Translation</meeting>
+		<imprint>
+			<date type="published" when="2015" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">BLEU: A Method for Automatic Evaluation of Machine Translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Papineni</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Roukos</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Ward</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W.-J</forename><surname>Zhu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 40th Annual Meeting on Association for Computational Linguistics</title>
+		<meeting>the 40th Annual Meeting on Association for Computational Linguistics</meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2002" />
+			<biblScope unit="page" from="311" to="318" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Domain adaptation in statistical machine translation using comparable corpora: case study for english latvian it localisation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Pinnis</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">I</forename><surname>Skadiņa</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Vasiļjevs</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Intelligent Text Processing and Computational Linguistics</title>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2013" />
+			<biblScope unit="page" from="224" to="235" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<monogr>
+		<title level="m" type="main">A productivity test of statistical machine translation post-editing in a typical localisation context. The Prague bulletin of mathematical linguistics</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Plitt</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Masselot</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2010" />
+			<biblScope unit="volume">93</biblScope>
+			<biblScope unit="page" from="7" to="16" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Perplexity minimization for translation model domain adaptation in statistical machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Sennrich</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 13th Conference of the European Chapter of the Association for Computational Linguistics</title>
+		<meeting>the 13th Conference of the European Chapter of the Association for Computational Linguistics</meeting>
+		<imprint>
+			<date type="published" when="2012" />
+			<biblScope unit="page" from="539" to="549" />
+		</imprint>
+	</monogr>
+	<note>Association for Computational Linguistics</note>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">A study of translation edit rate with targeted human annotation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Snover</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Dorr</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Schwartz</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">L</forename><surname>Micciulla</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Makhoul</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Association for Machine Translation in the Americas</title>
+		<meeting>Association for Machine Translation in the Americas</meeting>
+		<imprint>
+			<date type="published" when="2006" />
+			<biblScope unit="page" from="223" to="231" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Parallel data, tools and interfaces in OPUS</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Tiedemann</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 8th Language Resources and Evaluation Conference</title>
+		<meeting>the 8th Language Resources and Evaluation Conference</meeting>
+		<imprint>
+			<date type="published" when="2012" />
+			<biblScope unit="page" from="2214" to="2218" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">A multifaceted evaluation of neural versus phrase-based machine translation for 9 language directions</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Toral</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">V</forename><forename type="middle">M</forename><surname>Sánchez-Cartagena</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 15th Conference of the European Chapter of the Association for Computational Linguistics</title>
+		<meeting>the 15th Conference of the European Chapter of the Association for Computational Linguistics<address><addrLine>Valencia, Spain</addrLine></address></meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2017-04" />
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="1063" to="1073" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Comparative evaluation of research vs. online MT systems</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Toral</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Gaspari</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Kumar Naskar</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Way</forename></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 15th Conference of the European Association for Machine Translation</title>
+		<meeting>the 15th Conference of the European Association for Machine Translation</meeting>
+		<imprint>
+			<date type="published" when="2011" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Parallel corpora for medium density languages</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Varga</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">L</forename><surname>Németh</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Halácsy</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Kornai</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">V</forename><surname>Trón</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">V</forename><surname>Nagy</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Recent Advances in Natural Language Processing</title>
+		<imprint>
+			<date type="published" when="2005" />
+			<biblScope unit="page" from="590" to="596" />
+		</imprint>
+	</monogr>
+	<note>RANLP 2005</note>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<analytic>
+		<title level="a" type="main">Transfer learning for low-resource neural machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Zoph</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Yuret</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>May</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Knight</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Conference on Empirical Methods in Natural Language Processing</title>
+		<meeting>the Conference on Empirical Methods in Natural Language Processing</meeting>
+		<imprint>
+			<date type="published" when="2016" />
+			<biblScope unit="page" from="1568" to="1575" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T19:21+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Feedback Cleaning of Machine Translation Rules Using Automatic Evaluation</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kenji</forename><surname>Imamura</surname></persName>
+							<email>kenji.imamura@atr.co.jp</email>
+							<affiliation key="aff0">
+								<orgName type="laboratory">ATR Spoken Language Translation Research Laboratories Seika-cho</orgName>
+								<orgName type="institution">Nara Institute of Science and Technology</orgName>
+								<address>
+									<addrLine>Soraku-gun, Ikoma-shi</addrLine>
+									<settlement>Kyoto, Nara</settlement>
+									<country>Japan, Japan</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Eiichiro</forename><surname>Sumita</surname></persName>
+							<email>eiichiro.sumita@atr.co.jp</email>
+							<affiliation key="aff0">
+								<orgName type="laboratory">ATR Spoken Language Translation Research Laboratories Seika-cho</orgName>
+								<orgName type="institution">Nara Institute of Science and Technology</orgName>
+								<address>
+									<addrLine>Soraku-gun, Ikoma-shi</addrLine>
+									<settlement>Kyoto, Nara</settlement>
+									<country>Japan, Japan</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Yuji</forename><surname>Matsumoto</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="laboratory">ATR Spoken Language Translation Research Laboratories Seika-cho</orgName>
+								<orgName type="institution">Nara Institute of Science and Technology</orgName>
+								<address>
+									<addrLine>Soraku-gun, Ikoma-shi</addrLine>
+									<settlement>Kyoto, Nara</settlement>
+									<country>Japan, Japan</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Feedback Cleaning of Machine Translation Rules Using Automatic Evaluation</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>When rules of transfer-based machine translation (MT) are automatically acquired from bilingual corpora, incorrect/redundant rules are generated due to acquisition errors or translation variety in the corpora. As a new countermeasure to this problem, we propose a feedback cleaning method using automatic evaluation of MT quality, which removes incorrect/redundant rules as a way to increase the evaluation score. BLEU is utilized for the automatic evaluation. The hillclimbing algorithm, which involves features of this task, is applied to searching for the optimal combination of rules. Our experiments show that the MT quality improves by 10% in test sentences according to a subjective evaluation. This is considerable improvement over previous methods.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Along with the efforts made in accumulating bilingual corpora for many language pairs, quite a few machine translation (MT) systems that automatically acquire their knowledge from corpora have been proposed. However, knowledge for transferbased MT acquired from corpora contains many incorrect/redundant rules due to acquisition errors or translation variety in the corpora. Such rules conflict with other existing rules and cause implausible MT results or increase ambiguity. If incorrect rules could be avoided, MT quality would necessarily improve.</p><p>There are two approaches to overcoming incorrect/redundant rules:</p><p>• Selecting appropriate rules in a disambiguation process during the translation (on-line processing, <ref type="bibr" target="#b5">(Meyers et al., 2000)</ref>).</p><p>• Cleaning incorrect/redundant rules after automatic acquisition (off-line processing, <ref type="bibr" target="#b4">(Menezes and Richardson, 2001;</ref><ref type="bibr" target="#b3">Imamura, 2002)</ref>).</p><p>We employ the second approach in this paper. The cutoff by frequency <ref type="bibr" target="#b4">(Menezes and Richardson, 2001</ref>) and the hypothesis test <ref type="bibr" target="#b3">(Imamura, 2002)</ref> have been applied to clean the rules. The cutoff by frequency can slightly improve MT quality, but the improvement is still insufficient from the viewpoint of the large number of redundant rules. The hypothesis test requires very large corpora in order to obtain a sufficient number of rules that are statistically confident.</p><p>Another current topic of machine translation is automatic evaluation of MT quality <ref type="bibr" target="#b6">(Papineni et al., 2002;</ref><ref type="bibr" target="#b9">Yasuda et al., 2001;</ref><ref type="bibr" target="#b0">Akiba et al., 2001)</ref>. These methods aim to replace subjective evaluation in order to speed up the development cycle of MT systems. However, they can be utilized not only as developers' aids but also for automatic tuning of MT systems <ref type="bibr" target="#b7">(Su et al., 1992)</ref>.</p><p>We propose feedback cleaning that utilizes an automatic evaluation for removing incorrect/redundant translation rules as a tuning method  <ref type="figure" target="#fig_0">Figure 1</ref>). Our method evaluates the contribution of each rule to the MT results and removes inappropriate rules as a way to increase the evaluation scores. Since the automatic evaluation correlates with a subjective evaluation, MT quality will improve after cleaning.</p><p>Our method only evaluates MT results and does not consider various conditions of the MT engine, such as parameters, interference in dictionaries, disambiguation methods, and so on. Even if an MT engine avoids incorrect/redundant rules by on-line processing, errors inevitably remain. Our method cleans the rules in advance by only focusing on the remaining errors. Thus, our method complements on-line processing and adapts translation rules to the given conditions of the MT engine.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">MT System and Problems of Automatic Acquisition</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1">MT Engine</head><p>We use the Hierarchical Phrase Alignment-based Translator (HPAT) <ref type="bibr" target="#b3">(Imamura, 2002)</ref> as a transferbased MT system. The most important knowledge in HPAT is transfer rules, which define the correspondences between source and target language expressions. An example of English-to-Japanese transfer rules is shown in <ref type="figure" target="#fig_1">Figure 2</ref>. The transfer rules are regarded as a synchronized context-free grammar. When the system translates an input sentence, the sentence is first parsed by using source patterns of the transfer rules. Next, a tree structure of the target language is generated by mapping the source patterns to the corresponding target patterns. When non-terminal symbols remain in the target tree, target words are inserted by referring to a translation dictionary.</p><p>Ambiguities, which occur during parsing or mapping, are resolved by selecting the rules that minimize the semantic distance between the input words and source examples (real examples in the training corpus) of the transfer rules <ref type="bibr" target="#b1">(Furuse and Iida, 1994)</ref>. For instance, when the input phrase "leave at 11 a.m." is translated into Japanese, Rule 2 in <ref type="figure" target="#fig_1">Figure  2</ref> is selected because the semantic distance from the source example <ref type="bibr">(arrive, p.m.)</ref> is the shortest to the head words of the input phrase (leave, a.m.).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2">Problems of Automatic Acquisition</head><p>HPAT automatically acquires its transfer rules from parallel corpora by using Hierarchical Phrase Alignment <ref type="bibr" target="#b2">(Imamura, 2001)</ref>. However, the rule set contains many incorrect/redundant rules. The reasons for this problem are roughly classified as follows.</p><p>• Errors in automatic rule acquisition</p><p>• Translation variety in corpora -The acquisition process cannot generalize the rules because bilingual sentences depend on the context or the situation. -Corpora contain multiple (paraphrasable) translations of the same source expression.</p><p>In the experiment of <ref type="bibr" target="#b3">Imamura (2002)</ref>, about 92,000 transfer rules were acquired from about 120,000 bilingual sentences 1 . Most of these rules are low-frequency. They reported that MT quality slightly improved, even though the low-frequency rules were removed to a level of about 1/9 the previous number. However, since some of them, such as idiomatic rules, are necessary for translation, MT quality cannot be dramatically improved by only removing low-frequency rules.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Automatic Evaluation of MT Quality</head><p>We utilize BLEU <ref type="bibr" target="#b6">(Papineni et al., 2002)</ref> for the automatic evaluation of MT quality in this paper.</p><p>BLEU measures the similarity between MT results and translation results made by humans (called Note that a sizeable set of MT results is necessary in order to calculate an accurate BLEU score. Although it is possible to calculate the BLEU score of a single MT result, it contains errors from the subjective evaluation. BLEU cancels out individual errors by summing the similarities of MT results. Therefore, we need all of the MT results from the evaluation corpus in order to calculate an accurate BLEU score.</p><formula xml:id="formula_0">Rule No. Syn. Cat. Source Pattern Target Pattern Source Example 1 VP X VP at Y NP ⇒ Y' de X' ((present, conference) ...) 2 VP X VP at Y NP ⇒ Y' ni X' ((stay, hotel), (arrive, p.m) ...) 3 VP X VP at Y NP ⇒ Y' wo X' ((look, it) ...) 4 NP X NP at Y NP ⇒ Y' no X' ((man, front desk) ...)</formula><p>One feature of BLEU is its use of multiple references for a single source sentence. However, one reference per sentence is used in this paper because an already existing bilingual corpus is applied to the cleaning.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Feedback Cleaning</head><p>In this section, we introduce the proposed method, called feedback cleaning. This method is carried out by selecting or removing translation rules to increase the BLEU score of the evaluation corpus ( <ref type="figure" target="#fig_0">Figure 1</ref>). Thus, this task is regarded as a combinatorial optimization problem of translation rules. The hillclimbing algorithm, which involves the features of this task, is applied to the optimization. The following sections describe the reasons for using this method and its procedure. The hill-climbing algorithm often falls into locally optimal solutions. However, we believe that a locally optimal solution is more effective in improving MT quality than the previous methods.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Costs of Combinatorial Optimization</head><p>Most combinatorial optimization methods iterate changes in the combination and the evaluation. In the machine translation task, the evaluation process requires the longest time. For example, in order to calculate the BLEU score of a combination (solution), we have to translate C times, where C denotes the size of the evaluation corpus. Furthermore, in order to find the nearest neighbor solution, we have to calculate all BLEU scores of the neighborhood. If the number of rules is R and the neighborhood is regarded as consisting of combinations made by changing only one rule, we have to translate C × R times to find the nearest neighbor solution. Assume that C = 10, 000 and R = 100, 000, the number of sentence translations (sentences to be translated) becomes one billion. It is infeasible to search for the optimal solution without reducing the number of sentence translations.</p><p>A feature of this task is that removing rules is easier than adding rules. The rules used for translating a sentence can be identified during the translation. Conversely, the source sentence set S <ref type="bibr">[r]</ref>, where a rule r is used for the translation, is determined once the evaluation corpus is translated. When r is removed, only the MT results of S[r] will change, so we do not need to re-translate other sentences. Assuming that five rules on average are applied to translate a sentence, the number of sentence translations becomes 5 × C + C = 60, 000 for testing all rules. On the contrary, to add a rule, the entire corpus must be re-translated because it is unknown which MT results will change by adding a rule.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Cleaning Procedure</head><p>Based on the above discussion, we utilize the hillclimbing algorithm, in which the initial solution contains all rules (called the base rule set) and the search for a combination is done by only removing static: C eval , an evaluation corpus R base , a rule set acquired from the entire training corpus (the base rule set) R, a current rule set, a subset of the base rule set S[r], a source sentence set where the rule r is used for the translation Doc iter , an MT result set of the evaluation corpus translated with the current rule set   <ref type="figure" target="#fig_2">Figure 3</ref>. This algorithm can be summarized as follows.</p><formula xml:id="formula_1">procedure CLEAN-RULESET () R ← R base repeat R iter ← R R remove ← ∅ score iter ← SET-TRANSLATION() for each r in R iter do if S[r] = ∅ then R ← R iter − {r}</formula><p>• Translate the evaluation corpus first and then obtain the rules used for the translation and the BLEU score before removing rules.</p><p>• For each rule one-by-one, calculate the BLEU score after removing the rule and obtain the difference between this score and the score before the rule was removed. This difference is called the rule contribution.</p><p>• If the rule contribution is negative (i.e., the BLUE score increases after removing the rule), remove the rule.</p><p>In order to achieve faster convergence, this algorithm removes all rules whose rule contribution is negative in one iteration. This assumes that the removed rules are independent from one another.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">N-fold Cross-cleaning</head><p>In general, most evaluation corpora are smaller than training corpora. Therefore, omissions of cleaning will remain because not all rules can be tested by the evaluation corpus. In order to avoid this problem, we propose an advanced method called cross-cleaning <ref type="figure" target="#fig_3">(Figure 4)</ref>, which is similar to cross-validation.</p><p>The procedure of cross-cleaning is as follows.</p><p>1. First, create the base rule set from the entire training corpus.</p><p>2. Next, divide the training corpus into N pieces uniformly.</p><p>3. Leave one piece for the evaluation, acquire rules from the rest (N − 1) of the pieces, and repeat them N times. Thus, we obtain N pairs of rule set and evaluation sub-corpus. Each rule set is a subset of the base rule set.</p><p>4. Apply the feedback cleaning algorithm to each of the N pairs and record the rule contributions even if the rules are removed. The purpose of this step is to obtain the rule contributions.</p><p>5. For each rule in the base rule set, sum up the rule contributions obtained from the rule subsets. If the sum is negative, remove the rule from the base rule set.</p><p>The major difference of this method from crossvalidation is Step 5. In the case of cross-cleaning,  Therefore, we only obtain the rule contributions from the rule subsets and sum them up. The summed contribution is an approximate value of the rule contribution to the entire training corpus. Crosscleaning removes the rules from the base rule set based on this approximate contribution.</p><p>Cross-cleaning uses all sentences in the training corpus, so it is nearly equivalent to applying a large evaluation corpus to feedback cleaning, even though it does not require specific evaluation corpora.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Evaluation</head><p>In this section, the effects of feedback cleaning are evaluated by using English-to-Japanese translation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.1">Experimental Settings</head><p>Bilingual Corpora The corpus used in the following experiments is the Basic Travel Expression Corpus <ref type="bibr" target="#b8">(Takezawa et al., 2002)</ref>. This is a collection of Japanese sentences and their English translations based on expressions that are usually found in phrasebooks for foreign tourists. We divided it into sub-corpora for training, evaluation, and test as shown in <ref type="table" target="#tab_2">Table 1</ref>. The number of rules acquired from the training corpus (the base rule set size) was 105,588.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Evaluation Methods of MT Quality</head><p>We used the following two methods to evaluate MT quality.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.">Test Corpus BLEU Score</head><p>The BLUE score was calculated with the test corpus. The number of references was one for each sentence, in the same way used for the feedback cleaning. Subjective Quality A total of 510 sentences from the test corpus were evaluated by paired comparison. Specifically, the source sentences were translated using the base rule set, and the same sources were translated using the rules after the cleaning. One-by-one, a Japanese native speaker judged which MT result was better or that they were of the same quality. Subjective quality is represented by the following equation, where I denotes the number of improved sentences and D denotes the number of degraded sentences.</p><formula xml:id="formula_2">Subj. Quality = I − D # of test sentences (1)</formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.2">Feedback Cleaning Using Evaluation Corpus</head><p>In order to observe the characteristics of feedback cleaning, cleaning of the base rule set was carried out by using the evaluation corpus. The results are shown in <ref type="figure" target="#fig_4">Figure 5</ref>. This graph shows changes in the test corpus BLEU score, the evaluation corpus BLEU score, and the number of rules along with the number of iterations. Consequently, the removed rules converged at nine iterations, and 6,220 rules were removed. The evaluation corpus BLEU score was improved by increasing the number of iterations, demonstrating that the combinatorial optimization by the hill-climbing algorithm worked effectively. The test corpus BLEU score reached a peak score of 0.245 at the second iteration and slightly decreased after the third iteration due to overfitting. However, the final score was 0.244, which is almost the same as the peak score.</p><p>The test corpus BLEU score was lower than the evaluation corpus BLEU score because the rules used in the test corpus were not exhaustively checked by the evaluation corpus. If the evaluation corpus size could be expanded, the test corpus score would improve.</p><p>About 37,000 sentences were translated on average in each iteration. This means that the time for an iteration is estimated at about ten hours if translation speed is one second per sentence. This is a short enough time for us because our method does not require real-time processing. 2</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.3">MT Quality vs. Cleaning Methods</head><p>Next, in order to compare the proposed methods with the previous methods, the MT quality achieved by each of the following five methods was measured.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.">Baseline</head><p>The MT results using the base rule set.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">Cutoff by Frequency</head><p>Low-frequency rules that appeared in the training corpus less often than twice were removed from the base rule set. This threshold was experimentally determined by the test corpus BLEU score.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.">χ 2 Test</head><p>The χ 2 test was performed in the same manner as in Imamura <ref type="formula">(2002)</ref>'s experiment. We introduced rules with more than 95 percent confidence (χ 2 ≥ 3.841).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.">Simple Feedback Cleaning</head><p>Feedback cleaning was carried out using the evaluation corpus in <ref type="table" target="#tab_2">Table 1.</ref> 5. Cross-cleaning N-fold cross-cleaning was carried out. We applied five-fold cross-cleaning in this experiment.</p><p>The results are shown in  Focusing on the subjective quality of the proposed methods, some MT results were degraded from the baseline due to the removal of rules. However, the subjective quality levels were relatively improved because our methods aim to increase the portion of correct MT results.</p><p>Focusing on the number of the rules, the rule set of the simple feedback cleaning is clearly a locally optimal solution, since the number of rules is more than that of cross-cleaning, although the BLEU score is lower. In comparing the number of rules in cross-cleaning with that in the cutoff by frequency, the former is three times higher than the latter. We assume that the solution of cross-cleaning is also the locally optimal solution. If we could find the globally optimal solution, the MT quality would certainly improve further.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7">Discussion</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.1">Other Automatic Evaluation Methods</head><p>The idea of feedback cleaning is independent of BLEU. Some automatic evaluation methods of MT quality other than BLEU have been proposed. For example, <ref type="bibr" target="#b7">Su et al. (1992)</ref>, <ref type="bibr" target="#b9">Yasuda et al. (2001)</ref>, and <ref type="bibr" target="#b0">Akiba et al. (2001)</ref> measure similarity between MT results and the references by DP matching (edit distances) and then output the evaluation scores. These automatic evaluation methods that output scores are applicable to feedback cleaning.</p><p>The characteristics common to these methods, including BLEU, is that the similarity to references are measured for each sentence, and the evaluation score of an MT system is calculated by aggregating the similarities. Therefore, MT results of the evaluation corpus are necessary to evaluate the system, and reducing the number of sentence translations is an important technique for all of these methods.</p><p>The effects of feedback cleaning depend on the characteristics of objective measures. DP-based measures and BLEU have different characteristics <ref type="bibr" target="#b10">(Yasuda et al., 2003)</ref>. The exploration of several measures for feedback cleaning remains an interesting future work.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.2">Domain Adaptation</head><p>When applying corpus-based machine translation to a different domain, bilingual corpora of the new domain are necessary. However, the sizes of the new corpora are generally smaller than that of the original corpus because the collection of bilingual sentences requires a high cost.</p><p>The feedback cleaning proposed in this paper can be interpreted as adapting the translation rules so that the MT results become similar to the evaluation corpus. Therefore, if we regard the bilingual corpus of the new domain as the evaluation corpus and carry out feedback cleaning, the rule set will be adapted to the new domain. In other words, our method can be applied to adaptation of an MT system by using a smaller corpus of the new domain.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8">Conclusions</head><p>In this paper, we proposed a feedback cleaning method that utilizes automatic evaluation to remove incorrect/redundant translation rules. BLEU was utilized for the automatic evaluation of MT quality, and the hill-climbing algorithm was applied to searching for the combinatorial optimization. Utilizing features of this task, incorrect/redundant rules were removed from the initial solution, which contains all rules acquired from the training corpus. In addition, we proposed N-fold cross-cleaning to reduce the influence of the evaluation corpus size. Our experiments show that the MT quality was improved by 10% in paired comparison and by 0.045 in the BLEU score. This is considerable improvement over the previous methods.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 :</head><label>1</label><figDesc>Figure 1: Structure of Feedback Cleaning</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: Example of HPAT Transfer Rules</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: Feedback Cleaning Algorithm</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 4 :</head><label>4</label><figDesc>Figure 4: Structure of Cross-cleaning (In the case of three-fold cross-cleaning)</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 5 :</head><label>5</label><figDesc>Figure 5: Relationship between Number of Iterations and BLEU Scores/Number of Rules</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0" validated="false"><head></head><label></label><figDesc>then add r to R remove end R ← R iter − R remove until R remove = ∅ function SET-TRANSLATION () returns a BLEU score of the evaluation corpus translated with R Doc iter ← ∅ for each r in R base do S[r] ← ∅ end for each s in C eval do translate s and obtain the MT result t obtain the rule set R[s] that is used for translating s for each r in R[s] do add s to S[r] end add t to Doc iter end return BLEU-SCORE(Doc iter )</figDesc><table>translate all sentences in S[r], and obtain the MT results T [r] 
+Doc[r] ← the MT result set that T [r] is replaced from Doc iter 
+the rule contribution contrib[r] ← score iter − BLEU-SCORE(Doc[r]) 
+if contrib[r] &lt; 0 </table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2" validated="false"><head>Table 1 :</head><label>1</label><figDesc>Corpus Size</figDesc><table>the rule subsets cannot be directly merged because 
+some rules have already been removed in Step 4. 
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3" validated="false"><head>Table 2 .</head><label>2</label><figDesc>This table shows that the test corpus BLEU score and the subjective</figDesc><table>Previous Methods 
+
+Proposed Methods 
+Baseline Cutoff by Freq. χ 2 Test Simple FC Cross-cleaning 
+# of Rules 
+105,588 
+26,053 
+1,499 
+99,368 
+82,462 
+Test Corpus BLEU Score 
+0.232 
+0.234 
+0.157 
+0.244 
+0.277 
+Subjective Quality 
++1.77% 
+-6.67% 
++6.67% 
++10.0% 
+# of Improved Sentences 
+83 
+115 
+83 
+100 
+# of Same Quality 
+353 
+246 
+378 
+361 
+(Same Results) 
+(257) 
+(114) 
+(266) 
+(234) 
+# of Degraded Sentences 
+74 
+149 
+49 
+49 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4" validated="false"><head>Table 2 :</head><label>2</label><figDesc>MT Quality vs. Cleaning Methods quality of the proposed methods (simple feedback cleaning and cross-cleaning) are considerably im- proved over those of the previous methods.</figDesc><table></table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1">In this paper, the number of rules denotes the number of unique pairs of source patterns and target patterns.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="2">In this experiment, it took about 80 hours until convergence using a Pentium 4 2-GHz computer.</note>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Acknowledgment</head><p>The research reported here is supported in part by a contract with the Telecommunications Advancement Organization of Japan entitled, "A study of speech dialogue translation technology based on a large corpus."</p></div>
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Using multiple edit distances to automatically rank machine translation output</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Yasuhiro</forename><surname>Akiba</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kenji</forename><surname>Imamura</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Eiichiro</forename><surname>Sumita</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Machine Translation Summit VIII</title>
+		<meeting>Machine Translation Summit VIII</meeting>
+		<imprint>
+			<date type="published" when="2001" />
+			<biblScope unit="page" from="15" to="20" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Constituent boundary parsing for example-based machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Osamu</forename><surname>Furuse</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hitoshi</forename><surname>Iida</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of COLING-94</title>
+		<meeting>COLING-94</meeting>
+		<imprint>
+			<date type="published" when="1994" />
+			<biblScope unit="page" from="105" to="111" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Hierarchical phrase alignment harmonized with parsing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kenji</forename><surname>Imamura</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 6th Natural Language Processing Pacific Rim Symposium (NLPRS 2001)</title>
+		<meeting>the 6th Natural Language Processing Pacific Rim Symposium (NLPRS 2001)</meeting>
+		<imprint>
+			<date type="published" when="2001" />
+			<biblScope unit="page" from="377" to="384" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Application of translation knowledge acquired by hierarchical phrase alignment for pattern-based MT</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kenji</forename><surname>Imamura</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 9th Conference on Theoretical and Methodological Issues in Machine Translation (TMI-2002)</title>
+		<meeting>the 9th Conference on Theoretical and Methodological Issues in Machine Translation (TMI-2002)</meeting>
+		<imprint>
+			<date type="published" when="2002" />
+			<biblScope unit="page" from="74" to="84" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">A best first alignment algorithm for automatic extraction of transfer mappings from bilingual corpora</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Arul</forename><surname>Menezes</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Stephen</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Richardson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the &apos;Workshop on Example-Based Machine Translation&apos; in MT Summit VIII</title>
+		<meeting>the &apos;Workshop on Example-Based Machine Translation&apos; in MT Summit VIII</meeting>
+		<imprint>
+			<date type="published" when="2001" />
+			<biblScope unit="page" from="35" to="42" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Chart-based translation rule application in machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Adam</forename><surname>Meyers</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Michiko</forename><surname>Kosaka</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ralph</forename><surname>Grishman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of COLING-2000</title>
+		<meeting>COLING-2000</meeting>
+		<imprint>
+			<date type="published" when="2000" />
+			<biblScope unit="page" from="537" to="543" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">BLEU: a method for automatic evaluation of machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kishore</forename><surname>Papineni</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Salim</forename><surname>Roukos</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Todd</forename><surname>Ward</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Weijing</forename><surname>Zhu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 40th Annual Meeting of the Association for Computational Linguistics (ACL)</title>
+		<meeting>the 40th Annual Meeting of the Association for Computational Linguistics (ACL)</meeting>
+		<imprint>
+			<date type="published" when="2002" />
+			<biblScope unit="page" from="311" to="318" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">A new quantitative quality measure for machine translation systems</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Keh-Yih</forename><surname>Su</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ming-Wen</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jing-Shin</forename><surname>Chang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of COLING-92</title>
+		<meeting>COLING-92</meeting>
+		<imprint>
+			<date type="published" when="1992" />
+			<biblScope unit="page" from="433" to="439" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Toward a broad-coverage bilingual corpus for speech translation of travel conversations in the real world</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Toshiyuki</forename><surname>Takezawa</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Eiichiro</forename><surname>Sumita</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Fumiaki</forename><surname>Sugaya</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hirofumi</forename><surname>Yamamoto</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Seiichi</forename><surname>Yamamoto</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Third International Conference on Language Resources and Evaluation (LREC 2002)</title>
+		<meeting>the Third International Conference on Language Resources and Evaluation (LREC 2002)</meeting>
+		<imprint>
+			<date type="published" when="2002" />
+			<biblScope unit="page" from="147" to="152" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">An automatic evaluation method of translation quality using translation answer candidates queried from a parallel corpus</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Keiji</forename><surname>Yasuda</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Fumiaki</forename><surname>Sugaya</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Toshiyuki</forename><surname>Takezawa</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Seiichi</forename><surname>Yamamoto</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Masuzo</forename><surname>Yanagida</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Machine Translation Summit VIII</title>
+		<meeting>Machine Translation Summit VIII</meeting>
+		<imprint>
+			<date type="published" when="2001" />
+			<biblScope unit="page" from="373" to="378" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Applications of automatic evaluation methods to measuring a capability of speech translation system</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Keiji</forename><surname>Yasuda</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Fumiaki</forename><surname>Sugaya</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Toshiyuki</forename><surname>Takezawa</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Seiichi</forename><surname>Yamamoto</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Masuzo</forename><surname>Yanagida</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 10th Conference of the European Chapter of the Association for Computational Linguistics (EACL 2003)</title>
+		<meeting>the 10th Conference of the European Chapter of the Association for Computational Linguistics (EACL 2003)</meeting>
+		<imprint>
+			<date type="published" when="2003" />
+			<biblScope unit="page" from="371" to="378" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>
