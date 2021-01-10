@@ -1,0 +1,929 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T20:23+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Connotation Lexicon: A Dash of Sentiment Beneath the Surface Meaning</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+				<date type="published" when="2009-08-04">August 4-9</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Song</forename><surname>Feng</surname></persName>
+							<email>songfeng@cs.stonybrook.edu</email>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Computer Science</orgName>
+								<orgName type="institution">Stony Brook University Stony Brook</orgName>
+								<address>
+									<postCode>11794-4400</postCode>
+									<region>NY</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jun</forename><forename type="middle">Seok</forename><surname>Kang</surname></persName>
+							<email>junkang@cs.stonybrook.edu</email>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Computer Science</orgName>
+								<orgName type="institution">Stony Brook University Stony Brook</orgName>
+								<address>
+									<postCode>11794-4400</postCode>
+									<region>NY</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Polina</forename><surname>Kuznetsova</surname></persName>
+							<email>pkuznetsova@cs.stonybrook.edu</email>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Computer Science</orgName>
+								<orgName type="institution">Stony Brook University Stony Brook</orgName>
+								<address>
+									<postCode>11794-4400</postCode>
+									<region>NY</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Yejin</forename><surname>Choi</surname></persName>
+							<email>ychoi@cs.stonybrook.edu</email>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Computer Science</orgName>
+								<orgName type="institution">Stony Brook University Stony Brook</orgName>
+								<address>
+									<postCode>11794-4400</postCode>
+									<region>NY</region>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Connotation Lexicon: A Dash of Sentiment Beneath the Surface Meaning</title>
+					</analytic>
+					<monogr>
+						<title level="m">Proceedings of the 51st Annual Meeting of the Association for Computational Linguistics</title>
+						<meeting>the 51st Annual Meeting of the Association for Computational Linguistics <address><addrLine>Sofia, Bulgaria</addrLine></address>
+						</meeting>
+						<imprint>
+							<biblScope unit="page" from="1774" to="1784"/>
+							<date type="published" when="2009-08-04">August 4-9</date>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>Understanding the connotation of words plays an important role in interpreting subtle shades of sentiment beyond denotative or surface meaning of text, as seemingly objective statements often allude nuanced sentiment of the writer, and even purposefully conjure emotion from the readers' minds. The focus of this paper is drawing nuanced, connotative sentiments from even those words that are objective on the surface, such as "intelligence", "human", and "cheesecake". We propose induction algorithms encoding a diverse set of linguistic insights (semantic prosody, distributional similarity, semantic parallelism of coordination) and prior knowledge drawn from lexical resources, resulting in the first broad-coverage connotation lexicon.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>There has been a substantial body of research in sentiment analysis over the last decade <ref type="bibr" target="#b20">(Pang and Lee, 2008)</ref>, where a considerable amount of work has focused on recognizing sentiment that is generally explicit and pronounced rather than implied and subdued. However in many real-world texts, even seemingly objective statements can be opinion-laden in that they often allude nuanced sentiment of the writer <ref type="bibr" target="#b10">(Greene and Resnik, 2009</ref>), or purposefully conjure emotion from the readers' minds <ref type="bibr" target="#b17">(Mohammad and Turney, 2010)</ref>. Although some researchers have explored formal and statistical treatments of those implicit and implied sentiments (e.g. <ref type="bibr" target="#b31">Wiebe et al. (2005)</ref>, <ref type="bibr" target="#b8">Esuli and Sebastiani (2006)</ref>, <ref type="bibr" target="#b10">Greene and Resnik (2009)</ref>, <ref type="bibr" target="#b6">Davidov et al. (2010)</ref>), automatic analysis of them largely remains as a big challenge.</p><p>In this paper, we concentrate on understanding the connotative sentiments of words, as they play an important role in interpreting subtle shades of sentiment beyond denotative or surface meaning of text. For instance, consider the following:</p><p>Geothermal replaces oil-heating; it helps reducing greenhouse emissions. 1</p><p>Although this sentence could be considered as a factual statement from the general standpoint, the subtle effect of this sentence may not be entirely objective: this sentence is likely to have an influence on readers' minds in regard to their opinion toward "geothermal". In order to sense the subtle overtone of sentiments, one needs to know that the word "emissions" has generally negative connotation, which geothermal reduces. In fact, depending on the pragmatic contexts, it could be precisely the intention of the author to transfer his opinion into the readers' minds. The main contribution of this paper is a broadcoverage connotation lexicon that determines the connotative polarity of even those words with ever so subtle connotation beneath their surface meaning, such as "Literature", "Mediterranean", and "wine". Although there has been a number of previous work that constructed sentiment lexicons (e.g., <ref type="bibr" target="#b8">Esuli and Sebastiani (2006)</ref>, <ref type="bibr" target="#b32">Wilson et al. (2005a)</ref>, <ref type="bibr" target="#b13">Kaji and Kitsuregawa (2007)</ref>, <ref type="bibr" target="#b22">Qiu et al. (2009)</ref>), which seem to be increasingly and inevitably expanding over words with (strongly) connotative sentiments rather than explicit sentiments alone (e.g., "gun"), little prior work has directly tackled this problem of learning connotation, 2 and much of the subtle connotation of many seemingly objective words is yet to be determined. A central premise to our approach is that it is collocational statistics of words that affect and shape the polarity of connotation. Indeed, the etymology of "connotation" is from the Latin "com-" ("together or with") and "notare" ("to mark"). It is important to clarify, however, that we do not simply assume that words that collocate share the same polarity of connotation. Although such an assumption played a key role in previous work for the analogous task of learning sentiment lexicon <ref type="bibr" target="#b30">(Velikovich et al., 2010)</ref>, we expect that the same assumption would be less reliable in drawing subtle connotative sentiments of words. As one example, the predicate "cure", which has a positive connotation typically takes arguments with negative connotation, e.g., "disease", when used as the "relieve" sense. <ref type="bibr">3</ref> Therefore, in order to attain a broad coverage lexicon while maintaining good precision, we guide the induction algorithm with multiple, carefully selected linguistic insights: [1] distributional similarity, [2] semantic parallelism of coordination, [3] selectional preference, and [4] semantic prosody (e.g., <ref type="bibr" target="#b24">Sinclair (1991)</ref>, <ref type="bibr" target="#b15">Louw (1993)</ref>, <ref type="bibr" target="#b27">Stubbs (1995)</ref>, <ref type="bibr" target="#b25">Stefanowitsch and Gries (2003)</ref>)), and also exploit existing lexical resources as an additional inductive bias.</p><p>We cast the connotation lexicon induction task as a collective inference problem, and consider approaches based on three distinct types of algorithmic framework that have been shown successful for conventional sentiment lexicon induction:</p><p>Random walk based on HITS/PageRank (e.g., <ref type="bibr" target="#b14">Kleinberg (1999)</ref>, <ref type="bibr" target="#b19">Page et al. (1999</ref><ref type="bibr" target="#b9">), Feng et al. (2011</ref><ref type="bibr" target="#b12">) Heerschop et al. (2011</ref><ref type="bibr" target="#b18">), Montejo-Ráez et al. (2012</ref>)</p><p>Label/Graph propagation (e.g., <ref type="bibr">Zhu and Ghahra-(2011)</ref> but with practical limitations. See §3 for detailed discussion. <ref type="bibr">3</ref> Note that when "cure" is used as the "preserve" sense, it expects objects with non-negative connotation. Hence wordsense-disambiguation (WSD) presents a challenge, though not unexpectedly. In this work, we assume the general connotation of each word over statistically prevailing senses, leaving a more cautious handling of WSD as future work. mani (2002), <ref type="bibr" target="#b30">Velikovich et al. (2010))</ref> Constraint optimization (e.g., <ref type="bibr" target="#b23">Roth and Yih (2004)</ref>, <ref type="bibr">Cardie (2009), Lu et al. (2011)</ref>).</p><p>We provide comparative empirical results over several variants of these approaches with comprehensive evaluations including lexicon-based, human judgments, and extrinsic evaluations. It is worthwhile to note that not all words have connotative meanings that are distinct from denotational meanings, and in some cases, it can be difficult to determine whether the overall sentiment is drawn from denotational or connotative meanings exclusively, or both. Therefore, we encompass any sentiment from either type of meanings into the lexicon, where non-neutral polarity prevails over neutral one if some meanings lead to neutral while others to non-neutral. <ref type="bibr">4</ref> Our work results in the first broad-coverage connotation lexicon, 5 significantly improving both the coverage and the precision of <ref type="bibr" target="#b9">Feng et al. (2011)</ref>. As an interesting by-product, our algorithm can be also used as a proxy to measure the general connotation of real-world named entities based on their collocational statistics. <ref type="table" target="#tab_0">Table 1</ref> highlights some example proper nouns included in the final lexicon.</p><p>The rest of the paper is structured as follows. In §2 we describe three types of induction algorithms followed by evaluation in §3. Then we revisit the induction algorithms based on constraint optimization in §4 to enhance quality and scalability. §5 presents comprehensive evaluation with human judges and extrinsic evaluations. Related work and conclusion are in §6 and §7. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Connotation Induction Algorithms</head><p>We develop induction algorithms based on three distinct types of algorithmic framework that have been shown successful for the analogous task of sentiment lexicon induction: HITS &amp; PageRank ( §2.1), Label/Graph Propagation ( §2.2), and Constraint Optimization via Integer Linear Programming ( §2.3). As will be shown, each of these approaches will incorporate additional, more diverse linguistic insights.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1">HITS &amp; PageRank</head><p>The work of <ref type="bibr" target="#b9">Feng et al. (2011)</ref> explored the use of HITS <ref type="bibr" target="#b14">(Kleinberg, 1999)</ref> and PageRank <ref type="bibr" target="#b19">(Page et al., 1999)</ref> to induce the general connotation of words hinging on the linguistic phenomena of selectional preference and semantic prosody, i.e., connotative predicates influencing the connotation of their arguments. For example, the object of a negative connotative predicate "cure" is likely to have negative connotation, e.g., "disease" or "cancer". The bipartite graph structure for this approach corresponds to the left-most box (labeled as "pred-arg") in <ref type="figure">Figure 1</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2">Label Propagation</head><p>With the goal of obtaining a broad-coverage lexicon in mind, we find that relying only on the structure of semantic prosody is limiting, due to relatively small sets of connotative predicates available. <ref type="bibr">6</ref> Therefore, we extend the graph structure as an overlay of two sub-graphs <ref type="figure">(Figure 1</ref>) as described below:</p><formula xml:id="formula_0">Sub-graph #1: Predicate-Argument Graph</formula><p>This sub-graph is the bipartite graph that encodes the selectional preference of connotative predicates over their arguments. In this graph, connotative predicates p reside on one side of the graph and their co-occurring arguments a reside on the other side of the graph based on Google Web 1T corpus. <ref type="bibr">7</ref> The weight on the edges between the predicates p and arguments a are defined using Point-wise Mutual Information (PMI) as follows:</p><formula xml:id="formula_1">w(p → a) := P M I(p, a) = log 2 P (p, a) P (p)P (a)</formula><p>PMI scores have been widely used in previous studies to measure association between words (e.g., <ref type="bibr" target="#b29">Turney (2001)</ref>, <ref type="bibr" target="#b4">Church and Hanks (1990)</ref>).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Sub-graph #2: Argument-Argument Graph</head><p>The second sub-graph is based on the distributional similarities among the arguments. One possible way of constructing such a graph is simply connecting all nodes and assign edge weights proportionate to the word association scores, such as PMI, or distributional similarity. However, such a completely connected graph can be susceptible to propagating noise, and does not scale well over a very large set of vocabulary. We therefore reduce the graph connectivity by exploiting semantic parallelism of coordination <ref type="bibr" target="#b1">(Bock (1986)</ref>, <ref type="bibr">Hatzivassiloglou and McKeown 7</ref> We restrict predicte-argument pairs to verb-object pairs in this study. Note that Google Web 1T dataset consists of n-grams upto n = 5. Since n-gram sequences are too short to apply a parser, we extract verb-object pairs approximately by matching part-of-speech tags. Empirically, when overlaid with the second sub-graph, we found that it is better to keep the connectivity of this sub-graph as uni-directional. That is, we only allow edges to go from a predicate to an argument.  (1997), <ref type="bibr" target="#b21">Pickering and Branigan (1998)</ref>). In particular, we consider an undirected edge between a pair of arguments a 1 and a 2 only if they occurred together in the "a 1 and a 2 " or "a 2 and a 1 " coordination, and assign edge weights as:</p><formula xml:id="formula_2">w(a1 − a2) = CosineSim( − → a1, − → a2) = − → a1 · − → a2 || − → a1|| || − → a2||</formula><p>where − → a 1 and − → a 2 are co-occurrence vectors for a 1 and a 2 respectively. The co-occurrence vector for each word is computed using PMI scores with respect to the top n co-occurring words. 8 n (=50) is selected empirically. The edge weights in two sub-graphs are normalized so that they are in the comparable range. 9</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Limitations of Graph-based Algorithms</head><p>Although graph-based algorithms ( §2.1, §2.2) provide an intuitive framework to incorporate various lexical relations, limitations include:</p><p>1. They allow only non-negative edge weights. Therefore, we can encode only positive (supportive) relations among words (e.g., distributionally similar words will endorse each other with the same polarity), while missing on exploiting negative relations (e.g., antonyms may drive each other into the opposite polarity).</p><p>2. They induce positive and negative polarities in isolation via separate graphs. However, we expect that a more effective algorithm should induce both polarities simultaneously.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.3">Constraint Optimization</head><p>Addressing limitations of graph-based algorithms ( §2.2), we propose an induction algorithm based on Integer Linear Programming (ILP). <ref type="figure" target="#fig_0">Figure 2</ref> provides the pictorial overview. In comparison to <ref type="figure">Figure 1</ref>, two new components are: (1) dictionarydriven relations targeting enhanced precision, and (2) dictionary-driven words (i.e., unseen words with respect to those relations explored in <ref type="figure">Figure  1</ref>) targeting enhanced coverage. We formulate insights in <ref type="figure" target="#fig_0">Figure 2</ref> using ILP as follows:</p><p>Definition of sets of words: 1. P + : the set of positive seed predicates. P − : the set of negative seed predicates. 2. S: the set of seed sentiment words. 3. R syn : word pairs in synonyms relation.</p><p>R ant : word pairs in antonyms relation. R coord : word pairs in coordination relation. R pred : word pairs in pred-arg relation. R pred +(−) : R pred based on P + (P − ).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Definition of variables:</head><p>For each word i, we define binary variables x i , y i , z i ∈ {0, 1}, where Objective function: We aim to maximize:</p><formula xml:id="formula_3">x i = 1 (y i = 1, z i = 1) if</formula><formula xml:id="formula_4">F = Φ prosody + Φ coord + Φ neu</formula><p>where Φ prosody is the scores based on semantic prosody, Φ coord captures the distributional similarity over coordination, and Φ neu controls the sensitivity of connotation detection between positive (negative) and neutral. In particular,</p><formula xml:id="formula_5">Φ prosody = R pred i,j w pred i,j (d ++ i,j + d −− i,j − d +− i,j − d −+ i,j ) Φ coord = R coord i,j w coord i,j (d ++ i,j + d −− i,j + d 00 i,j ) Φ neu = α R pred i,j w pred i,j · zj</formula><p>Soft constraints (edge weights): The weights in the objective function are set as follows:</p><formula xml:id="formula_6">w pred (p, a) = f req(p, a) (p,x)∈R pred f req(p, x) w coord (a1, a2) = CosSim( − → a1, − → a2) = − → a1 · − → a2 || − → a1|| || − → a2||</formula><p>Note that the same w coord (a 1 , a 2 ) has been used in graph propagation described in Section 2.2. α controls the sensitivity of connotation detection such that higher value of α will promote neutral connotation over polar ones.</p><p>Hard constrains for variable consistency:</p><p>1. Each word i has one of {+, −, ø} as polarity:</p><formula xml:id="formula_7">∀i, x i + y i + z i = 1</formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">Variable consistency between d</head><p>pq ij and x i , y i , z i :</p><formula xml:id="formula_8">x i + x j − 1 ≤ 2d ++ i,j ≤ x i + x j y i + y j − 1 ≤ 2d −− i,j ≤ y i + y j z i + z j − 1 ≤ 2d 00 i,j ≤ z i + z j x i + y j − 1 ≤ 2d +− i,j ≤ x i + y j y i + x j − 1 ≤ 2d −+ i,j ≤ y i + x j</formula><p>Hard constrains for WordNet relations:</p><p>1. C ant : Antonym pairs will not have the same positive or negative polarity:</p><formula xml:id="formula_9">∀(i, j) ∈ R ant , x i + x j ≤ 1, y i + y j ≤ 1</formula><p>For this constraint, we only consider antonym pairs that share the same root, e.g., "sufficient" and "insufficient", as those pairs are more likely to have the opposite polarities than pairs without sharing the same root, e.g., "east" and "west".</p><p>2. C syn : Synonym pairs will not have the opposite polarity:</p><formula xml:id="formula_10">∀(i, j) ∈ R syn , x i + y j ≤ 1, x j + y i ≤ 1 3 Experimental Result I</formula><p>We provide comprehensive comparisons over variants of three types of algorithms proposed in §2.</p><p>We use the Google Web 1T data <ref type="bibr" target="#b2">(Brants and Franz (2006)</ref>), and POS-tagged ngrams using Stanford POS Tagger <ref type="bibr" target="#b28">(Toutanova and Manning (2000)</ref>). We filter out the ngrams with punctuations and other special characters to reduce the noise.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Comparison against Conventional Sentiment Lexicon</head><p>Note that we consider the connotation lexicon to be inclusive of a sentiment lexicon for two practical reasons: first, it is highly unlikely that any word with non-neutral sentiment (i.e., positive or negative) would carry connotation of the opposite, i.e., conflicting 10 polarity. Second, for some words with distinct sentiment or strong connotation, it can be difficult or even unnatural to draw a precise distinction between connotation and sentiment, e.g., "efficient". Therefore, sentiment lexicons can serve as a surrogate to measure a subset of connotation words induced by the algorithms, as shown in <ref type="table">Table 3</ref> with respect to General Inquirer (Stone and Hunt <ref type="formula">(1963)</ref>) and MPQA <ref type="bibr" target="#b33">(Wilson et al. (2005b)</ref>). 11</p><p>Discussion <ref type="table">Table 3</ref> shows the agreement statistics with respect to two conventional sentiment lexicons. We find that the use of label propagation alone [PRED-ARG <ref type="formula">(</ref> 1 The sub-graph #2, based on the semantic parallelism of coordination, is simple and yet very powerful as an inductive bias.</p><p>2 The performance of graph propagation varies significantly depending on the graph topology and the corresponding edge weights.</p><p>Note that a direct comparison against ILP for top N words is tricky, as ILP does not rank results. Only for comparison purposes however, we assign <ref type="bibr">10</ref> We consider "positive" and "negative" polarities conflict, but "neutral" polarity does not conflict with any. <ref type="bibr">11</ref> In the case of General Inquirer, we use words in POSITIV and NEGATIV sets as words with positive and negative labels respectively.  <ref type="table">Table 3</ref>: Evaluation of Induction Algorithms ( §2) with respect to Sentiment Lexicons (precision%).</p><p>ranks based on the frequency of words for ILP. Because of this issue, the performance of top ∼1k words of ILP should be considered only as a conservative measure. Importantly, when evaluated over more than top 5k words, ILP is overall the top performer considering both precision (shown in <ref type="table">Table 3</ref>) and coverage (omitted for brevity). 12</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Precision, Coverage, and Efficiency</head><p>In this section, we address three important aspects of an ideal induction algorithm: precision, coverage, and efficiency. For brevity, the remainder of the paper will focus on the algorithms based on constraint optimization, as it turned out to be the most effective one from the empirical results in §3.</p><p>Precision In order to see the effectiveness of the induction algorithms more sharply, we had used a limited set of seed words in §3. However to build a lexicon with substantially enhanced precision, we will use as a large seed set as possible, e.g., entire sentiment lexicons 13 .</p><p>Broad coverage Although statistics in Google 1T corpus represent a very large amount of text, words that appear in pred-arg and coordination relations are still limited. To substantially increase the coverage, we will leverage dictionary words (that are not in the corpus) as described in §2.3 and <ref type="figure" target="#fig_0">Figure 2</ref>.</p><p>Efficiency One practical problem with ILP is efficiency and scalability. In particular, we found that it becomes nearly impractical to run the ILP formulation including all words in WordNet plus all words in the argument position in Google Web 1T. We therefore explore an alternative approach based on Linear Programming in what follows.</p><p>12 In fact, the performance of PRED-ARG variants for top 10K w.r.t. GENINQ is not meaningful as no additional word was matched beyond top 5k words.</p><p>13 Note that doing so will prevent us from evaluating against the same sentiment lexicon used as a seed set.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Induction using Linear Programming</head><p>One straightforward option for Linear Programming formulation may seem like using the same Integer Linear Programming formulation introduced in §2.3, only changing the variable definitions to be real values ∈ [0, 1] rather than integers. However, because the hard constraints in §2.3 are defined based on the assumption that all the variables are binary integers, those constraints are not as meaningful when considered for real numbers. Therefore we revise those hard constraints to encode various semantic relations (WordNet and semantic coordination) more directly.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Definition of variables:</head><p>For each word i, we define variables x i , y i , z i ∈ [0, 1]. i has a positive (negative) connotation if and only if the x i (y i ) is assigned the greatest value among the three variables; otherwise, i is neutral.</p><p>Objective function: We aim to maximize:</p><formula xml:id="formula_11">F = Φ prosody + Φ coord + Φ syn + Φ ant + Φ neu Φ prosody = R pred + i,j w pred + i,j · xj + R pred − i,j w pred − i,j · yj Φ coord = R coord i,j w coord i,j · (dc ++ i,j + dc −− i,j ) Φ syn = W syn R syn i,j (ds ++ i,j + ds −− i,j ) Φ ant = W ant R ant i,j (da ++ i,j + da −− i,j ) Φ neu = α R pred i,j w pred i,j · zj</formula><p>Hard constraints We add penalties to the objective function if the polarity of a pair of words is not consistent with its corresponding semantic relations. For example, for synonyms i and j, we introduce a penalty W syn (a positive constant) for ds  <ref type="table">Table 4</ref>: ILP/LP Comparison on MQPA (%).</p><formula xml:id="formula_12">++ i,j , ds −− i,j ∈ [−1, 0],</formula><p>x i and x j (y i and y j ) as shown below:</p><formula xml:id="formula_13">For (i, j) ∈ R syn , ds ++ i,j ≤ x i − x j , ds ++ i,j ≤ x j − x i ds −− i,j ≤ y i − y j , ds −− i,j ≤ y j − y i Notice that ds ++ i,j , ds −−</formula><p>i,j satisfying above inequalities will be always of negative values, hence in order to maximize the objective function, the LP solver will try to minimize the absolute values of ds ++ i,j , ds −− i,j , effectively pushing i and j toward the same polarity. Constraints for semantic coordination R coord can be defined similarly. Lastly, following constraints encode antonym relations:</p><formula xml:id="formula_14">For (i, j) ∈ R ant , da ++ i,j ≤ x i − (1 − x j ), da ++ i,j ≤ (1 − x j ) − x i da −− i,j ≤ y i − (1 − y j ), da −− i,j ≤ (1 − y j ) − y i</formula><p>Interpretation Unlike ILP, some of the variables result in fractional values. We consider a word has positive or negative polarity only if the assignment indicates 1 for the corresponding polarity and 0 for the rest. In other words, we treat all words with fractional assignments over different polarities as neutral. Because the optimal solutions of LP correspond to extreme points in the convex polytope formed by the constraints, we obtain a large portion of words with non-fractional assignments toward non-neutral polarities. Alternatively, one can round up fractional values.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Empirical Comparisons: ILP v.s. LP</head><p>To solve the ILP/LP, we run ILOG CPLEX Optimizer (CPLEX, 2009)) on a 3.5GHz 6 core CPU machine with 96GB RAM. Efficiency-wise, LP runs within 10 minutes while ILP takes several hours. <ref type="table">Table 4</ref> shows the results evaluated against MPQA for different variations of ILP and LP. We find that LP variants much better recall and F-score, while maintaining comparable precision. Therefore, we choose the connotation lexicon by LP (C-LP) in the following evaluations in §5.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Experimental Results II</head><p>In this section, we present comprehensive intrinsic §5.1 and extrinsic §5.2 evaluations comparing three representative lexicons from §2 &amp; §4: C-LP, OVERLAY, PRED-ARG (CP), and two popular sentiment lexicons: SentiWordNet <ref type="bibr" target="#b0">(Baccianella et al., 2010)</ref> and GI+MPQA. 14 Note that C-LP is the largest among all connotation lexicons, including ∼70,000 polar words. 15</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.1">Intrinsic Evaluation: Human Judgements</head><p>We evaluate 4000 words 16 using Amazon Mechanical Turk (AMT). Because we expect that judging a connotation can be dependent on one's cultural background, personality and value systems, we gather judgements from 5 people for each word, from which we hope to draw a more general judgement of connotative polarity. About 300 unique Turkers participated the evaluation tasks. We gather gold standard only for those words for which more than half of the judges agreed on the same polarity. Otherwise we treat them as ambiguous cases. 17 <ref type="figure" target="#fig_3">Figure 3</ref> shows a part of the AMT task, where Turkers are presented with questions that help judges to determine the subtle connotative polarity of each word, then asked to rate the degree of connotation on a scale from -5 (most negative) and 5 (most positive). To draw 14 GI+MPQA is the union of General Inquirer and MPQA. The GI, we use words in the "Positiv" &amp; "Negativ" set. For SentiWordNet, to retrieve the polarity of a given word, we sum over the polarity scores over all senses, where positive (negative) values correspond to positive (negative) polarity.</p><p>15 ∼13k adj, ∼6k verbs, ∼28k nouns, ∼22k proper nouns. <ref type="bibr">16</ref> We choose words that are not already in GI+MPQA and obtain most frequent 10,000 words based on the unigram frequency in Google-Ngram, then randomly select 4000 words. <ref type="bibr">17</ref> We allow Turkers to mark words that can be used with both positive and negative connotation, which results in about 7% of words that are excluded from the gold standard set.   <ref type="table">Table 5</ref>: Distribution of Answers from AMT.</p><p>the gold standard, we consider two different voting schemes:</p><p>• Ω V ote : The judgement of each Turker is mapped to neutral for −1 ≤ score ≤ 1, positive for score ≥ 2, negative for score ≤ 2, then we take the majority vote.</p><p>• Ω Score : Let σ(i) be the sum (weighted vote) of the scores given by 5 judges for word i. Then we determine the polarity label l(i) of i as:</p><formula xml:id="formula_15">l(i) =    positive if σ(i) &gt; 1 negative if σ(i) &lt; −1 neutral if −1 ≤ σ(i) ≤ 1</formula><p>The resulting distribution of judgements is shown in <ref type="table">Table 5</ref> &amp; 6. Interestingly, we observe that among the relatively frequently used English words, there are overwhelmingly more positively connotative words than negative ones.</p><p>In <ref type="table">Table 7</ref>, we show the percentage of words with the same label over the mutual words by the two lexicon. The highest agreement is 77% by C-LP and the gold standard by AMT V ote . How good is this? It depends on what is the natural degree of agreement over subtle connotation among people. Therefore, we also report the degree of agreement among human judges in <ref type="table">Table 7</ref>, where we compute the agreement of one Turker with respect to the gold standard drawn from the rest of the Turkers, and take the average across over all five Turkers 18 . Interestingly, the performance of <ref type="bibr">18</ref> In order to draw the gold standard from the 4 remaining Turkers, we consider adjusted versions of Ω V ote and Ω Score schemes described above.   <ref type="table">Table 7</ref>: Agreement (Accuracy) against AMTdriven Gold Standard.</p><p>Turkers is not as good as that of C-LP lexicon. We conjecture that this could be due to generally varying perception of different people on the connotative polarity, 19 while the corpus-driven induction algorithms focus on the general connotative polarity corresponding to the most prevalent senses of words in the corpus.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.2">Extrinsic Evaluation</head><p>We conduct lexicon-based binary sentiment classification on the following two corpora.</p><p>SemEval From the SemEval task, we obtain a set of news headlines with annotated scores (ranging from -100 to 87). The positive/negative scores indicate the degree of positive/negative polarity orientation. We construct several sets of the positive and negative texts by setting thresholds on the scores as shown in <ref type="table">Table 8</ref>. "≶ n" indicates that the positive set consists of the texts with scores ≥ n and the negative set consists of the texts with scores ≤ −n.</p><p>Emoticon tweets The sentiment Twitter data 20 consists of tweets containing either a smiley emoticon (positive sentiment) or a frowny emoticon (negative sentiment). We filter out the tweets with question marks or more than 30 words, and keep the ones with at least two words in the union of all polar words in the five lexicons in <ref type="table">Table 8</ref>, and then randomly select 10000 per class.</p><p>We denote the short text (e.g., content of tweets or headline texts from SemEval) by t. w represents the word in t. W + /W − is the set of posi-  <ref type="table">Table 8</ref>: Accuracy on Sentiment Classification (%).</p><p>tive/negative words of the lexicon. We define the weight of w as s(w). If w is adjective, s(w) = 2; otherwise s(w) = 1. Then the polarity of each text is determined as follows:</p><formula xml:id="formula_16">pol(t) =          positive if W + w∈t s(w) ≥ W − w∈t s(w) negative if W + w∈t s(w) &lt; W − w∈t s(w)</formula><p>As shown in <ref type="table">Table 8</ref>, C-LP generally performs better than the other lexicons on both corpora. Considering that only very simple classification strategy is applied, the result by the connotation lexicon is quite promising.</p><p>Finally, <ref type="table" target="#tab_0">Table 1</ref> highlights interesting examples of proper nouns with connotative polarity, e.g., "Mandela", "Google", "Hawaii" with positive connotation, and "Monsanto", "Halliburton", "Enron" with negative connotation, suggesting that our algorithms could potentially serve as a proxy to track the general connotation of real world entities. <ref type="table" target="#tab_2">Table 2</ref> shows example common nouns with connotative polarity.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.3">Practical Remarks on WSD and MWEs</head><p>In this work we aim to find the polarity of most prevalent senses of each word, in part because it is not easy to perform unsupervised word sense disambiguation (WSD) on a large corpus in a reliable way, especially when the corpus consists primarily of short n-grams. Although the resulting lexicon loses on some of the polysemous words with potentially opposite polarities, per-word connotation (rather than per-sense connotation) does have a practical value: it provides a convenient option for users who wish to avoid the burden of WSD before utilizing the lexicon. Future work includes handling of WSD and multi-word expressions (MWEs), e.g., "Great Leader" (for Kim Jong-Il), "Inglourious Basterds" (a movie title). 21 <ref type="bibr">21</ref> These examples credit to an anonymous reviewer.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Related Work</head><p>A very interesting work of <ref type="bibr" target="#b17">Mohammad and Turney (2010)</ref> uses Mechanical Turk in order to build the lexicon of emotions evoked by words. In contrast, we present an automatic approach that infers the general connotation of words. <ref type="bibr" target="#b30">Velikovich et al. (2010)</ref> use graph propagation algorithms for constructing a web-scale polarity lexicon for sentiment analysis. Although we employ the same graph propagation algorithm, our graph construction is fundamentally different in that we integrate stronger inductive biases into the graph topology and the corresponding edge weights. As shown in our experimental results, we find that judicious construction of graph structure, exploiting multiple complementing linguistic phenomena can enhance both the performance and the efficiency of the algorithm substantially. Other interesting approaches include one based on min-cut <ref type="bibr" target="#b7">(Dong et al., 2012)</ref> or LDA <ref type="bibr" target="#b34">(Xie and Li, 2012)</ref>. Our proposed approaches are more suitable for encoding a much diverse set of linguistic phenomena however. But our work use a few seed predicates with selectional preference instead of relying on word similarity. Some recent work explored the use of constraint optimization framework for inducing domain-dependent sentiment lexicon <ref type="bibr">Cardie (2009), Lu et al. (2011)</ref>). Our work differs in that we provide comprehensive insights into different formulations of ILP and LP, aiming to learn the much different task of learning the general connotation of words.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7">Conclusion</head><p>We presented a broad-coverage connotation lexicon that determines the subtle nuanced sentiment of even those words that are objective on the surface, including the general connotation of realworld named entities. Via a comprehensive evaluation, we provided empirical insights into three different types of induction algorithms, and proposed one with good precision, coverage, and efficiency.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 2 :</head><label>2</label><figDesc>Figure 1: Graph for Graph Propagation ( §2.2).</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head></head><label></label><figDesc>and only if i has a pos- itive (negative, neutral) connotation respectively. For every pair of word i and j, we define binary variables d pq ij where p, q ∈ {+, −, 0} and d pq ij = 1 if and only if the polarity of i and j are p and q respectively.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head></head><label></label><figDesc>CP)] improves the per- formance substantially over the comparable graph construction with different graph analysis algo- rithms, in particular, HITS and PageRank ap- proaches of Feng et al. (2011). The two com- pletely connected variants of the graph propa- gation on the Pred-Arg graph, [ PRED-ARG (PMI)] and [ PRED-ARG (CP)], do not neces- sarily improve the performance over the simpler and computationally lighter alternative, [PRED- ARG (CP)]. The [OVERLAY], which is based on both Pred-Arg and Arg-Arg subgraphs ( §2.2), achieves the best performance among graph-based algorithms, significantly improving the precision over all other baselines. This result suggests:</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: A Part of AMT Task Design.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0" validated="false"><head>Table 1 :</head><label>1</label><figDesc>Example Named Entities (Proper Nouns) with Polar Connotation.</figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2" validated="false"><head>Table 2 :</head><label>2</label><figDesc></figDesc><table>Example Words with Learned Connotation: Nouns(n), Verbs(v), Adjectives(a). 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_7" validated="false"><head>Table 6 :</head><label>6</label><figDesc>Distribution of Connotative Polarity from AMT. C-LP SENTIWN HUMAN JUDGES Ω</figDesc><table>V ote 
+
+77.0 
+71.5 
+66.0 
+Ω 
+
+Score 
+
+73.0 
+69.0 
+69.0 
+
+</table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1">Our learned lexicon correctly assigns negative polarity to emission. 2 A notable exception would be the work of Feng et al.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="4">In general, polysemous words do not seem to have conflicting non-neutral polarities over different senses, though there are many exceptions, e.g., "heat", or "fine". We treat each word in each part-of-speech as a separate word to reduce such cases, otherwise aim to learn the most prevalent polarity in the corpus with respect to each part-of-speech of each word. 5 Available at http://www.cs.stonybrook.edu/ ychoi/connotation.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="6">For connotative predicates, we use the seed predicate set of Feng et al. (2011), which comprises of 20 positive and 20 negative predicates.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="3">. The framework does not readily allow incorporating a diverse set of soft and hard constraints. 8 We discard edges with cosine similarity ≤ 0, as those indicate either independence or the opposite of similarity. 9 Note that cosine similarity does not make sense for the first sub-graph as there is no reason why a predicate and an argument should be distributionally similar. We experimented with many different variations on the graph structure and edge weights, including ones that include any word pairs that occurred frequently enough together. For brevity, we present the version that achieved the best results here.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="19">Pearson correlation coefficient among turkers is 0.28, which corresponds to a positive small to medium correlation. Note that when the annotation of turkers is aggregated, we observe agreement as high as 77% with respect to the learned connotation lexicon. 20 http://www.stanford.edu/˜alecmgo/ cs224n/twitterdata.2009.05.25.c.zip</note>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Acknowledgments</head><p>This research was supported in part by the Stony Brook University Office of the Vice President for Research. We thank reviewers for many insightful comments and suggestions, and for providing us with several very inspiring examples to work with.</p></div>
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Sentiwordnet 3.0: An enhanced lexical resource for sentiment analysis and opinion mining</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Stefano</forename><surname>Baccianella</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Andrea</forename><surname>Esuli</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Fabrizio</forename><surname>Sebastiani</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Seventh conference on International Language Resources and Evaluation (LREC&apos;10)</title>
+		<meeting>the Seventh conference on International Language Resources and Evaluation (LREC&apos;10)<address><addrLine>Valletta, Malta, may</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2010" />
+		</imprint>
+	</monogr>
+	<note>European Language Resources Association (ELRA</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Syntactic persistence in language production</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kathryn</forename><surname>Bock</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Cognitive psychology</title>
+		<imprint>
+			<biblScope unit="volume">18</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="355" to="387" />
+			<date type="published" when="1986" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title level="m" type="main">{Web 1T 5-gram Version 1}</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Thorsten</forename><surname>Brants</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alex</forename><surname>Franz</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2006" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Adapting a polarity lexicon using integer linear programming for domain-specific sentiment classification</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Yejin</forename><surname>Choi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Claire</forename><surname>Cardie</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 2009 Conference on Empirical Methods in Natural Language Processing</title>
+		<meeting>the 2009 Conference on Empirical Methods in Natural Language Processing<address><addrLine>Stroudsburg, PA, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2009" />
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page" from="590" to="598" />
+		</imprint>
+	</monogr>
+	<note>EMNLP &apos;09. Association for Computational Linguistics</note>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Word association norms, mutual information, and lexicography</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kenneth</forename><forename type="middle">Ward</forename><surname>Church</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Patrick</forename><surname>Hanks</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Comput. Linguist</title>
+		<imprint>
+			<biblScope unit="volume">16</biblScope>
+			<biblScope unit="page" from="22" to="29" />
+			<date type="published" when="1990-03" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<title level="m" type="main">High-performance software for mathematical programming and optimization</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Ilog Cplex</surname></persName>
+		</author>
+		<ptr target="http://www.ilog.com/products/cplex" />
+		<imprint>
+			<date type="published" when="2009" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Semi-supervised recognition of sarcastic sentences in twitter and amazon</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Dmitry</forename><surname>Davidov</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Oren</forename><surname>Tsur</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ari</forename><surname>Rappoport</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Fourteenth Conference on Computational Natural Language Learning, CoNLL &apos;10</title>
+		<meeting>the Fourteenth Conference on Computational Natural Language Learning, CoNLL &apos;10<address><addrLine>Stroudsburg, PA, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2010" />
+			<biblScope unit="page" from="107" to="116" />
+		</imprint>
+	</monogr>
+	<note>Association for Computational Linguistics</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Setsimilarity joins based semi-supervised sentiment analysis</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Xishuang</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Qibo</forename><surname>Zou</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Yi</forename><surname>Guan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Neural Information Processing</title>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2012" />
+			<biblScope unit="page" from="176" to="183" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Sentiwordnet: A publicly available lexical resource for opinion mining</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Andrea</forename><surname>Esuli</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Fabrizio</forename><surname>Sebastiani</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 5th Conference on Language Resources and Evaluation (LREC06)</title>
+		<meeting>the 5th Conference on Language Resources and Evaluation (LREC06)</meeting>
+		<imprint>
+			<date type="published" when="2006" />
+			<biblScope unit="page" from="417" to="422" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Learning general connotation of words using graph-based algorithms</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Song</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ritwik</forename><surname>Bose</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Yejin</forename><surname>Choi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Conference on Empirical Methods in Natural Language Processing</title>
+		<meeting>the Conference on Empirical Methods in Natural Language Processing</meeting>
+		<imprint>
+			<date type="published" when="2011" />
+			<biblScope unit="page" from="1092" to="1103" />
+		</imprint>
+	</monogr>
+	<note>Association for Computational Linguistics</note>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">More than words: Syntactic packaging and implicit sentiment</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Stephan</forename><surname>Greene</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Philip</forename><surname>Resnik</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Human Language Technologies: The 2009 Annual Conference of the North American Chapter of the Association for Computational Linguistics</title>
+		<meeting>Human Language Technologies: The 2009 Annual Conference of the North American Chapter of the Association for Computational Linguistics<address><addrLine>Boulder, Colorado</addrLine></address></meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2009-06" />
+			<biblScope unit="page" from="503" to="511" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Predicting the semantic orientation of adjectives</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Vasileios</forename><surname>Hatzivassiloglou</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Kathleen R Mckeown</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the eighth conference on European chapter of the Association for Computational Linguistics</title>
+		<meeting>the eighth conference on European chapter of the Association for Computational Linguistics</meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="1997" />
+			<biblScope unit="page" from="174" to="181" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Sentiment lexicon creation from lexical resources</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Bas</forename><surname>Heerschop</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alexander</forename><surname>Hogenboom</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Flavius</forename><surname>Frasincar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Business Information Systems</title>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2011" />
+			<biblScope unit="page" from="185" to="196" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Building lexicon for sentiment analysis from massive collection of html documents</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Nobuhiro</forename><surname>Kaji</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Masaru</forename><surname>Kitsuregawa</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 2007 Joint Conference on Empirical Methods in Natural Language Processing and Computational Natural Language Learning</title>
+		<meeting>the 2007 Joint Conference on Empirical Methods in Natural Language Processing and Computational Natural Language Learning</meeting>
+		<imprint>
+			<publisher>EMNLP-CoNLL</publisher>
+			<date type="published" when="2007" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Authoritative sources in a hyperlinked environment</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jon</forename><forename type="middle">M</forename><surname>Kleinberg</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">JOURNAL OF THE ACM</title>
+		<imprint>
+			<biblScope unit="volume">46</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="604" to="632" />
+			<date type="published" when="1999" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Irony in the text or insincerity in the writer</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Bill</forename><surname>Louw</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Text and technology: In honour of John Sinclair</title>
+		<imprint>
+			<date type="published" when="1993" />
+			<biblScope unit="page" from="157" to="176" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Automatic construction of a context-aware sentiment lexicon: an optimization approach</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Yue</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Malu</forename><surname>Castellanos</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Umeshwar</forename><surname>Dayal</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Chengxiang</forename><surname>Zhai</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 20th international conference on World wide web</title>
+		<meeting>the 20th international conference on World wide web</meeting>
+		<imprint>
+			<publisher>ACM</publisher>
+			<date type="published" when="2011" />
+			<biblScope unit="page" from="347" to="356" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Emotions evoked by common words and phrases: Using mechanical turk to create an emotion lexicon</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Saif</forename><surname>Mohammad</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Peter</forename><surname>Turney</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the NAACL HLT 2010 Workshop on Computational Approaches to Analysis and Generation of Emotion in Text</title>
+		<meeting>the NAACL HLT 2010 Workshop on Computational Approaches to Analysis and Generation of Emotion in Text<address><addrLine>Los Angeles, CA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2010-06" />
+			<biblScope unit="page" from="26" to="34" />
+		</imprint>
+	</monogr>
+	<note>Association for Computational Linguistics</note>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Random walk weighting over sentiwordnet for sentiment polarity detection on twitter</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Arturo</forename><surname>Montejo-Ráez</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Eugenio</forename><surname>Martínez-Cámara</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Teresa Martín-Valdivia</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">L. Alfonso Ureña</forename><surname>López</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 3rd Workshop in Computational Approaches to Subjectivity and Sentiment Analysis</title>
+		<meeting>the 3rd Workshop in Computational Approaches to Subjectivity and Sentiment Analysis<address><addrLine>Jeju, Korea</addrLine></address></meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2012-07" />
+			<biblScope unit="page" from="3" to="10" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<monogr>
+		<title level="m" type="main">The pagerank citation ranking: Bringing order to the web</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Lawrence</forename><surname>Page</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sergey</forename><surname>Brin</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Rajeev</forename><surname>Motwani</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Terry</forename><surname>Winograd</surname></persName>
+		</author>
+		<idno>1999-66</idno>
+		<imprint>
+			<date type="published" when="1999-11" />
+			<pubPlace>Stanford InfoLab</pubPlace>
+		</imprint>
+	</monogr>
+<note type="report_type">Technical Report</note>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Opinion mining and sentiment analysis</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Bo</forename><surname>Pang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Lillian</forename><surname>Lee</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Found. Trends Inf. Retr</title>
+		<imprint>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="issue">1-2</biblScope>
+			<biblScope unit="page" from="1" to="135" />
+			<date type="published" when="2008" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">The representation of verbs: Evidence from syntactic priming in language production</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Martin</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Pickering</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Holly P Branigan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Memory and Language</title>
+		<imprint>
+			<biblScope unit="volume">39</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="633" to="651" />
+			<date type="published" when="1998" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Expanding domain sentiment lexicon through double propagation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Guang</forename><surname>Qiu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Bing</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jiajun</forename><surname>Bu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Chun</forename><surname>Chen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 21st international jont conference on Artifical intelligence, IJCAI&apos;09</title>
+		<meeting>the 21st international jont conference on Artifical intelligence, IJCAI&apos;09<address><addrLine>San Francisco, CA, USA</addrLine></address></meeting>
+		<imprint>
+			<publisher>Morgan Kaufmann Publishers Inc</publisher>
+			<date type="published" when="2009" />
+			<biblScope unit="page" from="1199" to="1204" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<monogr>
+		<title level="m" type="main">A linear programming formulation for global inference in natural language tasks. Defense Technical Information Center</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Dan</forename><surname>Roth</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Wen-Tau</forename><surname>Yih</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2004" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<title level="m" type="main">Corpus, concordance, collocation. Describing English language</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">John</forename><surname>Sinclair</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1991" />
+			<publisher>Oxford University Press</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Collostructions: Investigating the interaction of words and constructions</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Anatol</forename><surname>Stefanowitsch</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Stefan</forename><forename type="middle">Th</forename><surname>Gries</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">International journal of corpus linguistics</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="209" to="243" />
+			<date type="published" when="2003" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">A computer approach to content analysis: studies using the general inquirer system</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Philip</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Earl</forename><forename type="middle">B</forename><surname>Stone</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Hunt</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the May 21-23</title>
+		<meeting>the May 21-23<address><addrLine>New York, NY, USA</addrLine></address></meeting>
+		<imprint>
+			<publisher>ACM</publisher>
+			<date type="published" when="1963" />
+			<biblScope unit="page" from="241" to="256" />
+		</imprint>
+	</monogr>
+	<note>AFIPS &apos;63 (Spring)</note>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<monogr>
+		<title level="m" type="main">Collocations and semantic profiles: on the cause of the trouble with quantitative studies. Functions of language</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Michael</forename><surname>Stubbs</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1995" />
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page" from="23" to="55" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Enriching the knowledge sources used in a maximum entropy part-of-speech tagger</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kristina</forename><surname>Toutanova</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Christopher</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Manning</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">EMNLP/VLC 2000</title>
+		<imprint>
+			<date type="published" when="2000" />
+			<biblScope unit="page" from="63" to="70" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<monogr>
+		<title level="m" type="main">Mining the web for synonyms: Pmi-ir versus lsa on toefl</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Peter</forename><surname>Turney</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2001" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">The viability of web-derived polarity lexicons</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Leonid</forename><surname>Velikovich</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sasha</forename><surname>Blair-Goldensohn</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kerry</forename><surname>Hannan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ryan</forename><surname>Mcdonald</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Human Language Technologies: The 2010 Annual Conference of the North American Chapter of the Association for Computational Linguistics</title>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2010" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Annotating expressions of opinions and emotions in language. Language Resources and Evaluation (formerly</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Janyce</forename><surname>Wiebe</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Theresa</forename><surname>Wilson</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Claire</forename><surname>Cardie</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers and the Humanities)</title>
+		<imprint>
+			<biblScope unit="volume">39</biblScope>
+			<biblScope unit="issue">2/3</biblScope>
+			<biblScope unit="page" from="164" to="210" />
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Opinionfinder: a system for subjectivity analysis</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Theresa</forename><surname>Wilson</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Paul</forename><surname>Hoffmann</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Swapna</forename><surname>Somasundaran</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jason</forename><surname>Kessler</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Janyce</forename><surname>Wiebe</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Yejin</forename><surname>Choi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Claire</forename><surname>Cardie</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ellen</forename><surname>Riloff</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Siddharth</forename><surname>Patwardhan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of HLT/EMNLP on Interactive Demonstrations</title>
+		<meeting>HLT/EMNLP on Interactive Demonstrations<address><addrLine>Morristown, NJ, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2005" />
+			<biblScope unit="page" from="34" to="35" />
+		</imprint>
+	</monogr>
+	<note>Association for Computational Linguistics</note>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">Recognizing contextual polarity in phraselevel sentiment analysis</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Theresa</forename><surname>Wilson</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Janyce</forename><surname>Wiebe</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Paul</forename><surname>Hoffmann</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">HLT &apos;05: Proceedings of the conference on Human Language Technology and Empirical Methods in Natural Language Processing</title>
+		<meeting><address><addrLine>Morristown, NJ, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2005" />
+			<biblScope unit="page" from="347" to="354" />
+		</imprint>
+	</monogr>
+	<note>Association for Computational Linguistics</note>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Lexicon construction: A topic model approach</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Rui</forename><surname>Xie</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Chunping</forename><surname>Li</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Systems and Informatics (ICSAI), 2012 International Conference on</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2012" />
+			<biblScope unit="page" from="2299" to="2303" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<monogr>
+		<title level="m" type="main">Learning from labeled and unlabeled data with label propagation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Xiaojin</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Zoubin</forename><surname>Ghahramani</surname></persName>
+		</author>
+		<idno>CMU-CALD-02-107</idno>
+		<imprint>
+			<date type="published" when="2002" />
+		</imprint>
+		<respStmt>
+			<orgName>CarnegieMellon University</orgName>
+		</respStmt>
+	</monogr>
+<note type="report_type">Technical Report</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

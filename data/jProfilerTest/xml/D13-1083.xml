@@ -1,0 +1,598 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T11:44+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">A Corpus Level MIRA Tuning Strategy for Machine Translation</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher>Association for Computational Linguistics</publisher>
+				<availability status="unknown"><p>Copyright Association for Computational Linguistics</p>
+				</availability>
+				<date>18-21 October 2013. 2013</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ming</forename><surname>Tan</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">IBM T.J. Watson Research Center</orgName>
+								<orgName type="institution">Wright State University</orgName>
+								<address>
+									<addrLine>3640 Colonel Glenn Hwy, 1101 Kitchawan Rd</addrLine>
+									<postCode>45435, 10598</postCode>
+									<settlement>Dayton, Yorktown Heights</settlement>
+									<region>OH, NY</region>
+									<country>USA, USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Tian</forename><surname>Xia</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">IBM T.J. Watson Research Center</orgName>
+								<orgName type="institution">Wright State University</orgName>
+								<address>
+									<addrLine>3640 Colonel Glenn Hwy, 1101 Kitchawan Rd</addrLine>
+									<postCode>45435, 10598</postCode>
+									<settlement>Dayton, Yorktown Heights</settlement>
+									<region>OH, NY</region>
+									<country>USA, USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Shaojun</forename><surname>Wang</surname></persName>
+							<email>shaojun.wang@wright.edu</email>
+							<affiliation key="aff0">
+								<orgName type="department">IBM T.J. Watson Research Center</orgName>
+								<orgName type="institution">Wright State University</orgName>
+								<address>
+									<addrLine>3640 Colonel Glenn Hwy, 1101 Kitchawan Rd</addrLine>
+									<postCode>45435, 10598</postCode>
+									<settlement>Dayton, Yorktown Heights</settlement>
+									<region>OH, NY</region>
+									<country>USA, USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Bowen</forename><surname>Zhou</surname></persName>
+							<email>zhou@us.ibm.com</email>
+							<affiliation key="aff0">
+								<orgName type="department">IBM T.J. Watson Research Center</orgName>
+								<orgName type="institution">Wright State University</orgName>
+								<address>
+									<addrLine>3640 Colonel Glenn Hwy, 1101 Kitchawan Rd</addrLine>
+									<postCode>45435, 10598</postCode>
+									<settlement>Dayton, Yorktown Heights</settlement>
+									<region>OH, NY</region>
+									<country>USA, USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">A Corpus Level MIRA Tuning Strategy for Machine Translation</title>
+					</analytic>
+					<monogr>
+						<title level="m">Proceedings of the 2013 Conference on Empirical Methods in Natural Language Processing</title>
+						<meeting>the 2013 Conference on Empirical Methods in Natural Language Processing <address><addrLine>Seattle, Washington, USA</addrLine></address>
+						</meeting>
+						<imprint>
+							<publisher>Association for Computational Linguistics</publisher>
+							<biblScope unit="page" from="851" to="856"/>
+							<date type="published">18-21 October 2013. 2013</date>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>MIRA based tuning methods have been widely used in statistical machine translation (SMT) system with a large number of features. Since the corpus-level BLEU is not decomposable, these MIRA approaches usually define a variety of heuristic-driven sentencelevel BLEUs in their model losses. Instead, we present a new MIRA method, which employs an exact corpus-level BLEU to compute the model loss. Our method is simpler in implementation. Experiments on Chinese-toEnglish translation show its effectiveness over two state-of-the-art MIRA implementations.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Margin infused relaxed algorithm (MIRA) has been widely adopted for the parameter optimization in SMT with a large feature size <ref type="bibr" target="#b18">(Watanabe et al., 2007;</ref><ref type="bibr" target="#b4">Chiang et al., 2008;</ref><ref type="bibr" target="#b3">Chiang et al., 2009;</ref><ref type="bibr" target="#b2">Chiang, 2012;</ref><ref type="bibr" target="#b7">Eidelman, 2012;</ref><ref type="bibr" target="#b1">Cherry and Foster, 2012)</ref>. Since BLEU is defined on the corpus, and not decomposed into sentences, most MIRA approaches consider a variety of sentence-level BLEUs for the model losses, many of which are heuristic-driven <ref type="bibr" target="#b18">(Watanabe et al., 2007;</ref><ref type="bibr" target="#b4">Chiang et al., 2008;</ref><ref type="bibr" target="#b3">Chiang et al., 2009;</ref><ref type="bibr" target="#b2">Chiang, 2012;</ref><ref type="bibr" target="#b1">Cherry and Foster, 2012)</ref>. The sentence-level BLEU appearing in the objective is generally based on a pseudo-document, which may not precisely reflect the corpus-level BLEU. We believe that this mismatch could potentially harm the performance. To avoid the sentence BLEU, the work in <ref type="bibr" target="#b8">(Haddow et al., 2011)</ref> proposed to process sentences in small batches. The authors adopted a Gibbs sampling <ref type="bibr" target="#b0">(Arun et al., 2009</ref>) technique to search the hope and fear hypotheses, and they did not compare with MIRA. <ref type="bibr" target="#b17">Watanabe (2012)</ref> also tuned the parameters with small batches of sentences and optimized a hinge loss not explicitly related to BLEU using stochastic gradient descent. Both approaches introduced additional complexities over baseline MIRA approaches.</p><p>In contrast, we propose a remarkably simple but efficient batch MIRA approach which exploits the exact corpus-level BLEU to compute model losses. We search for a hope and a fear hypotheses for the corpus with a straightforward approach and minimize the structured hinge loss defined on them. The experiments show that our method consistently outperforms two state-of-the-art MIRAs in Chinese-toEnglish translation tasks with a moderate margin.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Margin Infused Relaxed Algorithm</head><p>We optimize the model parameters based on N-best lists. Our development (dev) set is a set of triples</p><formula xml:id="formula_0">{(f i , e i , r i )} M i=1</formula><p>, where f i is a source-language sentence, corresponded by a list of target-language hy-</p><formula xml:id="formula_1">potheses e i = {e ij } N (f i ) j=1</formula><p>, with a number of references r i . h(e ij ) is a feature vector. Generally, most decoders return a top-1 candidate as the translation result, such thatē i (w) = arg max j w · h(e ij ), where w are the model parameters. In this paper, we aim at optimizing the BLEU score <ref type="bibr" target="#b14">(Papineni et al., 2002)</ref>.</p><p>MIRA is an instance of online learning which assumes an overlap of the decoding procedure and the parameter optimization procedure. For example in <ref type="bibr" target="#b6">(Crammer et al., 2006;</ref><ref type="bibr" target="#b4">Chiang et al., 2008)</ref>, MIRA is performed after an input sentence are decoded, and the next sentence is decoded with the updated parameters. The objective for each sentence i is,</p><formula xml:id="formula_2">min w 1 2 ||w − w || 2 + C · l i (w) (1) l i (w) = max eij {b(e * i ) − b(e ij ) −w · [h(e * i ) − h(e ij )]}<label>(2)</label></formula><p>where e * i ∈ e i is a hope candidate, w is the parameter vector from the last sentence. Since MIRA defines its objective only based on the current sentence, b(·) is a sentence-level BLEU.</p><p>Most MIRA algorithms need a deliberate definition of b(·), since BLEU cannot be decomposed into sentences. The types of the sentence BLEU calculation includes: (a) a smoothed version of BLEU for e ij <ref type="bibr" target="#b10">(Liang et al., 2006)</ref>, (b) fit e ij into a pseudodocument considering the history <ref type="bibr" target="#b4">(Chiang et al., 2008;</ref><ref type="bibr" target="#b2">Chiang, 2012)</ref>, (c) use e ij to replace the corresponding hypothesis in the oracles <ref type="bibr" target="#b18">(Watanabe et al., 2007)</ref>. The sentence-level BLEU sometimes perplexes the algorithms and results in a mismatch with the corpus-level BLEU.</p><p>3 Corpus-level MIRA</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Algorithm</head><p>We propose a batch tuning strategy, corpus-level MIRA (c-MIRA), in which an objective is not built upon a hinge loss of a single sentence, but upon that of the entire corpus.</p><p>The online MIRAs are difficult to parallelize. Therefore, similar to the batch MIRA in <ref type="bibr" target="#b1">(Cherry and Foster, 2012)</ref>, we conduct the batch tuning by repeating the following steps: (a) Decode source sentences (in parallel) and obtain</p><formula xml:id="formula_3">{e i } M i=1 , (b) Merge {e i } M i=1</formula><p>with the one from the previous iteration, (c) Invoke Algorithm 1.</p><p>We define E = (e E,1 , e E,2 , ..., e E,M ) as a corpus hypothesis, with</p><formula xml:id="formula_4">H (E) = 1 M M i=1</formula><p>h(e E,i ). e E,i is the hypothesis of the source sentence f i covered by E. E is corresponded to a corpus-level BLEU, which we ultimately want to optimize. Following MIRA formulated in <ref type="bibr" target="#b6">(Crammer et al., 2006;</ref><ref type="bibr" target="#b4">Chiang et al., 2008)</ref>, c-MIRA repeatedly optimizes,</p><formula xml:id="formula_5">min w 1 2 ||w − w || 2 + C · l corpus (w) (3) l corpus (w) = max E {B(E * ) − B(E) −w · [H(E * ) − H(E)]} (4)</formula><p>where B(·) is a corpus-level BLEU. E * is a hope hypothesis. E ∈ L, where L is the hypothesis space of the entire corpus, and</p><formula xml:id="formula_6">|L| = |e 1 | · · · |e M |. Algorithm 1 Corpus-Level MIRA Require: {(f i , e i , r i )} M i=1 , w 0 , C 1: for t = 1 · · · T do 2: E * = {} ,E = {}</formula><p>Initialize the hope and fear 3:</p><formula xml:id="formula_7">for i = 1 · · · M do 4:</formula><p>e E * ,i = arg max</p><formula xml:id="formula_8">eij [w t−1 · h(e ij ) + b (e ij )] 5:</formula><p>e E ,i = arg max</p><formula xml:id="formula_9">eij [w t−1 · h(e ij ) − b (e ij )]</formula><p>6:</p><formula xml:id="formula_10">E * ← E * + {e E * ,i } Build the hope 7: E ← E + {e E ,i } Build the fear 8:</formula><p>end for 9:</p><formula xml:id="formula_11">B = B(E * ) − B(E ) the BLEU difference</formula><p>10:</p><formula xml:id="formula_12">H = H(E ) − H(E * ) the feature difference 11: α = min C, B+wt−1 · H || H || 2</formula><p>12:</p><formula xml:id="formula_13">w t = w t−1 − α · H 13:w t = 1 t + 1 t t=0</formula><p>w t 14: end for 15: returnw t with the optimal BLEU on the dev set.</p><p>c-MIRA can be regarded as a standard MIRA, in which there is only one single triple (F, L, R), where F and R are the source and reference of the corpus respectively. Eq. 3 is equivalent to a quadratic programming with |L| constraints. <ref type="bibr" target="#b6">Crammer et al. (2006)</ref> show that a single constraint with one hope E * and one fear E admits a closed-form update and performs well. We denote one execution of the outer loop as an epoch. The hope and fear are updated in each epoch. Similar to <ref type="bibr" target="#b4">(Chiang et al., 2008)</ref>, the hope and fear hypotheses are defined as following,</p><formula xml:id="formula_14">E * = max E [w · H(E) + B(E)]<label>(5)</label></formula><formula xml:id="formula_15">E = max E [w · H(E) − B(E)]<label>(6)</label></formula><p>Eq. 5 and 6 find the hypotheses with the best and worse BLEU that the decoder can easily achieve. It is unnecessary to search the entire space of L for precise solution E * and E , because MIRA only at-tempts to separate the hope from the fear by a margin proportional to their BLEU differentials <ref type="bibr" target="#b1">(Cherry and Foster, 2012)</ref>. We just construct E * and E respectively by, e E * ,i = max</p><formula xml:id="formula_16">e i,j [w · h(e i,j ) + b (e i,j )]</formula><p>e E ,i = max</p><formula xml:id="formula_17">e i,j [w · h(e i,j ) − b (e i,j )]</formula><p>where b is simply a BLEU with add one smoothing <ref type="bibr" target="#b11">(Lin and Och, 2004)</ref>. A smoothed BLEU is good enough to pick up a "satisfying" pair of hope and fear. However, the updating step (Line 11) uses the corpus-level BLEU.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Justification</head><p>c-MIRA treats a corpus as one sentence for decoding, while conventional decoders process sentences one by one. We show the optimal solutions from the two methods are equivalent theoretically.</p><p>We follow the notations in <ref type="bibr" target="#b13">(Och and Ney, 2002)</ref>. We search a hypothesis on corpus E = {e 1 ,k 1 , e 2 ,k 2 , ..., e M ,k M } with the highest probability given the source corpus F = {f 1 , f 2 , ..., f M },</p><formula xml:id="formula_18">E = arg max E logP (E|F) = arg max E w · M i=1 h(e i,ki ) − M i=1 log(Z i ) (7) = {arg max e i,k i w · h(e i,ki )} M i=1 (8)</formula><p>where</p><formula xml:id="formula_19">Z i = N (f i )</formula><p>j=1 exp(w · h(e i,j )), which is a constant with respective to E. Eq. 7 shows that the feature vector of E is determined by the sum of each candidate's feature vectors. Also, the model score can be decomposed into each sentence in Eq. 8, which shows that decoding all sentences together equals to decoding one by one.</p><p>We also show that if the metric is decomposable, the loss in c-MIRA is actually the sum of the hinge loss l i (w) in structural SVM <ref type="bibr" target="#b16">(Tsochantaridis et al., 2004;</ref><ref type="bibr" target="#b1">Cherry and Foster, 2012)</ref>. We assume B(e ij ) to be the metric of a sentence hypothesis, then the loss of c-MIRA in Eq. 4 is,</p><formula xml:id="formula_20">l corpus (w) ∝ max E M i=1 [B(e i,k E * ) − B(e i,k E ) −w·h(e i,k E * ) + w · h(e i,k E )] = M i=1 max eij [B(e i,k E * ) − B(e ij ) −w·h(e i,k E * ) + w · h(e ij )] = M i=1 l i (w)</formula><p>Instead of adopting a cutting-plane algorithm <ref type="bibr" target="#b16">(Tsochantaridis et al., 2004)</ref>, we optimize the same loss with a MIRA pattern in a simpler way. However, since BLEU is not decomposable, the structural SVM <ref type="bibr" target="#b1">(Cherry and Foster, 2012)</ref> uses an interpolated sentence BLEU <ref type="bibr" target="#b10">(Liang et al., 2006)</ref>. Although Algorithm 1 has an outlook similar to the batch-MIRA algorithm in <ref type="bibr" target="#b1">(Cherry and Foster, 2012)</ref>, their loss definitions differ fundamentally. Batch MIRA basically uses a sentence-level loss, and they also follow the sentence-by-sentence tuning pattern. In the future work, we will compare structural SVM and c-MIRA under decomposable metrics like WER or SSER <ref type="bibr" target="#b13">(Och and Ney, 2002)</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Experiments and Analysis</head><p>We first evaluate c-MIRA in a iterative batch tuning procedure in a Chinese-to-English machine translation system with 228 features. Second, we show c-MIRA is also effective in the re-ranking task with more than 50,000 features.</p><p>In both experiments, we compare c-MIRA and three baselines: (1) MERT <ref type="bibr" target="#b12">(Och, 2003)</ref>, (2) Chiang et al.'s MIRA (MIRA 1 ) in <ref type="bibr" target="#b4">(Chiang et al., 2008)</ref>. <ref type="formula">(3)</ref> batch-MIRA (MIRA 2 ) in <ref type="bibr" target="#b1">(Cherry and Foster, 2012)</ref>. Here, we roughly choose C with the best BLEU on dev set, from {0.1, 0.01, 0.001, 0.0001, 0.00001}. We convert Chiang et al.'s MIRA to the batch mode described in section 3.1. So the only difference between MIRA 1 and MIRA 2 is: MIRA 1 obtains multiple constraints before optimization, while MIRA 2 only uses one constraint. We implement MERT and MIRA 1 , and directly use MIRA 2 from Moses <ref type="bibr" target="#b9">(Koehn et al., 2007)</ref>. We conduct experiments in a server of 8-cores with 2.5GHz Opteron. We set the maximum number of epochs as we generally do not observe an obvious increase on the dev set BLEU.  The epoch size for MIRA 1 and MIRA 2 is 40, while the one for c-MIRA is 400. c-MIRA runs more epochs, because we update the parameters by much fewer times. However, we can implement Line 3∼8 in Algorithm 1 in multi-thread (we use eight threads in the following experiments), which makes our algorithm much faster. Also, we increase the epoch sizes of MIRA 1 and MIRA 2 to 400, and find there is no improvement on their performance.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Iterative Batch Training</head><p>In this experiment, we conduct the batch tuning procedure shown in section 3. We align the FBIS data including about 230K sentence pairs with GIZA++ for extracting grammar, and train a 4-gram language model on the Xinhua portion of Gigaword corpus. A hierarchical phrase-based model <ref type="bibr" target="#b5">(Chiang, 2007)</ref> is tuned on NIST MT 2002, which has 878 sentences, and tested on <ref type="bibr">MT 2004</ref><ref type="bibr">MT , 2005</ref><ref type="bibr">MT , 2006</ref><ref type="bibr">MT , and 2008</ref>. All features used here, besides eight basic ones in <ref type="bibr" target="#b5">(Chiang, 2007)</ref>, consists of an extra 220 group features. We design such feature templates to group grammar by the length of source side and target side, (f eat type, a ≤ src side ≤ b, c ≤ tgt side ≤ d) , where f eat type denotes any of relative frequency, reversed relative frequency, lexical probability and reversed lexical probability, and  length on each side of a hierarchical grammar is limited to 10. There are 4 × 55 extra group features. We also set the size of N-best list per sentence before merge as 200. All methods use 30 decoding iterations. We select the iteration with the best BLEU of the dev set for testing. We present the BLEU scores in <ref type="table" target="#tab_1">Table 1</ref> on two feature settings: (1) 8 basic features only, and (2) all 228 features. In the first case, due to the small feature size, MERT can get a better BLEU of the dev set, and all MIRA algorithms fails to generally beat MERT on the test set. However, as the feature size increase to 228, MERT degrades on the dev-set BLEU, and also become worse on test sets, while MIRA algorithms improve on the dev set expectedly. MIRA 1 performs better than MIRA 2 , probably because of more constraints. c-MIRA can moderately improve BLEU by 0.2∼0.4 from MIRA 1 and 0.2∼0.6 from MIRA 2 . This might indicate that a loss defined on corpus is more accurate than the one defined on sentence. <ref type="table" target="#tab_3">Table 2</ref> lists the running time. Only MIRA 2 is fairly faster than c-MIRA because of more epochs in c-MIRA.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Re-ranking Experiments</head><p>The baseline system is a state-of-the-art hierarchical phrase-based system, and trained on six million parallel sentences corpora available to the DARPA BOLT Chinese-English task. This system includes 51 dense features (including translation probabilities, provenance features, etc.) and about 50k sparse features (mostly lexical and fertility-based). The language model is a six-gram model trained on a 10 billion words monolingual corpus, including the English side of our parallel corpora plus other corpora such as Gigaword (LDC2011T07) and Google News. We use 1275 sentences for tuning and 1239 sentences for testing from the LDC2010E30 corpus respectively. There are four reference translations for each input sentence in both tuning and testing datasets.</p><p>We use a N-best list which is an intermediate out-   put of the baseline system optimized on TER-BLEU instead of BLEU. Before the re-ranking task, the initial BLEUs of the top-1 hypotheses on the tuning and testing set are 31.45 and 30.56. The average numbers of hypotheses per sentence are about 200 and 500, respectively for the tuning and testing sets. Again, we use the best epoch on the tuning set for testing. The BLEUs on dev and test sets are reported in <ref type="table" target="#tab_5">Table 3</ref>. We observe that the effectiveness of c-MIRA is not harmed as the feature size is scaled up.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3">Analysis</head><p>To examine the simple search for hopes and fears (Line 3∼8 in Alg. 1), we use two hope/fear building strategies to get E * and E : (1) simply connect each e * i and e i in Line 4∼5 of Algorithm 1, (2) conduct a slow beam search among the N-best lists of all foreign sentences from e 1 to e M and use Eq. 5 and 6 to prune the stack. The stack size is 10. We observe that there is no significant difference between the two strategies on the BLEU of the dev set. But the second strategy is about 10 times slower. We also consider more constraints in Eq. 3. By beam search, we obtain one corpus-level oracle and 29 other hypotheses similar to <ref type="bibr" target="#b4">(Chiang et al., 2008)</ref>, and optimize with SMO <ref type="bibr" target="#b15">(Platt, 1998)</ref>. Unfortunately, experiments show that more constraints lead to an overfitting and no improved performance.</p><p>As shown in <ref type="table" target="#tab_6">Table 4</ref>, in one execution, our method updates the parameters by only 400 times; MIRA 2 updates by 40 × 878 = 35120 times; and MIRA 1 updates much more (about 1,966,720 times) due to the SMO procedure. We are surprised to find c-MIRA gets a higher training BLEU with such few parameter updates. This probably suggests that there is a gap between sentence-level BLEU and corpuslevel BLEU, so standard MIRAs need to update the parameters more often.</p><p>Regarding simplicity, MIRA 1 uses a stronglyheuristic definition of a sentence BLEU, and MIRA 2 needs a pseudo-document with a decay rate of γ = 0.9. In comparison, c-MIRA avoids both the sentence level BLEU and the pseudo-document, thus needs fewer variables.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Conclusion</head><p>We present a simple and effective MIRA batch tuning algorithm without the heuristic-driven calculation of sentence-level BLEU, due to the indecomposability of a corpus-level BLEU. Our optimization objective is directly defined on the corpus-level hypotheses. This work simplifies the tuning process, and avoid the mismatch between the sentencelevel BLEU and the corpus-level BLEU. This strategy can be potentially applied to other optimization paradigms, such as the structural SVM <ref type="bibr" target="#b1">(Cherry and Foster, 2012)</ref>, SGD and AROW <ref type="bibr" target="#b2">(Chiang, 2012)</ref>, and other forms of samples, such as forests <ref type="bibr" target="#b2">(Chiang, 2012)</ref> and lattice <ref type="bibr" target="#b1">(Cherry and Foster, 2012)</ref>.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1" validated="false"><head>Table 1 :</head><label>1</label><figDesc></figDesc><table>BLEUs (%) on the dev and test sets with 8 dense 
+features only and all features. The significant symbols (+ 
+at 0.05 level) are compared with MIRA 2 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3" validated="false"><head>Table 2 :</head><label>2</label><figDesc>Running time.</figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5" validated="false"><head>Table 3 :</head><label>3</label><figDesc>BLEUs (%) on re-ranking experiments.</figDesc><table>MIRA 1 
+MIRA 2 
+c-MIRA 
+
+about 1,966,720 
+35,120 
+400 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_6" validated="false"><head>Table 4 :</head><label>4</label><figDesc>Times of updating model parameters.</figDesc><table></table></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Acknowledgments</head><p>The key idea and a part of the experimental work of this paper were developed in collaboration with the IBM researcher when the first author was an intern at IBM T.J. Watson Research Center. This research is partially supported by Air Force Office of Scientific Research under grant FA9550-10-1-0335, the National Science Foundation under grant IIS RIsmall 1218863 and a Google research award.</p></div>
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Monte Carlo inference and maximization for phrase-based translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Arun</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Dyer</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Haddow</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Blunsom</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Lopez</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Koehn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Thirteenth Conference on Computational Natural Language Learning (CoNLL)</title>
+		<meeting>the Thirteenth Conference on Computational Natural Language Learning (CoNLL)</meeting>
+		<imprint>
+			<date type="published" when="2009" />
+			<biblScope unit="page" from="102" to="110" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Batch tuning strategies for statistical machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Cherry</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Foster</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT)</title>
+		<imprint>
+			<date type="published" when="2012" />
+			<biblScope unit="page" from="427" to="436" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Hope and fear for discriminative training of statistical translation models</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Chiang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Machine Learning Research</title>
+		<imprint>
+			<biblScope unit="page" from="1159" to="1187" />
+			<date type="published" when="2012" />
+			<publisher>JMLR</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">001 new features for statistical machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Chiang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Knight</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT)</title>
+		<imprint>
+			<date type="published" when="2009" />
+			<biblScope unit="volume">11</biblScope>
+			<biblScope unit="page" from="218" to="226" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Online largemargin training of syntactic and structural translation features</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Chiang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Marton</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Resnik</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. of Conference on Empirical Methods in Natural Language Processing (EMNLP)</title>
+		<meeting>of Conference on Empirical Methods in Natural Language essing (EMNLP)</meeting>
+		<imprint>
+			<date type="published" when="2008" />
+			<biblScope unit="page" from="224" to="233" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Hierarchical phrase-based translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Chiang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">33</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="201" to="228" />
+			<date type="published" when="2007" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Online passive-aggressive algorithms</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Crammer</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">O</forename><surname>Dekel</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Keshet</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Shalev-Shwartz</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Singer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Machine Learning Research</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="page" from="551" to="585" />
+			<date type="published" when="2006" />
+			<publisher>JMLR</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Optimization strategies for online large-margin learning in machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">V</forename><surname>Eidelman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Seventh Workshop on Statistical Machine Translation</title>
+		<meeting>the Seventh Workshop on Statistical Machine Translation</meeting>
+		<imprint>
+			<date type="published" when="2012" />
+			<biblScope unit="page" from="480" to="489" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">SampleRank training for phrase-based machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Haddow</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Arun</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Koehn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Sixth Workshop on Statistical Machine Translation. Association for Computational Linguistics</title>
+		<meeting>the Sixth Workshop on Statistical Machine Translation. Association for Computational Linguistics</meeting>
+		<imprint>
+			<date type="published" when="2011" />
+			<biblScope unit="page" from="261" to="271" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Moses: Open source toolkit for statistical machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Koehn</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><surname>Hoang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Birch</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Burch</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Federico</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">N</forename><surname>Bertoldi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Cowan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><surname>Shen</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Moran</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Zens</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Dyer</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">O</forename><surname>Bojar</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Constantin</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><surname>Herbst</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Annual Meeting of the Association for Computational Linguistics (ACL)</title>
+		<meeting>the Annual Meeting of the Association for Computational Linguistics (ACL)</meeting>
+		<imprint>
+			<date type="published" when="2007" />
+			<biblScope unit="page" from="177" to="180" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">An end-to-end discriminative approach to machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Liang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Bouchard-Cote</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Klein</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Taskar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 21st International Conference on Computational Linguistics and the 44th annual meeting of the Association for Computational Linguistics</title>
+		<meeting>the 21st International Conference on Computational Linguistics and the 44th annual meeting of the Association for Computational Linguistics</meeting>
+		<imprint>
+			<date type="published" when="2006" />
+			<biblScope unit="page" from="761" to="768" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Orange: a method for evaluating automatic evaluation metrics for machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Och</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. of International Conference on Computational Linguistics</title>
+		<meeting>of International Conference on Computational Linguistics</meeting>
+		<imprint>
+			<date type="published" when="2004" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Minimum error rate training in statistical machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Och</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 41st Annual Meeting on Association for Computational Linguistics (ACL)</title>
+		<meeting>the 41st Annual Meeting on Association for Computational Linguistics (ACL)</meeting>
+		<imprint>
+			<date type="published" when="2003" />
+			<biblScope unit="page" from="160" to="167" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Discriminative training and maximum entropy models for statistical machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Och</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><surname>Ney</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 40th Annual Meeting on Association for Computational Linguistics (ACL)</title>
+		<meeting>the 40th Annual Meeting on Association for Computational Linguistics (ACL)</meeting>
+		<imprint>
+			<date type="published" when="2002" />
+			<biblScope unit="page" from="295" to="302" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">BLEU: a method for automatic evaluation of machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Papineni</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Roukos</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Ward</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><surname>Zhu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 40th annual meeting on association for computational linguistics</title>
+		<meeting>the 40th annual meeting on association for computational linguistics</meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2002" />
+			<biblScope unit="page" from="311" to="318" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+		<title level="m" type="main">Sequetial minimal optimization: A fast algorithm for training support vector machines</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Platt</surname></persName>
+		</author>
+		<idno>MST-TR-98-14</idno>
+		<imprint>
+			<date type="published" when="1998" />
+		</imprint>
+	</monogr>
+<note type="report_type">Technical Report</note>
+	<note>Microsoft Research</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Support vector machine learning for interdependent and structured output spaces</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">I</forename><surname>Tsochantaridis</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Hofman</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Joachims</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Altun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Machine Learning (ICML)</title>
+		<imprint>
+			<date type="published" when="2004" />
+			<biblScope unit="page" from="823" to="830" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Optimized online rank learning for machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Watanabe</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT)</title>
+		<meeting>Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT)</meeting>
+		<imprint>
+			<date type="published" when="2012" />
+			<biblScope unit="page" from="253" to="262" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Online large-margin training for statistical machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Watanabe</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Suzuki</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><surname>Tsukada</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><surname>Isozaki</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Conference on Empirical Methods in Natural Language Processing and Computational Natural Language Learning</title>
+		<meeting>Conference on Empirical Methods in Natural Language Processing and Computational Natural Language Learning</meeting>
+		<imprint>
+			<publisher>EMNLPCoNLL</publisher>
+			<date type="published" when="2007" />
+			<biblScope unit="page" from="764" to="773" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

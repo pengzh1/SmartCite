@@ -159,7 +159,7 @@ public class Article {
                 if (w.getIndex() > 0) { //不是第一个单词
                     if (w.getType() == WordItem.WordType.Word || w.getType() == WordItem.WordType.WordRef || w.getType() == WordItem.WordType.Word_G_Ref) {
                         //去掉句首word，去掉不是NN的，去掉停用词中的
-                        if (startCapital(w.getWord()) && w.getTag().startsWith("NN") && !lexicalHookStopword.contains(w.getWord())) { //首字母大写的名词
+                        if (startCapital(w.getWord()) && w.getTag() != null && w.getTag().startsWith("NN") && !lexicalHookStopword.contains(w.getWord())) { //首字母大写的名词
                             lexicalHookMap.putIfAbsent(w.getWord(), 1);
                             lexicalHookMap.computeIfPresent(w.getWord(), (s, c) -> c + 1);
                         }   //TODO 很多引文标记加进去了，不是应该已经去掉了吗？

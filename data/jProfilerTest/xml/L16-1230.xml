@@ -1,0 +1,542 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T16:25+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Issues and Challenges in Annotating Urdu Action Verbs on the IMAGACT4ALL Platform</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sharmin</forename><surname>Muzaffar</surname></persName>
+							<email>sharmin.muzaffar@gmail.com</email>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Pitambar</forename><surname>Behera</surname></persName>
+							<email>pitambarbehera2@gmail.com</email>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Girish</forename><surname>Nath</surname></persName>
+							<email>girishjha@gmail.com</email>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jha</forename></persName>
+						</author>
+						<author>
+							<affiliation key="aff0">
+								<orgName type="institution">Aligarh Muslim University</orgName>
+								<address>
+									<settlement>Jawaharlal</settlement>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<affiliation key="aff1">
+								<orgName type="institution">Nehru University Centre for Linguistics</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Issues and Challenges in Annotating Urdu Action Verbs on the IMAGACT4ALL Platform</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>Action verbs</term>
+					<term>Compound verbs</term>
+					<term>Complex predicates</term>
+					<term>Conjunct verbs</term>
+					<term>Computational semantics</term>
+					<term>Semantic discrepancy</term>
+					<term>IMAGACT ontology</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>In South-Asian languages such as Hindi and Urdu, action verbs having compound constructions and serial verbs constructions pose serious problems for natural language processing and other linguistic tasks. Urdu is an Indo-Aryan language spoken by 51, 500, 000 1 speakers in India. Action verbs that occur spontaneously in day-to-day communication are highly ambiguous in nature semantically and as a consequence cause disambiguation issues that are relevant and applicable to Language Technologies (LT) like Machine Translation (MT) and Natural Language Processing (NLP). IMAGACT4ALL is an ontology-driven web-based platform developed by the University of Florence for storing action verbs and their inter-relations. This group is currently collaborating with Jawaharlal Nehru University (JNU) in India to connect Indian languages on this platform. Action verbs are frequently used in both written and spoken discourses and refer to various meanings because of their polysemic nature. The IMAGACT4ALL platform stores each 3d animation image, each one of them referring to a variety of possible ontological types, which in turn makes the annotation task for the annotator quite challenging with regard to selecting verb argument structure having a range of probability distribution. The authors, in this paper, discuss the issues and challenges such as complex predicates (compound and conjunct verbs), ambiguously animated video illustrations, semantic discrepancies, and the factors of verb-selection preferences that have produced significant problems in annotating Urdu verbs on the IMAGACT ontology.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.">Introduction</head><p>Action verbs are those which refer to activities and are the center of the predicate in any utterance or sentence. These verbs are the "most frequent structuring elements of the discourse" <ref type="bibr" target="#b11">(Moneglia et al., 2012)</ref> in the communication process in any natural language of the world. Every language in the world categorizes actions in their own way which prevents the smooth functioning of NLP (Natural Language Processing), MT (Machine Translation) and other language technologies. Owing to the fact that they are 'polysemous' in nature <ref type="bibr" target="#b11">(Moneglia et al., 2012)</ref>; they often cause ambiguities that lead to various types of difficulties for the NLP technologies while processing. which aims at setting up cross-linguistic ontology for disambiguation tasks in this crucial area of the lexicon <ref type="bibr" target="#b11">(Moneglia et al., 2012</ref>) that deals with lexical semantics. It contains visual prototypes, but not definitions representing actions and thereby allows the exhibitions of typological variations across languages in transparent and informative manner. <ref type="figure" target="#fig_0">Figure 1</ref> is a snapshot of the IMAGACT User login page.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.1">The IMAGACT4ALL Platform</head><p>The IMAGACT data accounts for the semantic competence, separating the contexts from the metaphorical and the idiomatic expressions. Action verbs refer to a set of variety of possible ontological types which makes the task of the native speaker-annotator quite daunting with regard to selecting verb argument structure with a probability distribution. This paper discusses the issues and challenges-complex predicates (compound and conjunct verbs), ambiguously animated video illustrations, semantic discrepancies and the factors of verb-selection preferencesthat have produced significant problems while annotating Urdu verbs on the IMAGACT ontology platform as native speakers of Urdu language. IMAGACT4ALL 2 is a 'competencebased extension' for the IMAGACT ontology. It provides wide representation of the actions that are most prominent in every-day life using prototypic 3d animations of brief forms.</p><p>IMAGACT is an online corpus of action verbs of various nature and the meta-languages initially used are English and Italian. So the prototypic animated video illustrations are already explained in both the languages and the annotators of the other languages have to annotate their data based on the already-explained data in the metalanguages. Chart. 1 demonstrates a summary of verbs annotation in some major languages such as Chinese, English, and Italian. The number of verbs from ItalianEnglish annotated is 515, translated is 473 out of the total 521. On the other hand, annotated and translated verbs from English-Italian are 546 and 497 in number respectively out of the total 550. So far as the annotation in the Chinese language is concerned, from Italian-Chinese 430 verbs have been annotated and 156 have been translated out of 521. In addition, the verbs from English-Chinese are 550 in number and the annotated and translated verbs are 30 and 22 respectively. Chart 1: Summary of Verbs Annotation <ref type="bibr">(till March, 2014)</ref> It is currently being used for two main initiatives. The first one specifically concerns Indian languages: Bangla, Sanskrit, Hindi, Odia, Urdu, Manipuri and Magahi. A second initiative concerns languages like Polish, Danish, Tunisian and Tunisian-Arab and some others which are under the processing phase as the current extension beyond the existing Italian and English languages. The annotator needs to create these components, incorporating the applicable criteria that follow. The following chart represents the annotation of verbs in Indian languages. As far as Indian languages on the platform   </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.2">Urdu Language</head><p>Urdu, spoken approximately by 100 million people predominantly in Pakistan and India, is the member of the "Indo-Aryan language group within the Indo-European family of languages". <ref type="bibr">4</ref> It is the 'national language' of Pakistan <ref type="bibr">(Rahman, 1996)</ref> along with being one of the two official languages. Further, it is also a Scheduled Language in the Union of India among other 22 languages. It is spoken all over the world owing to the fact that big SouthAsian Diaspora is present in many parts of the world <ref type="bibr" target="#b20">(Schmidt, 1999)</ref>. It is also spoken in Bahrain, Afghanistan, Saudi Arabia, Bangladesh, Guyana, Botswana, Germany, India, Fiji, Malawi, Mauritius, Nepal, Oman, South Africa, Norway, Thailand, Qatar, the UAE, the UK, and Zambia.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>5</head><p>Six Indian states have conferred Urdu an official status and one of the 22 Scheduled Languages in the Constitution of India. Urdu has a few dialects, including Dakhni, Rekhta and Modern Vernacular Urdu (based on the Khariboli dialect of the western Uttar Pradesh region). It has a strong PersoArabic influence in its vocabulary, a cursive style, and context-sensitive Perso-Arabic script written from right to left and is closely associated to Hindi with which it shares commonalities with respect to morphology, syntax and a fair amount of vocabulary.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.2.1.">Forms of Urdu Verbs</head><p>As has been discussed in Urdu: An Essential Grammar by Ruth Laila Schmidt, Urdu verbs have been categorized into four main basic forms: root, imperfective and perfective participle and infinitive. They are as follows:</p><p> Root With the root /jA/ (go), /-nA/ suffix infinitive is attached to form an infinitive form /jAnA/ (to go) of the verb. Other roots vigorously used in the language are /kar/ (do), /de/ (give), sun (hear), /khA/ (eat) and the like. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Annotation of Verbs in Indian Languages</head><p>Verbs of the present suffix /-tA/ /-te, -tI/, which is inflected like an adjective to agree with nouns or pronouns in gender and number. /SunanA/, to hear-/sunatA/, hearing /KaranA/, to do-/karatA/, doing /KarAnA/, to cause to be done-/karAtA/, causing to be done Forms of the imperfective participle: singular plural Masculine /sunatA/ /sunate/ Feminine /sunatI/ /sunatIṀ/  Perfective Participles: Perfective participles are formed from the root by the addition of the past suffix /-A, /-e, -I, -IṀ/, which is inflected like an adjective to agree with nouns or pronouns in gender and number. For instance, /SunanA/ 'to hear'-/sunA/ 'heard' /Pa.DhanA/ 'to read', /pa.Dha dēnA/ 'to read to someone' etc.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.2.2.">Types of Action Verbs in Urdu</head><p> Simple and Compound Verbs: Simple verbs are those which use only a single structure with no any compound structure. For instance, /sonA/ (to sleep) and /pa.DhanA/ (to read) are simple verbs while /sojAnA/ (to fall asleep) and /pa.Dha dēnA/ (to read to someone) are the examples of compound verbs <ref type="bibr" target="#b1">(Agnihotri, 2007 and</ref><ref type="bibr" target="#b20">Schmidt, 1999)</ref>. The simple verbs used in the IMAGACT platform are /TAnganA/ 'to put', /jo.DanA/ 'to fix', /DAlanA/ 'to put', /mo.DanA/ 'to roll up', /lu.DhakanA/ 'to roll', /belanA/ 'to roll', /lapeTanA/ 'to wrap', /ghUmanA/ 'to turn', /mu.DanA/ 'to turn', /palaTanA/ 'to turn', /laTakanA/ 'to hang', /karanA/ 'to do', /rakhanA/ 'to put', /baiThanA/ 'to sit', /bAMdhanA/ 'to bandage', /kATanA/ 'to cut', and /poMChanA/ 'to wipe' etc.</p><p> Transitive and Intransitive Verbs In transitive sentences the verb takes an object and the focus is on the action performed by the doer. On the contrary, intransitive verbs do not take objects and the emphasis is on the consequence of the action performed by the doer. English verbs can both be transitive and intransitive at the same point of time. For instance, the shopkeeper sells (transitive verb) fruits. The fruits are selling well in these days (intransitive verb). This phenomenon creates some problems for the annotator of the IMAGACT. Example of a transitive verb: nUra posTara mo.Da rahI hai Noor-3.SG.FEM.NOM poster-ACC roll-PRES.IMPFV.PROG.AUX "Noor is rolling up the poster." In the above-instantiated example, the verb 'roll' takes up the object 'poster' as its argument and hence is a transitive one. Example of an intransitive verb: shAziA ghuma rahI hai shazia-3.SG.FEM.NOM spin-PRES.IMPFV.PROG.AUX "shazia is spinning around." In the above-mentioned example the verb 'to spin' does not take up any object and as a result can be called as intransitive verb.</p><p>On the IMAGACT platform the intransitive verbs employed are /lu.DhakanA/ 'to roll', /ghumanA/ 'to turn', and /palaTanA/ 'to turn' whereas the rest are transitive like /mo.DanA/ 'to roll up', /lapeTanA/ 'to wrap' and /laTakanA/ 'to hang'.  Causative Verbs: In Urdu causative verbs are formed by the addition of /-A/ /-la/ to the roots. For instance, from the root /sun/ and /khA/, causatives are formed like /sun-A/ and /khi-lA/. Double causatives are formed by the addition of /-vA/ and /-lvA/. For example, from the roots /kar/ and /khA/ causatives are formed like /kar-vA/ and /khil-vA/. The causatives used on the IMAGACT platform are /saTAnA/ 'cause to set', /khisakAnA/ 'cause to move', /laTakAnA/ 'cause to hang', /phailAnA/ 'cause to lay', /miTAnA/ 'cause to rub', /ghumAnA/ 'cause to move', /hilAnA/ 'cause to stir', /cipakAnA/ 'cause to stick', /milAnA/ 'cause to mix', /sukhAnA/ 'cause to dry', /uchAlanA/ 'cause to toss', /lagAnA/ 'cause to lean', /jhukAnA/ 'cause to drop' , and /lu.DhakAnA/ 'cause to roll'.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">Complex Predicates</head><p>The complex predicates are highly productive and different types can be stacked on top of one another <ref type="bibr" target="#b6">(Butt, 2011)</ref>, "so capturing their use computationally in a systematic, generalizable and efficient manner is a challenge" (Gunkel et al., 1998).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1">Conjunct Verbs</head><p>Conjunct verbs are those which comprise of noun or adjective and verb. In Hindi and Urdu Conjunct verb is formed by combining a noun or an adjective with a verb. They have the following structure  Noun/adjective + verb = conjunct verb The most frequent verbalizers in Hindi and Urdu are /karanA/ 'to do', /honA/ 'to be', /denA/ 'to give', /lenA/ 'to take', /AnA/ 'to come' .</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2">Compound Verbs</head><p>Compound verbs are those which include a combination of verb with verb where the first verb in the occurrence is the polar verb and the second is the vector <ref type="bibr">(Hook, 1974 and</ref><ref type="bibr" target="#b6">Butt, 2011)</ref>. The vector explicates the semantic and grammatical aspects of the verb group and thereby the sentence <ref type="bibr" target="#b0">(Abbi and Gopalakrishnan, 1991)</ref>. Verb (polar) + verb (vector) = compound verb Some of the examples of compound verbs are /khA liyA/, /mAra DAlanA/, /de denA/, /toDa DiyA/ and so on.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.">Ambiguously Animated Video Illustrations</head><p>The animated videos as demonstrated in <ref type="figure" target="#fig_3">Figure 2</ref> illustrated on the IMAGACT platform exhibit some ambiguity with reference to different types of actions. In other words, one action shows more than two types of representative verbs and hence causes disambiguation problems. As in the sentence id 17f0d2ba: /sir jhukAnA/ is the appropriate, /sir niche karnA/ is also possible, depicted by the picture. In both of the sentence id numbers 57b339d6, and 2b4dafad: the possible verb can be /ulaTanA/, which is not appropriate as it is used in the sense of putting some edibles from one object into some another. The correct verb is /palaTanA/ as it is illustrated in the afore-mentioned images that both the persons are turning the book and paper from the same location. In the sentence id no. b1be793, the picture depicts that she is dancing, but actually she is turning around. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.">Semantic Discrepancy</head><p>In <ref type="figure" target="#fig_5">Figure 4</ref>, /ghumanA/ is used in all the ontologies despite the fact that in the id no.35d8523a it is used in the sense of moving while in the id no.51ad2030 it is employed as to refer to the sense of turning up. In the id no. b1be7903 it is used in the sense of spinning or rotating or turning. But in Urdu they are semantically treated as referring to the same action verb "moving" /ghumanA/. On the contrary, in the English counterpart of the sentence ID: b65d7431ghumAnA refers to two verbs: 'to turn' and 'to rotate'. While in the rest of the sentence ids the verbs like rotate, swivel, turn and revolve are employed. It is because of the fact that each of the natural language assigns different action verbs for various ontologies and sometimes "one sole action verb in sentences having the same argument structure can refer to many different actions, so the verb does not explicitly specify the entity that it refers to" <ref type="bibr" target="#b11">(Moneglia et al., 2012)</ref>. This phenomenon of the language creates semantic discrepancy and is due to semantic factors. These action verbs are called general action verbs that can extend to actions belonging to different ontological types <ref type="bibr" target="#b11">(Moneglia et al., 2012 and</ref><ref type="bibr" target="#b17">Mohanan, 1994)</ref>. On one hand, there is no necessity for the existence of the object for ghumnA (to move) as it is an intransitive verb, whereas, on the other hand, it is likely for the action ghumAnA (cause to move) to take at least one object. In other words, in the causation of the action ghumAnA (cause to move) the action has to take the agent as the causal factor for the accomplishment of the action. Besides, another point which can be worthy of note is that it is also transitive verb along with causative. Analogously, in the sentence id numbers such as cecbd89f and 2adb416f (see <ref type="figure" target="#fig_6">Figure. 5</ref>), /lu.DhakAnA/ is used and in the id f81899f2, /lu.DhakanA/ (roll) is used. But in the English counterpart for all the sentences, 'roll' is used to refer to all the ontological action verbs which reveals the above fact as averred by <ref type="bibr" target="#b10">(Ishibashi, 2012 and</ref><ref type="bibr" target="#b15">Verma, 1999)</ref>. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.">Factors of Verb Selection Preferences</head><p>The verb 'to roll' in the sentence ids viz. cecbd89f and 2adb416f /lu.DhakanA/ is employed while the id f81899f2 contains lu.DhakanA is used in Urdu. The possible selection preferential candidate for the action of rolling could be /dhakelanA/ which is 'to push' for the said action.</p><p>The selection preference involves some factors: shape and weight of the object, force from the agent, direction of movement, causation and transitivity. In this case, the shape of the object is cylindrical and is light weight and the large amount of force or pressure exerted from the agent is indispensable. The participation of an agent and the patient is another criterion that the verb ought to take an object so as to fulfil the condition of transitivity, and finally the direction of movement is not a constraint which can be in any direction. The first two ids fulfill all the criteria mentioned and hence, are selected. The reason for /dhakelanA/ not being selected is that it involves the factors of direction of movement and the shape of the object. Generally, the shape of the object is a square-size and the movement has to be linear along a plain surface. The action /lu.DhakanA/ (see <ref type="figure">Figure. 6</ref>) also involves the agent and patient participation, and in the prototypic animated image the object is a cylinder and is rolling along a surface where the action verb /lu.DhakanA/ fits in. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.">Issues and Challenges</head><p>With the foregoing discussion, it can, however, be averred that working with IMAGACT4ALL encapsulates significant linguistic challenges with respect to verb selection in complex predicates (compound verbs and conjunct verbs), annotating ambiguous animated videos, factors for verb selection preferences and semantic discrepancy. The cultural difference regarding language poses serious problems for the annotator of a different cultural backdrop in order for appreciating the prototypic animated visuals and relate to his/her own socio-linguistic context. Single action verb in sentences having the same argument structure can denote to several types of actions. Therefore, the concerned action verb does not explicitly specify the entity that it signifies as put forth by <ref type="bibr" target="#b10">(Ishibashi, 2012 and</ref><ref type="bibr" target="#b15">Verma, 1999)</ref>. This above-stated phenomenon on the IMAGACT4ALL platform causes disambiguation problems. Moreover, the said platform has really attempted hard so as to avoid the intensity of the lexicographic work which upholds the idea of under-determinacy of semantic description. However, it has to be investigated up to which extent the animated video solves the issue of ambiguity; as the visuals capture the lexico-semantic aspect of the verbs. The association of prototypical visual scenes with the images provides a challenging question in restricting granularity to a minimal level as we cannot definitely specify the action suggested to by one action type as the example of another action verbs.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.">Conclusion</head><p>In this paper, the authors have dealt with the issues in annotating Urdu action verbs on the IMAGACT platform. If these issues and challenges are considered, the platform can further witness progress and not obstacles for incorporating more languages from across families; especially from families in Indian and the continent of Africa. One of the main NLP applications foreseen for IMAGACT4ALL platform is the word sense disambiguation. The objective of this paper correlates with the primary purpose of the said platform i.e. to incorporate more languages dealing with the pertinent issues. Thereby, it would be of a great value to the linguistic and NLP communities of different languages, especially lessresourced languages. The said ontological platform may further be of immense significance for Machine Translation and modelling of artificial intelligent systems. By way of incorporating less-resourced languages onto IMAGACT4ALL action ontology, international promotion and development of language resources and technologies may be achieved. Inter and trans-lingual research can be conducted between and among languages. Furthermore, languages having their genesis from a common parent language family can be compared considering verbs as the predominant category. We have emphasized the lexicalsemantics and given less prominence to syntax. Furthermore, cross-familial comparison of action verbs can be initiated so as to map the ontological similarities and differences among the languages. Another important and interesting project could be comparing the cross-linking of the Indian Languages Corpora Initiative (ILCI) platform <ref type="bibr" target="#b3">(Banerjee et al., 2013)</ref> which has seventeen Indian languages with the IMAGACT4ALL platform.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.">Acknowledgements</head><p>The IMAGACT project is funded by the PAR/FAS program of the Tuscan region in Italy.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig 1 :</head><label>1</label><figDesc>Fig 1: IMAGACT Log-in Page IMAGACT is a corpus-based ontology of action verbs</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head></head><label></label><figDesc>Imperfective Participle: These participles are formed from the root by the addition 5 www.omniglot.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Fig 2 :</head><label>2</label><figDesc>Fig 2: /Sir jhukAnA/ 'to drop head'</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Fig 3 :</head><label>3</label><figDesc>Fig 3: /palaTanA/ 'to turn over'</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Fig 4 :</head><label>4</label><figDesc>Fig 4: /ghumanA/ 'to move'</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Fig 5 :</head><label>5</label><figDesc>Fig 5: /ghumAnA/ 'to make something move'</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head></head><label></label><figDesc>Fig 6: /lu.DhakanA/ vs /lu.DhakAnA/</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0" validated="false"><head></head><label></label><figDesc>are concerned, there are in totality 730 number of verbs that have already been annotated in seven Indian languages, viz., Bangla, Sanskrit, Hindi, Odia, Urdu, Magahi and Manipuri out of which 6 are scheduled languages excluding Magahi. In Bangla, Hindi and Odia, 110 number of verbs each has been annotated while the rest of the languages figures 100 verbs each.</figDesc><table>3 http://www.imagact.it/imagact/cbeVerbsReport.seam 
+4 www.ethnologue.com 
+
+Chart 2: Annotated Verbs in Indian Languages on the 
+
+IMAGACT 
+
+</table></figure>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Semantics of explicator compound verbs in south Asian languages</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Abbi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Gopalakrishnan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Language Sciences</title>
+		<imprint>
+			<biblScope unit="volume">13</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="161" to="180" />
+			<date type="published" when="1991" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<title level="m" type="main">Hindi: an essential grammar</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><forename type="middle">K</forename><surname>Agnihotri</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2007" />
+			<publisher>Routledge</publisher>
+			<pubPlace>New York</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title/>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Alsina</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Bresnan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Sells</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1997" />
+		</imprint>
+	</monogr>
+	<note>Complex predicates</note>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Linking and referencing multi-lingual corpora in Indian languages</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><surname>Banerjee</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Kaushik</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Nainwani</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Bansal</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><forename type="middle">N</forename><surname>Jha</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Poland: 6 th LTC Conference</title>
+		<imprint>
+			<date type="published" when="2013" />
+			<biblScope unit="page" from="65" to="68" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<title level="m" type="main">Identification of conjunct verbs in Hindi and its effect on parsing accuracy</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Begum</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Jindal</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Jain</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Husain</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><forename type="middle">M</forename><surname>Sharma</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2011" />
+			<publisher>Springer Journal</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+				<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Begum</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Jindal</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Jain</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Husain</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><forename type="middle">M</forename><surname>Sharma</surname></persName>
+		</author>
+		<title level="m">Identification of conjunct verbs in hindi and its effect on parsing accuracy, Computational Linguistics and Intelligent Text Processing</title>
+		<meeting><address><addrLine>Berlin Heidelberg</addrLine></address></meeting>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2011" />
+			<biblScope unit="page" from="29" to="40" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title level="m" type="main">The light verb jungle: still hacking away. Complex predicates: cross-linguistic perspectives on event structure</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Butt</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2011" />
+			<biblScope unit="page" from="48" to="78" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Verb interpretation for basic action types: annotation, ontology induction and creation of prototypical scenes</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Frontini</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">I</forename><surname>De Felice</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Khan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">I</forename><surname>Russo</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><forename type="middle">M G</forename><surname>Gagliardi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Panunzi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">24th International Conference on Computational Linguistics</title>
+		<imprint>
+			<date type="published" when="2012-12" />
+			<biblScope unit="page">69</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<monogr>
+		<title level="m" type="main">The Oxford English-Urdu Dictionary</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><forename type="middle">S</forename><surname>Haqqee</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2003" />
+			<publisher>OUP</publisher>
+			<pubPlace>USA</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">The compound verb in Munda: An areal and typological overview</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><forename type="middle">E</forename><surname>Hook</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Language Sciences</title>
+		<imprint>
+			<biblScope unit="volume">13</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="181" to="195" />
+			<date type="published" when="1991" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<title level="m" type="main">The expression of &apos;putting&apos;and &apos;taking&apos; events in Japanese. Events of putting and taking: A crosslinguistic perspective</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Ishibashi</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2012" />
+			<biblScope unit="volume">100</biblScope>
+			<biblScope unit="page">253</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">The IMAGACT Cross-linguistic Ontology of Action. A new infrastructure for natural language disambiguation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Moneglia</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Monachini</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">O</forename><surname>Calabrese</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Panunzi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Frontini</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Gagliardi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">I</forename><surname>Russo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">LREC</title>
+		<imprint>
+			<date type="published" when="2012" />
+			<biblScope unit="page" from="2606" to="2613" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<monogr>
+		<title level="m" type="main">The variation of action verbs in multilingual spontaneous speech corpora. Spoken Corpora and Linguistic Studies</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Moneglia</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2014" />
+			<biblScope unit="page">152</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<monogr>
+		<title/>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Moneglia</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><forename type="middle">W</forename><surname>Brown</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Kar</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><surname>Mello</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">N</forename><surname>Mishra</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><forename type="middle">N</forename><surname>Jha</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Ray</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Sharma</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2014" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<monogr>
+		<title level="m" type="main">Mapping Indian Languages onto the IMAGACT ontology of action</title>
+		<imprint>
+			<pubPlace>WILDRE, Iceland</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+				<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><forename type="middle">K</forename><surname>Verma</surname></persName>
+		</author>
+		<title level="m">Complex Predicates in South Asian Languages. New Delhi: Manohar Publishers and Distributors</title>
+		<imprint>
+			<date type="published" when="1999" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Wordhood and lexicality: Noun incorporation in Hindi</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Mohanan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Natural Language &amp; Linguistic Theory</title>
+		<imprint>
+			<date type="published" when="1995" />
+			<biblScope unit="volume">13</biblScope>
+			<biblScope unit="page" from="75" to="134" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<monogr>
+		<title level="m" type="main">Argument structure in Hindi</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Mohanan</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1994" />
+			<publisher>CSLI Publication</publisher>
+			<pubPlace>Stanford</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Error Analysis of the Urdu Verb Markers: A Comparative Study on Google and Bing Machine Translation Platforms</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Muzaffar</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Behera</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Aligarh Journal of Linguistics</title>
+		<imprint>
+			<biblScope unit="page" from="199" to="208" />
+			<date type="published" when="2014" />
+		</imprint>
+	</monogr>
+	<note>ISSN-2249-1511), 4 (1-2)</note>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+				<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Muzaffar</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Behera</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><forename type="middle">N</forename><surname>Jha</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">L</forename><surname>Hellan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Beermann</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">TypeCraft Natural Language Database: Annotating and Incorporating Urdu, Proceedings of the Third Reg-ICON</title>
+		<imprint>
+			<date type="published" when="2015" />
+			<biblScope unit="volume">8</biblScope>
+		</imprint>
+	</monogr>
+	<note>IPL0579. Accessed date 6.03.</note>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<monogr>
+		<title level="m" type="main">Urdu: an essential grammar</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><forename type="middle">L</forename><surname>Schmidt</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1999" />
+			<pubPlace>London: Routledge</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

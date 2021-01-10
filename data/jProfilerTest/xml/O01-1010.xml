@@ -1,0 +1,848 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T18:43+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Design, Compilation and Processing of CUCall: A Set of Cantonese Spoken Language Corpora Collected Over Telephone Networks</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><forename type="middle">K</forename><surname>Lo</surname></persName>
+							<email>wklo@ee.cuhk.edu.hk</email>
+							<affiliation key="aff0">
+								<orgName type="institution">The Chinese University of Hong Kong</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><forename type="middle">C</forename><surname>Ching</surname></persName>
+							<email>pcching@ee.cuhk.edu.hk</email>
+							<affiliation key="aff0">
+								<orgName type="institution">The Chinese University of Hong Kong</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Tan</forename><surname>Lee</surname></persName>
+							<email>tanlee@ee.cuhk.edu.hk</email>
+							<affiliation key="aff0">
+								<orgName type="institution">The Chinese University of Hong Kong</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Helen</forename><surname>Meng</surname></persName>
+							<email>hmmeng@se.cuhk.edu.hk</email>
+							<affiliation key="aff0">
+								<orgName type="institution">The Chinese University of Hong Kong</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Design, Compilation and Processing of CUCall: A Set of Cantonese Spoken Language Corpora Collected Over Telephone Networks</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>The design and compilation of the CUCall telephone speech corpora is described in this paper. Speech database is an indispensable resource for research and development of state-of-the-art spoken language technology. These speech recognition systems rely greatly on a huge amount of well-designed and appropriately processed speech data for parameters training. On the other hand, as telephony applications are becoming more demanding and complicated, natural language interface is gaining more popularity than the traditional touch tone operation. Therefore, large telephone speech databases are required for such system building. Separate speech corpora are needed for telephone systems since there exist significant differences due to the channel difference. In this paper, we will describe the design and processing of a set of spoken language corpora for Cantonese that are collected over fixed line as well as mobile telephone networks. The corpora are intended as a versatile set of training data for general purpose application systems that adopt a statistical approach to spoken language processing. The designed set of corpora will be made up of over 1000 speaker calls.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Speech data collected over telephone network is an essential resource for telephone based spoken language systems. The increasing penetration of remote system or service access over telephone networks has created a great driving force for collecting a huge amount of telephone speech data from a large speaker population and for different languages.</p><p>Since the current state-of-the-art speech recognition techniques are statistically based, the availability of annotated data is particularly important. In general, the greater the amount and coverage of the data, the better the speech applications developed. In order to build a spoken language system over telephone network, the speech data has to be collected over telephone network and properly transcribed. The goal of this work 1 is to collect and compile a set of general purpose Cantonese telephone speech data from a large group of people of both genders. With the availability of this set of corpora, the rapid growth in the spoken language applications over telephone networks for the Cantonese speaking community is made possible.</p><p>Over the past decades, many telephone based spoken language systems have been developed with great success. They all take advantage of the existence of several spoken language corpora compiled in recent years. Examples include the Jupiter from MIT <ref type="bibr" target="#b25">[25]</ref>, HMIHY 2 from AT&amp;T <ref type="bibr" target="#b17">[17]</ref> and the European Union projects such as ACCeSS <ref type="bibr">[27]</ref> and ARISE <ref type="bibr" target="#b27">[28]</ref> etc. Nowadays, there are quite a large number of companies that make use of simple automatic telephone service systems to reduce the cost of employing human operators. Many of them have upgraded or wish to upgrade their touch-tone based system to speech enabled versions. It is obvious that continuous efforts are needed to enhance these services via speech technologies as much as possible.</p><p>For building telephone speech recognition systems, there has long been a great demand on Cantonese telephone speech data. This work is an initial effort to collect a set of Cantonese spoken language corpora over telephone network. It is targeted to provide some versatile data for public use. It aims to enrich the infrastructure for spoken language technology by providing the speech community with well-designed corpora in Cantonese.</p><p>The compiled database will enable the integration of Cantonese speech technology to many of the existing telephone based interactive systems.</p><p>1 http://dsp.ee.cuhk.edu.hk/speech/cucall.html 2 How may I help you? is the service offered by AT&amp;T.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>1-1 Background</head><p>There has been much effort in spoken language corpora development over the past decades.</p><p>These include the TIMIT <ref type="bibr" target="#b8">[8]</ref>, Resource Management <ref type="bibr" target="#b15">[15]</ref>, Wall Street Journal <ref type="bibr" target="#b14">[14]</ref>, Air Travel Information Service <ref type="bibr" target="#b16">[16]</ref> etc. from the United States. In Europe, there are the EUROM1 <ref type="bibr" target="#b21">[21]</ref> and SpeechDat <ref type="bibr" target="#b2">[3]</ref> etc. They contain microphone data and telephone data as well. From the early adaptation of microphone corpora to network versions like NTIMIT <ref type="bibr" target="#b5">[5]</ref> and the collection of real-world telephone data such as MACROPHONE <ref type="bibr" target="#b0">[1]</ref>, CALLHOME <ref type="bibr" target="#b29">[30]</ref>, SpeechDat <ref type="bibr" target="#b2">[3]</ref>, POLYPHONE <ref type="bibr" target="#b28">[29]</ref> etc., there is an abundant amount of data available for the western languages. The availability of these telephone corpora has successfully helped drive the research and development of telephone-based speech technologies of these languages.</p><p>For Asian languages, there has been limited investment spent on corpora development.</p><p>Much effort came from Japan, for example those reported in <ref type="bibr" target="#b6">[6,</ref><ref type="bibr" target="#b7">7,</ref><ref type="bibr" target="#b13">13]</ref>. For Chinese language, speech database collection has only started relatively recently. More widely used databases include microphone speech corpora such as the USTC95 <ref type="bibr" target="#b19">[19]</ref>, HKU96 <ref type="bibr" target="#b1">[2,</ref><ref type="bibr" target="#b24">24]</ref>, HKU99 <ref type="bibr" target="#b4">[4]</ref>, CMSC <ref type="bibr" target="#b22">[22]</ref> and others <ref type="bibr" target="#b23">[23]</ref>; and telephone speech corpora such as MAT-160 and MAT-2000 <ref type="bibr" target="#b18">[18,</ref><ref type="bibr" target="#b20">20,</ref><ref type="bibr">31]</ref>. These telephone data become valuable resources for many voice-activated telephony applications development.</p><p>Among the many Chinese dialects, Cantonese is one of the most popular Chinese dialects used in the southern China. Development of spoken language corpora has just started within the past decade <ref type="bibr" target="#b9">[9,</ref><ref type="bibr" target="#b10">10,</ref><ref type="bibr" target="#b11">11]</ref>. It began with some small-scale corpus collection for specific projects. There is great shortage in Cantonese speech corpora to drive the growth and advancement of Cantonese speech technologies.</p><p>In 1997, the development of CUCorpora 3 <ref type="bibr" target="#b9">[9,</ref><ref type="bibr" target="#b11">11,</ref><ref type="bibr" target="#b12">12]</ref> was initiated at the Chinese University of Hong Kong. CUCorpora is the first large-scale Cantonese spoken language corpora that are made available for public access. It is designed to cover both phonetically based content and common task oriented and application-specific content. The present work on telephone speech data compilation is a momentous extension of this effort. The vast variation of operator network protocols in Hong Kong 4 yet enrich the content of the corpora. Since the speakers will have to call our server to activate the data collection process, the resultant corpora are thus code named CUCall. The availability of the invaluable CUCall will undoubtedly nourish the booming technologies to a greater extent.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>1-2 Paper organization</head><p>The paper is organized as follows. The design of the corpora materials will be described in detail first in Section 2. The design selection of the major parts of data will be elaborated.</p><p>After that, actual collection process is presented. From the recording system setup down to the collection process, every detail of the process will be given. In Section 4, the postprocessing of the captured data will be explained. The validation, transcription as well as the organization procedures are described. We will then provide some initial analysis on the designed corpora materials. Finally, conclusions are made in Section 6.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Corpora Design and Organization</head><p>The design of the CUCall has been based on our previous experience with CUCorpora.</p><p>The concepts behind stay the same. Like CUCorpora, CUCall comprises of linguistically oriented and application-specific data. In CUCall, we take a step forward to include spontaneous conversations and short paragraphs data. These will altogether make up two major parts in the corpora:</p><p>1. Phonetically oriented continuous speech data that focus on: (a) coverage through carefully designed corpora materials; and (b) different speaking styles from short paragraphs and free form spontaneous conversation style.</p><p>2. Application-oriented short phrases and digit strings. Sentences The sentences are chosen to be phonetically rich in the sense that they constitute complete coverage of bi-phone class context. The selection of sentences was detailed in <ref type="bibr" target="#b9">[9,</ref><ref type="bibr" target="#b11">11]</ref>. It was implemented as a semi-automatic process where human intervention is included to decide on the readability of the automatically selected sentences.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Short paragraphs</head><p>The short paragraphs attempt to emphasize more on the variations of the speaking behaviour and characteristics. For short paragraphs, the selection is solely based on the readability of the paragraphs without taking into consideration of the phonetic content. It aims to enrich the sentence data as well as provide data that bears very different speaking style. <ref type="table" target="#tab_0">Table 1</ref> shows the amount of data for each of these types. short paragraphs 90</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>2-1-2 Speaking style oriented</head><p>For collecting speech data of different speaking styles, the design of CUCall included specifically short paragraphs and conversation parts.</p><p>Short paragraphs While the short paragraphs can enrich the phonetic coverage as mentioned in 2-1-1, the data collected in this part is believed to be very different from that of the stand alone sentences. There are many different speaking phenomena being exaggerated when people reading a section of long text materials. These include correction, hesitation, breathing, long pause etc. Therefore, these recorded materials can also serve the purpose of representing another kind of speaking style in addition to enriching the phonetic content of the sentence corpus.</p><p>Spontaneous conversation In the CUCall corpora, a new type of speech data to be collected is the spontaneous conversation type of utterances. These data are collected with the aim to obtain the characteristics of various speakers when prompted to speak in an unprepared manner. There are expected delay, hesitation, correction and skipped words etc. In addition, there are also many colloquials, pronunciations and agrammatical sentences that will not be found in normal read speech. These will provide us with invaluable data for the study of the variation of speaking characteristics under different situations.</p><p>The design of "prompts" for this part of data collection has been carefully planned.</p><p>It is implemented as a single round dialogue between the speaker and the system. Since the speakers are free to answer anything to the prompts, the phonetic content is uncontrollable. The major consideration here is to ensure that there is a high proportion of speakers capable of responding to the prompts. Due to the lengthy nature of the recording process, some speakers are expected to skip these prompts intentionally while some may be too enthusiastic to give very long answers. Several points are considered during the design of prompts:</p><p>1. The prompts must be simple enough that "spontaneous" response is possible. Calculation, memory recall or questions requiring accuracy are not suitable.</p><p>2. The prompts must have different answers from different speakers so as to increase the variations of the collected data. It would be even better if the same speaker will</p><p>give different answers at different time.</p><p>3. The responses to the prompts may be either long or short.</p><p>4. Both for legal purpose and encouraging speakers to answer, the content of the answer must be irrelevant to privacy of the speakers.</p><p>Based on the considerations mentioned above, we have carefully designed six prompts.</p><p>These prompts are carried out at the end of each of the collection sessions. It is done this way because by that time, the speaker will be more familiar with the recording process. This will then reduce the probability of making mistake since unprepared types of responses are usually "error" prone. In <ref type="figure" target="#fig_1">Figure 1</ref>, the six prompts are listed for reference (in English translation, because of the colloquial nature of the Cantonese prompt, not all words are writtable in characters ). </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>2-2 Application-specific data</head><p>The CUCall corpora also contain digit strings as well as application-specific short phrases in some specific domains. The design of the digit corpus is similar to that of the CUD-IGIT <ref type="bibr" target="#b9">[9]</ref> corpus. In CUCall, the reading materials include all of the single digits together with some random generated long digit strings. This makes up a small-scale digit string corpus collected over telephone network from a large number of speakers.</p><p>The short phrase materials are designed with reference to CUCorpora. Phrases are chosen from various reading materials including names of listed companies and their abbreviations, name of foreign currencies, district names and major housing estates in Hong</p><p>Kong together with the navigation commands adopted from the CUCMD <ref type="bibr" target="#b9">[9,</ref><ref type="bibr" target="#b11">11]</ref> corpus.</p><p>These phrases cover the financial domain, navigation commands, as well as major local places. They could be used when building command based speech applications for the related domains. <ref type="table" target="#tab_1">Table 2</ref> lists the amount of corresponding type of phrases. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Data Collection Process</head><p>The data collection is facilitated by using an automatic call centre type telephone server system. The overall set-up is shown in <ref type="figure">Figure 3</ref>. This server system allows the speakers to call in and then read the provided materials. It is also equipped with the usual navigating features with a touch-tone telephone system.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>3-1 Telephone Server</head><p>The telephone server is a cluster of computers with one file server and two computer telephony servers (see <ref type="figure">Figure Figure 4</ref>). The file server has a large 64 GB harddisk and is directly connected to the two telephony servers over a 100 Mbps isolated ethernet. <ref type="bibr" target="#b5">5</ref> The computer telephony servers are equipped with a Dialogic D/41-ESC four port telephony cards for telephone network connection.</p><p>There are eight ports available on the Dialogic D/41-ESC card, but only two ports are used. This is sufficient for our current scale of speech collection. Also, additional ports may be used as backup during system maintenance or occasional system breakdown.</p><p>Furthermore, we can also even out the potential analog channel discrepancies among the different ports by intermittently changing the answering ports over the course of data collection.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>3-2 Collection Process</head><p>The actual collection process was implemented in several steps:</p><p>1. Preparation of the reading materials;</p><p>2. Distribution of the reading materials;</p><p>3. Accepted speakers call to the telephone server.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.">Return of filled questionnaires from speakers.</head><p>Preparation of reading materials The reading materials are mixtures of phrases and sentences described in Section 2. Each part is randomly shuffled and printed out on paper. Every 10 to 30 successful calls will gives a complete set for that part of the corpora.</p><p>In order to differentiate against different gender and different kinds of telephone networks, the reading materials are prepared and distributed in four parallel streams: male mobile, male fixed-line, female mobile and female fixed-line. At the end of each of the prompt sheets, there is a short questionnaire to enable the collection of information about the speaker's age group, telephone network operator (for mobile phone) or type of telephone (whether they are using extension line or direct line).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Distribution of prompt sheet</head><p>The prepared prompt sheets are distributed through recruited agents. They pass the reading materials to candidate speakers. After recording, the speakers then return the prompt sheet with questionnaire duly completed to the agent and then the agent pass them back to us for processing. The adoption of an agent based distribution network allows an efficient collection process while we could indirectly control the speaker community by choosing appropriate agents.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Speakers call</head><p>The speakers will make call to our telephone server at any time they so wish. The server would answer the calls whenever it is idle. The speakers are then requested to jot down a generated serial number for bookkeeping purpose. After that, our server program will prompt the speaker by the item numbers on the prompt sheet and then wait for the speakers' speech data with an automatic silence detector. After the speakers have read the prompted item (or time-out if the speakers do not say anything), the data is immediately stored on to the server's hard disk. This prompting process repeats until the last item is finished. The server then reminds the speakers to fill out the questionnaire and hang up subsequently.</p><p>Questionnaire return After the agents have collected the prompt sheet, the serial number and questionnaire results are entered into our database for bookkeeping and analysis purposes. Up to this point the collection process is completed and the data are kept for later post-processing.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Post-Processing of Data</head><p>The most important part of a spoken language corpora development process is the postprocessing of the collected speech data. The collected data need to be accurately annotated with necessary labels and organized properly for easy distribution and usage.</p><p>Based on our previous experience from developing the CUCorpora <ref type="bibr" target="#b9">[9]</ref>, we have carefully designed the post-processing procedure for the telephone speech data. <ref type="figure">Figure 5</ref> illustrates the general flow of the post-processing procedures.</p><p>Validation of the calls Among the large number of calls received, there is a small percentage of useless data. It may be due to the reason that the speakers give up reading after a short while, the recording environment is too noisy that the silence detector failed totally, or even the system broke down. Based on the serial numbers, we validate all of the calls by checking if there is reasonable amount of data being recorded. If the call is finished properly, the information of the speaker provided on the questionnaire is entered into our speaker database anonymously.</p><p>Phonemic transcription of the validated data A major effort in spoken language corpora development is annotation. This is the most important and labour intensive process. In our case, all of the validated data will be transferred using cassette tapes to our contracted professional transcribers. They will listen to the recording tapes and provide</p><p>Cantonese phonemic transcriptions to all data or mark them as noise wherever applicable. Those successfully transcribed data will then be accompanied by the corresponding phonemic transcription when distributed.</p><p>Partitioning and distribution of the collected data The transcribed data will then be partitioned according to the different parts (e.g. digit strings, short phrases, sentences, spontaneous conversation etc.). The partitioned data will be organized into different directories according to different speakers. The phonemic transcription will also be provided in the form of LSHK 6 transcription symbols. These organized directories of speech data and transcription will be printed on to compact disk for distribution.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Data Analysis</head><p>In this section, some statistical information of the designed corpora reading materials will be presented. Although there are many expected discrepancies from the actual data that are collected, these statistics can still give an overview of the characteristics of the designed corpora. The discrepancies between the designed materials and the recorded data are mainly due to the reason that there are many speakers who read colloquial and 'lazy' pronunciations, mis-read of materials (e.g. insertion, deletion and substitution of words), and mis-use of the recording systems (e.g. start reading before the recording actually started, stop reading before all of the materials are read, etc.). These could only be analyzed after all data have been transcribed. Detailed statistical analysis of the actual collected data will be released after the information has been prepared. <ref type="table" target="#tab_2">Table 3</ref> shows the basic information for different parts of the corpora. From this table,</p><p>it can be observed that out of the 1600 common tonal syllables in Cantonese, the sentence materials have covered over 85% of the syllables. In the short paragraphs corpus, even though the tonal syllable coverage is not as high as that of the sentence recording, we are <ref type="bibr" target="#b6">6</ref> Linguistic Society of Hong Kong. expected to obtain speech data in the form of sentences of length ranging from 23 to 120</p><p>characters. These could give us a number of important and unique characteristics in long utterances. it is observed that the content of the corpora is reasonably distributed. While there are some frequently occurred syllables and also some rarely occurred syllables, the majority of the syllable occurrences lie in the middle range. This could then enable us to obtain a normal distribution for the syllables in these parts of the corpora.</p><p>For the application-specific corpora, information shown in <ref type="table" target="#tab_2">Table 3</ref> can give us an idea of what is being collected for the database. We have some randomly generated digit strings of various lengths. They should cover most of the common applications where digit strings are needed to be recognized. These may include getting identity card number, telephone number, credit card numbers etc. The 7-digit, 8-digit, 16-digit strings together with the single digits are targeted for these applications. However, since digit strings are so general that continuous digit string data can definitely be applied to other areas of applications.</p><p>The other application-specific data collected in this corpora are phrases of various kinds (see Section 2). The phrases from the various different domains are mixed and shuffled for each of the speakers so as to increase the variation in the collection data.</p><p>From <ref type="table" target="#tab_2">Table 3</ref>, it may be found that the acoustic coverage of the phrase part is not as good as that of sentences and paragraphs. Since these data are designed for use in the designated domains, phonetic coverage is not the major concern during corpus design.</p><p>Nevertheless, the base syllable coverage for these phrase is not far deviated from the complete Cantonese syllable inventory.</p><p>Regarding the amount of data in the corpora, a rough estimation has been made. Up We are currently post-processing these data and they will be made available for public release in the near future when the data are processed.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Conclusions</head><p>In this paper, the design and data collection process for a telephone spoken language corpora is presented. Details about the post-processing and preliminary analysis of the data are given. Based on the previous experience in microphone speech data collection, this work is extended to collect telephone speech data so as to provide sufficient materials for the building of statistical spoken language systems. The corpora are again divided into two parts: phonetically oriented data and application-specific data. In this work, we have further extend our previous design to include also short paragraph for encompassing speaking characteristics when people reading long materials. Furthermore, we have also included some free-form open questions or prompts for obtaining speaking characteristics in spontaneous speech. Spontaneous speech presents new challenges to speech recognition and the collected data is a valuable resource for investigating possible solutions.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7">Acknowledgements</head></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 2</head><label>2</label><figDesc>Figure 2 shows an overview of the organization of the CUCall telephone spoken language corpora.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 1 :</head><label>1</label><figDesc>Figure 1: The Cantonese prompts (with English translation) for spontaneous spoken response collection.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 6</head><label>6</label><figDesc>Figure 6 gives another way to look at the properties of the designed reading materials in the sentences and paragraphs parts of the corpora. These are the frequency-of-frequency (FOF) scattered plots for the base and tonal syllables in these parts of the corpus. The FOF plots show the distributions of the occurrences of the syllables. From these figures,</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head></head><label></label><figDesc>to the time of writing, there have been over 1,000 successful calls received. These calls give a total of around 200 hours of data covering all sorts of acoustic events (speech, silence, noise, background etc). Among this volume of recording, the sentence, speaking style, short phrases and digit parts roughly contains 84, 40, 28 and 59 hours of recording.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 2 :Figure 3 :Figure 5 :Figure 6 :</head><label>2356</label><figDesc>Figure 2: This is an overview of the organization of the CUCall telephone spoken language corpora for Cantonese.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0" validated="false"><head>Table 1 :</head><label>1</label><figDesc>The number of reading materials for each type of the phonetically oriented data.</figDesc><table>material 
+number 
+
+sentences 
+5719 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1" validated="true"><head>Table 2 :</head><label>2</label><figDesc>The amount of different types of phrases for the application-specific data.</figDesc><table>material 
+amount 
+
+name of places (districts &amp; housing estates) 
+228 
+
+listed companies 
+1085 
+
+foreign currencies 
+37 
+
+navigation commands 
+90 
+
+Total 
+1440 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2" validated="true"><head>Table 3 :</head><label>3</label><figDesc>Statistical information of the reading materials for the phonetically oriented and application-specific parts of the corpora.</figDesc><table>Part 
+# per speaker # tonal syl. # base syl. syllable count 
+
+Phonetically oriented corpora 
+
+sentences 
+50 (out of 5719) 
+2251 
+1030 
+4 to 31 
+
+short paragraphs 
+3 (out of 90) 
+768 
+418 
+23 to 120 
+
+Application-specific corpora 
+
+1-digit string 
+10 
+N.A. 
+N.A. 
+N.A. 
+
+7-digit string 
+5 
+N.A. 
+N.A. 
+N.A. 
+
+8-digit string 
+5 
+N.A. 
+N.A. 
+N.A. 
+
+16-digit string 
+5 
+N.A. 
+N.A. 
+N.A. 
+
+phrases 
+48 (out of 1440) 
+562 
+344 
+2 to 8 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3" validated="false"><head></head><label></label><figDesc>This project is developed with the support from the Innovation and Technology Fund (AF/96/99). We are grateful to industrial sponsors: Group Sense Limited and SmarTone Mobile Communication Limited. We would also like to thank the Hong Kong Blind Union for helping us transcribes the telephone speech data.</figDesc><table></table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="3">http://dsp.ee.cuhk.edu.hk/speech 4 Hong Kong has a large number of mobile network operators offering different kinds of network services using different protocols. This includes the GSM900, GSM1800, TDMA, CDMA.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="5">This is intentionally set up to improve the security and robustness of the systems. The cluster of computer connected in their own network could eliminate the interference of possible network traffic from other irrelevant processes.</note>
+		</body>
+		<back>
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>T ra nscript ion: a ccu r a t e v er b a t i m t r a n scr i pt i o n f o r t he speech d a t a T ra nscript ion: T ra nscript ion: a ccu r a t e a ccu r a t e v er b a t i m t r a n scr i pt i o n v er b a t i m t r a n scr i pt i o n f o r t he speech d a t a f o r t he speech d a t a D a t a S t ora ge:</p><p>co l l ect ed t el epho n e speech d a t a D a t a S t ora ge: D a t a S t ora ge:</p><p>co l l ect ed t el epho n e co l l ect ed t el epho n e speech d a t a speech d a t a O rga niz a t ion: o r g a n i z e d a t a f o r ea sy a ccess O rga niz a t ion: O rga niz a t ion: o r g a n i z e o r g a n i z e D ist rib u t ion: D ist rib u t ion: pr i n t i n g pr i n t i n g</p></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">MACROPHONE, an American English telephone speech corpus for the polyphone project</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Bernstein</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Taussig</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Godfrey</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of 1994 IEEE International Conference on Acoustics, Speech, and Signal Processing</title>
+		<meeting>1994 IEEE International Conference on Acoustics, Speech, and Signal Processing</meeting>
+		<imprint>
+			<date type="published" when="1994" />
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="81" to="84" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Design considerations of a Putonghua database for speech recognition</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Chan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Conference on Phonetics of the Languages in China</title>
+		<meeting>the Conference on Phonetics of the Languages in China<address><addrLine>Hong Kong</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="1998" />
+			<biblScope unit="page" from="13" to="16" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title/>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><surname>Hoge</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><forename type="middle">S</forename><surname>Tropf</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Winski</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><surname>Van Den Heuyel</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Haeb-Umbach</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename></persName>
+		</author>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">European speech databases for telephone applications</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Choukri</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of 1997 IEEE International Conference on Acoustics, Speech, and Signal Processing</title>
+		<meeting>1997 IEEE International Conference on Acoustics, Speech, and Signal Processing</meeting>
+		<imprint>
+			<date type="published" when="1997" />
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="page" from="1771" to="1774" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Training material considerations for task-independent subword modeling: design and other possibilities</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Q</forename><surname>Huo</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Ma</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of 1999 Oriental CO-COSDA Workshop</title>
+		<meeting>1999 Oriental CO-COSDA Workshop</meeting>
+		<imprint>
+			<date type="published" when="1999" />
+			<biblScope unit="page" from="85" to="88" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">NTIMIT: a phonetically balanced, continuous speech, telephone bandwidth speech database</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Jankowski</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Kalyanswamy</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Basson</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Spitz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of 1990 IEEE International Conference on Acoustics, Speech, and Signal Processing</title>
+		<meeting>1990 IEEE International Conference on Acoustics, Speech, and Signal Processing</meeting>
+		<imprint>
+			<date type="published" when="1990" />
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="109" to="112" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">ATR Japanese speech database as a tool of speech recognition and synthesis</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Kurematsu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Takeda</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Sagisaka</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Katagiri</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><surname>Kuwabara</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Shikano</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Speech Communication</title>
+		<imprint>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="page" from="357" to="363" />
+			<date type="published" when="1990" />
+			<publisher>Elsevier Science</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Construction of a large-scale Japanese speech database and its management system</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><surname>Kuwabara</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Takeda</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Sagisaka</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Katagiri</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Morikawa</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Watanabe</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of 1989 IEEE International Conference on Acoustics, Speech, and Signal Processing</title>
+		<meeting>1989 IEEE International Conference on Acoustics, Speech, and Signal Processing</meeting>
+		<imprint>
+			<date type="published" when="1989" />
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="560" to="563" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Speech database development: design and analysis of the acoustic-phonetic corpus</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">L</forename><surname>Lamel</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Kassel</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Seneff</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of DARPA Speech Recognition Workshop</title>
+		<meeting>DARPA Speech Recognition Workshop</meeting>
+		<imprint>
+			<date type="published" when="1986" />
+			<biblScope unit="page" from="100" to="109" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<monogr>
+		<title level="m" type="main">Spoken language resources for Cantonese speech processing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Tan</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><forename type="middle">K</forename><surname>Lo</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><forename type="middle">C</forename><surname>Ching</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Helen</forename><surname>Meng</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2001" />
+			<publisher>Elsevier Science</publisher>
+		</imprint>
+	</monogr>
+	<note>to appear in Speech Communication</note>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Cantonese databases developed at CUHK for speech processing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><forename type="middle">K</forename><surname>Lo</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><forename type="middle">F</forename><surname>Chow</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Tan</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><forename type="middle">C</forename><surname>Ching</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Conference on Phonetics of the Languages in China</title>
+		<meeting>the Conference on Phonetics of the Languages in China<address><addrLine>Hong Kong</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="1998" />
+			<biblScope unit="page" from="77" to="80" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Development of Cantonese spoken language corpora for speech applications</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><forename type="middle">K</forename><surname>Lo</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Tan</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><forename type="middle">C</forename><surname>Ching</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the First International Symposium on Chinese Spoken Language Processing</title>
+		<meeting>the First International Symposium on Chinese Spoken Language Processing<address><addrLine>Singapore</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="1998" />
+			<biblScope unit="page" from="102" to="107" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Sub-syllabic acoustic modeling across Chinese dialects</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><forename type="middle">K</forename><surname>Lo</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Helen</forename><surname>Meng</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><forename type="middle">C</forename><surname>Ching</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Second International Symposium on Chinese Spoken Language Processing</title>
+		<meeting>the Second International Symposium on Chinese Spoken Language Processing<address><addrLine>Beijing</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2000" />
+			<biblScope unit="page" from="97" to="100" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Japanese large-vocabulary continuous speech recognition using a newspaper corpus and broadcast news</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Ohtsuki</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Matsuoka</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Mori</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Yoshida</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Taguchi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Furui</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Shirai</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Speech Communication</title>
+		<imprint>
+			<biblScope unit="volume">28</biblScope>
+			<biblScope unit="page" from="155" to="166" />
+			<date type="published" when="1999" />
+			<publisher>Elsevier Science</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">The design of the Wall Street Journal based CSR corpus</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Paul</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Baker</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Fifth DARPA Speech and Natural Language Workshop</title>
+		<meeting>the Fifth DARPA Speech and Natural Language Workshop</meeting>
+		<imprint>
+			<publisher>Morgan Kaufmann</publisher>
+			<date type="published" when="1992" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">The DARPA 1000-word resource management database for continuous speech recognition</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Price</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><forename type="middle">M</forename><surname>Fisher</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Bernstein</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><forename type="middle">S</forename><surname>Pallett</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of 1998 IEEE International Conference on Acoustics, Speech, and Signal Processing</title>
+		<meeting>1998 IEEE International Conference on Acoustics, Speech, and Signal Processing</meeting>
+		<imprint>
+			<date type="published" when="1988" />
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="651" to="654" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Evaluation of spoken language systems: The ATIS domain</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">P</forename><surname>Price</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Third DARPA Speech and Natural Language Workshop</title>
+		<meeting>the Third DARPA Speech and Natural Language Workshop</meeting>
+		<imprint>
+			<publisher>Morgan Kaufmann</publisher>
+			<date type="published" when="1990" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">A spoken language system for automated call routing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Riccardi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><forename type="middle">L</forename><surname>Gorin</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Ljolje</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Riley</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of 1997 IEEE International Conference on Acoustics, Speech, and Signal Processing</title>
+		<meeting>1997 IEEE International Conference on Acoustics, Speech, and Signal Processing</meeting>
+		<imprint>
+			<date type="published" when="1997" />
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page" from="1143" to="1146" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">A phonetically oriented speech database for Mandarin Chinese</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><forename type="middle">Y</forename><surname>Tseng</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of 1995 International Congress of Phonetics Sciences</title>
+		<meeting>1995 International Congress of Phonetics Sciences</meeting>
+		<imprint>
+			<date type="published" when="1995" />
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="page" from="326" to="329" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">USTC95-A Putonghua corpus</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Xia</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Ni</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Liu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Fourth International Conference on Spoken Language Processing</title>
+		<meeting>the Fourth International Conference on Spoken Language Processing</meeting>
+		<imprint>
+			<date type="published" when="1996" />
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="page" from="1894" to="1897" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Speech research infra-structure in Taiwan</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">H</forename><forename type="middle">C</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of 1999 Oriental COCOSDA Workshop</title>
+		<meeting>1999 Oriental COCOSDA Workshop</meeting>
+		<imprint>
+			<date type="published" when="1999" />
+			<biblScope unit="page" from="53" to="56" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">A common European approach to assessment, corpora and standards</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Winski</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Fourcin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Advanced Speech Applications: European Research on Speech Technology</title>
+		<editor>K. Varghese, S. Pfleger, and J.P. Lefvre Eds.</editor>
+		<imprint>
+			<publisher>SprinerVerlag</publisher>
+			<date type="published" when="1994" />
+			<biblScope unit="page" from="25" to="79" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Chili Mandarin speech corpus</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Wu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Newsletter of ISCSLP98 Special Interest Group: Linguistic Database and Tools</title>
+		<imprint>
+			<date type="published" when="1998" />
+			<biblScope unit="page" from="1" to="3" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Notes on speech corpora of standard Chinese in China</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Zhang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Newsletter of ISCSLP98 Special Interest Group: Linguistic Database and Tools</title>
+		<imprint>
+			<date type="published" when="1998" />
+			<biblScope unit="page" from="4" to="5" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<title level="m" type="main">HKU96-A Putonghua corpus (CDROM version),&quot; HKU96 corpus</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><forename type="middle">Q</forename><surname>Zu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><forename type="middle">X</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><forename type="middle">C</forename><surname>Ho</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Chan</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1996" />
+		</imprint>
+		<respStmt>
+			<orgName>Department of Computer Science, University of Hong Kong, Hong Kong</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">JUPlTER: a telephone-based conversational interface for weather information</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">V</forename><surname>Zue</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Seneff</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><forename type="middle">R</forename><surname>Glass</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Polifroni</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Pao</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><forename type="middle">J</forename><surname>Hazen</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">L</forename><surname>Hetherington</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Speech and Audio Processing</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="86" to="96" />
+			<date type="published" when="2000" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Speech database development at MIT: TIMIT and beyond</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">V</forename><surname>Zue</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Seneff</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Glass</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Speech Communication</title>
+		<imprint>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="page" from="351" to="356" />
+			<date type="published" when="1990" />
+			<publisher>Elsevier Science</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<monogr>
+		<title level="m" type="main">Automatic Railway Information Systems for Europe</title>
+		<ptr target="http://www.compuleer.nl/arise.htm" />
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<monogr>
+		<title level="m" type="main">European Language Resources Association</title>
+		<ptr target="http://www.icp.grenet.fr/ELRA/home.html" />
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<monogr>
+				<ptr target="http://www.ldc.upenn.edu" />
+		<title level="m">Linguistic Data Consortium</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

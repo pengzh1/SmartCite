@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-08T01:40+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">A Probabilistic Model of Referring Expressions for Complex Objects</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher>Association for Computational Linguistics</publisher>
+				<availability status="unknown"><p>Copyright Association for Computational Linguistics</p>
+				</availability>
+				<date type="published" when="2009-03">March 2009. 2009</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author role="corresp">
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kotaro</forename><surname>Funakoshi</surname></persName>
+							<email>funakoshi@jp.honda-ri.comnakano@jp.honda-ri.com</email>
+							<affiliation key="aff0">
+								<orgName type="institution">Philipp Spanger ‡ † Honda Research Institute Japan Co., Ltd. Saitama</orgName>
+								<address>
+									<country key="JP">Japan</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Mikio</forename><surname>Nakano</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="department">Takenobu Tokunaga ‡ ‡</orgName>
+								<orgName type="institution">Tokyo Institute of Technology Tokyo</orgName>
+								<address>
+									<country key="JP">Japan</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">A Probabilistic Model of Referring Expressions for Complex Objects</title>
+					</analytic>
+					<monogr>
+						<title level="m">Proceedings of the 12th European Workshop on Natural Language Generation</title>
+						<meeting>the 12th European Workshop on Natural Language Generation <address><addrLine>Athens, Greece</addrLine></address>
+						</meeting>
+						<imprint>
+							<publisher>Association for Computational Linguistics</publisher>
+							<biblScope unit="page" from="30" to="31"/>
+							<date type="published" when="2009-03">March 2009. 2009</date>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>This paper presents a probabilistic model both for generation and understanding of referring expressions. This model introduces the concept of parts of objects, modelling the necessity to deal with the characteristics of separate parts of an object in the referring process. This was ignored or implicit in previous literature. Integrating this concept into a probabilistic formulation, the model captures human characteristics of visual perception and some type of pragmatic implicature in referring expressions. Developing this kind of model is critical to deal with more complex domains in the future. As a first step in our research, we validate the model with the TUNA corpus to show that it includes conventional domain modeling as a subset.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Generation of referring expressions has been studied for the last two decades. The basic orientation of this research was pursuing an algorithm that generates a minimal description which uniquely identifies a target object from distractors. Thus the research was oriented and limited by two constraints: minimality and uniqueness.</p><p>The constraint on minimality has, however, been relaxed due to the computational complexity of generation, the perceived naturalness of redundant expressions, and the easiness of understanding them (e.g., <ref type="bibr" target="#b1">(Dale and Reiter, 1995;</ref><ref type="bibr" target="#b6">Spanger et al., 2008)</ref>). On the other hand, the other constraint of uniqueness has not been paid much attention to. One major aim of our research is to relax this constraint on uniqueness because of the reason explained below.</p><p>The fundamental goal of our research is to deal with multipartite objects, which have constituents with different attribute values. Typical domain settings in previous literature use uniform objects like the table A shown in <ref type="figure" target="#fig_0">Figure 1</ref>. However, real life is not so simple. Multipartite objects such as tables B and C can be found easily. Therefore this paper introduces the concept of parts of objects to deal with more complex domains containing such objects. Hereby the constraint on uniqueness becomes problematic because people easily generate and understand logically ambiguous expressions in such domains.</p><p>For example, people often use an expression such as "the table with red corners" to identify table B. Logically speaking, this expression is equally applicable both to A and to B, that is, violating the constraint on uniqueness. And yet people seem to have no problem identifying the intended target correctly and have little reluctance to use such an expression (Evidence is presented in Section 3). We think that this reflects some type of pragmatic implicature arising from human characteristics of visual perception and that is important both for understanding human-produced expressions and for generating human-friendly expressions in a real environment. This paper proposes a model of referring expressions both for generation and understanding. Our model uses probabilities to solve ambiguity under the relaxed constraint on uniqueness while considering human perception.</p><p>No adequate data is currently available in order to provide a comprehensive evaluation of our model. As a first step in our research, we validate the model with the TUNA corpus to show that it includes conventional domain modeling. 2 Related work <ref type="bibr" target="#b2">Horacek (2005)</ref> proposes to introduce probabilities to overcome uncertainties due to discrepancies in knowledge and cognition between subjects. While our model shares the same awareness of issues with Horacek's work, our focus is on rather different issues (i.e., handling multipartite objects and relaxing the constraint on uniqueness). In addition, Horacek's work is concerned only with generation while our model is available both for generation and understanding. Roy (2002) also proposes a probabilistic model for generation but presupposes uniform objects.</p><p>Horacek <ref type="formula" target="#formula_0">(2006)</ref> deals with references for structured objects such as documents. Although it considers parts of objects, the motivation and focus of the work are on quite different aspects from ours.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Evidence against logical uniqueness</head><p>We conducted two psycholinguistic experiments using the visual stimulus shown in <ref type="figure" target="#fig_0">Figure 1</ref>.</p><p>In the first experiment, thirteen Japanese subjects were presented with an expression "kado no akai tukue (the table with red corners)" and asked to choose a table from the three in the figure. Twelve out of the thirteen chose table B. Seven out of the twelve subjects answered that the given expression was not ambiguous.</p><p>In the second experiment, thirteen different Japanese subjects were asked to make a description for table B without using positional relations. Ten out of the thirteen made expressions semantically equivalent to the expression used in the first experiment. Only three subjects made logically discriminative expressions such as "asi to yotu kado dake akai tukue (the table whose four corners and leg only are red)."</p><p>These results show that people easily generate/understand logically ambiguous expressions.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Proposed model</head><p>We define π = {p 1 , p 2 , . . . , p k } as the set of k parts of objects (classes of sub-parts) that appears in a domain. Here p 1 is special and always means the whole of an object. In a furniture domain, p 1 means a piece of furniture regardless of the kind of the object (chair, table, whatever). p i (i ̸ = 1) means a sub-part class such as leg. Note that π is defined not for each object but for a domain. Thus, objects may have no part corresponding to p i (e.g., some chairs have no leg.). For example, an expression "the white table with a red leg" is represented as {("table", "white"), ("leg", "red")}.</p><p>Given a set of objects ω and a referring expression e, the probability with which the expression e refers to an object o ∈ ω is denoted as P r(O = o|E = e, Ω = ω). If we seek to provide a more realistic model, we can model a probabilistic distribution even for Ω. In this paper, however, we assume that Ω is fixed to ω and it is shared by interlocutors exactly. Thus, hereafter, P r(o|e) is equal to P r <ref type="bibr">(o|e, ω)</ref>.</p><p>Following the definition (1), we estimate P r(o|e) as follows:</p><formula xml:id="formula_0">P r(o|e) ≈ N ∏ i P r(o|e p i , e a i ).<label>(2)</label></formula><p>Here, N is a normalization coefficient. According to Bayes' rule,</p><formula xml:id="formula_1">P r(o|e p i , e a i ) = P r(o)P r(e p i , e a i |o) P r(e p i , e a i )</formula><p>.</p><p>Therefore,</p><formula xml:id="formula_3">P r(o|e) ≈ N ∏ i P r(o)P r(e p i , e a i |o) P r(e p i , e a i )</formula><p>.</p><p>We decompose P r(e p i , e a i |o) as </p><formula xml:id="formula_5">∑ u ∑ v P r(e p i |p u , o)P r(e a i |a v , o)P r(p u , a v |o)<label>(5)</label></formula><formula xml:id="formula_6">P r(o|e) ≈ N ∏ i P r(o)P r(p i , a i |o) P r(p i , a i ) (6) ≈ N ∏ i P r(o|p i , a i )<label>(7)</label></formula><p>1 Each attribute value belongs to an attribute α, a set of attribute values. E.g., α color = {red, white, . . .}.</p><p>2 That is, we ignore lexical selection matters in this paper, although our model is potentially able to handle those matters including training from corpora. P r(o|p, a) concerns attribute selection in generation of referring expressions. Most attribute selection algorithms presented in past work are based on set operations over multiple attributes with discrete (i.e., symbolized) values such as colors (red, brown, white, etc) to find a uniquely distinguishing description. The simplest estimation of P r(o|p, a) following this conventional Boolean domain modeling is</p><formula xml:id="formula_7">P r(o|p, a) ≈ { |ω ′ | −1 (p in o has a) 0 (p in o does not have a)<label>(8)</label></formula><p>where ω ′ is the subset of ω, each member of which has attribute value a in its part of p. As <ref type="bibr" target="#b2">Horacek (2005)</ref> pointed out, however, this standard approach is problematic in a real environment because many physical attributes are nondiscrete and the symbolization of these continuous attributes have uncertainties. For example, even if two objects are blue, one can be more blueish than the other. Some subjects may say it's blue but others may say it's purple. Moreover, there is the problem of logical ambiguity pointed out in Section 1. That is, even if an attribute itself is equally applicable to several objects in a logical sense, other available information (such as visual context) might influence the interpretation of a given referring expression.</p><p>Such phenomena could be captured by estimating P r(o|p, a) as</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>P r(o|p, a) ≈ P r(a|p, o)P r(p|o)P r(o) P r(p, a) . (9)</head><p>P r <ref type="bibr">(a|p, o)</ref> represents the relevance of attribute value a to part p in object o. P r(p|o) represents the salience of part p in object o. The underlying idea to deal with the problem of logical ambiguity is "If some part of an object is mentioned, it should be more salient than other parts." This is related to Grice's maxims in a different way from matters discussed in <ref type="bibr" target="#b1">(Dale and Reiter, 1995)</ref>. P r(p|o) could be computed in some manner by using the saliency map <ref type="bibr" target="#b4">(Itti et al., 1998)</ref>. P r(o) is the prior probability that object o is chosen. If potential functions (such as used in <ref type="bibr" target="#b7">(Tokunaga et al., 2005)</ref>) are used for computing P r(o), we can naturally rank objects, which are equally relevant to a given referring expression, according to distances from interlocutors.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Algorithms</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.1">Understanding</head><p>Understanding a referring expression e is identifying the target objectô from a set of objects ω. This is formulated in a straightforward way aŝ</p><formula xml:id="formula_8">o = argmax o∈ω P r(o|e).<label>(10)</label></formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.2">Generation</head><p>Generation of a referring expression is choosing the best appropriate expressionê to discriminate a given objectô from a set of distractors. A simple formulation iŝ e = argmax e∈ρ P r(e)P r(ô|e).</p><p>ρ is a pre-generated set of candidate expressions forô. This paper does not explain how to generate a set of candidates. P r(e) is the generation probability of an expression e independent of objects. This probability can be learned from a corpus. In the evaluation described in Section 6, we estimate P r(e) as</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>P r(e) ≈ P r(|e|)</head><formula xml:id="formula_10">∏ i P r(α i ).<label>(12)</label></formula><p>Here, P r(|e|) is the distribution of expression length in terms of numbers of attributes used. P r(α) is the selection probability of a specific attribute α (SP (a) in <ref type="bibr" target="#b6">(Spanger et al., 2008)</ref>).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Preliminary evaluation</head><p>As mentioned above, no adequate corpus is currently available in order to provide an initial validation of our model which we present in this paper. In this section, we validate our model using the TUNA corpus (the "Participant's Pack" available for download as part of the Generation Challenge 2009) to show that it includes traditional domain modeling. We use the trainingpart of the corpus for training our model and the development-part for evaluation. We note that we here assume a homogeneous distribution of the probability P r(o|p, a), i.e., we are applying formula (8) here in order to calculate this probability. We first implemented our probabilistic model for the area of understanding. This means our algorithm took as input the user's selection of attribute-value pairs in the description and calculated the most likely target object. This was carried out for both the furniture and people domains. Overall, outside of exceptional cases (e.g., human error), our algorithm was able to distinguish the target object for all human descriptions (precision of 100%). This means it covers all the cases the original approach dealt with.</p><p>We then implemented our model for the case of generation. We measured the similarity of the output of our algorithm with the human-produced sets by using the Dice-coefficient (see <ref type="bibr" target="#b0">(Belz and Gatt, 2007)</ref>). We evaluated this both for the Furniture and People domain. The results are summarized in <ref type="table" target="#tab_2">Table 1</ref>.</p><p>Our focus was here to fundamentally show how our model includes traditional modelling as a subset, without much focus or effort on tuning in order to achieve a maximum Dice-score. However, we note that the Dice-score of our algorithm was comparable to the top 5-7 systems in the 2007 GREChallenge (see <ref type="bibr" target="#b0">(Belz and Gatt, 2007)</ref>) and thus produced a relatively good result. This shows how our algorithm -providing a model of the referring process in a more complex domain -is applicable as well to the very simple TUNA-domain as a special case.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7">Discussion</head><p>In past work, parts of objects were ignored or implicit. In case of the TUNA corpus, while the Furniture domain ignores parts of objects, the People domain contained parts of objects such as hair, glasses, beard, etc. However, they were implicitly modeled by combining a pair of a part and its attribute as an attribute such as hairColor. One major advantage of our model is that, by explicitly modelling parts of objects, it can handle the problem of logical ambiguity that is newly reported in this paper. Although it might be possible to handle the problem by extending previously proposed algorithms in some ways, our formulation would be clearer. Moreover, our model is directly available both for generation and understanding. Referring expressions using attributes (such as discussed in this paper) and those using discourse contexts (such as "it") are separately approached in past work. Our model possibly handles both of them in a unified manner with a small extension. This paper ignored relations between objects. We, however, think that it is not difficult to prepare algorithms handling relations using our model. Generation using our model is performed in a generate-and-test manner. Therefore computational complexity is a matter of concern. However, that could be controlled by limiting the numbers of attributes and parts under consideration according to relevance and salience, because our model is under the relaxed constraint of uniqueness unlike previous work.</p><p>As future work, we have to gather data to evaluate our model and to statistically train lexical selection in a new domain containing multipartite objects.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 :</head><label>1</label><figDesc>Figure 1: An example scene</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0" validated="false"><head></head><label></label><figDesc>A referring expression e is represented as a set of n pairs of an attribute value expression e a j and a part expression e</figDesc><table>p 
+
+j modified by e a 
+j as 
+e = {(e 
+
+p 
+
+1 , e 
+
+a 
+
+1 ), (e 
+
+p 
+
+2 , e 
+
+a 
+
+2 ), . . . , (e 
+
+p 
+
+n , e 
+
+a 
+
+n )}. (1) 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1" validated="false"><head></head><label></label><figDesc>where p u is one of parts of objects that could be expressed with e</figDesc><table>p 
+
+i , and a v is one of attribute val-
+ues 1 that could be expressed with e a 
+i . Under the 
+simplifying assumption that e 
+
+p 
+
+i and e a 
+i are not am-
+biguous and are single possible expressions for 
+a part of objects and an attribute value indepen-
+dently of objects 2 , 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2" validated="false"><head>Table 1 :</head><label>1</label><figDesc>Initial evaluation of proposed model for generation in TUNA-domain</figDesc><table>Furniture People 
+Total cases 
+80 
+68 
+Mean Dice-score 
+0.78 
+0.66 
+
+</table></figure>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">The attribute selection for GRE challenge: Overview and evaluation results</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Anja</forename><surname>Belz</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Albert</forename><surname>Gatt</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. the MT Summit XI Workshop Using Corpora for Natural Language Generation: Language Generation and Machine Translation (UC-NLG+MT)</title>
+		<meeting>the MT Summit XI Workshop Using Corpora for Natural Language Generation: Language Generation and Machine Translation (UC-NLG+MT)</meeting>
+		<imprint>
+			<date type="published" when="2007" />
+			<biblScope unit="page" from="75" to="83" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Computational interpretations of the Gricean maxims in the generation of referring expressions</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Robert</forename><surname>Dale</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ehud</forename><surname>Reiter</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Cognitive Science</title>
+		<imprint>
+			<biblScope unit="volume">18</biblScope>
+			<biblScope unit="page" from="233" to="263" />
+			<date type="published" when="1995" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Generating referential descriptions under conditions of uncertainty</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Helmut</forename><surname>Horacek</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. ENLG 05</title>
+		<meeting>ENLG 05</meeting>
+		<imprint>
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Generating references to parts of recursively structured objects</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Helmut</forename><surname>Horacek</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. ACL 06</title>
+		<meeting>ACL 06</meeting>
+		<imprint>
+			<date type="published" when="2006" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">A model of saliency-based visual attention for rapid scene analysis</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Itti</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><surname>Koch</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Niebur</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Pattern Analysis and Machine Intelligence</title>
+		<imprint>
+			<biblScope unit="volume">20</biblScope>
+			<biblScope unit="issue">11</biblScope>
+			<biblScope unit="page" from="1254" to="1259" />
+			<date type="published" when="1998" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Learning visually-grounded words and syntax for a scene description task</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Deb</forename><forename type="middle">Roy</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computer Speech and Language</title>
+		<imprint>
+			<biblScope unit="volume">16</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<date type="published" when="2002" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">On &quot;redundancy&quot; in selecting attributes for generating referring expressions</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Philipp</forename><surname>Spanger</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Takehiro</forename><surname>Kurosawa</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Takenobu</forename><surname>Tokunaga</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. COLING 08</title>
+		<meeting>COLING 08</meeting>
+		<imprint>
+			<date type="published" when="2008" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Meaning of Japanese spatial nouns</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Takenobu</forename><surname>Tokunaga</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Tomonori</forename><surname>Koyama</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Suguru</forename><surname>Saito</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. the Second ACL-SIGSEM Workshop on The Linguistic Dimensions of Prepositions and their Use in Computational Linguistics Formalisms and Applications</title>
+		<meeting>the Second ACL-SIGSEM Workshop on The Linguistic Dimensions of Prepositions and their Use in Computational Linguistics Formalisms and Applications</meeting>
+		<imprint>
+			<date type="published" when="2005" />
+			<biblScope unit="page" from="93" to="100" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>
