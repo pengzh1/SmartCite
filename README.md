@@ -6,7 +6,8 @@
 ##  **安装教程** 
 
 1. 安装Java8
-2. 如果需要处理PDF论文，请安装并运行gorbid。[点击查看grobid官方安装说明文档](https://grobid.readthedocs.io/en/latest/Install-Grobid/) 
+2. 如果需要处理PDF论文，请安装并运行gorbid。[点击查看grobid官方安装说明文档](https://grobid.readthedocs.io/en/latest/Install-Grobid/)
+   [gradle-5.4.1-all.zip 下载](https://mo.own-cloud.cn/#/s/PQLEUe)
 3. 下载下面的压缩包，并解压
     
     链接: https://pan.baidu.com/s/1PPARTNc0NipZ7bKaNmsupg 

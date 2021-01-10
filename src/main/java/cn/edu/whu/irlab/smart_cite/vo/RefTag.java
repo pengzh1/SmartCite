@@ -56,12 +56,11 @@ public class RefTag implements ToJsonAble {
     }
 
     /**
-     *@auther gcr19
-     *@desc 向 contextList 添加引文上下文句子对象
-     *@param sentence 引文上下文句子对象
-     *@return
+     * @param sentence 引文上下文句子对象
+     * @auther gcr19
+     * @desc 向 contextList 添加引文上下文句子对象
      **/
-    public void addContext(Sentence sentence){
+    public void addContext(Sentence sentence) {
         contextList.add(sentence);
     }
 
@@ -106,7 +105,12 @@ public class RefTag implements ToJsonAble {
     private void collectRefPhrases() {
         //搜集指代词语，先进行分词，然后寻找引文标记前面的所有名词作为指代对象，如果是连续大写，加上首字母缩略词
         this.refPhrases = new ArrayList<>();
-        List<WordItem> list = wordItem.nearWords(5, 0, (v) -> v.getType() == WordItem.WordType.Word || v.getType() == WordItem.WordType.WordRef || v.getType() == WordItem.WordType.Word_G_Ref);
+        List<WordItem> list=null;
+        try {
+            list = wordItem.nearWords(5, 0, (v) -> v.getType() == WordItem.WordType.Word || v.getType() == WordItem.WordType.WordRef || v.getType() == WordItem.WordType.Word_G_Ref);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         WordItem item;
         for (int i = list.size() - 1; i >= 0; i--) {    //从最后一个开始找
             item = list.get(i);
@@ -146,14 +150,14 @@ public class RefTag implements ToJsonAble {
     }
 
     @Override
-    public JSONObject toJson(){
-        JSONObject jsonObject=new JSONObject();
-        jsonObject.put("id",id);
-        jsonObject.put("text",text);
-        if(reference!=null)
-        jsonObject.put("reference",reference.toJson());
-        jsonObject.put("contextList",TypeConverter.list2JsonArray(contextList));
-        jsonObject.put("sentence",sentence.toJson());
+    public JSONObject toJson() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", id);
+        jsonObject.put("text", text);
+        if (reference != null)
+            jsonObject.put("reference", reference.toJson());
+        jsonObject.put("contextList", TypeConverter.list2JsonArray(contextList));
+        jsonObject.put("sentence", sentence.toJson());
         return jsonObject;
     }
 

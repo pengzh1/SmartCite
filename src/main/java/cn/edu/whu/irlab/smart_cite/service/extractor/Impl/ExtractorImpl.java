@@ -107,6 +107,7 @@ public class ExtractorImpl {
 
         //识别XML类型（PDF转换为XML）
         switch (mimeType) {
+            case "text/html":
             case "application/xml":
                 root = ReadUtil.read2xml(file);
                 xmlTypeEnum = identifyXMLType(root, file);
@@ -152,7 +153,7 @@ public class ExtractorImpl {
         //抽取特征
         List<Result> results = featureExtractor.extract(article);
 
-        article=null;//释放内存
+        article = null;//释放内存
 
         //分类
         Instances instances = wekaService.classify(FEATURE_FILE + File.separator + file.getName() + "_features.libsvm");
@@ -259,7 +260,7 @@ public class ExtractorImpl {
 
     /**
      * @param article 根节点
-     * @param file 文件
+     * @param file    文件
      * @return
      * @auther gcr19
      * @desc 识别XML文件的类型
@@ -267,7 +268,12 @@ public class ExtractorImpl {
     private XMLTypeEnum identifyXMLType(Element article, File file) {
         String nameOfFirstNode = article.getName();
         if (nameOfFirstNode.equals("article")) {
-            return XMLTypeEnum.Plos;
+            Element header=article.getChild("header");
+            if (header!=null){
+                return XMLTypeEnum.Lei;
+            }else {
+                return XMLTypeEnum.Plos;
+            }
         } else if (nameOfFirstNode.equals("TEI")) {
             return XMLTypeEnum.Grobid;
         }
