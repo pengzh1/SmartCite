@@ -2,6 +2,7 @@ package cn.edu.whu.irlab.smart_cite.util;
 
 import cn.edu.whu.irlab.smart_cite.vo.BertPair;
 import cn.edu.whu.irlab.smart_cite.vo.RecordVo;
+import cn.edu.whu.irlab.smart_cite.vo.Result;
 import com.csvreader.CsvWriter;
 import org.apache.commons.io.FileUtils;
 import org.jdom2.Element;
@@ -16,6 +17,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -52,14 +54,43 @@ public class WriteUtil {
         }
     }
 
-    public static void writeList(String docPath, List list,boolean isAppend) {
+    public static void writeList(String docPath, List list, boolean isAppend) {
         File file = new File(docPath);
         try {
-            FileUtils.writeLines(file, list, "\n",isAppend);
+            FileUtils.writeLines(file, list, "\n", isAppend);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
     }
+
+    public static void writeResult(String path, List<Result> results) {
+        List<String> libsvm=new ArrayList<>();
+        CsvWriter csvWriter = new CsvWriter(path+".csv", ',', StandardCharsets.UTF_8);
+        String[] header = {"aroundSentence", "refInformation", "isContextPair"};
+
+        try {
+            csvWriter.writeRecord(header, false);
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        try {
+            for (Result result :
+                    results) {
+                String[] record = new String[3];
+                record[0] = result.getSentence().getText();
+                record[1] = result.getRefTag().getSentence().getText();
+                record[2] = String.valueOf(result.isContext() ? 1 : 0);
+                csvWriter.writeRecord(record, false);
+                libsvm.add(result.getLibsvmFeature());
+            }
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+        csvWriter.close();
+        writeList(path+".libsvm",libsvm);
+    }
+
 
     public static void writeBertPair2csv(String path, List<BertPair> bertPairs) {
         CsvWriter csvWriter = new CsvWriter(path, ',', StandardCharsets.UTF_8);
@@ -77,7 +108,7 @@ public class WriteUtil {
                 String[] record = new String[3];
                 record[0] = bertPair.getAroundSentence();
                 record[1] = bertPair.getRefInformation();
-                record[2] = String.valueOf(bertPair.isContextPair()?1:0);
+                record[2] = String.valueOf(bertPair.isContextPair() ? 1 : 0);
                 csvWriter.writeRecord(record, false);
             }
         } catch (IOException e) {
@@ -87,7 +118,7 @@ public class WriteUtil {
         csvWriter.close();
     }
 
-        public static void writeRecord2csv(String path, List<RecordVo> recordVos) {
+    public static void writeRecord2csv(String path, List<RecordVo> recordVos) {
 
         CsvWriter csvWriter = new CsvWriter(path, ',', StandardCharsets.UTF_8);
         String[] header = {"article_id", "ref_rid", "ref_title", "sentence", "position", "is_similar"};

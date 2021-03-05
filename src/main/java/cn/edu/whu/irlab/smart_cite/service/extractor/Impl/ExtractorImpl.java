@@ -62,7 +62,6 @@ import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.*;
 @Service("extractor")
 public class ExtractorImpl {
 
-
     @Autowired
     private GrobidService grobidService;
 
@@ -151,7 +150,7 @@ public class ExtractorImpl {
         Article article = paperXmlReader.processFile(file, root);
 
         //抽取特征
-        List<Result> results = featureExtractor.extract(article);
+        List<Result> results = featureExtractor.extract(article,false);
 
         article = null;//释放内存
 

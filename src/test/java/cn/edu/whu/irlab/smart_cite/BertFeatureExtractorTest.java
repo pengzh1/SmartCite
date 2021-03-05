@@ -53,7 +53,7 @@ public class BertFeatureExtractorTest {
         Element element = ReadUtil.read2xml(file);
         Element newRoot = leiPreprocessor.parseXML(element, file);
         Article article = paperXmlReader.processLabeledFile(file, newRoot);
-        List<BertPair> bertPairs = bertFeatureExtractor.extract(article,2);
+        List<BertPair> bertPairs = bertFeatureExtractor.extract(article,1);
         WriteUtil.writeBertPair2csv("test/testOutput/31-P07-1001-paper.csv", bertPairs);
         System.out.println(bertPairs);
     }
@@ -77,7 +77,7 @@ public class BertFeatureExtractorTest {
             }
         }
 
-        WriteUtil.writeBertPair2csv("test/testOutput/bertData2.csv", bertPairs);
+        WriteUtil.writeBertPair2csv("test/testOutput/bertData2_20201203.csv", bertPairs);
 
         long end = System.currentTimeMillis();
         System.out.println("finished! 用时：" + (end - start) + " ms");

@@ -43,7 +43,13 @@ public class FeatureExtractor {
             return new ArrayList<>();
         }
     };
-//    private static List<Result> information = new ArrayList<>();
+
+    private static ThreadLocal<List<String>> svmFeatures = new ThreadLocal<List<String>>() {
+        @Override
+        protected List<String> initialValue() {
+            return new ArrayList<>();
+        }
+    };
 
     @SuppressWarnings("rawtypes")
     private ThreadLocal<List<IFeature>> features = new ThreadLocal<List<IFeature>>() {
@@ -54,17 +60,17 @@ public class FeatureExtractor {
     };
 //    private List<IFeature> features = new ArrayList<>();    //特征列表
 
-
 //    @Autowired
 //    private StatisticVisitor statisticVisitor;   //统计分析
 
-    public List<Result> extract(Article article) {
+    public List<Result> extract(Article article, boolean isPutInTogether) {
         String name = article.getName();
-        String fileName = FEATURE_FILE + File.separator + name + "_features.libsvm";
-        Files featureWriter = Files.open(fileName);
+        String fileName = isPutInTogether ? FEATURE_FILE + File.separator + "together_features.libsvm" : FEATURE_FILE + File.separator + name + "_features.libsvm";
+        Files featureWriter = Files.open(fileName, isPutInTogether, 0);
 
         features.get().clear();
         information.get().clear();
+        svmFeatures.get().clear();
 
         loadFeatures();
         extractArticle(article, featureWriter);
@@ -74,8 +80,14 @@ public class FeatureExtractor {
         //关闭特征文件流
         featureWriter.close();
         //保存位置信息
-        WriteUtil.writeList("temp/location/" + article.getName() + "_location.txt", information.get());
+        List<Result> results = information.get();
+        List<String> svm = svmFeatures.get();
+        System.out.println("results size:" + results.size() + " svm size:" + svm.size());
+        for (int i = 0; i < results.size(); i++) {
+            results.get(i).setLibsvmFeature(svm.get(i));
+        }
 
+        WriteUtil.writeList(isPutInTogether ? "temp/location/together_location.txt" : "temp/location/" + article.getName() + "_location.txt", information.get(), isPutInTogether);
 
         return information.get();
     }
@@ -199,6 +211,8 @@ public class FeatureExtractor {
 
         //转换格式
         result = toSVMFormat(result);
+        svmFeatures.get().addAll(result);
+
         //       result = toCRFFormat(result);
         featureWriter.appendLn(toStr(result, "\n"));
 //        System.out.println(toStr(result, "\n"));
@@ -226,11 +240,14 @@ public class FeatureExtractor {
      * @return
      */
     public static String label(RefTag r, Sentence s) {
-        information.get().add(new Result(s, r));
+        boolean isContext = contain(r.getContexts().split(","), s.getId() + "");
+        Result result = new Result(s, r);
+        result.setContext(isContext);
+        information.get().add(result);
         //类别值:文章编号:引文句编号:引文编号:候选上下文编号 todo important
 //        return (contain(r.getContexts().split(","), s.getId() + "") ? "1" : "0") + ":" + s.getArticle().getNum() +
 //                ":" + r.getSentence().getId() + ":" + r.getId() + ":" + s.getId();
-        return (contain(r.getContexts().split(","), s.getId() + "") ? "1" : "0");
+        return (isContext ? "1" : "0");
     }
 
 
@@ -246,7 +263,7 @@ public class FeatureExtractor {
         } else if (fv instanceof Map) {
             return "{" + Maps.toStr((Map) fv, ",", ":");
         } else if (fv instanceof Boolean) {
-            return ((Boolean) fv) == true ? "1" : "0";
+            return ((Boolean) fv) ? "1" : "0";
         } else if (fv instanceof Double || fv instanceof Float) { //如果是0.0这样的就直接算0了
             boolean dv = ((Double) fv) == 0;
             if (dv)
@@ -293,5 +310,6 @@ public class FeatureExtractor {
         }).collect(Collectors.toList());
         return result;
     }
+
 
 }

@@ -17,6 +17,8 @@ public class Result {
     private RefTag refTag;
     //是否为引文上下文
     private boolean context;
+    //libsvm 特征
+    private String libsvmFeature;
 
     public Result(Sentence sentence, RefTag refTag) {
         this.sentence = sentence;
