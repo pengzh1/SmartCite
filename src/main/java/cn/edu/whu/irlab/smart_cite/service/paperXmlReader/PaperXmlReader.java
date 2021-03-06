@@ -2,6 +2,7 @@ package cn.edu.whu.irlab.smart_cite.service.paperXmlReader;
 
 import cn.edu.whu.irlab.smart_cite.util.*;
 import cn.edu.whu.irlab.smart_cite.vo.*;
+import org.apache.commons.io.FileUtils;
 import org.jdom2.Attribute;
 import org.jdom2.Content;
 import org.jdom2.Element;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 import static com.leishengwei.jutils.Collections.toStr;
@@ -116,15 +118,14 @@ public class PaperXmlReader {
         for (Element e :
                 sentenceElements) {
             sentence = new Sentence(Integer.parseInt(e.getAttributeValue("id").split(",")[0]),
-                    e.getValue().replaceAll("\\s", " ").replaceAll(" {2,}", " "), article);//todo 1.lei的数据个别句子存在一个句子含2各以上id的情况,按照lei的做法只取了第一个.
+                    e.getValue().replaceAll("\\s", " ").replaceAll(" {2,}", " ").replaceAll("\u00AD", ""), article);//todo 1.lei的数据个别句子存在一个句子含2各以上id的情况,按照lei的做法只取了第一个.
 //            logger.info("analyze [article] " + sentence.getArticle().getName() + " [sentence] " + sentence.getId());
             setSecInfo(e, sentence);
+            sentence.setText1(sentence.plain());
             article.append(sentence);   //append中设置一些索引位置信息
-
             sentence = null;//释放内存
 //            logs.info(s.toText());
         }
-
         return article;
     }
 
@@ -197,11 +198,15 @@ public class PaperXmlReader {
 
         //括号替换
         wordItemList = WordItemReplace.replaceBracket(wordItemList);
+
         //引文分组替换 todo 可能不适用于我的模板
         WordItemReplace.replaceGroup(wordItemList);
+
+        System.out.println(WriteUtil.plain(wordItemList));
+
         //非句法成分移除
         WordItemReplace.replaceNonSyntactic(wordItemList);
-        //分词
+
         sentence.setWordList(wordItemList);
 
         wordItemList.forEach(wordItem -> {
@@ -219,40 +224,30 @@ public class PaperXmlReader {
             wordList.addAll(stanfordNLPUtil.tokenizeAndPosTags(text));
         } else if (content.getCType().equals(Content.CType.Element)) {
 
-//            Attribute c_type = content.getParentElement().getAttribute("c_type");
-//            if (c_type != null && !c_type.getValue().equals("r")) {
-//                return;
-//            }//todo 除了Lei的数据，预处理中没有生成c_type属性 为什么要检查c_type(gcr)?
-
-
             Element element = (Element) content;
-            if (element.getName().equals("xref")) {   //应该都是xref
-
-//                try {
-//                    Integer.parseInt((element.getAttributeValue("id")));
-//                } catch (Exception e) {
-//                    logger.error(e.getMessage(), e);
-//                    System.out.println(element.getAttributeValue("id"));
-//                    System.out.println();
-//                }//未发现作用，注释
-
-                RefTag xref = new RefTag(sentence, element.getText().trim().replaceAll("\\s", " ").replaceAll(" {2,}", " "),
-                        Integer.parseInt((element.getAttributeValue("id"))));
-                String contexts = element.getAttributeValue("context");
-                xref.setContexts(contexts != null ? contexts : "");//todo 预处理无法生成这个属性
-                String refNum = element.getAttributeValue("rid");
-                if (refNum != null && !refNum.trim().equals("")) {  //指向的参考文献
-                    if (refNum.trim().substring(0, 1).equals("#")) {
-                        refNum = refNum.trim().substring(1);
-                    }
-                    xref.setRid(refNum.trim());
-                    xref.setReference(article.get().getReferences().get(xref.getRid()));
-                }
-                sentence.addRef(xref);  //给句子加引文引用
-                //引文替换工作
-                wordList.add(WordItem.ref(WordItem.REF, xref));
-                xref = null;//释放内存
+            if (!element.getName().equals("xref")) {
+                throw new IllegalArgumentException("This element's name is "+element.getName()+" not xref");
             }
+            RefTag xref = new RefTag(sentence, element.getText().trim().replaceAll("\\s", " ").replaceAll(" {2,}", " "),
+                    Integer.parseInt((element.getAttributeValue("id"))));
+            String contexts = element.getAttributeValue("context");
+            xref.setContexts(contexts != null ? contexts : "");//todo 预处理无法生成这个属性
+            String refNum = element.getAttributeValue("rid");
+            if (refNum != null && !refNum.trim().equals("")) {  //指向的参考文献
+                if (refNum.trim().substring(0, 1).equals("#")) {
+                    refNum = refNum.trim().substring(1);
+                }
+                xref.setRid(refNum.trim());
+                xref.setReference(article.get().getReferences().get(xref.getRid()));
+            }
+            sentence.addRef(xref);  //给句子加引文引用
+
+//                String r_content = xref.getText().replaceAll("\\(", "&bracp;").replaceAll("\\)", "&brace;");
+//                String s_content = sentence.getText().replaceAll("\\(", "&bracp;").replaceAll("\\)", "&brace;");
+//                sentence.setText1(s_content.replaceAll(r_content, "[#]").replaceAll("&bracp;", "\\(").replaceAll("&brace;", "\\)"));
+
+            //引文替换工作
+            wordList.add(WordItem.ref(WordItem.REF, xref));
         }
     }
 }

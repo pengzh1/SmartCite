@@ -22,15 +22,19 @@ public class WordItemReplace {
      * @param wordList
      */
     public static List<WordItem> replaceBracket(List<WordItem> wordList) {
+
         wordList = wordList.stream().filter((v) -> !v.getWord().trim().equals("")).collect(Collectors.toList());
+
         for (int i = 1; i < wordList.size() - 1; i++) {
             if (wordList.get(i).getType() == WordItem.WordType.Ref) {
-                if (wordList.get(i - 1).getWord().endsWith("(")) {
+                String lastWord = wordList.get(i - 1).getWord();
+                if (lastWord.endsWith("(") || lastWord.endsWith("-LRB-")) {
                     wordList.get(i).getRef().setLeft("(");
                     wordList.remove(i - 1);
                     i--;
                 }
-                if (wordList.get(i + 1).getWord().startsWith(")")) {
+                String nextWord = wordList.get(i + 1).getWord();
+                if (nextWord.startsWith(")") || nextWord.startsWith("-RRB-")) {
                     wordList.get(i).getRef().setRight(")");
                     wordList.remove(i + 1);
                 }
@@ -42,7 +46,7 @@ public class WordItemReplace {
     /**
      * 引文分组替换
      * 找出符合R(;R)+模式替换为WordItem(WordRef)类型 //todo R(;R)+ 是什么模式？
-     *
+     * todo 未处理连接符为“-”多引文标记类型
      * @param wordList
      */
 
@@ -52,7 +56,7 @@ public class WordItemReplace {
             if (item.getType() == WordItem.WordType.Ref) {  //R
                 int index = 0;
                 while (i < wordList.size() - 2 && wordList.get(i + 1).getWord().equals(";") && wordList.get(i + 2).getType() == WordItem.WordType.Ref) { //todo 判定条件可能不通用，“-”分割符号如何处理？
-                    if (index  ==0) {
+                    if (index == 0) {
                         RefTag ref = item.getRef();
                         item = new WordItem(WordItem.WordType.G_REF, WordItem.G_REF);
                         item.addRef(ref);
@@ -87,7 +91,7 @@ public class WordItemReplace {
                 if (i == 0) {  //第一个位置
                     continue;
                 }
-                if (i > 0 && in(Words.SP, wordList.get(i - 1).getWord().toLowerCase())) {   //第一个位置
+                if (i > 0 && in(Words.SP, wordList.get(i - 1).getWord().toLowerCase())) {   //
                     continue;
                 }
                 if (i > 0 && in(Words.PREP, wordList.get(i - 1).getWord().toLowerCase())) {   //前一个字符是in,of,by etc

@@ -16,10 +16,11 @@ import static com.leishengwei.jutils.Collections.isEmpty;
  * @desc 句子实体
  **/
 @Data
-public class Sentence implements ISentence,ToJsonAble {
+public class Sentence implements ISentence, ToJsonAble {
 
     private int id;   //句子编号，从1开始(lei:number)
     private String text;    //句子内容
+    private String text1;   //句子内容，引文标记被[#]替换
     private Article article; //所在文章对象
 
     /**

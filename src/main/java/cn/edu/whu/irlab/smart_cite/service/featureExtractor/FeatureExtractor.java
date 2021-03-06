@@ -7,6 +7,7 @@ import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
 import cn.edu.whu.irlab.smart_cite.vo.*;
 import com.leishengwei.jutils.Files;
 import com.leishengwei.jutils.Maps;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -244,6 +245,7 @@ public class FeatureExtractor {
         Result result = new Result(s, r);
         result.setContext(isContext);
         information.get().add(result);
+
         //类别值:文章编号:引文句编号:引文编号:候选上下文编号 todo important
 //        return (contain(r.getContexts().split(","), s.getId() + "") ? "1" : "0") + ":" + s.getArticle().getNum() +
 //                ":" + r.getSentence().getId() + ":" + r.getId() + ":" + s.getId();

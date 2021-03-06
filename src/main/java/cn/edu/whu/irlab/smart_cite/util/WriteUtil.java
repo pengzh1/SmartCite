@@ -3,6 +3,7 @@ package cn.edu.whu.irlab.smart_cite.util;
 import cn.edu.whu.irlab.smart_cite.vo.BertPair;
 import cn.edu.whu.irlab.smart_cite.vo.RecordVo;
 import cn.edu.whu.irlab.smart_cite.vo.Result;
+import cn.edu.whu.irlab.smart_cite.vo.WordItem;
 import com.csvreader.CsvWriter;
 import org.apache.commons.io.FileUtils;
 import org.jdom2.Element;
@@ -63,9 +64,40 @@ public class WriteUtil {
         }
     }
 
+    //检查数据用
+    public static void writeResult1(List<Result> results) {
+        CsvWriter csvWriter = new CsvWriter("test/jiancha.csv", ',', StandardCharsets.UTF_8);
+        String[] header = {"aroundSentence", "refInformation", "isContextPair", "articleId", "sentId", "refSentId", "refSentPlain", "refProcessed"};
+
+        try {
+            csvWriter.writeRecord(header, false);
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        try {
+            for (Result result :
+                    results) {
+                String[] record = new String[8];
+                record[0] = result.getSentence().getText();
+                record[1] = result.getRefTag().getSentence().getText();
+                record[2] = String.valueOf(result.isContext() ? 1 : 0);
+                record[3] = result.getSentence().getArticle().getName();
+                record[4] = String.valueOf(result.getSentence().getId());
+                record[5] = String.valueOf(result.getRefTag().getSentence().getId());
+                record[6] = result.getRefTag().getSentence().plain();
+                record[7] = result.getRefTag().getSentence().plain().replaceAll("-LRB- -RRB- ", "[#]").replaceAll("-LRB-", "(").replaceAll("-RRB-", ")");
+                csvWriter.writeRecord(record, false);
+            }
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+        csvWriter.close();
+    }
+
     public static void writeResult(String path, List<Result> results) {
-        List<String> libsvm=new ArrayList<>();
-        CsvWriter csvWriter = new CsvWriter(path+".csv", ',', StandardCharsets.UTF_8);
+        List<String> libsvm = new ArrayList<>();
+        CsvWriter csvWriter = new CsvWriter(path + ".csv", ',', StandardCharsets.UTF_8);
         String[] header = {"aroundSentence", "refInformation", "isContextPair"};
 
         try {
@@ -78,8 +110,8 @@ public class WriteUtil {
             for (Result result :
                     results) {
                 String[] record = new String[3];
-                record[0] = result.getSentence().getText();
-                record[1] = result.getRefTag().getSentence().getText();
+                record[0] = result.getSentence().plain().replaceAll("-LRB- -RRB- ", "").replaceAll("-LRB-", "(").replaceAll("-RRB-", ")");
+                record[1] = result.getRefTag().getSentence().plain().replaceAll("-LRB- -RRB- ", "").replaceAll("-LRB-", "(").replaceAll("-RRB-", ")");
                 record[2] = String.valueOf(result.isContext() ? 1 : 0);
                 csvWriter.writeRecord(record, false);
                 libsvm.add(result.getLibsvmFeature());
@@ -88,7 +120,7 @@ public class WriteUtil {
             logger.error(e.getMessage(), e);
         }
         csvWriter.close();
-        writeList(path+".libsvm",libsvm);
+        writeList(path + ".libsvm", libsvm);
     }
 
 
@@ -147,5 +179,8 @@ public class WriteUtil {
         csvWriter.close();
     }
 
+    public static String plain(List<WordItem> wordItems) {
+        return wordItems.stream().reduce("", (s, wordItem) -> s + " " + wordItem.getWord(), (r1, r2) -> r1);
+    }
 
 }
