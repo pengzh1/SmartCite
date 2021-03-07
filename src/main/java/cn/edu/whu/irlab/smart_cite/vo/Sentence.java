@@ -145,6 +145,40 @@ public class Sentence implements ISentence, ToJsonAble {
         return text(wordList);
     }
 
+    /**
+     * 仅输出句子句法结构部分
+     *
+     * @param list
+     * @return
+     */
+    public static String standardText(List<WordItem> list) {
+        StringBuilder text = new StringBuilder();
+        if (isEmpty(list)) {
+            return text.toString();
+        }
+        list.forEach(wordItem -> {
+            switch (wordItem.getType()) {
+                case Word:
+                case WordRef:
+                case Word_G_Ref:
+                    text.append(wordItem.getWord()).append(" ");
+                    break;
+                case Ref:
+                    text.append(wordItem.getRef().getText()).append(" ");
+                    break;
+                case G_REF:
+                    wordItem.getRefs().forEach(refTag -> {
+                        text.append(refTag.getText()).append(" ");
+                    });
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        return text.toString().replaceAll("-LRB-", "(").replaceAll("-RRB-", ")").trim();
+    }
+
     public static String text(List<WordItem> list) {
         if (isEmpty(list)) {
             return "";

@@ -202,8 +202,6 @@ public class PaperXmlReader {
         //引文分组替换 todo 可能不适用于我的模板
         WordItemReplace.replaceGroup(wordItemList);
 
-        System.out.println(WriteUtil.plain(wordItemList));
-
         //非句法成分移除
         WordItemReplace.replaceNonSyntactic(wordItemList);
 
@@ -213,7 +211,7 @@ public class PaperXmlReader {
             if (wordItem.getType() != WordItem.WordType.Word) {
                 wordItem.getRef().setWordItem(wordItem);
             }
-        });
+        });//todo 有啥用？
         logger.debug(toStr(sentence.getWordList(), " "));
         wordItemList = null;//释放内存
     }

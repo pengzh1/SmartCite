@@ -230,7 +230,9 @@ public class FeatureExtractor {
         NavigableMap<Integer, Sentence> map = Article.sectionSentences(ref);
         int index = ref.getSentence().getIndex(); //当前句的索引
         //去掉引文句
-        return map.values().stream().filter(v -> v.getIndex() >= index - 4 && v.getIndex() <= index + 4 && v.getIndex() != ref.getSentence().getIndex()).collect(Collectors.toList());
+        //return map.values().stream().filter(v -> v.getIndex() >= index - 4 && v.getIndex() <= index + 4 && v.getIndex() != ref.getSentence().getIndex()).collect(Collectors.toList());
+        //保留引文句
+        return map.values().stream().filter(v -> v.getIndex() >= index - 4 && v.getIndex() <= index + 4).collect(Collectors.toList());
     }
 
     /**
@@ -241,7 +243,7 @@ public class FeatureExtractor {
      * @return
      */
     public static String label(RefTag r, Sentence s) {
-        boolean isContext = contain(r.getContexts().split(","), s.getId() + "");
+        boolean isContext = contain(r.getContexts().split(","), s.getId() + "") || r.getSentence().equals(s);
         Result result = new Result(s, r);
         result.setContext(isContext);
         information.get().add(result);
@@ -313,5 +315,55 @@ public class FeatureExtractor {
         return result;
     }
 
+    /**
+     * 数据采样 采用完整数据集
+     *
+     * @param results
+     * @return
+     */
+    public Map<String, List<Result>> sampleData(List<Result> results) {
+        //随机打散数据
+        Collections.shuffle(results);
+        //数据检查
+        WriteUtil.writeResult1(results);
+        return splitTrainAndEval(results);
+    }
+
+    public Map<String, List<Result>> sampleData1(List<Result> results) {
+
+        List<Result> positiveResults = results.stream().filter(Result::isContext).collect(Collectors.toList());
+        List<Result> negativeResults = results.stream().filter(result -> !result.isContext()).collect(Collectors.toList());
+
+        //随机打散负例
+        Collections.shuffle(negativeResults);
+        //取和正例数量相同的负样本
+        negativeResults = negativeResults.subList(0, positiveResults.size());
+
+        results.clear();
+        results.addAll(positiveResults);
+        results.addAll(negativeResults);
+
+        //随机打散样本
+        Collections.shuffle(results);
+
+        return splitTrainAndEval(results);
+    }
+
+    /**
+     * 分割训练集 评估集 测试集 8 1 1
+     *
+     * @param results
+     * @return
+     */
+    public Map<String, List<Result>> splitTrainAndEval(List<Result> results) {
+        Map<String, List<Result>> resultMap = new HashMap<>();
+
+        resultMap.put("train_set", results.subList(0, results.size() / 10 * 8));
+        resultMap.put("eval_set", results.subList(results.size() / 10 * 8, results.size() / 10 * 9));
+        resultMap.put("train_and_eval_set", results.subList(0, results.size() / 10 * 9));
+        resultMap.put("test_set", results.subList(results.size() / 10 * 9, results.size()));
+        resultMap.put("all_set", results);
+        return resultMap;
+    }
 
 }

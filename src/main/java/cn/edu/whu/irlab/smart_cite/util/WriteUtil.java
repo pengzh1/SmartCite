@@ -1,9 +1,6 @@
 package cn.edu.whu.irlab.smart_cite.util;
 
-import cn.edu.whu.irlab.smart_cite.vo.BertPair;
-import cn.edu.whu.irlab.smart_cite.vo.RecordVo;
-import cn.edu.whu.irlab.smart_cite.vo.Result;
-import cn.edu.whu.irlab.smart_cite.vo.WordItem;
+import cn.edu.whu.irlab.smart_cite.vo.*;
 import com.csvreader.CsvWriter;
 import org.apache.commons.io.FileUtils;
 import org.jdom2.Element;
@@ -86,7 +83,8 @@ public class WriteUtil {
                 record[4] = String.valueOf(result.getSentence().getId());
                 record[5] = String.valueOf(result.getRefTag().getSentence().getId());
                 record[6] = result.getRefTag().getSentence().plain();
-                record[7] = result.getRefTag().getSentence().plain().replaceAll("-LRB- -RRB- ", "[#]").replaceAll("-LRB-", "(").replaceAll("-RRB-", ")");
+                record[7] = Sentence.standardText(result.getRefTag().getSentence().getWordList());
+//                record[7] = result.getRefTag().getSentence().plain().replaceAll("-LRB- -RRB- ", "[#]").replaceAll("-LRB-", "(").replaceAll("-RRB-", ")");
                 csvWriter.writeRecord(record, false);
             }
         } catch (IOException e) {
@@ -110,8 +108,8 @@ public class WriteUtil {
             for (Result result :
                     results) {
                 String[] record = new String[3];
-                record[0] = result.getSentence().plain().replaceAll("-LRB- -RRB- ", "").replaceAll("-LRB-", "(").replaceAll("-RRB-", ")");
-                record[1] = result.getRefTag().getSentence().plain().replaceAll("-LRB- -RRB- ", "").replaceAll("-LRB-", "(").replaceAll("-RRB-", ")");
+                record[0] = Sentence.standardText(result.getSentence().getWordList());
+                record[1] = Sentence.standardText(result.getRefTag().getSentence().getWordList());
                 record[2] = String.valueOf(result.isContext() ? 1 : 0);
                 csvWriter.writeRecord(record, false);
                 libsvm.add(result.getLibsvmFeature());

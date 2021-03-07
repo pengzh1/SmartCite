@@ -2,6 +2,8 @@ package cn.edu.whu.irlab.smart_cite.vo;
 
 import lombok.Data;
 
+import java.util.Objects;
+
 /**
  * @author gcr19
  * @version 1.0
@@ -24,6 +26,4 @@ public class Result {
         this.sentence = sentence;
         this.refTag = refTag;
     }
-
-
 }
