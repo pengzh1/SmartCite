@@ -33,6 +33,8 @@ public class FeatureExtractor {
 
     private static final Logger logger = LoggerFactory.getLogger(FeatureExtractor.class);
 
+    private static final Random random = new Random(100);
+
     //输入输出
     public static String TRAIN_DIR;
 
@@ -99,25 +101,26 @@ public class FeatureExtractor {
     public void loadFeatures() {
         logger.info("--------load features---------");
 
-        features.get().add(new AuthorFeature());//1:
-        features.get().add(new RefListFeature(RefListFeature.NUMBER));//2
-        features.get().add(new ConjFeature(ConjFeature.START));//3
-        features.get().add(new DistanceFeature());//4
-        features.get().add(new InParaFeature());//5
-        features.get().add(new LexicalHooksFeature());//6
-        features.get().add(new PronFeature(10));//7
-        features.get().add(new SimilarityFeature(SimilarityFeature.GRAM_1));//8
-        features.get().add(new SimilarityFeature(SimilarityFeature.GRAM_2));//9
-        features.get().add(new SimilarityFeature(SimilarityFeature.GRAM_3));//10
-        features.get().add(new RefPositionFeature(RefPositionFeature.PRE));//11
-        features.get().add(new RefPositionFeature(RefPositionFeature.NEXT));//12
-        features.get().add(new RefRefFeature());//13
-        features.get().add(new SectionFeature(SectionFeature.START));//14
-        features.get().add(new SectionFeature(SectionFeature.PRE_START));//15
-        features.get().add(new SectionFeature(SectionFeature.NEXT_START));//16
-        features.get().add(new SectionPositionFeature());//17
-        features.get().add(new WorkNounsFeature(5));//18
-        features.get().add(new RefFeature(RefFeature.OTHER_REF));//19
+        features.get().add(new WorkNounsFeature(5));//1 句子中是否包含work nous词组
+        features.get().add(new RefRefFeature());//2 是否包含引文句中目标引文标记前面相邻的名词短语
+        features.get().add(new AuthorFeature());//3 是否包含作者名字
+        features.get().add(new PronFeature(10));//4 是否包含第三人称代词
+        features.get().add(new LexicalHooksFeature());//5* Lexical hooks
+        features.get().add(new DistanceFeature());//6* 与目标引文句的距离
+        features.get().add(new InParaFeature());//7* 是否和目标引文在同一个段落内
+        features.get().add(new SectionFeature(SectionFeature.START));//8*
+        features.get().add(new SectionFeature(SectionFeature.PRE_START));//9*
+        features.get().add(new SectionFeature(SectionFeature.NEXT_START));//10*
+        features.get().add(new RefPositionFeature(RefPositionFeature.PRE));//11* 当前候选上下文句前面一句是否是非目标引文句
+        features.get().add(new RefPositionFeature(RefPositionFeature.NEXT));//12* 当前候选上下文句后面一句是否是非目标引文句
+        features.get().add(new RefFeature(RefFeature.OTHER_REF));//13 当前句中是否只包含其他引文标记
+        features.get().add(new SectionPositionFeature());//14* 句子在文章中的区域
+        features.get().add(new ConjFeature(ConjFeature.START));//15 是否起始于指定的连接副词
+        features.get().add(new SimilarityFeature(SimilarityFeature.GRAM_1));//16
+        features.get().add(new SimilarityFeature(SimilarityFeature.GRAM_2));//17
+        features.get().add(new SimilarityFeature(SimilarityFeature.GRAM_3));//18
+        features.get().add(new RefListFeature(RefListFeature.NUMBER));//19 引文句中的引文标记个数
+
 //        features.add(new RefPronFeature()); //20
 
         logger.info(">>>>特征总数为" + features.get().size());
@@ -129,7 +132,7 @@ public class FeatureExtractor {
         if (trainArticles == null) {
             trainArticles = new ArrayList<>();
             File[] files = new File(TRAIN_DIR).listFiles(v -> v.getName().endsWith(".art"));
-            Arrays.asList(files).stream().forEach(f -> {
+            Arrays.asList(files).forEach(f -> {
                 logger.info("读取文件 " + f.getName());
 //                trainArticles.add(afr.load(f));
             });
@@ -148,7 +151,7 @@ public class FeatureExtractor {
     public void extractAll(Files featureWriter) {
         logger.info("start extract...");
 
-        trainArticles.stream().forEach(ar -> {  //每篇文章
+        trainArticles.forEach(ar -> {  //每篇文章
             logger.info("开始处理Article：" + ar.getNum() + "-" + ar.getName() + ":" + ar.getTitle());
             extractArticle(ar, featureWriter);
         });
@@ -322,8 +325,9 @@ public class FeatureExtractor {
      * @return
      */
     public Map<String, List<Result>> sampleData(List<Result> results) {
+
         //随机打散数据
-        Collections.shuffle(results);
+        Collections.shuffle(results, random);
         //数据检查
         WriteUtil.writeResult1(results);
         return splitTrainAndEval(results);
@@ -335,7 +339,7 @@ public class FeatureExtractor {
         List<Result> negativeResults = results.stream().filter(result -> !result.isContext()).collect(Collectors.toList());
 
         //随机打散负例
-        Collections.shuffle(negativeResults);
+        Collections.shuffle(negativeResults, random);
         //取和正例数量相同的负样本
         negativeResults = negativeResults.subList(0, positiveResults.size());
 
@@ -344,7 +348,7 @@ public class FeatureExtractor {
         results.addAll(negativeResults);
 
         //随机打散样本
-        Collections.shuffle(results);
+        Collections.shuffle(results, random);
 
         return splitTrainAndEval(results);
     }

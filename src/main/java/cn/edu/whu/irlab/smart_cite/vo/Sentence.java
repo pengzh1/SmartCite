@@ -151,30 +151,87 @@ public class Sentence implements ISentence, ToJsonAble {
      * @param list
      * @return
      */
-    public static String standardText(List<WordItem> list) {
+    public static String standardText(List<WordItem> list, int type) {
         StringBuilder text = new StringBuilder();
         if (isEmpty(list)) {
             return text.toString();
         }
-        list.forEach(wordItem -> {
-            switch (wordItem.getType()) {
-                case Word:
-                case WordRef:
-                case Word_G_Ref:
-                    text.append(wordItem.getWord()).append(" ");
-                    break;
-                case Ref:
-                    text.append(wordItem.getRef().getText()).append(" ");
-                    break;
-                case G_REF:
-                    wordItem.getRefs().forEach(refTag -> {
-                        text.append(refTag.getText()).append(" ");
-                    });
-                    break;
-                default:
-                    break;
-            }
-        });
+        switch (type) {
+            case 1:
+                list.forEach(wordItem -> {
+                    switch (wordItem.getType()) {
+                        case Word:
+                        case WordRef:
+                        case Word_G_Ref:
+                            text.append(wordItem.getWord()).append(" ");
+                            break;
+                        case Ref:
+                            text.append(wordItem.getRef().getText()).append(" ");
+                            break;
+                        case G_REF:
+                            wordItem.getRefs().forEach(refTag -> {
+                                text.append(refTag.getText()).append(" ");
+                            });
+                            break;
+                        default:
+                            break;
+                    }
+                });
+                break;
+            case 2:
+                list.forEach(wordItem -> {
+                    switch (wordItem.getType()) {
+                        case Word:
+                            text.append(wordItem.getWord()).append(" ");
+                            break;
+                        case WordRef:
+                            text.append(wordItem.getWord()).append(" (").append(wordItem.getRef().getText()).append(") ");
+                            break;
+                        case Word_G_Ref:
+                            text.append(wordItem.getWord()).append("(");
+                            wordItem.getRefs().forEach(refTag -> {
+                                text.append(refTag.getText()).append("; ");
+                            });
+                            text.append(") ");
+                            break;
+                        case Ref:
+                            text.append(wordItem.getRef().getText()).append(" ");
+                            break;
+                        case G_REF:
+                            wordItem.getRefs().forEach(refTag -> {
+                                text.append(refTag.getText()).append("; ");
+                            });
+                            break;
+                        default:
+                            break;
+                    }
+                });
+                break;
+            case 3:
+                list.forEach(wordItem -> {
+                    switch (wordItem.getType()) {
+                        case Word:
+                            text.append(wordItem.getWord()).append(" ");
+                            break;
+                        case WordRef:
+                        case Word_G_Ref:
+                            text.append(wordItem.getWord()).append(" [#] ");
+                            break;
+                        case Ref:
+                            text.append(wordItem.getRef().getText()).append(" [#] ");
+                            break;
+                        case G_REF:
+                            wordItem.getRefs().forEach(refTag -> {
+                                text.append(refTag.getText()).append("; ");
+                            });
+                            text.append(" [#] ");
+                            break;
+                        default:
+                            break;
+                    }
+                });
+                break;
+        }
 
         return text.toString().replaceAll("-LRB-", "(").replaceAll("-RRB-", ")").trim();
     }

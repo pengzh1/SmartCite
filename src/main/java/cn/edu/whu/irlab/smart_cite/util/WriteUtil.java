@@ -83,7 +83,7 @@ public class WriteUtil {
                 record[4] = String.valueOf(result.getSentence().getId());
                 record[5] = String.valueOf(result.getRefTag().getSentence().getId());
                 record[6] = result.getRefTag().getSentence().plain();
-                record[7] = Sentence.standardText(result.getRefTag().getSentence().getWordList());
+                record[7] = Sentence.standardText(result.getRefTag().getSentence().getWordList(),1);
 //                record[7] = result.getRefTag().getSentence().plain().replaceAll("-LRB- -RRB- ", "[#]").replaceAll("-LRB-", "(").replaceAll("-RRB-", ")");
                 csvWriter.writeRecord(record, false);
             }
@@ -108,8 +108,8 @@ public class WriteUtil {
             for (Result result :
                     results) {
                 String[] record = new String[3];
-                record[0] = Sentence.standardText(result.getSentence().getWordList());
-                record[1] = Sentence.standardText(result.getRefTag().getSentence().getWordList());
+                record[0] = Sentence.standardText(result.getSentence().getWordList(),3);
+                record[1] = Sentence.standardText(result.getRefTag().getSentence().getWordList(),3);
                 record[2] = String.valueOf(result.isContext() ? 1 : 0);
                 csvWriter.writeRecord(record, false);
                 libsvm.add(result.getLibsvmFeature());
