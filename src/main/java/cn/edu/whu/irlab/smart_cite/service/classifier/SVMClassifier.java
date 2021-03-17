@@ -1,4 +1,4 @@
-package cn.edu.whu.irlab.smart_cite.service.weka;
+package cn.edu.whu.irlab.smart_cite.service.classifier;
 
 import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
 import org.slf4j.Logger;
@@ -9,8 +9,6 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils;
 import weka.core.converters.LibSVMLoader;
-import weka.core.converters.Loader;
-import weka.core.converters.SVMLightLoader;
 import weka.filters.unsupervised.attribute.NumericToNominal;
 
 import java.io.*;
@@ -22,9 +20,9 @@ import java.io.*;
  * @desc weka服务
  **/
 @Service
-public class WekaService {
+public class SVMClassifier {
 
-    private static final Logger logger = LoggerFactory.getLogger(WekaService.class);
+    private static final Logger logger = LoggerFactory.getLogger(SVMClassifier.class);
 
     private static final String MODEL_NAME = "libsvm.model";
     private static final String MODEL_PATH = System.getProperty("user.dir") + "/data/model/" + MODEL_NAME;

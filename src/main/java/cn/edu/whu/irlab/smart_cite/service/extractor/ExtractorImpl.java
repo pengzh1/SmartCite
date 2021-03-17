@@ -9,7 +9,7 @@ import cn.edu.whu.irlab.smart_cite.service.preprocessor.GrobidPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.JsonXmlPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.LeiPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.PlosPreprocessorImpl;
-import cn.edu.whu.irlab.smart_cite.service.weka.WekaService;
+import cn.edu.whu.irlab.smart_cite.service.classifier.SVMClassifier;
 import cn.edu.whu.irlab.smart_cite.util.ReadUtil;
 import cn.edu.whu.irlab.smart_cite.util.TypeConverter;
 import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
@@ -17,11 +17,9 @@ import cn.edu.whu.irlab.smart_cite.vo.Article;
 import cn.edu.whu.irlab.smart_cite.vo.FileLocation;
 import cn.edu.whu.irlab.smart_cite.vo.RefTag;
 import cn.edu.whu.irlab.smart_cite.vo.Result;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.metadata.HttpHeaders;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.TikaMetadataKeys;
@@ -31,8 +29,6 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -81,7 +77,7 @@ public class ExtractorImpl {
     private FeatureExtractor featureExtractor;
 
     @Autowired
-    private WekaService wekaService;
+    private SVMClassifier SVMClassifier;
 
     @Autowired
     private JsonXmlPreprocessorImpl jsonXmlPreprocessor;
@@ -155,7 +151,7 @@ public class ExtractorImpl {
         article = null;//释放内存
 
         //分类
-        Instances instances = wekaService.classify(FEATURE_FILE + File.separator + file.getName() + "_features.libsvm");
+        Instances instances = SVMClassifier.classify(FEATURE_FILE + File.separator + file.getName() + "_features.libsvm");
 
         //匹配分类结果
         for (int i = 0; i < results.size(); i++) {
