@@ -93,7 +93,7 @@ public class WriteUtil {
         csvWriter.close();
     }
 
-    public static void writeResult(String path, List<Result> results) {
+    public static void writeResult(String path, List<Result> results,int outputType) {
         List<String> libsvm = new ArrayList<>();
         CsvWriter csvWriter = new CsvWriter(path + ".csv", ',', StandardCharsets.UTF_8);
         String[] header = {"aroundSentence", "refInformation", "isContextPair"};
@@ -108,8 +108,8 @@ public class WriteUtil {
             for (Result result :
                     results) {
                 String[] record = new String[3];
-                record[0] = Sentence.standardText(result.getSentence().getWordList(),3);
-                record[1] = Sentence.standardText(result.getRefTag().getSentence().getWordList(),3);
+                record[0] = Sentence.standardText(result.getSentence().getWordList(),outputType);
+                record[1] = Sentence.standardText(result.getRefTag().getSentence().getWordList(),outputType);
                 record[2] = String.valueOf(result.isContext() ? 1 : 0);
                 csvWriter.writeRecord(record, false);
                 libsvm.add(result.getLibsvmFeature());

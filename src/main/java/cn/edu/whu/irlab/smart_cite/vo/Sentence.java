@@ -147,8 +147,11 @@ public class Sentence implements ISentence, ToJsonAble {
 
     /**
      * 仅输出句子句法结构部分
-     *
      * @param list
+     * @param type
+     *        1:仅保留句法成分，删除非句法成分的引文标记内容，包含引文当前句
+     *        2:未作任何处理的原始句子，包含引文当前句
+     *        3:句法成分引文标记后增加[#]，非句法成分引文标记使用[#]替换
      * @return
      */
     public static String standardText(List<WordItem> list, int type) {

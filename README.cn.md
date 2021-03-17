@@ -20,7 +20,7 @@ Note: The uploaded file must be an academic paper and must conform to the suppor
 
 The file formats supported by SCC are: XML of Plosone database, XML of TEI format, Json data conforming to GORC data format
 
-###  Extract
+###  /Extract
 
 Function: Extract the citation context of a single paper
 
@@ -156,7 +156,7 @@ Return result：
 }
 ```
 
-###  Batch Extraction
+###  /Batch Extraction
 
 Function: Batch extract citation contexts of multiple papers
 
