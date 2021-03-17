@@ -1,4 +1,4 @@
-package cn.edu.whu.irlab.smart_cite.service.extractor.Impl;
+package cn.edu.whu.irlab.smart_cite.service.extractor;
 
 import cn.edu.whu.irlab.smart_cite.enums.XMLTypeEnum;
 import cn.edu.whu.irlab.smart_cite.exception.FileTypeException;

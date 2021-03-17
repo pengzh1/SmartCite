@@ -2,7 +2,7 @@ package cn.edu.whu.irlab.smart_cite.controller;
 
 import cn.edu.whu.irlab.smart_cite.enums.ResponseEnum;
 import cn.edu.whu.irlab.smart_cite.exception.FileTypeException;
-import cn.edu.whu.irlab.smart_cite.service.extractor.Impl.ExtractorImpl;
+import cn.edu.whu.irlab.smart_cite.service.extractor.ExtractorImpl;
 import cn.edu.whu.irlab.smart_cite.util.ResponseUtil;
 import cn.edu.whu.irlab.smart_cite.util.UnPackeUtil;
 import cn.edu.whu.irlab.smart_cite.vo.ResponseVo;
@@ -18,8 +18,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 /**
  * @author gcr19

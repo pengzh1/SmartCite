@@ -4,7 +4,7 @@ package cn.edu.whu.irlab.smart_cite.controller;
 import cn.edu.whu.irlab.smart_cite.enums.ResponseEnum;
 import cn.edu.whu.irlab.smart_cite.service.unpack.AjaxList;
 import cn.edu.whu.irlab.smart_cite.service.unpack.FileUploadService;
-import cn.edu.whu.irlab.smart_cite.service.extractor.Impl.ExtractorImpl;
+import cn.edu.whu.irlab.smart_cite.service.extractor.ExtractorImpl;
 import cn.edu.whu.irlab.smart_cite.util.ReadUtil;
 import cn.edu.whu.irlab.smart_cite.util.ResponseUtil;
 import cn.edu.whu.irlab.smart_cite.vo.PackParam;

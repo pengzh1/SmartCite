@@ -2,8 +2,8 @@ package cn.edu.whu.irlab.smart_cite.service.extractor;
 
 /**
  * @author gcr19
- * @date 2019-10-19 11:31
- * @desc
+ * @date 2021-03-17 23:28
+ * @desc SVM模型识别
  **/
-public interface Extractor {
+public class SVMExtractor {
 }
