@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -18,6 +19,10 @@ import java.util.List;
 @Service
 public class PretrainModelExtractor extends ExtractorImpl {
 
+    @Override
+    List<Result> classify(List<Result> results, File file) {
+        return null;
+    }
 
     @Autowired
     private BertFeatureExtractor bertFeatureExtractor;

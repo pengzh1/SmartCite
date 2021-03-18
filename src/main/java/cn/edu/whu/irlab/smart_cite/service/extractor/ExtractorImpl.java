@@ -2,6 +2,7 @@ package cn.edu.whu.irlab.smart_cite.service.extractor;
 
 import cn.edu.whu.irlab.smart_cite.enums.XMLTypeEnum;
 import cn.edu.whu.irlab.smart_cite.exception.FileTypeException;
+import cn.edu.whu.irlab.smart_cite.service.Classifier;
 import cn.edu.whu.irlab.smart_cite.service.grobid.GrobidService;
 import cn.edu.whu.irlab.smart_cite.service.paperXmlReader.PaperXmlReader;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.GrobidPreprocessorImpl;
@@ -53,7 +54,7 @@ import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.*;
  * @desc 任务执行器 实现类
  **/
 @Slf4j
-public abstract class ExtractorImpl {
+public abstract class ExtractorImpl  {
 
     @Autowired
     private GrobidService grobidService;
@@ -70,8 +71,6 @@ public abstract class ExtractorImpl {
     @Autowired
     private PaperXmlReader paperXmlReader;
 
-    @Autowired
-    private SvmClassifier SVMClassifier;
 
     @Autowired
     private JsonXmlPreprocessorImpl jsonXmlPreprocessor;
@@ -82,7 +81,7 @@ public abstract class ExtractorImpl {
         return extract(upload);
     }
 
-    public abstract List<Result> extractFeature(Article article,boolean isPutInTogether);
+    public abstract List<Result> extractFeature(Article article, boolean isPutInTogether);
 
     public JSONObject extract(File file) {
         if (!file.exists()) {
@@ -141,19 +140,10 @@ public abstract class ExtractorImpl {
         Article article = paperXmlReader.processFile(file, root);
 
         //抽取特征
-        List<Result> results = extractFeature(article,false);
+        List<Result> results = extractFeature(article, false);
 
         //分类
-        Instances instances = SVMClassifier.classify(FEATURE_FILE + File.separator + file.getName() + "_features.libsvm");
-
-        //匹配分类结果
-        for (int i = 0; i < results.size(); i++) {
-            if (instances.get(i).classValue() == 0) {
-                results.get(i).setContext(false);
-            } else {
-                results.get(i).setContext(true);
-            }
-        }
+        results = classify(results, file);
 
         JSONArray refTags = CombinedResult(results);
 
@@ -168,6 +158,8 @@ public abstract class ExtractorImpl {
 
         return result;
     }
+
+    abstract List<Result> classify(List<Result> results, File file);
 
     private void removeTempFile(File file) {
         File added = new File(ADDED + File.separator + file.getName() + ".xml");

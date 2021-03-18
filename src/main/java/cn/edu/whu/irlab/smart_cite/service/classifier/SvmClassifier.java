@@ -1,6 +1,8 @@
 package cn.edu.whu.irlab.smart_cite.service.classifier;
 
+import cn.edu.whu.irlab.smart_cite.service.Classifier;
 import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
+import cn.edu.whu.irlab.smart_cite.vo.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,9 @@ import weka.core.converters.LibSVMLoader;
 import weka.filters.unsupervised.attribute.NumericToNominal;
 
 import java.io.*;
+import java.util.List;
+
+import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.FEATURE_FILE;
 
 /**
  * @author gcr19
@@ -20,7 +25,7 @@ import java.io.*;
  * @desc weka服务
  **/
 @Service
-public class SvmClassifier {
+public class SvmClassifier implements Classifier {
 
     private static final Logger logger = LoggerFactory.getLogger(SvmClassifier.class);
 
@@ -29,12 +34,14 @@ public class SvmClassifier {
 
     private static LibSVM svm;
 
-    public Instances classify(String instancesPath) {
+    public List<Result> classify(List<Result> results, File file) {
+        String instancesPath = FEATURE_FILE + File.separator + file.getName() + "_features.libsvm";
         Instances instances = loadInstances(instancesPath);
         if (svm == null) {
             svm = reloadPersistModel();
         }
-        return classify(svm, instances);
+        instances = classify(svm, instances);
+        return matchResults(results, instances);
     }
 
     public Instances trainAndClassify(String trainingDataPath, String instancesPath) {
@@ -148,5 +155,18 @@ public class SvmClassifier {
     public void outputInstances(Instances instances, String outputPath) {
         WriteUtil.writeStr(outputPath, instances.toString());
     }
+
+    private List<Result> matchResults(List<Result> results, Instances instances) {
+        //匹配分类结果
+        for (int i = 0; i < results.size(); i++) {
+            if (instances.get(i).classValue() == 0) {
+                results.get(i).setContext(false);
+            } else {
+                results.get(i).setContext(true);
+            }
+        }
+        return results;
+    }
+
 
 }
