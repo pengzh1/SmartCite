@@ -28,34 +28,26 @@ import static com.leishengwei.jutils.Strings.contain;
  * @date 2020/2/19 16:24
  * @desc 特征抽取器
  **/
-@Service
-public class FeatureExtractor {
+public abstract class FeatureExtractor {
 
     private static final Logger logger = LoggerFactory.getLogger(FeatureExtractor.class);
 
-    private static final Random random = new Random(100);
-
-    //输入输出
-    public static String TRAIN_DIR;
-
-    private static List<Article> trainArticles; //训练数据
-
-    private static ThreadLocal<List<Result>> information = new ThreadLocal<List<Result>>() {
+    static ThreadLocal<List<Result>> information = new ThreadLocal<List<Result>>() {
         @Override
         protected List<Result> initialValue() {
             return new ArrayList<>();
         }
     };
 
-    private static ThreadLocal<List<String>> svmFeatures = new ThreadLocal<List<String>>() {
-        @Override
-        protected List<String> initialValue() {
-            return new ArrayList<>();
-        }
-    };
+
+    //输入输出
+    public static String TRAIN_DIR;
+
+    private static List<Article> trainArticles; //训练数据
+
 
     @SuppressWarnings("rawtypes")
-    private ThreadLocal<List<IFeature>> features = new ThreadLocal<List<IFeature>>() {
+    ThreadLocal<List<IFeature>> features = new ThreadLocal<List<IFeature>>() {
         @Override
         protected List<IFeature> initialValue() {
             return new ArrayList<>();
@@ -66,16 +58,19 @@ public class FeatureExtractor {
 //    @Autowired
 //    private StatisticVisitor statisticVisitor;   //统计分析
 
+    /**
+     * 参数初始化
+     */
+    abstract void init();
+
+    abstract void close();
+
     public List<Result> extract(Article article, boolean isPutInTogether) {
         String name = article.getName();
         String fileName = isPutInTogether ? FEATURE_FILE + File.separator + "together_features.libsvm" : FEATURE_FILE + File.separator + name + "_features.libsvm";
         Files featureWriter = Files.open(fileName, isPutInTogether, 0);
 
-        features.get().clear();
-        information.get().clear();
-        svmFeatures.get().clear();
-
-        loadFeatures();
+        init();
         extractArticle(article, featureWriter);
 
 //        statisticVisitor.printRCCount();
@@ -83,47 +78,9 @@ public class FeatureExtractor {
         //关闭特征文件流
         featureWriter.close();
         //保存位置信息
-        List<Result> results = information.get();
-        List<String> svm = svmFeatures.get();
-        System.out.println("results size:" + results.size() + " svm size:" + svm.size());
-        for (int i = 0; i < results.size(); i++) {
-            results.get(i).setLibsvmFeature(svm.get(i));
-        }
-
         WriteUtil.writeList(isPutInTogether ? "temp/location/together_location.txt" : "temp/location/" + article.getName() + "_location.txt", information.get(), isPutInTogether);
-
+        close();
         return information.get();
-    }
-
-    /**
-     * 加载特征
-     */
-    public void loadFeatures() {
-        logger.info("--------load features---------");
-
-        features.get().add(new WorkNounsFeature(5));//1 句子中是否包含work nous词组
-        features.get().add(new RefRefFeature());//2 是否包含引文句中目标引文标记前面相邻的名词短语
-        features.get().add(new AuthorFeature());//3 是否包含作者名字
-        features.get().add(new PronFeature(10));//4 是否包含第三人称代词
-        features.get().add(new LexicalHooksFeature());//5* Lexical hooks
-        features.get().add(new DistanceFeature());//6* 与目标引文句的距离
-        features.get().add(new InParaFeature());//7* 是否和目标引文在同一个段落内
-        features.get().add(new SectionFeature(SectionFeature.START));//8*
-        features.get().add(new SectionFeature(SectionFeature.PRE_START));//9*
-        features.get().add(new SectionFeature(SectionFeature.NEXT_START));//10*
-        features.get().add(new RefPositionFeature(RefPositionFeature.PRE));//11* 当前候选上下文句前面一句是否是非目标引文句
-        features.get().add(new RefPositionFeature(RefPositionFeature.NEXT));//12* 当前候选上下文句后面一句是否是非目标引文句
-        features.get().add(new RefFeature(RefFeature.OTHER_REF));//13 当前句中是否只包含其他引文标记
-        features.get().add(new SectionPositionFeature());//14* 句子在文章中的区域
-        features.get().add(new ConjFeature(ConjFeature.START));//15 是否起始于指定的连接副词
-        features.get().add(new SimilarityFeature(SimilarityFeature.GRAM_1));//16
-        features.get().add(new SimilarityFeature(SimilarityFeature.GRAM_2));//17
-        features.get().add(new SimilarityFeature(SimilarityFeature.GRAM_3));//18
-        features.get().add(new RefListFeature(RefListFeature.NUMBER));//19 引文句中的引文标记个数
-
-//        features.add(new RefPronFeature()); //20
-
-        logger.info(">>>>特征总数为" + features.get().size());
     }
 
     public static List<Article> loadTrainArticles() {
@@ -196,31 +153,7 @@ public class FeatureExtractor {
      *
      * @param r 引文标记
      */
-    private void featuresRef(RefTag r, Files featureWriter) {
-        //统计距离
-//        statisticVisitor.visitRefCount(r);
-//        statisticVisitor.visitRefDistanceCount(r);
-//        statisticVisitor.visitRefNonContext(r);
-//        if (r.getContexts().trim().equals("")) {    //TEST，没有正例则不进行抽取
-//            return;
-//        }
-        //计算特征
-        @SuppressWarnings("unchecked")
-        List<String> result = candidate(r).stream() //遍历每个引文的候选上下文句
-                .map(sent -> features.get().stream()  //遍历所有特征
-                        .map(f -> f.f(sent, r)) //求特征值
-                        .reduce(label(r, sent), (re, fv) -> re + " " + text(fv), (re1, re2) -> re1))   //拼接特征值
-                //搜集特征值
-                .collect(Collectors.toList());
-
-        //转换格式
-        result = toSVMFormat(result);
-        svmFeatures.get().addAll(result);
-
-        //       result = toCRFFormat(result);
-        featureWriter.appendLn(toStr(result, "\n"));
-//        System.out.println(toStr(result, "\n"));
-    }
+    abstract void featuresRef(RefTag r, Files featureWriter);
 
     /**
      * 得到候选上下文
@@ -229,7 +162,7 @@ public class FeatureExtractor {
      * @param ref 目标引文所在引文句
      * @return
      */
-    private List<Sentence> candidate(RefTag ref) {
+    List<Sentence> candidate(RefTag ref) {
         NavigableMap<Integer, Sentence> map = Article.sectionSentences(ref);
         int index = ref.getSentence().getIndex(); //当前句的索引
         //去掉引文句
@@ -278,96 +211,6 @@ public class FeatureExtractor {
             else return fv.toString();
         }
         return fv.toString();
-    }
-
-    /**
-     * 修改为稀疏矩阵的形式
-     *
-     * @param result
-     * @return
-     */
-    private List<String> toSVMFormat(List<String> result) {
-        result = result.stream().map(v -> {
-            String[] fvs = v.split(" ");    //特征值
-            StringBuilder builder = new StringBuilder();
-            builder.append(fvs[0]); //label
-            int idIndex = 0;
-            for (int j = 1; j < fvs.length; j++) {
-                if (fvs[j].startsWith("[")) {   //列表
-                    List<String> items = com.leishengwei.jutils.Arrays.list(fvs[j].substring(0, fvs[j].length() - 1).split(","));
-                    for (String item : items) {
-                        idIndex++;  //ID index始终+1
-                        if (!item.trim().equals("0")) {
-                            builder.append(" ").append(idIndex).append(":").append(item);
-                        }
-                    }
-                } else if (fvs[j].startsWith("{")) {    //集合
-                    List<String> list = com.leishengwei.jutils.Arrays.list(fvs[j].substring(0, fvs[j].length() - 1).split(","));
-                    for (String s : list) {
-                        builder.append(" ").append(s);
-                    }
-                } else {    //普通
-                    idIndex++;  //ID index始终+1
-                    if (!fvs[j].trim().equals("0")) { //特征不为0时才添加
-                        builder.append(" ").append(idIndex).append(":").append(fvs[j]);
-                    }
-                }
-            }
-            return builder.toString().trim();
-        }).collect(Collectors.toList());
-        return result;
-    }
-
-    /**
-     * 数据采样 采用完整数据集
-     *
-     * @param results
-     * @return
-     */
-    public Map<String, List<Result>> sampleData(List<Result> results) {
-
-        //随机打散数据
-        Collections.shuffle(results, random);
-        //数据检查
-        WriteUtil.writeResult1(results);
-        return splitTrainAndEval(results);
-    }
-
-    public Map<String, List<Result>> sampleData1(List<Result> results) {
-
-        List<Result> positiveResults = results.stream().filter(Result::isContext).collect(Collectors.toList());
-        List<Result> negativeResults = results.stream().filter(result -> !result.isContext()).collect(Collectors.toList());
-
-        //随机打散负例
-        Collections.shuffle(negativeResults, random);
-        //取和正例数量相同的负样本
-        negativeResults = negativeResults.subList(0, positiveResults.size());
-
-        results.clear();
-        results.addAll(positiveResults);
-        results.addAll(negativeResults);
-
-        //随机打散样本
-        Collections.shuffle(results, random);
-
-        return splitTrainAndEval(results);
-    }
-
-    /**
-     * 分割训练集 评估集 测试集 8 1 1
-     *
-     * @param results
-     * @return
-     */
-    public Map<String, List<Result>> splitTrainAndEval(List<Result> results) {
-        Map<String, List<Result>> resultMap = new HashMap<>();
-
-        resultMap.put("train_set", results.subList(0, results.size() / 10 * 8));
-        resultMap.put("eval_set", results.subList(results.size() / 10 * 8, results.size() / 10 * 9));
-        resultMap.put("train_and_eval_set", results.subList(0, results.size() / 10 * 9));
-        resultMap.put("test_set", results.subList(results.size() / 10 * 9, results.size()));
-        resultMap.put("all_set", results);
-        return resultMap;
     }
 
 }

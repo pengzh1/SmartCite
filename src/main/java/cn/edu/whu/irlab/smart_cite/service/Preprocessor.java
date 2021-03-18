@@ -1,4 +1,4 @@
-package cn.edu.whu.irlab.smart_cite.service.preprocessor;
+package cn.edu.whu.irlab.smart_cite.service;
 
 /**
  * @author gcr19

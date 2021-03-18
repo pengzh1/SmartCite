@@ -20,9 +20,9 @@ import java.io.*;
  * @desc weka服务
  **/
 @Service
-public class SVMClassifier {
+public class SvmClassifier {
 
-    private static final Logger logger = LoggerFactory.getLogger(SVMClassifier.class);
+    private static final Logger logger = LoggerFactory.getLogger(SvmClassifier.class);
 
     private static final String MODEL_NAME = "libsvm.model";
     private static final String MODEL_PATH = System.getProperty("user.dir") + "/data/model/" + MODEL_NAME;
@@ -66,7 +66,7 @@ public class SVMClassifier {
         NumericToNominal toNominal = new NumericToNominal();
         String[] options = new String[0];
         try {
-            options = weka.core.Utils.splitOptions("-R 1-7,11-last");
+            options = weka.core.Utils.splitOptions("-R 1-15,19-last");
             toNominal.setOptions(options);
             toNominal.setInputFormat(instances);
             instances = weka.filters.Filter.useFilter(instances, toNominal);
@@ -111,6 +111,7 @@ public class SVMClassifier {
     }
 
     public void persistModel(LibSVM svm) {
+
         ObjectOutputStream objectOutputStream;
         try {
             objectOutputStream = new ObjectOutputStream(new FileOutputStream(MODEL_PATH));

@@ -2,14 +2,13 @@ package cn.edu.whu.irlab.smart_cite.service.extractor;
 
 import cn.edu.whu.irlab.smart_cite.enums.XMLTypeEnum;
 import cn.edu.whu.irlab.smart_cite.exception.FileTypeException;
-import cn.edu.whu.irlab.smart_cite.service.featureExtractor.FeatureExtractor;
 import cn.edu.whu.irlab.smart_cite.service.grobid.GrobidService;
 import cn.edu.whu.irlab.smart_cite.service.paperXmlReader.PaperXmlReader;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.GrobidPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.JsonXmlPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.LeiPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.PlosPreprocessorImpl;
-import cn.edu.whu.irlab.smart_cite.service.classifier.SVMClassifier;
+import cn.edu.whu.irlab.smart_cite.service.classifier.SvmClassifier;
 import cn.edu.whu.irlab.smart_cite.util.ReadUtil;
 import cn.edu.whu.irlab.smart_cite.util.TypeConverter;
 import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
@@ -32,7 +31,6 @@ import org.jdom2.JDOMException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
-import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.helpers.DefaultHandler;
@@ -55,8 +53,7 @@ import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.*;
  * @desc 任务执行器 实现类
  **/
 @Slf4j
-@Service("extractor")
-public class ExtractorImpl {
+public abstract class ExtractorImpl {
 
     @Autowired
     private GrobidService grobidService;
@@ -74,10 +71,7 @@ public class ExtractorImpl {
     private PaperXmlReader paperXmlReader;
 
     @Autowired
-    private FeatureExtractor featureExtractor;
-
-    @Autowired
-    private SVMClassifier SVMClassifier;
+    private SvmClassifier SVMClassifier;
 
     @Autowired
     private JsonXmlPreprocessorImpl jsonXmlPreprocessor;
@@ -88,6 +82,7 @@ public class ExtractorImpl {
         return extract(upload);
     }
 
+    public abstract List<Result> extractFeature(Article article,boolean isPutInTogether);
 
     public JSONObject extract(File file) {
         if (!file.exists()) {
@@ -146,9 +141,7 @@ public class ExtractorImpl {
         Article article = paperXmlReader.processFile(file, root);
 
         //抽取特征
-        List<Result> results = featureExtractor.extract(article,false);
-
-        article = null;//释放内存
+        List<Result> results = extractFeature(article,false);
 
         //分类
         Instances instances = SVMClassifier.classify(FEATURE_FILE + File.separator + file.getName() + "_features.libsvm");
@@ -263,10 +256,10 @@ public class ExtractorImpl {
     private XMLTypeEnum identifyXMLType(Element article, File file) {
         String nameOfFirstNode = article.getName();
         if (nameOfFirstNode.equals("article")) {
-            Element header=article.getChild("header");
-            if (header!=null){
+            Element header = article.getChild("header");
+            if (header != null) {
                 return XMLTypeEnum.Lei;
-            }else {
+            } else {
                 return XMLTypeEnum.Plos;
             }
         } else if (nameOfFirstNode.equals("TEI")) {

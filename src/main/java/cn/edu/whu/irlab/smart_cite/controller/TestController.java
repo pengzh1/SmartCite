@@ -2,6 +2,7 @@ package cn.edu.whu.irlab.smart_cite.controller;
 
 
 import cn.edu.whu.irlab.smart_cite.enums.ResponseEnum;
+import cn.edu.whu.irlab.smart_cite.service.extractor.SvmExtractor;
 import cn.edu.whu.irlab.smart_cite.service.unpack.AjaxList;
 import cn.edu.whu.irlab.smart_cite.service.unpack.FileUploadService;
 import cn.edu.whu.irlab.smart_cite.service.extractor.ExtractorImpl;
@@ -30,7 +31,8 @@ public class TestController {
     private FileUploadService fileUploadService;
 
     @Autowired
-    private ExtractorImpl extractor;
+    private SvmExtractor svmExtractor;
+
 
     @GetMapping("/connectTest")
     public String connectTest() {
@@ -51,7 +53,7 @@ public class TestController {
             return ResponseUtil.error(ResponseEnum.FILE_NOT_FOUND);
         }
         try {
-            File file=extractor.saveUploadedFile(multipartFile);
+            File file=svmExtractor.saveUploadedFile(multipartFile);
             String str= ReadUtil.read2Str(file);
             JSONObject jsonObject=JSONObject.parseObject(str);
             return ResponseUtil.success(jsonObject);

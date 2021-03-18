@@ -1,15 +1,16 @@
 package cn.edu.whu.irlab.smart_cite.service.featureExtractor;
 
 import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
-import cn.edu.whu.irlab.smart_cite.vo.Article;
-import cn.edu.whu.irlab.smart_cite.vo.BertPair;
-import cn.edu.whu.irlab.smart_cite.vo.RefTag;
-import cn.edu.whu.irlab.smart_cite.vo.Sentence;
+import cn.edu.whu.irlab.smart_cite.vo.*;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.leishengwei.jutils.Files;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.leishengwei.jutils.Collections.toStr;
 
 /**
  * @author gcr19
@@ -18,79 +19,79 @@ import java.util.*;
  * @desc 用于训练bert模型的特征收集器
  **/
 @Service
-public class BertFeatureExtractor {
+public class BertFeatureExtractor extends FeatureExtractor {
+    private static final Random random = new Random(100);
 
+    @Override
+    void init() {
+        information.get().clear();
+    }
+
+    @Override
+    void close() {
+
+    }
 
     /**
-     * @param article
-     * @param dataType
-     * @return
-     * @auther gcr19
-     * @desc 提起用于bert模型的数据
-     **/
-    public List<BertPair> extract(Article article, int dataType) {
-        List<BertPair> bertPairs = new ArrayList<>();
-        TreeMap<Integer, Sentence> sentenceTreeMap = article.getSentenceTreeMap();
-        JSONArray errorList = new JSONArray();
-
-        for (Map.Entry<Integer, Sentence> sentenceEntry :
-                sentenceTreeMap.entrySet()) {
-            Sentence s = sentenceEntry.getValue();
-            for (RefTag reftag :
-                    s.getRefList()) {
-                //插入正例
-                for (Sentence contextSentence :
-                        reftag.getContextList()) {
-                    switch (dataType) {
-                        case 1:
-                            bertPairs.add(new BertPair(contextSentence.getText(), reftag.getSentence().getText(), true));
-                            break;
-                        case 2:
-                            if (reftag.getReference() != null && reftag.getReference().getArticle_title() != null) {
-                                bertPairs.add(new BertPair(contextSentence.getText(), reftag.getSentence().getText() + reftag.getReference().getArticle_title(), true));
-                            } else {
-                                JSONObject error = new JSONObject();
-                                error.put("article", s.getArticle().getName());
-                                error.put("refTagId", reftag.getId());
-                                error.put("refTag", reftag.getText());
-                                errorList.add(error);
-                                bertPairs.add(new BertPair(contextSentence.getText(), reftag.getSentence().getText(), true));
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                //插入负例（前后各4句中非上下文的）
-                int sentenceId = s.getId();
-                List<String> context = new ArrayList<>(Arrays.asList(reftag.getContexts().split(",")));
-                context.add(String.valueOf(reftag.getSentence().getId()));
-                for (int i = sentenceId - 4; i < sentenceId + 4; i++) {
-                    if (i > 0 && !context.contains(String.valueOf(i))) {
-                        Sentence unContextSentence = sentenceTreeMap.get(i);
-                        if (unContextSentence != null) {
-                            switch (dataType) {
-                                case 1:
-                                    bertPairs.add(new BertPair(unContextSentence.getText(), reftag.getSentence().getText(), false));
-                                    break;
-                                case 2:
-                                    if (reftag.getReference() != null) {
-                                        bertPairs.add(new BertPair(unContextSentence.getText(), reftag.getSentence().getText() + reftag.getReference().getArticle_title(), false));
-                                    } else {
-                                        bertPairs.add(new BertPair(unContextSentence.getText(), reftag.getSentence().getText(), false));
-                                    }
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                    }
-                }
-
-            }
-        }
-        WriteUtil.writeList("test/testOutput/referenceEmpty.json", errorList, true);
-        System.out.println(errorList);
-        return bertPairs;
+     * 每个引文标记进行特征抽取
+     *
+     * @param r 引文标记
+     */
+    void featuresRef(RefTag r, Files featureWriter) {
+        candidate(r).forEach(sentence -> label(r, sentence));
     }
+
+    /**
+     * 数据采样 采用完整数据集
+     *
+     * @param results
+     * @return
+     */
+    public Map<String, List<Result>> sampleData(List<Result> results) {
+
+        //随机打散数据
+        Collections.shuffle(results, random);
+        //数据检查
+        WriteUtil.writeResult1(results);
+        return splitTrainAndEval(results);
+    }
+
+    public Map<String, List<Result>> sampleData1(List<Result> results) {
+
+        List<Result> positiveResults = results.stream().filter(Result::isContext).collect(Collectors.toList());
+        List<Result> negativeResults = results.stream().filter(result -> !result.isContext()).collect(Collectors.toList());
+
+        //随机打散负例
+        Collections.shuffle(negativeResults, random);
+        //取和正例数量相同的负样本
+        negativeResults = negativeResults.subList(0, positiveResults.size());
+
+        results.clear();
+        results.addAll(positiveResults);
+        results.addAll(negativeResults);
+
+        //随机打散样本
+        Collections.shuffle(results, random);
+
+        return splitTrainAndEval(results);
+    }
+
+    /**
+     * 分割训练集 评估集 测试集 8 1 1
+     *
+     * @param results
+     * @return
+     */
+    public Map<String, List<Result>> splitTrainAndEval(List<Result> results) {
+        Map<String, List<Result>> resultMap = new HashMap<>();
+
+        resultMap.put("train_set", results.subList(0, results.size() / 10 * 8));
+        resultMap.put("eval_set", results.subList(results.size() / 10 * 8, results.size() / 10 * 9));
+        resultMap.put("train_and_eval_set", results.subList(0, results.size() / 10 * 9));
+        resultMap.put("test_set", results.subList(results.size() / 10 * 9, results.size()));
+        resultMap.put("all_set", results);
+        return resultMap;
+    }
+
+
 }

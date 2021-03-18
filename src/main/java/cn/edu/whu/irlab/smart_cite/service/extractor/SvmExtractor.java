@@ -1,6 +1,6 @@
 package cn.edu.whu.irlab.smart_cite.service.extractor;
 
-import cn.edu.whu.irlab.smart_cite.service.featureExtractor.BertFeatureExtractor;
+import cn.edu.whu.irlab.smart_cite.service.featureExtractor.SvmFeatureExtractor;
 import cn.edu.whu.irlab.smart_cite.vo.Article;
 import cn.edu.whu.irlab.smart_cite.vo.Result;
 import lombok.extern.slf4j.Slf4j;
@@ -12,18 +12,18 @@ import java.util.List;
 /**
  * @author gcr19
  * @date 2021-03-17 23:28
- * @desc 预训练语言模型识别
+ * @desc SVM模型识别
  **/
 @Slf4j
 @Service
-public class PretrainModelExtractor extends ExtractorImpl {
+public class SvmExtractor extends ExtractorImpl {
 
 
     @Autowired
-    private BertFeatureExtractor bertFeatureExtractor;
+    private SvmFeatureExtractor svmFeatureExtractor;
 
     @Override
     public List<Result> extractFeature(Article article, boolean isPutInTogether) {
-        return bertFeatureExtractor.extract(article, false);
+        return svmFeatureExtractor.extract(article,false);
     }
 }

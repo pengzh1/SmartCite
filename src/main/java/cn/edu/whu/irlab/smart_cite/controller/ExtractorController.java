@@ -2,7 +2,7 @@ package cn.edu.whu.irlab.smart_cite.controller;
 
 import cn.edu.whu.irlab.smart_cite.enums.ResponseEnum;
 import cn.edu.whu.irlab.smart_cite.exception.FileTypeException;
-import cn.edu.whu.irlab.smart_cite.service.extractor.ExtractorImpl;
+import cn.edu.whu.irlab.smart_cite.service.extractor.SvmExtractor;
 import cn.edu.whu.irlab.smart_cite.util.ResponseUtil;
 import cn.edu.whu.irlab.smart_cite.util.UnPackeUtil;
 import cn.edu.whu.irlab.smart_cite.vo.ResponseVo;
@@ -31,7 +31,7 @@ public class ExtractorController {
     private static final Logger logger = LoggerFactory.getLogger(ExtractorController.class);
 
     @Autowired
-    private ExtractorImpl extractor;
+    private SvmExtractor svmExtractor;
 
 
     @PostMapping("/extract")
@@ -39,7 +39,7 @@ public class ExtractorController {
     public ResponseVo extractController(MultipartFile file) {
 
         try {
-            JSONObject object = extractor.extract(file);
+            JSONObject object = svmExtractor.extract(file);
             return ResponseUtil.success(object);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -56,8 +56,8 @@ public class ExtractorController {
     public ResponseVo batchController(MultipartFile file) {
         List<JSONObject> array = new ArrayList<>();
         try {
-            File uploaded = extractor.saveUploadedFile(file);
-            String mimeType = extractor.identifyMimeType(uploaded);
+            File uploaded = svmExtractor.saveUploadedFile(file);
+            String mimeType = svmExtractor.identifyMimeType(uploaded);
             File folder;
             switch (mimeType) {
                 case "application/zip":
@@ -76,7 +76,7 @@ public class ExtractorController {
             CountDownLatch countDownLatch = new CountDownLatch(files.length);
             List<ListenableFuture<JSONObject>> listenableFutureList = new ArrayList<>();
             for (File f : files) {
-                ListenableFuture<JSONObject> jsonObjectListenableFuture = extractor.asyncExtract(f, countDownLatch);
+                ListenableFuture<JSONObject> jsonObjectListenableFuture = svmExtractor.asyncExtract(f, countDownLatch);
                 listenableFutureList.add(jsonObjectListenableFuture);
             }
             countDownLatch.await();
@@ -111,7 +111,7 @@ public class ExtractorController {
             }
             CountDownLatch countDownLatch = new CountDownLatch(files.length);
             for (File f : files) {
-                extractor.asyncExtract(f, countDownLatch);
+                svmExtractor.asyncExtract(f, countDownLatch);
             }
             countDownLatch.await();
         } catch (Exception e) {
