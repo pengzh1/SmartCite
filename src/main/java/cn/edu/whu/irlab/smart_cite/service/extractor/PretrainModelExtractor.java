@@ -1,5 +1,6 @@
 package cn.edu.whu.irlab.smart_cite.service.extractor;
 
+import cn.edu.whu.irlab.smart_cite.service.classifier.PretrainModelClassifier;
 import cn.edu.whu.irlab.smart_cite.service.featureExtractor.BertFeatureExtractor;
 import cn.edu.whu.irlab.smart_cite.vo.Article;
 import cn.edu.whu.irlab.smart_cite.vo.Result;
@@ -19,9 +20,13 @@ import java.util.List;
 @Service
 public class PretrainModelExtractor extends ExtractorImpl {
 
+
+    @Autowired
+    private PretrainModelClassifier pretrainModelClassifier;
+
     @Override
     List<Result> classify(List<Result> results, File file) {
-        return null;
+        return pretrainModelClassifier.classify(results, file);
     }
 
     @Autowired
