@@ -40,7 +40,7 @@ public class PretrainModelClassifier implements Classifier {
         results.forEach(result -> {
             JSONArray pair = new JSONArray();
             pair.add(Sentence.standardText(result.getSentence().getWordList(), outputType));
-            pair.add(Sentence.standardText(result.getSentence().getWordList(), outputType));
+            pair.add(Sentence.standardText(result.getRefTag().getSentence().getWordList(), outputType));
             sentence_pairs.add(pair);
         });
 
