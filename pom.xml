@@ -128,6 +128,8 @@
             <groupId>com.leishengwei</groupId>
             <artifactId>jutils</artifactId>
             <version>0.0.1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/lib/JavaUtils.jar</systemPath>
         </dependency>
         <!--雷声伟设计的工具 end-->
 
