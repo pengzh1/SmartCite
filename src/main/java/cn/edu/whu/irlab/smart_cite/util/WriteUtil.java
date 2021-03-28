@@ -7,17 +7,13 @@ import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author gcr19
@@ -83,7 +79,7 @@ public class WriteUtil {
                 record[4] = String.valueOf(result.getSentence().getId());
                 record[5] = String.valueOf(result.getRefTag().getSentence().getId());
                 record[6] = result.getRefTag().getSentence().plain();
-                record[7] = Sentence.standardText(result.getRefTag().getSentence().getWordList(),1);
+                record[7] = Sentence.standardText(result.getRefTag().getSentence().getWordList(), 1);
 //                record[7] = result.getRefTag().getSentence().plain().replaceAll("-LRB- -RRB- ", "[#]").replaceAll("-LRB-", "(").replaceAll("-RRB-", ")");
                 csvWriter.writeRecord(record, false);
             }
@@ -93,10 +89,15 @@ public class WriteUtil {
         csvWriter.close();
     }
 
-    public static void writeResult(String path, List<Result> results,int outputType) {
+    public static void writeResult(String path, List<Result> results, int outputType, boolean isInOrder) {
         List<String> libsvm = new ArrayList<>();
         CsvWriter csvWriter = new CsvWriter(path + ".csv", ',', StandardCharsets.UTF_8);
-        String[] header = {"aroundSentence", "refInformation", "isContextPair"};
+        String[] header;
+        if (isInOrder) {
+            header = new String[]{"text_a", "text_b", "isContextPair"};
+        } else {
+            header = new String[]{"aroundSentence", "refInformation", "isContextPair"};
+        }
 
         try {
             csvWriter.writeRecord(header, false);
@@ -108,8 +109,20 @@ public class WriteUtil {
             for (Result result :
                     results) {
                 String[] record = new String[3];
-                record[0] = Sentence.standardText(result.getSentence().getWordList(),outputType);
-                record[1] = Sentence.standardText(result.getRefTag().getSentence().getWordList(),outputType);
+                if (isInOrder) {
+                    Sentence aroundSentence = result.getSentence();
+                    Sentence refSentence = result.getRefTag().getSentence();
+                    if (aroundSentence.getId() > refSentence.getId()) {
+                        record[0] = Sentence.standardText(refSentence.getWordList(), outputType);
+                        record[1] = Sentence.standardText(aroundSentence.getWordList(), outputType);
+                    }else {
+                        record[0] = Sentence.standardText(aroundSentence.getWordList(), outputType);
+                        record[1] = Sentence.standardText(refSentence.getWordList(), outputType);
+                    }
+                } else {
+                    record[0] = Sentence.standardText(result.getSentence().getWordList(), outputType);
+                    record[1] = Sentence.standardText(result.getRefTag().getSentence().getWordList(), outputType);
+                }
                 record[2] = String.valueOf(result.isContext() ? 1 : 0);
                 csvWriter.writeRecord(record, false);
                 libsvm.add(result.getLibsvmFeature());
