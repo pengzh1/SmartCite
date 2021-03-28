@@ -28,7 +28,7 @@ public class PretrainModelClassifier implements Classifier {
     private static final Logger logger = LoggerFactory.getLogger(PretrainModelClassifier.class);
 
 
-    private static final String URL_PREFIX = "http://localhost:5000/";
+    private static final String URL_PREFIX = "http://localhost:8888/";
 
     @Autowired
     private RestTemplate restTemplate;
@@ -53,15 +53,17 @@ public class PretrainModelClassifier implements Classifier {
         valueMap.add("to_predict", sentence_pairs.toString());
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(valueMap, httpHeaders);
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, request, String.class);
-        String response = responseEntity.getBody();
+        String response = responseEntity.getBody().replaceAll("\\n", "");
+
+        System.out.println(response);
 
         //todo 待测试
         JSONArray jsonArray = JSONObject.parseObject(response).getJSONArray("predictions");
 
-        int index = 0;
-        results.forEach(result -> {
-            result.setContext(jsonArray.get(index) == "1");
-        });
+        for (int i = 0; i < results.size(); i++) {
+            Result result = results.get(i);
+            result.setContext(jsonArray.get(i) == Integer.valueOf(1));
+        }
 
         return results;
     }
