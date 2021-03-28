@@ -51,17 +51,17 @@ public class Article {
         this.name = name;
     }
 
+    private int index = 0;  //句子索引，temp data
+    private int sectionIndex = 0; //章节索引，temp data
+    private int paraIndex = 0;    //段落索引，temp data
+    private Sentence last = null; //上一个句子
+
     /**
      * 将句子添加到当前文章，按顺序添加
      *
      * @param s
      * @return
      */
-    private int index = 0;  //句子索引，temp data
-    private int sectionIndex = 0; //章节索引，temp data
-    private int paraIndex = 0;    //段落索引，temp data
-    private Sentence last = null; //上一个句子
-
     public void append(Sentence s) {
         if (s == null) {
             throw new IllegalArgumentException("不能添加空句子.");
@@ -75,11 +75,13 @@ public class Article {
             System.out.println("last [article]" + last.getArticle().getName() + "[sentence]" + last.getId());
             System.out.println("this [article]" + s.getArticle().getName() + "[sentence]" + s.getId());
         }//todo 这里可能有错误
+
         if (last != null && !last.getSect().equals(s.getSect())) {
             sectionIndex = 0;
         }
         s.setPIndex(++paraIndex);
         s.setSectionIndex(++sectionIndex);
+
         sentenceTreeMap.put(s.getId(), s);
         last = s;
     }
@@ -157,7 +159,7 @@ public class Article {
                 if (w.getIndex() > 0) { //不是第一个单词
                     if (w.getType() == WordItem.WordType.Word || w.getType() == WordItem.WordType.WordRef || w.getType() == WordItem.WordType.Word_G_Ref) {
                         //去掉句首word，去掉不是NN的，去掉停用词中的
-                        if (startCapital(w.getWord()) && w.getTag().startsWith("NN") && !lexicalHookStopword.contains(w.getWord())) { //首字母大写的名词
+                        if (startCapital(w.getWord()) && w.getTag() != null && w.getTag().startsWith("NN") && !lexicalHookStopword.contains(w.getWord())) { //首字母大写的名词
                             lexicalHookMap.putIfAbsent(w.getWord(), 1);
                             lexicalHookMap.computeIfPresent(w.getWord(), (s, c) -> c + 1);
                         }   //TODO 很多引文标记加进去了，不是应该已经去掉了吗？

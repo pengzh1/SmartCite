@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T09:14+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Combination of Symbolic and Statistical Approaches for Grammatical Knowledge Acquisition</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Masaki</forename><surname>Kiyono</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">Centre for Computational Linguistics</orgName>
+								<orgName type="institution">University of Manchester Institute of Science and Technology</orgName>
+								<address>
+									<postBox>PO Box 88</postBox>
+									<postCode>M60 1QD</postCode>
+									<settlement>Manchester</settlement>
+									<country key="GB">United Kingdom</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jun</forename><forename type="middle">&amp;apos;</forename><surname>Ichi Tsujii</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">Centre for Computational Linguistics</orgName>
+								<orgName type="institution">University of Manchester Institute of Science and Technology</orgName>
+								<address>
+									<postBox>PO Box 88</postBox>
+									<postCode>M60 1QD</postCode>
+									<settlement>Manchester</settlement>
+									<country key="GB">United Kingdom</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Combination of Symbolic and Statistical Approaches for Grammatical Knowledge Acquisition</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>The framework we adopted for customizing linguistic knowledge to individual application domains is an integration of symbolic and statistical approaches. In order to acquire domain specific knowledge, we have previously proposed a rule-based mechanism to hypothesize missing knowledge from partial parsing results of unsuccessfully parsed sentences. In this paper, we focus on the statistical process which selects plausible knowledge from a set of hypotheses generated from the whole corpus. In particular, we introduce two statistical measures of hypotheses, Local Plausibility and Global Plausibility, and describe how these measures are determined iteratively. The proposed method will be incorporated into the tool kit for linguistic knowledge acquisition which we are now developing.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Current technologies in natural language processing are not so mature as to make general purpose systems applicable to any domains; therefore rapid customization of linguistic knowledge to the sublanguage of an application domain is vital for the development of practical systems. In the currently working systems, such customization has been carried out manually by linguists or lexicographers with time-consuming effort.</p><p>We have already proposed a mechanism which acquires sublanguage-specific linguistic knowledge from parsing failures and which can be used as a tool for linguistic knowledge customization <ref type="bibr" target="#b6">(Kiyono and Tsujii, 1993;</ref><ref type="bibr" target="#b7">Kiyono and Tsujii, 1994)</ref>. Our approach is characterized by a mixture of symbolic and statistical approaches to grammatical knowledge acquisition. Unlike probabilistic parsing, proposed by <ref type="bibr" target="#b5">(Fujisaki et al., 1989;</ref><ref type="bibr" target="#b1">Briscoe and Carroll, 1993</ref>), *also a staff member of Matsushita Electric Industrial Co.,Ltd., Shinagawa, Tokyo, JAPAN. 72 which assumes the prior existence of comprehensive linguistic knowledge, our system can suggest new pieces of knowledge including CFG rules, subcategorization frames, and other lexical features. It also differs from previous proposals on lexical acquisition using statistical measures such as <ref type="bibr" target="#b3">(Church et al., 1991;</ref><ref type="bibr" target="#b0">Brent, 1991;</ref><ref type="bibr" target="#b2">Brown et al., 1993)</ref> which either deny the prior existence of linguistic knowledge or use linguistic knowledge in ad hoc ways.</p><p>Our system consists of two components: (1) the rule-based component, which detects incompleteness of the existing knowledge and generates a set of hypotheses of new knowledge and (2) the corpus-based component which selects plausible hypotheses on the basis of their statistical behaviour. As the rule-based component has been explained in our previous papers, in this paper we focus on the corpus-based component.</p><p>After giving a brief explanation of the framework, we describe a data structure called Hypothesis Graph which plays a crucial role in the corpus-based process, and then introduce two statistical measures of hypotheses, Global Plausibility and Local Plausibility, which are iteratively determined to select a set of plausible hypotheses. An experiment which shows the effectiveness of our method is also given.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>2</head><p>The System Organization <ref type="figure">Figure 1</ref> shows the framework of our system. When the parser fails to analyse a sentence, the Hypothesis Generator (HG) produces hypotheses of missing knowledge each of which could rectify the defects of the current grammar. As the parser is a sort of Chart Parser and maintains partial parsing results in the form of inactive and active edges, a parsing failure means that no inactive edge of category S spanning the whole sentence exists. The HG tries to introduce an inactive edge of S by making hypotheses of missing linguistic knowledge. It generates hypotheses of rewriting rules which collect existing sequences of inactive edges into an expected category. It also calls itself recursively to in-  This algorithm has been further augmented in order to treat sentences which contain more than one construction not covered by the current version of the grammar and to generate hypotheses concerning complex features like subcategorization frames.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1">Hypothesis Generation</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Human t lnteraction</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2">Hypothesis Filtering</head><p>The greater number of the hypotheses generated by the algorithm are linguistically unnatural, because the algorithm does not embody any linguistic principle to judge the appropriateness of hypotheses, and therefore we introduced a set of criteria to filter out unnatural hypotheses <ref type="bibr" target="#b6">(Kiyono and Tsujii, 1993;</ref><ref type="bibr" target="#b7">Kiyono and Tsujii, 1994)</ref>. This includes, for example,</p><p>• The maximum number of daughter constituents of a rule is set to 3.</p><p>• Supposing that the current version of the grammar contains all the category conversion rules, a unary rule with one daughter constituent is not generated.</p><p>• Using generalizations embodied in the current version of the grammar, a rule containing a sequence of constituents which can be collected into a larger constituent by the current version of grammar is not generated.</p><p>• Distinguishing non-lexical categories from lexical categories, a rule whose mother category is a lexical category is not generated.</p><p>These criteria significantly reduce the number of hypotheses to be generated.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.3">Hypothesis Graph</head><p>As the criteria which the HG uses to filter out unnatural hypotheses are solely based on the forms of hypotheses, they cannot identify the "correct" hypotheses on their own. The correct ones are rather chosen by the Hypothesis Selector (HS), which resorts to examining the statistical behaviour of hypotheses throughout a given corpus.</p><p>A straightforward method is to count the frequency of hypotheses, but this simple method does not work, because hypotheses are not independent of each other. A hypothesis is either competing with or complemenlary to other hypotheses generated from the same sentence. A group of hypotheses generated for restoring the same inactive edge constitutes a set of competing hypotheses and only one of them contributes to the correct structure of the sentence. On the other hand, two groups of hypotheses which are generated to treat two different parts of the same sentence stand in complementary relationships.</p><p>A hypothesis should be recognized as being correct, only when no other competing hypothesis is more plausible. That is, even if a hypothesis is generated frequently, it should not be chosen as the correct one, if more plausible competing hypotheses are always generated together with it. On the other hand, even if a hypothesis is generated only once, it should be chosen as the correct one, if there is no other competing hypothesis.</p><p>In order to realize the above conception, the HS maintains mutual relationships among hypotheses as an AND-OR graph. In a graph, AND nodes and OR nodes express complementary relationships and competing relationships, respectively. A node is shared, when different recursion steps in the HG try to restore the same inactive edge. <ref type="figure" target="#fig_1">Figure 2</ref> shows the AND-OR graph for the hypotheses generated from the sentence '~Failing students looked embarrassed" when the current version of grammar does not contain rules for participles. The top node is an AND node which has two groups of hypotheses that treat two different parts of the sentence, i.e. "failing students" and "looked embarrased".  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Two Measures of Plausibility</head><p>The HS uses two measures of plausibility of hypotheses. One is computed for an instance hypothesis and the other is for a generic hypothesis. (See 3.3 for the relationship between the two types of hypotheses.)</p><p>(1) Local Plausibility: This value shows how plausible an instance hypothesis is as grammatical knowledge to contribute to the correct analysis of a unsuccessfully parsed sentence.</p><p>(2) Global Plausibility: This value shows how plausible the hypothesis of the generic form is as grammatical knowledge to be acquired.</p><p>As we describe in the following section, the Local Plausibility (LP) of an instance hypothesis is computed on the basis of the values of the Global Plausibility (GP) of the generic hyoptheses which are linked to instance hypotheses in the same hypothesis graph. On the other hand, the GP of a generic hypothesis is computed from the LP values of its instance hypotheses across the whole corpus.</p><p>Intuitively speaking, the GP of a generic hypothesis is high if its instances are frequently generated and if they receive high LP values, while the LP of a instance hypothesis is high if the GP of the corresponding generic hypothesis is high and if the GP values of the generic hypotheses corresponding to its competing hypotheses are low. Because of this mutual dependence between LP and GP, they cannot be computed in a single step but rather computed iteratively by repeating the following steps until the halt condition is satisfied.</p><p>[</p><p>Step 1] Estimates the initial values of LP.</p><p>[</p><p>Step 2] Calculates GP values from LP values.</p><p>[</p><p>Step 3] Checks the halt condition.</p><p>[</p><p>Step 4] Calculates LP values from GP values and GOT0 [</p><p>Step 2].</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Initial Estimation of Local Plausibility</head><p>If the current version of the grammar is reasonably comprehensive, pieces of linguistic knowledge which have to be acquired are likely to be lexical or idiosyncratic. That is, we assume that sublanguage-specificity tends to be manifested by unknown words, new usages of existing words, and syntactic constructions idiosyncratic to the sublanguage. In order to quantify such plausibility, the following value is given to each hypothesis.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>W(Hypoi) × H(Hypoi) iP(Hypoi) = 1-W(S) x H(S)</head><p>This value shows the proportion of the syntactic structure in the whole sentence which is not covered by the hypothesis. It ranges from 0 to 1 and gets larger if the hypothesis rectifies a smaller part of the sentence. W(Hypol), the width of the hypothesis, is defined as the word count of the subtree and H(Hypoi), the height, is defined as the shortest path from lexical nodes to the top node of the subtree.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3">Generic Hypothesis and Global</head><p>Plausibility The GP of a hypothesis is computed based on the LP values of its instance hypotheses, but the relationship between a generic hypothesis and its instances is not straightforward because we adopted a unification-based grammar formalism. For example, the instance hypothesis of NP =:~ VP, NP in <ref type="figure" target="#fig_1">Figure 2</ref> contains not only this CFG skeleton but also further feature descriptions of the three constituents which include specific surface words like "failing" and "students". Unless we generalize them, we cannot obtain the generic form of this instance hypothesis, and therefore cannot judge whether the hypotheses generated from different sentences are identical.</p><p>Such generalization of instance hypotheses requires an inductive mechanism for judging which parts of the feature specification are common to all instance hypotheses and should be included in a hypothesis of the generic form. This kind of induction is beyond the scope of the current framework, because such induction may need a lot of time and space if it is carried out from scratch. We first gather a set of instance hypotheses which are likely to be instances of the same generic hypothesis which, in turn, is likely to be "correct" linguistic knowledge.</p><p>Our current framework uses a simple definition of generic hypotheses and their instances. That is, if two rule hypotheses have the same CFG skeleton, then they are judged to be instances of the same generic hypotheses. As for lexical hypotheses, we use a set of fixed templates of lexical entries in order to acquire detailed knowledge like subcategorization frames. Features which are not included in the templates are ignored in the judgement of whether generic hypotheses are identical. The GP of a generic hypotheses is defined as being the probability of the event that at least one instance hypothesis recovers the true cause of a parsing failure, and it is computed by the following formula when a set of its instance hypotheses is identified.</p><p>In the formula, HP is a generic hypothesis and HPi are its instances.</p><formula xml:id="formula_0">n GP(HP) = 1 -H(1 -LP(HPi)) i=1</formula><p>The more instance hypotheses are generated, the closer to 1 GP(HP) becomes. If one of the instances is regarded to be recovering the true cause of a parsing failure, the GP of the generic hypothesis is assigned 1, because the hypothesis is indispensable to the analysis of the corpus.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.4">Local Plausibility</head><p>The calculation of LP is carried out on each hypothesis graph based on the assumption that an instance hypothesis or a set of instance hypotheses which recovers the true cause(s) of the parsing failure should exist in the graph. This assumption means that the top node of a hypothesis graph is assigned 1 as its LP value.</p><p>The LP value assigned to a node is to be distributed to its daughter nodes by considering the GP values of the corresponding generic hypotheses. For example, the daughter nodes of an OR node, which constitute a set of competing hypotheses, receive their LP values which are dividents of the LP value of the mother node proportional to their GP values.</p><p>However, as GP is defined only for hypotheses, we first determine the GP values of all nodes in a hypothesis graph in a bottom-up manner, starting from the tip nodes of the graph to which instance hypotheses are attached. Therefore, <ref type="bibr">[</ref>Step 2] in the statistical analysis is further divided into the following three steps.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>[Step 2-1] Bottom-up Calculation of GP</head><p>The GP value of an intermediate node is determined as follows (See <ref type="figure" target="#fig_2">Figure 3(a)</ref>).</p><p>• The GP value of an OR node is computed by the following formula based on the GP values of the daughter nodes, which corresponds to the probability that at least one of the daughter nodes represents "correct" grammatical knowledge.</p><formula xml:id="formula_1">m GP(OR) = 1 -H(1 -GP(Nodei)) i=1</formula><p>• The GP value of an AND node is computed by the following formula, which corresponds to the probability that all the daughter nodes represent "correct" grammatical knowledge.</p><p>m</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>GP(AND) = H GP(Nodei)</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>i=1 [Step 2-2] Deletion of Hypotheses</head><p>The nodes which have significantly smaller GP values than the highest one among the daughter nodes of the same mother OR node (less than one tenth, in our current implementation) will be removed from the hypothesis graph. For example, HP2 in <ref type="figure" target="#fig_2">Figure 3</ref> was considered to be much less plausible than HP4 and removed from the graph.</p><p>As a node in a hypothesis graph could have more than one mother nodes, the hypothesis deletion is realized by removing the link between the node representing the hypothesis and one of its mother OR nodes (not removing the node itself). For example, in <ref type="figure" target="#fig_2">Figure 3</ref>, when HP4 is removed in comparison with HP2 or HP3, the link between HP4 and the OR node is removed, while the link between HP4 and the AND node still remains.</p><p>The deletion of less viable nodes accelerates the convergence of the iterative process of computing GP and LP.</p><p>[Step 2-3] Top-down Calculation of LP This step distributes the LP assigned to the top node (that is, 1) to the nodes below in a topdown way according to the following rules (See <ref type="figure" target="#fig_2">Figure 3(b)</ref>).</p><p>• The LP value of an OR node is distributed to its daughter nodes proportional to their GP values so that the sum of their LP values is the same as that of the OR node because the daughter nodes of the same OR node represent mutually exclusive hypotheses.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>GP(Nodei) L " LP(gode,) = ~.~.---~l ~ej) P(OR)</head><p>• The LP value of an AND node is distributed to its daughter nodes with the same values.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>LP(godei) = LP(AND)</head><p>If a hypothesis has more than one mother nodes and its LP can be calculated through several paths, the sum of those is given to the hypothesis. For example, the value for HP4 in <ref type="figure" target="#fig_2">Figure 3</ref> is 0.56 + 0.38 = 0.94.</p><p>As we discussed before, these newly computed LP values are used to compute the GP values at [</p><p>Step 2] in the next cycle of iteration.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.5">Halt Condition</head><p>The iterative calculation process is regarded to have converged if the GP values of all the generic hypotheses do not change in comparison with the previous cycle, but as it possibly takes a lot of time for the process to reach such a situation, we use an easier condition to stop the process. That is, we count the number of deleted instance hypotheses at each cycle and terminate the iteration when no instance hypothesis is deleted in a number of consecutive iterations. Actually, the process halts after 5 zerodeletion cycles in our current implementation. When the interative process terminates, the hypotheses with high GP values are presented as the final candidates of new knowledge to be added to the current version of grammar.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Preliminary Experiment</head><p>In order to demonstrate how the HS works, we carried out a preliminary experiment with 1,000 sentences in the UNIX on-line manual (approximately one fifth of the whole manual). As the initial knowledge for the experiment, we prepared a grammar set which contains 120 rules covering English basic expressions and deliberately removed rules for participles in order to check whether the HS can discover adequate rules. The input data to the statistical process is a set of 5,906 instance hypotheses generated from 282 unsuccessfully parsed sentences.   The statistical process removed 4,034 instance hypotheses and stopped after 63 cycles of the iterative computation of GP and LP. The instance hypotheses were grouped into 2,876 generic hypotheses and the GP values of 2,331 generic hypotheses were reduced to 0 by the hypothesis deletion. <ref type="table">Table 1</ref> is the list of "correct" hypotheses picked up from the whole list of generic hypotheses sorted by GP values. The hypothesis for participles, np =&gt; vp,np, is one of the 128 hypotheses whose GP values are 1. This table also shows that quite a few "correct" lexical hypotheses are in higher positions because lexical knowledge for unknown words is indispensable to the successful parsing of the corpus.</p><p>The distribution of "correct" hypotheses within the whole list is shown in <ref type="table" target="#tab_5">Table 2</ref>. The fact that "correct" hypotheses exist more in higher ranges supports our mechanism. Although some of the "correct" ones have zero GP values, they do not diminish our framework because most of them are the hypotheses treating participles as adjectives, which are the alternative hypotheses of np =&gt; vp,np.</p><p>The parameter which we can adjust to select more plausible hypotheses is the threshold for the hypothesis deletion. Generally speaking, giving a higher threshold causes an increase of the number of deleted hypotheses and therefore accelerates the convergence of the iterative process. In the experiment, however, the use of one fifth as the threshold instead of one tenth did not bring a major difference.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Conclusion</head><p>The statistical analysis discussed in this paper is based on the assumption that types of linguistic knowledge to be acquired are:</p><p>[1] Knowledge for syntactic constructions which is used frequently in the given sublanguage.</p><p>[2] Lexical knowledge such as subcategorization frames and number properties, which is often idiosyncratic to the given sublanguage.</p><p>[3] Knowledge which belongs neither to [1] nor to [2], but is indispensable to the given corpus.</p><p>[1] implies that knowledge for less frequent constructions can be ignored at the initial stage of linguistic knowledge customization. Such knowledge will be discovered after major defects of the current grammar are rectified, because the GP of a generic hypothesis is defined as being sensitive to the frequency of the hypothesis.</p><p>[2] means that we assume that the set of initially provided grammar rules has a comprehensive coverage of English basic expressions. This assumption is reflected in the way of the initial estimation of LP values. Also note that only when this assumption is satisfied, can the HG produce a reasonable set of hypotheses. On the other hand, because of this assumption, our framework can learn structurally complex and linguistically meaningful lexical descriptions, like a subcategorization frame.</p><p>[3] is reflected in the way of the computation of GP values. A generic hypothesis one of whose instances occurs as a single possible hypothesis that can recover a parsing failure will have the GP value of 1, even though its frequency is very low.</p><p>The computation mechanism of GP and LP bears a resemblance to the EM algorithm <ref type="bibr" target="#b4">(Dempster et al., 1977;</ref><ref type="bibr" target="#b2">Brown et al., 1993)</ref>, which iteratively computes maximum likelihood estimates from incomplete data. As the purpose of our statistical analysis is to choose "correct" hypotheses from a hypothesis set which contains unnatural hypotheses as well, our motivation is different from that of the EM algorithm. However, if we consider that the hypothesis deletion is maxmizing the plausibility of "correct" hypotheses, the computation procedures of both algorithms have a strong similarity.</p><p>The grammatical knowledge acquisition method proposed in this paper will be incorporated into the tool kit for linguistic knowledge customization which we are now developing. In the practical use of our method, a grammar maintainer will be shown a list of hypotheses with high GP values and renew the current version of grammatical knowledge. The renewed knowledge will be used in the next cycle of hypothesis generation and selection to achieve the gradual enlargement of linguistic knowledge.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: AND-OR Graph of Hypotheses</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: Calculation of Local Plausibility</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>GP</head><label></label><figDesc></figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0" validated="false"><head></head><label></label><figDesc>Figure 1: Framework of Grammar Acquisition troduce necessary inactive edges for each rule of the expected category whose application is prevented due to the lack of necessary inactive edges. The simplest form of the algorithm is shown below. [Algorithm] An inactive edge [ie(A) : xo, xn] can be introduced, with label A, between word po- sitions x0 and xn by each of the hypotheses gen- erated from the following two steps.</figDesc><table>Plausible 
+Hypotheses ) 
+
+÷ 
+
+Hypothesis 
+Selector 
+
+Hypothesis DB) 
+
+Rule-Based Component Corpus-Based Component 
+
+[Step 1] For each sequence of inactive edges, 
+[~e(Bl) : x0, Xl], ..., [ie(Bn): Xn-l,Xn], 
+
+spanning from x0 to Xn, generates a new 
+rule. 
+
+A ==~ B1,.-.,B, 
+
+[Step 2] For each existing rule of form A ::V 
+A1, • • -, An, finds an incomplete sequence 
+of inactive edges, [ie(A1) : xo, xl], ..., 
+[ie(A~_l) : x~-2, xi-1], [ie(Ai+l) : xi, xi+l], 
+..., [ie(An) : xn-1, xn], and calls this algo-
+rithm for [ie(Ai) : xi-1, xi]. 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1" validated="false"><head></head><label></label><figDesc>Sentence: Failing students looked embarrassed.</figDesc><table>HPI: NP =~ VP, NP ("failing students") 
+HP2: ADJ =¢, [failing] 
+HP3: VP ~ VP, VP 
+("looked embarrassed") 
+HP4: ADV ~ [embarrassed] 
+HP5: N ~ [embarrassed] 
+HP6: ADJ ~ [embarrassed] 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3" validated="false"><head>Table h</head><label>h</label><figDesc>List of "Correct" Hypotheses</figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5" validated="false"><head>Table 2 :</head><label>2</label><figDesc>Distribution of "Correct" Hypotheses</figDesc><table></table></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Acknowledgements</head><p>We would like to thank our colleagues in UMIST who gave us many usuful comments. We also want to thank Mr Tsumura and Dr Kawakami of Matsushita, who allowed the first author to study at UMIST.</p></div>
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Automatic Acquisition of Subcategorization Frames from Untagged Text</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Michael</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Brent</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. of the 29st ACL meeting</title>
+		<meeting>of the 29st ACL meeting</meeting>
+		<imprint>
+			<date type="published" when="1991" />
+			<biblScope unit="page" from="209" to="214" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Generalized Probabilistic LR Parsing of Natural Language (Corpora) with Unification-Based Grammars</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ted</forename><surname>Briscoe</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">John</forename><surname>Carroll</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">19</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="25" to="59" />
+			<date type="published" when="1993" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+				<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Peter</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Stephen</forename><forename type="middle">A Della</forename><surname>Brown</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Vincent</forename><forename type="middle">J</forename><surname>Pietra</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Robert</forename><forename type="middle">L</forename><surname>Della Pietra</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Mercer</surname></persName>
+		</author>
+		<title level="m">The Mathematics of Statistical Machine Translation: Parameter Estimation. Computational Linguistics</title>
+		<imprint>
+			<date type="published" when="1993" />
+			<biblScope unit="volume">19</biblScope>
+			<biblScope unit="page" from="263" to="311" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Using Statistics in Lexical Analysis</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kenneth</forename><surname>Church</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">William</forename><surname>Gale</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Patrick</forename><surname>Hanks</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Donald</forename><surname>Hindle</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Lexical Acquisition: Exploiting On-Line Resources to Build a Lexicon</title>
+		<editor>Uri Zernik</editor>
+		<imprint>
+			<publisher>Lawrence Erlbaum Associates</publisher>
+			<date type="published" when="1991" />
+			<biblScope unit="page" from="115" to="164" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Maximum Likelihood from Incomplete Data via the EM Algorithm</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><forename type="middle">P</forename><surname>Dempster</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">N</forename><forename type="middle">M</forename><surname>Laird</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><forename type="middle">B</forename><surname>Rubin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of the Royal Statistical Society</title>
+		<imprint>
+			<biblScope unit="volume">39</biblScope>
+			<biblScope unit="issue">B</biblScope>
+			<biblScope unit="page" from="1" to="38" />
+			<date type="published" when="1977" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">A Probabilistic Parsing Method for Sentence Disambiguation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Fujisaki</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Jelinek</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Cocke</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><surname>Black</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">T</forename><surname>Nishino</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. of the Int. Workshop on Parsing Technologies</title>
+		<meeting>of the Int. Workshop on Parsing Technologies</meeting>
+		<imprint>
+			<date type="published" when="1989" />
+			<biblScope unit="page" from="105" to="114" />
+		</imprint>
+		<respStmt>
+			<orgName>Carnegie-Mellon University</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Linguistic Knowledge Acquisition from Parsing Failures</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Masaki</forename><surname>Kiyono</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jun&amp;apos;ichi</forename><surname>Tsujii</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. of EACL-93</title>
+		<meeting>of EACL-93</meeting>
+		<imprint>
+			<date type="published" when="1993" />
+			<biblScope unit="page" from="222" to="231" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Hypothesis Selection in Grammar Acquisition</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Masaki</forename><surname>Kiyono</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jun&amp;apos;ichi</forename><surname>Tsujii</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proc. of COLING-g4</title>
+		<meeting>of COLING-g4</meeting>
+		<imprint>
+			<date type="published" when="1994" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

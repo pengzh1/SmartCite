@@ -1,0 +1,658 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T21:47+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">TYPES IN FUNCTIONAL UNIFICATION GRAMMARS</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author role="corresp">
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Michael</forename><surname>Elhadad</surname></persName>
+							<email>internet:elhadad@cs.columbia.edu</email>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Computer Science</orgName>
+								<orgName type="institution">Columbia University New York</orgName>
+								<address>
+									<postCode>10027</postCode>
+									<region>NY</region>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">TYPES IN FUNCTIONAL UNIFICATION GRAMMARS</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>ABSTRACT</head><p>Functional Unification Grammars (FUGs) are popular for natural language applications because the formalism uses very few primitives and is uniform and expressive. In our work on text generation, we have found that it also has annoying limitations: it is not suited for the expression of simple, yet very common, taxonomic relations and it does not allow the specification of completeness conditions. We have implemented an extension of traditional functional unification. This extension addresses these limitations while preserving the desirable properties of FUGs. It is based on the notions of typed features and typed constituents. We show the advantages of this extension in the context of a grammar used for text generation.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">INTRODUCTION</head><p>Unification-based formalisms are increasingly used in linguistic theories <ref type="bibr" target="#b28">(Shieber, 1986</ref>) and computational linguistics.</p><p>In particular, one type of unification formalism, functional unification grammar (FUG) is widely used for text generation <ref type="bibr" target="#b17">(Kay, 1979</ref><ref type="bibr" target="#b20">, McKeown, 1985</ref><ref type="bibr" target="#b1">, Appelt, 1985</ref><ref type="bibr" target="#b24">, Paris, 1987</ref><ref type="bibr">, McKeown &amp; Elhadad, 1990</ref> and is beginning to be used for parsing <ref type="bibr" target="#b18">(Kay, 1985</ref><ref type="bibr" target="#b15">, Kasper, 1987</ref>. FUG enjoys such popularity mainly because it allies expressiveness with a simple economical formalism. It uses very few primitives, has a clean semantics <ref type="bibr">(Pereira&amp;Shieber, 1984</ref><ref type="bibr" target="#b16">, Kasper &amp; Rounds, 1986</ref><ref type="bibr">, E1-hadad, 1990</ref>, is monotonic, and grants equal status to function and structure in the descriptions.</p><p>We have implemented a functional unifier <ref type="bibr">(EIhadad, 1988</ref>) covering all the features described in <ref type="bibr" target="#b17">(Kay, 1979)</ref> and <ref type="bibr" target="#b22">(McKeown &amp; Paris, 1987)</ref>. Having used this implementation extensively, we have found all these properties very useful, but we also have met with limitations. The functional unification (FU) formalism is not well suited for the expression of simple, yet very common, taxonomic relations. The traditional way to implement such relations in FUG is verbose, inefficient and unreadable. It is also impossible to express completeness constraints on descriptions.</p><p>In this paper, we present several extensions to the FU formalism that address these limitations. These extensions are based on the formal semantics presented in <ref type="bibr" target="#b4">(Elhadad, 1990)</ref>. They have been implemented and tested on several applications. 157</p><p>We first introduce the notion of typed features. R allows the definition of a structure over the primitive symbols used in the grammar. The unifier can take advantage of this structure in a manner similar to <ref type="bibr">(AitKaci, 1984)</ref>. We then introduce the notion of typed constituents and the FSET construct. It allows the declaration of explicit constraints on the set of admissible paths in functional descriptions. Typing the primitive elements of the formalism and the constituents allows a more concise expression of grammars and better checking of the input descriptions. It also provides more readable and better documented grammars.</p><p>Most work in computational linguistics using a unification-based formalism (e.g., <ref type="bibr" target="#b27">(Sag &amp; Pollard, 1987</ref><ref type="bibr" target="#b30">, Uszkoreit, 1986</ref><ref type="bibr" target="#b14">, Karttunen, 1986</ref><ref type="bibr" target="#b17">, Kay, 1979</ref><ref type="bibr" target="#b10">, Kaplan &amp; Bresnan, 1982</ref>) does not make use of explicit typing. In <ref type="bibr" target="#b0">(Ait-Kaci, 1984)</ref>, Ait-Kaci introduced V-terms, which are very similar to feature structures, and introduced the use of type inheritance in unification. W-terms were intended to be general-purpose programming constructs. We base our extension for typed features on this work but we also add the notion of typed constituents and the ability to express completeness constraints. We also integrate the idea of typing with the particulars of FUGs (notion of constituent, NONE, ANY and CSET constructs) and show the relevance of typing for linguistic applications. An FD describes a set of objects (most often linguistic entities) that satisfy certain properties. It is represented by a set of pairs <ref type="bibr">[a:v]</ref>, called features, where a is an attribute (the name of the property) and v is a value, either an atomic s3anbol or recursively an FD. An attribute a is allowed to appear at most once in a given FD F, so that the phrase "the a of F" is always non ambiguous <ref type="bibr" target="#b17">(Kay, 1979)</ref>.</p><p>It is possible to define a natural partial order over the set of FDs. An FD Xis more specific than the FD Y if X contains at least all the features of Y (that is X _c Y). Two FDs are compatible if they are not contradictory on the value of an attribute. Let X and Y be two compatible FDs. The unification of X and Y is by definition the most general FD that is more specific than both X and Y. For example, the unification of {year:88, time: {hour:5} } and {time:{mns:22}, month:10} is {year:88, month: i0, time: {hour: 5, mns:22 } }. When properties are simple (all the values are atomic), unification is therefore very similar to the union of two sets: XuY is the smallest set containing both X and Y. There are two problems that make unification different from set union: first, in general, the union of two FDs is not a consistent FD (it can contain two different values for the same label); second, values of features can be complex FDs. The mechanism of unification is therefore a little more complex than suggested, but the FU mechanism is abstractly best understood as a union operation over FDs (cf <ref type="bibr" target="#b17">(Kay, 1979)</ref> for a full description of the algorithm).</p><p>Note that contrary to structural unification (SU, as used in Prolog for example), FU is not based on order and length. Therefore, { a : 1, b : 2 } and { b : 2, a : 1 ] are equivalent in FU but not in SU, and { a : 1 } and {b:2, a:l } are compatible in FU but not in SU (FDs have no fixed arity) (cf. <ref type="bibr">(Knight, 1989, p.105</ref>) for a comparison SU vs. FU).</p><p>TERMINOLOGY: We introduce here terms that constitute a convenient vocabulary to describe our extensions. In the rest of the paper, we consider the unification of two FDs that we call input and grammar. We define L as a set of labels or attribute names and C as a set of constants, or simple atomic values. A string of labels (that is an element of L*) is called a path, and is noted &lt;11...11,&gt;. A grammar defines a domain of admissible paths, A c L*. A defines the skeleton of well-formed FDs.</p><p>• An FD can be an atom (element of 6') or a set of features. One of the most attractive characteristics of FU is that non-atomic FDs can be abstractly viewed in two ways: either as a fiat list of equations or as a structure equivalent to a directed graph with labeled arcs <ref type="bibr" target="#b11">(Karttunen, 1984)</ref>. The possibility of using a nonstructured representation removes the emphasis that has traditionally been placed on structure and constituency in language.</p><p>• The meta-FDs NONE and ANY are provided to refer to the status of a feature in a description rather than to its value.</p><p>[label:NONE] indicates that label cannot have a ground value in the FD resulting from the unification.</p><p>[label:ANY] indicates that label ~-must have a ground value in the resulting FD. Note that NONE is best viewed as imposing constraints on the definition of A: an equation &lt;II...ln&gt;=NONE means that &lt;ll...ln &gt; ~ A. 158</p><p>• A constituent of a complex FD is a distinguished subset of features. The special label CSET (Constituent Set) is used to identify constituents. The value of CSET is a list of paths leading to all the constitueuts of the FD. Constituents trigger recursion in the FU algorithm. Note that CSET is part of the formalism, and that its value is not a valid FD. A related construct of the formalism, PATTERN, implements ordering constraints on the strings denoted by the FDs.</p><p>Among the many unification-based formalisms, the constructs NONE, ANY, PATrEKN, CSET and the notion of constituent are specific to FUGs. A formal semantics of FUGs covering all these special constructs is presented in <ref type="bibr" target="#b4">(Elhadad, 1990)</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">TYPED FEATURES A LIMITATION OF FUGS: NO STRUCTURE OVER</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>THE SET OF VALUES:</head><p>In FU, the set of constants C has no structure. It is a fiat collection of symbols with no relations between each other. All constraints among symbols must be expressed in the grammar. In linguistics, however, grammars assume a rich structure between properties: some groups of features are mutually exclusive; some features are only defined in the context of other features. Let's consider a fragment of grammar describing noun-phrases (NPs) (cf <ref type="figure">Figure 1)</ref> using the systemic notation given in <ref type="bibr" target="#b31">(Winograd, 1983)</ref>. Systemic networks, such as this one, encode the choices that need to be made to produce a complex linguistic entity. They indicate how features can be combined or whether features are inconsistent with other combinations. The configuration illustrated by this fragment is typical, and occurs very often in grammars. 1 The schema indicates that a noun can be either a pronoun, a proper noun or a common noun. Note that these 1We have implemented a grammar similar to OVinograd, 1983, appendix B) containing 111 systems. In this grammar, more than 40% of the systems are similar to the one described here.</p><p>( (cat noun) (alt (( (noun pronoun) (pronoun ( (alt (question personal demonstrative quantified) ) ) ) ) ( (noun proper) ) ( (noun common) (common ((alt (count mass))))))))</p><p>Figure 2: A faulty FUG for the NP system ((alt (( (noun pronoun) (common NONE) (pronoun ( (alt (question personal demonstrative quantified) ) ) ) ) ((noun proper) (pronoun NONE) (common NONE)) ( (noun common) (pronoun NONE) (common ((alt (count mass))))))))</p><p>The input FD describing a personal pronoun is then: ((cat noun) (noun pronoun) (pronoun personal) ) demonstrative, quantified} is relevant only when the feature pronoun is selected. This system therefore forbids combinations of the type { pronoun, proper } and { common, personal }.</p><p>The traditional technique for expressing these constraints in a FUG is to define a label for each non terminal symbol in the ~stem. The resulting gram-2 mar is shown in <ref type="figure">Figure 2</ref>. This grammar is, however, incorrect, as it allows combinations of the type ( (noun proper) (pronoun question) ) or even worse ( (noun proper) (pronoun zouzou) ). Because unification is similar to union of features sets, a feature (pronoun question) in the input would simply get added to the output. In order to enforce the correct constraints, it is therefore necessary to use the meta-FD NONE (which prevents the addition of unwanted features) as shown in <ref type="figure" target="#fig_1">Figure  3</ref>.</p><p>There are two problems with this corrected FUG implementation. First, both the input FD describing a pronoun and the grammar are redundant and longer than needed. Second, the branches of the alternations in the grammar are interdependent: you need to know in the branch for pronouns that common nouns can be sub-categorized and what the other classes of nouns are. This interdependence prevents any modularity: if a branch is added to an alternation, all other branches 2ALT indicates that the lists that follow are alternative noun types. 159 need to be modified. It is also an inefficient mechanism as the number of pairs processed during unification is O (n ~) for a taxonomy of depth d with an average ofn branches at each level.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>TYPED FEATURES:</head><p>The problem thus is that FUGs do not gracefiilly implement mutual exclusion and hierarchical relations. The system of nouns is a typical taxonomic relation. The deeper the taxonomy, the more problems we have expressing it using traditional FUGs.</p><p>We propose extracting hierarchical information from the FUG and expressing it as a constraint over the symbols used. The solution is to define a subsumption relation over the set of constants C. One way to define this order is to define types of symbols, as illustrated in <ref type="figure">Figure 4</ref>. This is similar to V-terms defined in <ref type="bibr" target="#b0">(Ait-Kaci, 1984)</ref>.</p><p>Once types and a subsumption relation are defined, the unification algorithm must be modified. The atoms X and Y can be unified ff they are equal OR if one subsumes the other. The resuR is the most specific of X and Y. The formal semantics of this extension is detailed in <ref type="bibr" target="#b4">(Elhadad, 1990)</ref>.</p><p>With this new definition of unification, taking advantage of the structure over constants, the grammar and the input become much smaller and more readable as shown in <ref type="figure">Figure 4</ref>. There is no need to introduce artificial labels. The input FD describing a pronoun is a simple ( (cat personal-pronoun) ) instead of the redundant chain down the hierarchy ((cat noun) (noun pronoun) (pronoun (define-type noun (pronoun proper common)) (define-type pronoun (personal-pronoun question-pronoun demonstrative-pronoun quantified-pronoun)) (define-type common (count-noun mass-noun))</p><p>The ~amm~becomes: ((cat noun) (alt (((cat pronoun) (cat ((alt (question-pronoun personal-pronoun demonstrative-pronoun quantified-pronoun))))) ((cat proper)) ((cat common) (cat ((alt (count-noun mass-noun))))))))</p><p>Andthemput: ((cat personal-pronoun))</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Figure 4: Using typed ~atures</head><p>Typedeelarat~ns:</p><p>(define-constituent determiner (definite distance demonstrative possessive))</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>InputFDd~cr~ingadeterminer:</head><p>(determiner ((definite yes) (distance far) (demonstrative no) (possessive no)))</p><p>F~ure 5: A typed constitue~ personal)). Because values can now share the same label CAT, mutual exclusion is enforced without adding any pair [ 1 : NONE] .3 Note that it is now possible to have several pairs [a :v i ] in an FD F, but that the phrase "the a of F" is still non-ambiguous: it refers to the most specific of the v i. Finally, the fact that there is a taxonomy is explicitly stated in the type definition section whereas it used to be buried in the code of the FUG. This taxonomy is used to document the grammar and to check the validity of input FDs.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">TYPED CONSTITUENTS: THE FSET CONSTRUCT</head><p>A natural extension of the notion of typed features is to type constituents: typing a feature restricts its possible values; typing a constituent restricts the possible features it can have. <ref type="figure">Figure 5</ref> illustrates the idea.</p><p>The define constituent statement allows only the four given features to appear under the constituent determiner.</p><p>This statement declares what the 3In this example, the grammar could be a simple flat alternation ((cat ((alt (noun pronoun personal-pronoun .., common mass-noun count-noun))))), but this expression would hide the structure of the gIan~n~.</p><p>16 0 grammar knows about determiners. Define constituent is a completeness constraint as defined in LFGs <ref type="bibr" target="#b10">(Kaplan &amp; Bresnan, 1982)</ref>; it says what the grammar needs in order to consider a constituent complete. Without this construct, FDs can only express partial information.</p><p>Note that expressing such a constraint (a limit on the arity of a constituent) is impossible in the traditional FU formalism. It would be the equivalent of putting a NONE in the attribute field of a pair as in NONE:NONE.</p><p>In general, the set of features that are allowed under a certain constituent depends on the value of another feature. <ref type="figure">Figure 6</ref> illustrates the problem. The fragment of grammar shown defines what inherent roles are defined for different types of processes (it follows the classification provided in <ref type="bibr" target="#b7">(Halliday, 1985)</ref>). We also want to enforce the constraint that the set of inherent roles is "closed": for an action, the inherent roles are agent, medium and benef and nothing else. This constraint cannot be expressed by the standard FUG formalism. A define constituent makes it possible, but nonetheless not very efficient: the set of possible features under the constituent inherent-roles depends on the value of the feature process-type.</p><p>The first part of <ref type="figure">Figure 6</ref> shows how the correct constraint can be implemented with define constituent only: we need to exclude all the roles that are not defined WithoutFSET:</p><p>(define-constituent inherent-roles (agent medium benef carrier attribute processor phenomenon)) (processor NONE) (phenomenon NONE) ) ) ) ( (process-type mental) (inherent-roles ((agent NONE) (medium NONE) (benef NONE) (carrier NONE) (attribute NONE) ) ) ) ) ) )</p><p>With FSET: ( (cat clause) (alt ( ( (process-type action) (inherent-roles ( (FEET (agent medium benef) ) ) ) ) ( (process-type attributive) (inherent-roles ( (FEET (carrier attribute) ) ) ) ) ( (process-type mental) (inherent-roles ( (FEET (processor phenomenon) ) ) ) ) ) ) )</p><p>Figure 6: The FSET Construct for the process-type. Note that the problems are very similar to those encountered on the pronoun system: explosion of NONE branches, interdependent branches, long and inefficient grammar.</p><p>To solve this problem, we introduce the construct FEET (feature set). FEET specifies the complete set of legal features at a given level of an FD. FEET adds constraints on the definition of the domain of admissible paths A. The syntax is the same as CSET. Note that all the features specified in FEET do not need to appear in an FD: only a subset of those can appear.</p><p>For example, to define the class of middle verbs (e.g., "to shine" which accepts only a medium as inherent role and no agent), the following statement can be unified with the fragment of grammar given in <ref type="figure">Figure  6</ref>: <ref type="bibr">( (verb ( (lex "shine")</ref> )) (process-type action) (voice-class middle) (inherent-roles ( (FSET (medium)) ) ) )</p><p>The feature (FEET (medium)) can be unified vAth (FSET (agent medium benef)) and the result is (FSET (medium)).</p><p>Typing constituents is necessary to implement the theoretical claim of LFG that the number of syntactic functions is limited. It also has practical advantages. 161</p><p>The first advantage is good documentation of the grammar. Typing also allows checking the validity of inputs as defined by the type declarations.</p><p>The second advantage is that it can be used to define more efficient data-structures to represent FDs. As suggested by the definition of FDs, two types of data-structures can be used to internally represent FDs: a fiat list of equations (which is more appropriate for a language like Prolog) and a structured representation (which is more natural for a language like Lisp). When all constituents are typed, it becomes possible to use arrays or hash-tables to store FDs in Lisp, which is much more efficient We are currently investigating alternative internal representations for FDs (cf. <ref type="bibr" target="#b25">(Pereira, 1985</ref><ref type="bibr" target="#b12">, Karttunen, 1985</ref><ref type="bibr" target="#b2">, Boyer, 1988</ref><ref type="bibr" target="#b8">, Hirsh, 1988</ref> for discussions of data-structures and compilation of FUGs).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">CONCLUSION</head><p>Functional Descriptions are built from two components: a set C of primitives and a set L of labels. Traditionally, all structuring of FDs is done using strings of labels. We have shown in this paper that there is much to be gained by delegating some of the structuring to a set of primitives. The set C is no longer a fiat set of symbols, but is viewed as a richly structured world. The idea of typed-unification is not new <ref type="bibr" target="#b0">(Ait-Kaci, 1984</ref>), but we have integrated it for the first time in the context of FUGs and have shown its linguistic relevance. We have also introduced the FSET construct, not previously used in unification, endowing FUGs with the capacity to represent and reason about complete information in certain situations.</p><p>The structure of C can be used as a metadescription of the grammar: the type declarations specify what the grammar knows, and are used to check input FDs. It allows the writing of much more concise grammars, which perform more efficiently. It is a great resource for documenting the grammar.</p><p>The extended formalism described in this paper is implemented in Common Lisp using the Union-Find algorithm <ref type="bibr" target="#b3">(Elhadad, 1988)</ref>, as suggested in <ref type="bibr" target="#b9">(Huet, 1976</ref><ref type="bibr" target="#b0">, Ait-Kaci, 1984</ref><ref type="bibr">, Escalada-Imaz &amp; Ghallab, 1988</ref> and is used in several research projects <ref type="bibr" target="#b29">(Smadja &amp; McKeown, 1990</ref><ref type="bibr" target="#b5">, Elhadad et al, 1989</ref><ref type="bibr">, McKeown &amp; Elhadad, 1990</ref><ref type="bibr" target="#b23">, McKeown et al, 1991</ref>. The source code for the unifier is available to other researchers. Please contact the author for further details.</p><p>We are investigating other extensions to the FU formalism, and particularly, ways to modify control over grammars: we have developed indexing schemes for more efficient search through the grammar and have extended the formalism to allow the expression of complex constraints (set union and intersection). We are now exploring ways to integrate these later extensions more tightly to the FUG formalism.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head></head><label></label><figDesc>Figure l: A systemforNPs</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: A correct FUG for the NP system</figDesc></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>ACKNOWLEDGMENTS</head><p>This work was supported by DARPA under contract #N00039-84-C-0165 and NSF grant IRT-84-51438.</p><p>I would like to thank Kathy McKeown for her guidance on my work and precious comments on earlier drafts of this paper. Thanks to Tony Weida, Frank Smadja and Jacques Robin for their help in shaping this paper. I also want to thank Bob Kasper for originally suggesting using types in FUGs.</p></div>
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<title level="m" type="main">A Lattice-theoretic Approach to Computation Based on a Calculus of Partially Ordered Type Structures. Doctoral dissertation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hassan</forename><surname>Ait-Kaci</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1984" />
+		</imprint>
+		<respStmt>
+			<orgName>University of Pennsylvania. UMI #8505030</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Planning English Sentences</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Douglass</forename><forename type="middle">E</forename><surname>Appelt</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Studies in Natural Language Processing</title>
+		<meeting><address><addrLine>Cambridge, England</addrLine></address></meeting>
+		<imprint>
+			<publisher>Cambridge University Press</publisher>
+			<date type="published" when="1985" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Towards Functional Logic Grammars</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Michel</forename><surname>Boyer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Natural Language Programming and Logic Programming</title>
+		<editor>Dahl, V. and Saint-Dizier P.</editor>
+		<meeting><address><addrLine>II. Amsterdam</addrLine></address></meeting>
+		<imprint>
+			<publisher>North Holland</publisher>
+			<date type="published" when="1988" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<monogr>
+		<title level="m" type="main">The FUF Functional Unifier: User&apos;s manual</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Michael</forename><surname>Elhadad</surname></persName>
+		</author>
+		<idno>CUCS-408-88</idno>
+		<imprint>
+			<date type="published" when="1988" />
+		</imprint>
+		<respStmt>
+			<orgName>Columbia University</orgName>
+		</respStmt>
+	</monogr>
+<note type="report_type">Technical Report</note>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<title level="m" type="main">A Set-theoretic Semantics for Extended FUGs</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Michael</forename><surname>Elhadad</surname></persName>
+		</author>
+		<idno>CUCS-020-90</idno>
+		<imprint>
+			<date type="published" when="1990" />
+		</imprint>
+		<respStmt>
+			<orgName>Columbia University</orgName>
+		</respStmt>
+	</monogr>
+<note type="report_type">Technical Report</note>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">A Common Intention Description Language for Interactive Multi-media Systems</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Michael</forename><surname>Elhadad</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Seligmann</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">D</forename><surname>Doree</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Steve</forename><surname>Feiner</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kathleen</forename><forename type="middle">R</forename><surname>Mckeown</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Presented at the Workshop on Intelligent Interfaces, IJCAI 89</title>
+		<meeting><address><addrLine>Detroit, MI</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="1989" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">A Practically Efficient and Almost Linear Unification Algorithm</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Esealada-Imaz</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Ghallab</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Artificial Intelligence</title>
+		<imprint>
+			<biblScope unit="volume">36</biblScope>
+			<biblScope unit="page" from="249" to="263" />
+			<date type="published" when="1988" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">An Introduction to Functional Grammar. London: Edward Arnold</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Michael</forename><forename type="middle">A K</forename><surname>Halliday</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1985" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">P-PATR: A Compiler for Unification-based Grammars</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Susan</forename><surname>Hirsh</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Natural Language Understanding and Logic Programming</title>
+		<editor>Dahl, V. and Saint-Dizier, P. fed</editor>
+		<meeting><address><addrLine>II. Amsterdam</addrLine></address></meeting>
+		<imprint>
+			<publisher>North Holland</publisher>
+			<date type="published" when="1988" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<monogr>
+		<title level="m" type="main">Resolution d&apos;Equations dans des langages d&apos;ordre 1,2,...,co. Doctoral dissertation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">George</forename><surname>Huet</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1976" />
+			<pubPlace>France</pubPlace>
+		</imprint>
+		<respStmt>
+			<orgName>Universite de Paris VII</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Lexicalfunctional grammar: A formal system for grammatical representation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><forename type="middle">M</forename><surname>Kaplan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Bresnan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">The Mental Representation of Grammatical Relations</title>
+		<meeting><address><addrLine>Cambridge, MA</addrLine></address></meeting>
+		<imprint>
+			<publisher>MIT Press</publisher>
+			<date type="published" when="1982" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<monogr>
+		<title level="m" type="main">Features and Values. Coling84</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Lauri</forename><surname>Karttunen</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1984-07" />
+			<publisher>COLING</publisher>
+			<biblScope unit="page" from="28" to="33" />
+			<pubPlace>Stanford, California</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<monogr>
+		<title level="m" type="main">Structure Sharing with Bi-163</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Lauri</forename><surname>Karttunen</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1985" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<monogr>
+				<title level="m">nary Trees. Proceedings of the 2Zrd annual meeting of the ACL. ACL</title>
+		<imprint>
+			<biblScope unit="page" from="133" to="137" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<monogr>
+		<title level="m" type="main">Radical Lexicalism</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Lauri</forename><surname>Karttunen</surname></persName>
+		</author>
+		<idno>CSLI-86-66</idno>
+		<imprint>
+			<date type="published" when="1986" />
+		</imprint>
+		<respStmt>
+			<orgName>CSLI -Stanford University</orgName>
+		</respStmt>
+	</monogr>
+<note type="report_type">Technical Report</note>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+		<title level="m" type="main">Systemic Functional Perspectives on discourse: selected papers from the 12th International Systemic Workshop. Norwood</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Robert</forename><surname>Kasper</surname></persName>
+		</author>
+		<editor>Benson &amp; Greaves</editor>
+		<imprint>
+			<date type="published" when="1987" />
+		</imprint>
+		<respStmt>
+			<orgName>N J: Ablex</orgName>
+		</respStmt>
+	</monogr>
+	<note>Systemic Grammar and Functional Unification Grammar</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">A Logical Semantics for Feature Structures</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Robert</forename><surname>Kasper</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">William</forename><surname>Rounds</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 24th meeting of the ACL</title>
+		<meeting>the 24th meeting of the ACL<address><addrLine>New York, NY</addrLine></address></meeting>
+		<imprint>
+			<publisher>ACL</publisher>
+			<date type="published" when="1986-06" />
+			<biblScope unit="page" from="257" to="266" />
+		</imprint>
+		<respStmt>
+			<orgName>Columbia University</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Functional Grammar</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Kay</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 5th meeting of the Berkeley Linguistics Society</title>
+		<meeting>the 5th meeting of the Berkeley Linguistics Society</meeting>
+		<imprint>
+			<publisher>Berkeley Linguistics Society</publisher>
+			<date type="published" when="1979" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Parsing in Unification grammar</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Kay</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Dowty, Karttunen &amp; Zwicky fed.), Natural Language Parsing</title>
+		<meeting><address><addrLine>Cambridge, England</addrLine></address></meeting>
+		<imprint>
+			<publisher>Cambridge University Press</publisher>
+			<date type="published" when="1985" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Unification: a Multidisciplinary Survey</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kevin</forename><surname>Knight</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computing Surveys</title>
+		<imprint>
+			<biblScope unit="volume">21</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="93" to="124" />
+			<date type="published" when="1989-03" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Text Generation: Using Discourse Strategies and Focus Constraints to Generate Natural Language Text</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kathleen</forename><forename type="middle">R</forename><surname>Mckeown</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Studies in Natural Language Processing</title>
+		<meeting><address><addrLine>Cambridge, England</addrLine></address></meeting>
+		<imprint>
+			<publisher>Cambridge University Press</publisher>
+			<date type="published" when="1985" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">A Contrastive Evaluation of Functional Unification Grammar for Surface Language Generators: A Case Study in Choice of Connectives</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kathleen</forename><surname>Mckeown</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Michael</forename><surname>Ethadad</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Natural Language Generation in Artificial Intelligence and Computational Linguistics</title>
+		<editor>Cecile L. Paris, William R. Swartout and William C. Mann</editor>
+		<imprint>
+			<publisher>Kluwer Academic Publishers</publisher>
+			<date type="published" when="1990" />
+		</imprint>
+		<respStmt>
+			<orgName>Columbia University</orgName>
+		</respStmt>
+	</monogr>
+	<note>to appear, also available as Technical Report CUCS-407-88</note>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Functional Unification Grammar Revisited</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kathleen</forename><forename type="middle">R</forename><surname>Mckeown</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Cecile</forename><forename type="middle">L</forename><surname>Paris</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the ACL conference. ACL</title>
+		<meeting>the ACL conference. ACL</meeting>
+		<imprint>
+			<date type="published" when="1987-07" />
+			<biblScope unit="page" from="97" to="103" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Natural Language Generation in COMET</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Mckeown</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Elhadad</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Y</forename><surname>Fukumoto</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Lira</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Lombardi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Robin</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Smadja</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the second European Workshop on Natural Language Generation</title>
+		<editor>Dale, R., Mellish, C. and Zock, M.</editor>
+		<meeting>the second European Workshop on Natural Language Generation</meeting>
+		<imprint>
+			<date type="published" when="1991" />
+		</imprint>
+	</monogr>
+	<note>To appear</note>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<title level="m" type="main">The Use of Explicit User models in Text Generation: Tailoring to a User&apos;s level of expertise. Doctoral dissertation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Cecile</forename><forename type="middle">L</forename><surname>Paris</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1987" />
+		</imprint>
+		<respStmt>
+			<orgName>Columbia University</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">A Structure Sharing Forrealism for Unification-based Formalisms</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Fernando</forename><surname>Pereira</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 23rd annual meeting of the ACL. ACL</title>
+		<meeting>the 23rd annual meeting of the ACL. ACL</meeting>
+		<imprint>
+			<date type="published" when="1985" />
+			<biblScope unit="page" from="137" to="144" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">The Semantics of Grammar Formalisms Seen as Computer Languages</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Fernando</forename><surname>Pereira</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Stuart</forename><surname>Shieber</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Tenth International Conference on Computational Linguistics</title>
+		<meeting>the Tenth International Conference on Computational Linguistics<address><addrLine>Stanford, Ca</addrLine></address></meeting>
+		<imprint>
+			<publisher>ACL</publisher>
+			<date type="published" when="1984-07" />
+			<biblScope unit="page" from="123" to="129" />
+		</imprint>
+		<respStmt>
+			<orgName>Stanford University</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<monogr>
+		<title level="m" type="main">Head-driven phrase structure grammar: an informal synopsis</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">I</forename><forename type="middle">A</forename><surname>Sag</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Pollard</surname></persName>
+		</author>
+		<idno>CSLI-87-79</idno>
+		<imprint>
+			<date type="published" when="1987" />
+		</imprint>
+		<respStmt>
+			<orgName>Center for the Study of Language and Information</orgName>
+		</respStmt>
+	</monogr>
+<note type="report_type">Technical Report</note>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">An introduction to Unification-Based Approaches to Grammar</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Stuart</forename><surname>Shieber</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">CSLILecture Notes</title>
+		<imprint>
+			<biblScope unit="volume">4</biblScope>
+			<date type="published" when="1986" />
+			<publisher>Chicago, Ih University of Chicago Press</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Automatically Extracting and Representing Collocations for Language Generation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Frank</forename><forename type="middle">A</forename><surname>Smadja</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kathleen</forename><forename type="middle">R</forename><surname>Mckeown</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 28th annual meeting of the ACL. Pittsburgh: ACL</title>
+		<meeting>the 28th annual meeting of the ACL. Pittsburgh: ACL</meeting>
+		<imprint>
+			<date type="published" when="1990" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<monogr>
+		<title level="m" type="main">Categorial Unification Grammars</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hanz</forename><surname>Uszkoreit</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1986" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<monogr>
+		<title level="m" type="main">Language as a Cognitive Process</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Terry</forename><surname>Winograd</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1983" />
+			<publisher>Addison-Wesley</publisher>
+			<pubPlace>Reading, Ma</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

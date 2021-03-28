@@ -6,7 +6,8 @@
 ##  **安装教程** 
 
 1. 安装Java8
-2. 如果需要处理PDF论文，请安装并运行gorbid。[点击查看grobid官方安装说明文档](https://grobid.readthedocs.io/en/latest/Install-Grobid/) 
+2. 如果需要处理PDF论文，请安装并运行gorbid。[点击查看grobid官方安装说明文档](https://grobid.readthedocs.io/en/latest/Install-Grobid/)
+   [gradle-5.4.1-all.zip 下载](https://mo.own-cloud.cn/#/s/PQLEUe)
 3. 下载下面的压缩包，并解压
     
     链接: https://pan.baidu.com/s/1PPARTNc0NipZ7bKaNmsupg 
@@ -270,7 +271,7 @@ curl --location --request POST 'http://localhost:8080/batchExtract' --form 'file
 
 | method | request type | response type | parameters | reqirement | description|
 |---|---|---|---|---|---|
-|get|||path|required|含有待处理文件的文件夹路径|
+|get| | |path|required|含有待处理文件的文件夹路径|
 
 请求示例：
 
@@ -278,6 +279,50 @@ curl --location --request POST 'http://localhost:8080/batchExtract' --form 'file
 curl --location --request GET 'http://localhost:8080/localExtract?path=/home/guochenrui/smart_cite/3000'
 ```
 返回参数：无。只需发出请求即可，无需等待返回参数。
+
+#### /count/contextNum
+功能: 统计结果文件中ICC和ECC的数量
+
+请求方式：GET
+
+请求地址：/count/contextNum
+
+请求参数：
+
+| method | request type | response type | parameters | reqirement | description|
+|---|---|---|---|---|---|
+|get| | |outputFolder|unrequired|含有结果的文件夹路径，默认为output文件夹|
+
+请求示例：
+
+```ftl
+curl --location --request GET 'http://localhost:8080/count/contextNum?outputFolder=E:\code\smart_cite\output\json'
+```
+
+返回参数：
+
+|code|message|data|动作|
+|---|---|---|---|
+|0|成功|JsonObject|显示收到的data|
+|100|文件错误，请上传正确文件|null|提示错误信息|
+|500|服务器错误|null|提示错误信息|
+
+返回示例：
+```json
+{
+    "code": 0,
+    "msg": "extract successfully",
+    "data": {
+        "ECC": 1605695,
+        "ICC": 10215848,
+        "FileNum": 33319
+    }
+}
+```
+
+##  **导入Jar包到本地Maven仓库**
+mvn install:install-file -DgroupId=com.leishengwei -DartifactId=jutils -Dversion=0.0.1 -Dpackaging=jar -Dfile=E:\code\smart_cite\lib\JavaUtils.jar
+
 
 ##  **其他说明** 
 

@@ -1,0 +1,709 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T11:26+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Discriminative Word Alignment with a Function Word Reordering Model</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher>Association for Computational Linguistics</publisher>
+				<availability status="unknown"><p>Copyright Association for Computational Linguistics</p>
+				</availability>
+				<date type="published" when="2010-10">October 2010. 2010</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hendra</forename><surname>Setiawan</surname></persName>
+							<email>hendra@umiacs.umd.edu</email>
+							<affiliation key="aff0">
+								<orgName type="department">Language Technologies Institute</orgName>
+								<orgName type="institution" key="instit1">UMIACS University of Maryland</orgName>
+								<orgName type="institution" key="instit2">Carnegie Mellon University</orgName>
+								<orgName type="institution" key="instit3">UMIACS University of Maryland</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Chris</forename><surname>Dyer</surname></persName>
+							<email>cdyer@cs.cmu.edu</email>
+							<affiliation key="aff0">
+								<orgName type="department">Language Technologies Institute</orgName>
+								<orgName type="institution" key="instit1">UMIACS University of Maryland</orgName>
+								<orgName type="institution" key="instit2">Carnegie Mellon University</orgName>
+								<orgName type="institution" key="instit3">UMIACS University of Maryland</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Philip</forename><surname>Resnik</surname></persName>
+							<email>resnik@umd.edu</email>
+							<affiliation key="aff0">
+								<orgName type="department">Language Technologies Institute</orgName>
+								<orgName type="institution" key="instit1">UMIACS University of Maryland</orgName>
+								<orgName type="institution" key="instit2">Carnegie Mellon University</orgName>
+								<orgName type="institution" key="instit3">UMIACS University of Maryland</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Discriminative Word Alignment with a Function Word Reordering Model</title>
+					</analytic>
+					<monogr>
+						<title level="m">Proceedings of the 2010 Conference on Empirical Methods in Natural Language Processing</title>
+						<meeting>the 2010 Conference on Empirical Methods in Natural Language Processing <address><addrLine>MIT, Massachusetts, USA, 9; c</addrLine></address>
+						</meeting>
+						<imprint>
+							<publisher>Association for Computational Linguistics</publisher>
+							<biblScope unit="issue">11</biblScope>
+							<biblScope unit="page" from="534" to="544"/>
+							<date type="published" when="2010-10">October 2010. 2010</date>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>We address the modeling, parameter estimation and search challenges that arise from the introduction of reordering models that capture non-local reordering in alignment modeling. In particular, we introduce several reordering models that utilize (pairs of) function words as contexts for alignment reordering. To address the parameter estimation challenge, we propose to estimate these reordering models from a relatively small amount of manuallyaligned corpora. To address the search challenge, we devise an iterative local search algorithm that stochastically explores reordering possibilities. By capturing non-local reordering phenomena, our proposed alignment model bears a closer resemblance to stateof-the-art translation model. Empirical results show significant improvements in alignment quality as well as in translation performance over baselines in a large-scale ChineseEnglish translation task.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>In many Statistical Machine Translation (SMT) systems, alignment represents an important piece of information, from which translation rules are learnt. However, while translation models have evolved from word-based to syntax-based modeling, the de facto alignment model remains word-based <ref type="bibr" target="#b1">(Brown et al., 1993;</ref><ref type="bibr" target="#b23">Vogel et al., 1996)</ref>. This gap between alignment modeling and translation modeling is clearly undesirable as it often generates tensions that would prevent the extraction of many useful translation rules <ref type="bibr" target="#b5">(DeNero and Klein, 2007)</ref>. Recent work, e.g. by <ref type="bibr" target="#b0">Blunsom et al. (2009)</ref> and <ref type="bibr">Haghihi et al. (2009)</ref> just to name a few, show that alignment models that bear closer resemblance to state-of-theart translation model consistently yields not only a better alignment quality but also an improved translation quality.</p><p>In this paper, we follow this recent effort to narrow the gap between alignment model and translation model to improve translation quality. More concretely, we focus on the reordering component since we observe that the treatment of reordering remains significantly different when comparing alignment versus translation: the reordering component in state-of-the-art translation models has focused on long-distance reordering, but its counterpart in alignment models has remained focused on local reordering, typically modeling distortion based entirely on positional information. This leaves most alignment decisions to association-based scores.</p><p>Why is employing stronger reordering models more challenging in alignment than in translation? One answer can be attributed to the fact that alignment points are unobserved in parallel text, thus so are their reorderings. As such, introducing stronger reordering often further exacerbates the computational complexity to do inference over the model. Some recent alignment models appeal to external linguistic knowledge, mostly by using monolingual syntactic parses <ref type="bibr" target="#b3">(Cherry and Lin, 2006;</ref><ref type="bibr" target="#b20">Pauls et al., 2010)</ref>, which at the same time, provides an approximation of the bilingual syntactic divergences that drive the reordering. To our knowledge, however, this approach has been used mainly to constrain reordering possibilities, or to add to the generalization ability of association-based scores, not to directly model reordering in the context of alignment.</p><p>In this paper, we introduce a new approach to improving the modeling of reordering in alignment. Instead of relying on monolingual parses, we condition our reordering model on the behavior of function words and the phrases that surround them. Function words are the "syntactic glue" of sentences, and in fact many syntacticians believe that functional categories, as opposed to substantive categories like noun and verb, are primarily responsible for cross-language syntactic variation <ref type="bibr" target="#b19">(Ouhalla, 1991)</ref>. Our reordering model can be seen as offering a reasonable approximation to more fully elaborated bilingual syntactic modeling, and this approximation is also highly practical, as it demands no external knowledge (other than a list of function words) and avoids the practical issues associated with the use of monolingual parses, e.g. whether the monolingual parser is robust enough to produce reliable output for every sentence in training data.</p><p>At a glance, our reordering model enumerates the function words on both source and target sides, modeling their reordering relative to their neighboring phrases, their neighboring function words, and the sentence boundaries. Because the frequency of function words is high, we find that by predicting the reordering of function words accurately, the reordering of the remaining words improves in accuracy as well. In total, we introduce six sub-models involving function words, and these serve as features in a log linear model. We train model weights discriminatively using Minimum Error Rate Training (MERT) <ref type="bibr" target="#b18">(Och, 2003)</ref>, optimizing F-measure.</p><p>The parameters of our sub-models are estimated from manually-aligned corpora, leading the reordering model more directly toward reproducing human alignments, rather than maximizing the likelihood of unaligned training data. This use of manual data for parameter estimation is a reasonable choice because these models depend on a small, fixed number of lexical items that occur frequently in language, hence only small training corpora are required. In addition, the availability of manually-aligned corpora has been growing steadily.</p><p>The remainder of the paper proceeds as follows. In Section 2, we provide empirical motivation for our approach. In Section 3, we discuss six submodels based on function word relationships and how their parameters are estimated; these are com- bined with additional features in Section 4 to produce a single discriminative alignment model. Section 5 describes a simple decoding algorithm to find the most probable alignment under the combined model, Section 6 describes the training of our discriminative model and Section 7 presents experimental results for the model using this algorithm. We wrap up in Sections 8 and 9 with a discussion of related work and a summary of our conclusions. <ref type="figure" target="#fig_0">Fig. 1</ref> shows an example of a Chinese-English sentence pair together with correct alignment points. Predicting the alignment for this particular ChineseEnglish sentence pair is challenging, since the significantly different syntactic structures of these two languages lead to non-monotone reordering. For example, an accurate alignment model should account for the fact that prepositional phrases in Chinese appear in a different order than in English, as illustrated by the movement of the phrase "与北韩/with North Korea" from the beginning of the Chinese noun phrase to the end of the corresponding English. The central question that concerns us here is how to define and infer regularities that can be useful to predict alignment reorderings. The approach we take here is supported by empirical results from a pilot study, conducted as an inquiry into the idea of focusing on function words to model alignment reordering, which we briefly describe.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Empirical Motivation</head><p>We took a Chinese-English manually-aligned corpus of approximately 21 thousand sentence pairs, and divided each sentence pair into all-monotone phrase pairs. Visually, an all-monotone phrase pair corresponds to a maximal block in the alignment matrix for which internal alignment points appear in monotone order from the top-left corner to the bottom-right corner. <ref type="figure" target="#fig_1">Fig. 2</ref> illustrates seven such pairs that can be extracted from the example in <ref type="figure" target="#fig_0">Fig. 1</ref>. In total, there are 154,517 such phrase pairs in our manually-aligned corpus. The alignment configuration internal to allmonotone phrase pair blocks is, obviously, monotonic, which is a configuration that is effectively modeled by traditional alignments models. On the other hand, the reordering between two adjacent blocks is the focus of our efforts since existing models are less effective at modeling non-monotonic alignment configurations. To measure the function words' potential to predict non-monotone reorderings, we examined the border words where two adjacent blocks meet. In particular, we are interested in how many adjacent blocks whose border words are function words.</p><p>The results of this pilot study were quite encouraging. If we consider only the Chinese side of the phrase pairs, 88.35% adjacent blocks have function words as their boundary words. If we consider only the English side, function words appear at the borders of 93.91% adjacent blocks. If we consider both the Chinese and English sides, the percentage increases to 95.53%. Notice that in <ref type="figure" target="#fig_1">Fig. 2</ref>, function words appear at the borders of all adjacent allmonotone phrase pairs, if both Chinese and English sides are considered. Clearly with such high coverage, function words are central in predicting nonmonotone reordering in alignment.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Reordering with Function Words</head><p>The reordering models we describe follow our previous work using function word models for translation <ref type="bibr" target="#b21">(Setiawan et al., 2007;</ref><ref type="bibr" target="#b22">Setiawan et al., 2009</ref>). The core hypothesis in this work is that function words provide robust clues to the reordering patterns of the phrases surrounding them. To make this insight useful for alignment, we develop features that score the alignment configuration of the neighboring phrases of a function word (which functions as an anchor) using two kinds of information: 1) the relative ordering of the phrases with respect to the function word anchor; and 2) the span of the phrases. This section provides a high level overview of our reordering model, which attempts to leverage this information.</p><p>To facilitate subsequent discussions, we introduce the notion of monolingual function word phrase</p><formula xml:id="formula_0">F W i , which consists of the tuple (Y i , L i , R i )</formula><p>, where Y i is the i-th function word and L i ,R i are its left and right neighboring phrases, respectively. Note that this notion of "phrase" is defined only for reordering purposes in our model, and does not necessarily correspond to a linguistic phrase. We define such phrases on both sides to cover as many nonmonotone reorderings as possible, as suggested by the pilot study. To denote the side, we append a subscript:</p><formula xml:id="formula_1">F W i,S = (Y i,S , L i,S , R i,S )</formula><p>refers to a function word phrase on the source side, and</p><formula xml:id="formula_2">F W i,T = (Y i,T , L i,T , R i,T )</formula><p>to one on the target side. In our subsequent discussion, we will mainly use F W i,S , and we will omit subscripts S or T if they are clear from context.</p><p>The primary objective of our reordering model is to predict the projection of monolingual function word phrases from one language to the other, inferring bilingual function word phrase pairs</p><formula xml:id="formula_3">F W i,S→T = (Y i,S→T , L i,S→T , R i,S→T )</formula><p>, which encode the two aforementioned pieces of information. <ref type="bibr">1</ref> To infer these phrases, we take a probabilis-tic approach. For instance, to estimate the spans of L i,S→T , R i,S→T , our reordering model assumes that any span to the left of Y i,S is a possible L i,S and any span to the right of Y i,S is a possible R i,S , deciding which is most probable via features, rather than committing to particular spans (e.g. as defined by a monolingual text chunker or parser). We only enforce one criterion on L i,S→T and R i,S→T : they have to be the maximal alignment blocks satisfying the consistent heuristic <ref type="bibr" target="#b17">(Och and Ney, 2004</ref>) that end or start with Y i,S→T on the source S side respectively. <ref type="bibr">2</ref> To infer these phrases, we decompose</p><formula xml:id="formula_4">L i,S→T into (o(L i,S→T ), d(F W i−1,S→T ), b( s )); sim- ilarly, R i,S→T into (o(R i,S→T ),d(F W i+1,S→T ), b( /s ) )).</formula><p>Taking the decomposition of L i,S→T as a case in point, here o(L i,S→T ) describes the reordering of the left neighbor L i,S→T with respect to the function word Y i,S→T , while d(F W i−1,S→T ) and b( s )) probe the span of L i,S→T , i.e. whether it goes beyond the preceding function word phrase pairs F W i−1,S→T and up to the beginning-ofsentence marker s respectively. The same definition applies to the decomposition of R i,S→T , where F W i+1,S→T is the succeeding function word phrase pair and /s is the end-of-sentence marker.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Six (Sub-)Models</head><p>To model o(L i,S→T ), o(R i,S→T ), i.e. the reordering of the neighboring phrases of a function word, we employ the orientation model introduced by <ref type="bibr" target="#b21">Setiawan et al. (2007)</ref>. Formally, this model takes the form of probability distribution</p><formula xml:id="formula_5">P ori (o(L i,S→T ), o(R i,S→T )|Y i,S→T )</formula><p>, which conditions the reordering on the lexical identity of the function word alignment (but independent of the lexical identity of its neighboring phrases). In particular, o maps the reordering into one of the following four orientation values (borrowed from <ref type="bibr" target="#b16">Nagata et al. (2006)</ref>) with respect to the function word: Monotone Adjacent (MA), Monotone Gap (MG), Reverse Adjacent (RA) and Reverse Gap (RG). The Monotone/Reverse distinction indicates whether the projected order follows the original order, while the Adjacent/Gap distinction indicates whether the pro-jections of the function word and the neighboring phrase are adjacent or separated by an intervening phrase.</p><formula xml:id="formula_6">To model d(F W i−1,S→T ), d(F W i+1,S→T ), i.e.</formula><p>whether L i,S→T and R i,S→T extend beyond the neighboring function word phrase pairs, we utilize the pairwise dominance model of <ref type="bibr" target="#b22">Setiawan et al. (2009)</ref>. Taking d(F W i−1,S→T ) as a case in point, this model takes the form</p><formula xml:id="formula_7">P dom (d(F W i−1,S→T )|Y i−1,S→T , Y i,S→T )</formula><p>, where d takes one of the following four dominance values: leftFirst, rightFirst, dontCare, or neither. We will detail the exact formulation of these values in the next subsection. However, to provide intuition, the value of either leftFirst or neither for d(F W i−1,S→T ) would suggest that the span of L i,S→T doesn't extend to Y i−1,S→T ; the further distinction between leftFirst and neither concerns with whether the span of R i−1,S→T extends to F W i,S→T .</p><p>To model b( s ), b( /s ), i.e. whether the span of L i,S→T and R i,S→T extends up to sentence markers, we introduce the borderwise dominance model. Formally, this model is similar to the pairwise dominance model, except that we use the sentence boundaries as the anchors instead of the neighboring phrase pairs. This model captures longer distance dependencies compared to the previous two models; in the Chinese-English case, in particular, it is useful to discourage word alignments from crossing clause or sentence boundaries. The sentence boundary issue is especially important in machine translation (MT) experimentation, since the Chinese side of English-Chinese parallel text often includes long sentences that are composed of several independent clauses joined together; in such cases, words from one clause should be discouraged from aligning to words from other clauses. In <ref type="figure" target="#fig_0">Fig. 1</ref>, this model is potentially useful to discourage words from crossing the copula "是/is". We define each model for all (pairs of) function word phrase pairs, forming features over a set of word alignments (A) between source (S) and target (T ) sentence pair, as follows:</p><formula xml:id="formula_8">f ori = N i=1 P ori (o(L i ), o(R i )|Y i ) (1) f dom = N i=2 P dom (d(F W i−1 )|Y i−1 , Y i ) (2) f bdom = N i=1 P bdom (b ( s )| s , Y i ) · P bdom (b ( /s )|Y i , /s )<label>(3)</label></formula><p>where N is the number of function words (of the source side, in the S → T case). As the bilingual function word phrase pairs are uni-directional, we employ these three models in both directions, i.e. T → S as well as S → T . As a result, there are six reordering models based on function words.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Prediction and Parameter Estimation</head><p>Given F W i−1,S→T (and all other F W ∀i ′ /i,S→T ), our reordering model has to decompose</p><formula xml:id="formula_9">L i,S→T into (o(L i,S→T ), d(F W i−1,S→T ), b( s )); and R i,S→T into (o(R i,S→T ),d(F W i+1,S→T ), b( /s ) )</formula><p>) during prediction and parameter estimation. In prediction mode (described in Section 5), it has to make the decomposition on the current state of alignment, while during parameter estimation, it has to make the same decomposition on the manually-aligned corpora. Since the process is identical, we proceed with the discussion in the context of parameter estimation, where the decomposition is performed to collect counts to estimate the parameters of our models.</p><p>Orientation model. Using L i,S→T as a case in point and given</p><formula xml:id="formula_10">(Y i,S→T =s l l /t m m , L i,S→T =s l 2 l 1 /t m 2 m 1 , R i,S→T =s l 4 l 3 /t m 4 m 3 ) 3 , the value of o(L i,S→T ) in terms of Monotone/Reverse is: Monotone/Reverse = M, m 2 &lt; m, R, m &lt; m 1 .<label>(4)</label></formula><p>while its value in terms of Adjacent/Gap values is:</p><formula xml:id="formula_11">Adjacent/Gap = A, |m − m 1 | ∨ |m − m 2 | = 1, G, otherwise.<label>(5)</label></formula><p>By adjusting the indices, the computation of o(R i,S→T ) follows similarly to the procedure above. Suppose we want to estimate the probability of L i,S→T =M A for a particular Y i . Note that here, we are interested in the lexical identity of Y i , thus the index i is irrelevant. We first gather the counts of the orientation value for all L i,S→T of Y i in the corpus:</p><formula xml:id="formula_12">c(o(L i,S→T ) ∈ {M A, RA, M G, RG}, Y i ). Then P ori (M A|Y i )</formula><p>is estimated as follows:</p><formula xml:id="formula_13">P ori (M A|Y i ) = c(M A, Y i ) c(Y i )<label>(6)</label></formula><p>where c(Y i ) is the frequency of Y i in the corpus. The estimation of other orientation values as well as the T → S version of the model, follows the same procedure.</p><p>Pairwise and Borderwise dominance models.</p><formula xml:id="formula_14">Given R i,S→T = s l 2 l 1 /t m 2 m 1 and L i+1,S→T = s l 4 l 3 /t m 4</formula><p>m 3 , i.e. the spans of the neighbors of a pair of neighboring function word phrase pairs</p><formula xml:id="formula_15">(Y i = s l 5 l 5 /t m 5 m 5 , Y i+1 = s l 6 l 6 /t m 6 m 6 ), the value of d(F W i+1,S→T ) is: =            leftFirst, l 2 ≥ l 6 l 3 &gt; l 5 rightFirst, l 2 &lt; l 6 l 3 ≤ l 5 dontCare, l 2 ≥ l 6 l 3 ≤ l 5 neither, l 2 &lt; l 6 l 3 &gt; l 5<label>(7)</label></formula><p>Note that the neighbors of the sentence markers for the borderwise models span the whole sentence, thus value of neither is impossible for these models. Suppose we want to estimate the probability of Y i and Y i+1 having a dontCare dominance value. Note that here we are interested in the lexical identity of Y i and Y i+1 , thus the models are insensitive to the indices. We first gather the counts of the Y i and Y i+1 having the dontCare value c(dontCare, Y i , Y i+1 ); then P dom (dontCare|Y i , Y i+1 ) is estimated as follows: </p><formula xml:id="formula_16">P dom (dontCare|Y i , Y i+1 ) = c(dontCare, Y i , Y i+1 ) c(Y i , Y i+1 )<label>(8)</label></formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Alignment Model</head><p>To use the function word alignment features described in the previous section to predict alignments, we use a linear model of the following form:</p><formula xml:id="formula_17">A = arg max A∈A(S,T ) θ · f (A, S, T )<label>(9)</label></formula><p>where A(S, T ) is the set of all possible alignments of a source sentence S and target sentence T , and f (A, S, T ) is a vector of feature functions on A, S, and T , and θ is a parameter vector. In addition to the six reordering models, our model employs several association-based scores that look at alignments in isolation. These features include:</p><p>1. Normalized log-likelihood ratio (LLR). This feature represents an association score, derived from statistical testing statistics. LLR <ref type="bibr" target="#b6">(Dunning, 1993)</ref> has been widely used especially to measure lexical association. Since the values of LLR are unnormalized, we normalize them on a per-sentence basis, so that the normalized LLRs of, say, a particular source word to the target words in a particular sentence sum up to one.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">Translation table from IBM model 4.</head><p>This feature represents another association score, derived from a generative model, in particular the wordbased IBM model 4. The use of this feature is widespread in recent alignment models, since it provides a relatively accurate initial prediction.</p><p>3. Translation table from manually-aligned corpora. This feature represents a gold-standard association score, based on human annotation. While attractive, this feature suffers from data sparseness issues since the lexical coverage of manuallyaligned corpora, especially over content words, is very low. To overcome this issue, we design this feature to have two levels of granularity; as such, a fine-grained one is applied for function words and the coarse-grained one for content words.</p><p>4. Grow-diag-final alignments bonus. This feature encourages our alignment model to reuse alignment points that are part of the alignments created by the grow-diag-final heuristic, which we used as the baseline of our machine translation experiments. 5. Fertility model from IBM model 4. This feature, which is another by-product of IBM model 4, measures the probability of a certain word aligning to zero, one, or two or more words.</p><p>6. Null-alignment probability. This binomial feature models preference towards not aligning words, i.e. aligning to the NULL token. The intuition is to penalize NULL alignments depending on word class, by assigning lower probability mass to unaligned content words than to unaligned function words. In our experiment, we assign feature value 10 −3 for a function word aligning to NULL, and 10 −5 for a content word aligning to NULL.</p><p>Note that with the exception of the alignment bonus feature (4), all features are uni-directional, and therefore we employ these features in both directions just as was done for the reordering models.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Search</head><p>To findÂ using the model in Eq. 9, it is necessary to search 2 |S|×|T | different alignment configurations, and, because of the non-local dependencies in some of our features, it is not possible to use dynamic programming to perform this search efficiently. We therefore employ an approximate search for the best alignment. We use a local search procedure which starts from some alignment (in our case, a symmetrized Model 4 alignment) and make local changes to it. Rather than taking a pure hillclimbing approach which greedily moves to locally better configurations <ref type="bibr" target="#b1">(Brown et al., 1993)</ref>, we use a stochastic search procedure which can move into lower-scoring states with some probability, similar to the Monte Carlo techniques used to draw samples from analytically intractable probability distributions.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.1">Algorithm</head><p>To findÂ, our search algorithm starts with an initial alignment A (1) and iteratively draws a new set by making a few small changes to the current set. For each step i = [1, n], with alignment A (i) , a set of neighboring alignments N (A (i) ) is induced by applying small transformations (discussed below) to the current alignment. The next alignment A <ref type="formula">(i+1)</ref> is sampled from the following distribution:</p><formula xml:id="formula_18">p(A (i+1) |S, T, A (i) ) = exp θ · f (A (i+1) , S, T ) Z(A (i) , S, T ) where Z(A (i) , S, T ) = A ′ ∈N (A (i) ) exp θ · f (A ′ , S, T )</formula><p>In addition to the current 'active' alignment configuration A (i) , the algorithm keeps track of the highest scoring alignment observed so far, A max . After n steps, the algorithm returns A max as its approximation ofÂ. In the experiments reported below, we initialized A (1) with the Model 4 alignments symmetrized by using the grow-diag-final-and heuristic <ref type="bibr" target="#b13">(Koehn et al., 2003)</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.2">Alignment Neighborhoods</head><p>We now turn to a discussion of how the alignment neighborhoods used by our stochastic search algorithm are generated. We define three local transformation operations that apply to single columns of the alignment grid (which represent all of the alignments to the l th source word), rows, or existing alignment points (l, m). Our three neighborhood generating operators are ALIGN, ALIGNEXCLUSIVE, and SWAP. The ALIGN operator applies to the l th column of A and can either add an alignment point (l, m ′ ) or move an existing one (including to null, thus deleting it). ALIGNEXCLUSIVE adds an alignment point (l, m) and deletes all other points from row m. Finally, the SWAP operator swaps (l, m) and (l ′ , m ′ ), resulting in new alignment points (l, m ′ ) and (l ′ , m). We increase the decoder's mobility by traversing the target side and applying the same steps above for each target word. <ref type="figure" target="#fig_3">Fig. 3</ref> illustrates the three operators. By iterating over all columns l and rows m, the full alignment space A(S, T ) can be explored. <ref type="bibr">4</ref> To further reduce the search space, an alignment point (l, m) is only admitted into a neighborhood if it is found in the high-recall alignment set R(S, T ), which we define to be the model 4 union alignments (bidirectional model 4 symmetrized via union) plus the 5 best alignments according to the log-likelihood ratio. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Discriminative Training</head><p>To set the model parameters θ, we used the minimum error rate training (MERT) algorithm <ref type="bibr" target="#b18">(Och, 2003)</ref> to maximize the F-measure of the 1-best alignment of the model on a development set consisting of sentence pairs with manually generated alignments. The candidate set used by MERT to approximate the model is simply the set of alignments {A (1) , A (2) , . . . , A (n) } encountered in the stochastic search. While MERT does not scale to large numbers of features, the scarcity of manually aligned training data also means that models with large numbers of sparse features would be difficult to learn discriminatively, so this limitation is somewhat inherent in the problem space. Additionally, MERT has several advantages that make it particularly useful for our task. First, we can optimize F-measure of the alignments directly, which has been shown to correlate with translation quality in a downstream system <ref type="bibr" target="#b9">(Fraser and Marcu, 2007b)</ref>. Second, we are optimizing the quality of the 1-best alignments under the model. Since translation pipelines typically use only a single word alignment, this criterion is appropriate. Finally, and very importantly for us, MERT requires only an approximation of the model's hypothesis space to carry out optimization. Since we are using a stochastic search, this is crucial, since sub-sequent evaluations of the same sentence pair (even with the same weights) may result in a different candidate set.</p><p>Although MERT is a non-probabilistic optimizer, we explore the alignment space stochastically. This is necessary to make sure that the weights we use correspond to a probability distribution that is not overly peaked (which would result in a greedy hillclimbing search) or flat (which would explore the model space without information from the model). We found that normalizing the weights by the Euclidean norm resulted in a distribution that was wellbalanced between the two extremes.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7">Experiments</head><p>We evaluated our proposed alignment model intrinsically on an alignment task and extrinsically on a large-scale translation task, focusing on ChineseEnglish as the language pair. Our training data consists of manually aligned corpora available from LDC (LDC2006E93 and LDC2008E57) and unaligned corpora, which include FBIS, ISI, HKNews and Xinhua. In total, the manually aligned corpora consist of more than 21 thousand sentence pairs, while the unaligned corpora consist of more than 710 thousand sentence pairs. The manually-aligned corpora are primarily used for training the reordering models and for discriminative training purposes. For translation experiments, we used cdec <ref type="bibr" target="#b7">(Dyer et al., 2010)</ref>, a fast implementation of hierarchical phrase-based translation models <ref type="bibr" target="#b4">(Chiang, 2005)</ref>, which represents a state-of-the-art translation system.</p><p>We constructed the list of function words in English manually and in Chinese from <ref type="bibr" target="#b12">(Howard, 2002)</ref>. Punctuation marks were added to the list, resulting in 883 and 359 tokens in the Chinese and English lists, respectively. For the alignment experiments, we took the first 500 sentence pairs from the newswire genre of the manually-aligned corpora and used the first 250 sentences as the development set, with the remaining 250 as the test set. To ensure blind experimentation, we excluded these sentence pairs from the training of the features, including the reordering models.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.1">Alignment Quality</head><p>We used GIZA++, the implementation of the defacto standard IBM alignment model, as our baseline alignment model. In particular, we used GIZA++ to align the concatenation of the development set, the test set, and the unaligned corpora, with 5, 5, 3 and 3 iterations of model 1, HMM, model 3, and model 4 respectively. Since the IBM model is asymmetric, we followed the standard practice of running GIZA++ twice, once in each direction, and combining the resulting outputs heuristically. We chose to use the grow-diag-final-and heuristic as it worked well for hierarchical phrase-based translation in our early experiments. We recorded the alignment quality of the test set as our baseline performance.</p><p>For our alignment model, we used the same set of training data. To align the test set, we first tuned the weights of the features in our discriminative alignment model using minimum error rate training (MERT) <ref type="bibr" target="#b18">(Och, 2003)</ref> with F α=0.1 as the optimization criterion. At each iteration, our aligner outputs k-best alignments under current set of weights, from which MERT proceeds to compute the next set of weights. MERT terminates once the improvement over the previous iteration is lower than a predefined value. Once tuned, we ran our aligner on the test set and measured the quality of the resulting alignment as the performance of our model.  <ref type="table">Table 1</ref>: Alignment quality results (F 0.1 ) for our discriminative reordering models with various features (lines 2-5) versus the baseline IBM word-based Model 4 symmetrized using the grow-diag-final-and heuristic. The balanced F 0.5 measure is reported for reference. The best scores are bolded. <ref type="table">Table 1</ref> reports the results of our experiments, which are conducted in an incremental fashion primarily to highlight the role of reordering modeling. The first line (gdfa) reports the baseline perfor-mance. In the first experiment (association), we employed only the association-based features described in Section 4. As shown, we obtain a significant improvement over baseline. This result is consistent with recent literature <ref type="bibr" target="#b8">(Fraser and Marcu, 2007a</ref>) that shows that a discriminatively trained model outperforms baseline unsupervised models like GIZA++. In the second set of experiments, we added the reordering models into our discriminative model one by one, starting with the orientation models, then the pairwise dominance model and finally the borderwise dominance model, reported in lines +ori, +dom and +bdom respectively. As shown, each additional reordering model provides a significant additional improvement. The best result is obtained by employing all reordering models. These results empirically confirm our hypothesis that we can improve alignment quality by employing reordering models that capture non-local reordering phenomena.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Model</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.2">Translation Quality</head><p>For translation experiments, we used the products from our intrinsic experiments to learn translation rules for the hierarchical phrase-based decoder, i.e. the features weights of the +bdom experiment to align the MT training data using our discriminative model. For our translation model, we used the standard features based on the relative frequency counts, including a 5-gram language model feature trained on the English portion of the whole training data plus portions of the Gigaword v2 corpus. Specifically, we tuned the weights of these features via MERT on the NIST MT06 set and we report the result on the NIST MT02, MT03, MT04 and MT05 sets.  <ref type="table">Table 2</ref>: The translation performance (BLEU) of hierarchical phrase-based translation trained on training data aligned by IBM model 4 symmetrized with the growdiag-final-and heuristic, versus being trained on alignments by our discriminative alignment model. Bolded scores indicate that the improvement is statistically significant. <ref type="table">Table 2</ref> shows the result of our translation experiments. In our alignment model, we employed the whole set of reordering models, i.e. the one reported in the +bdom line in <ref type="table">Table 1</ref>. As shown, our discriminative alignment model produces a consistent and significant improvement over the baseline IBM model 4 (p &lt; 0.01), ranging between 0.81 and 1.71 BLEU points.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8">Related Work</head><p>The focus of our work is to strengthen the reordering component of alignment modeling. Although the de facto standard, the IBM models do not generalize well in practice: the IBM approach employs a series of reordering models based on the word's position, but reordering depends on syntactic context rather than absolute position in the sentence. Over the years, there have been many proposals to improve these reordering models, most notably <ref type="bibr" target="#b23">Vogel et al. (1996)</ref>, which adds a first-order dependency. Nevertheless, the use of these distortion-based models remains widespread <ref type="bibr" target="#b14">(Marcu and Wong, 2002;</ref><ref type="bibr" target="#b15">Moore, 2004)</ref>.</p><p>Alignment modeling is challenging because it often has to consider a prohibitively large alignment space. Efforts to constrain the space generally comes from the use of Inversion Transduction Grammar (ITG) <ref type="bibr" target="#b24">(Wu, 1997)</ref>. Recent proposals that use ITG constraints include <ref type="bibr" target="#b10">(Haghighi et al., 2009;</ref><ref type="bibr" target="#b0">Blunsom et al., 2009</ref>) just to name a few. More recent models have begun to use linguisticallymotivated constraints, often in combination with ITG, primarily exploiting monolingual syntactic information <ref type="bibr" target="#b2">(Burkett et al., 2010;</ref><ref type="bibr" target="#b20">Pauls et al., 2010</ref>).</p><p>Our reordering model is closely related to the model proposed by <ref type="bibr" target="#b25">Zhang and Gildea (2005;</ref><ref type="bibr" target="#b8">2007a)</ref>, with respect to conditioning the reordering predictions on lexical items. These related models treat their lexical items as latent variables to be estimated from training data, while our model uses a fixed set of lexical items that correspond to the class of function words. With respect to the focus on function words, our reordering model is closely related to the UALIGN system <ref type="bibr" target="#b11">(Hermjakob, 2009</ref>). However, UALIGN uses deep syntactic analysis and hand-crafted heuristics in its model.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="9">Conclusions</head><p>Languages exhibit regularities of word order that are preserved when projected to another language. We use the notion of function words to infer such regularities, resulting in several reordering models that are employed as features in a discriminative alignment model. In particular, our models predict the reordering of function words by looking at their dependencies with respect to their neighboring phrases, their neighboring function words, and the sentence boundaries. By capturing such long-distance dependencies, our proposed alignment model contributes to the effort to unify alignment and translation. Our experiments demonstrate that our alignment approach achieves both its intrinsic and extrinsic goals.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 :</head><label>1</label><figDesc>Figure 1: An aligned Chinese-English sentence pair.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: The all-monotone phrase pairs, indicated as rectangular areas in bold, that can be extracted from the Fig. 1 example.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head></head><label></label><figDesc>where c(Y i , Y i+1 ) is the count of Y i appears after Y i+1 in the training corpus without any other func- tion word comes in between.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: Illustrations for (a) ALIGN, (b) ALIGNEXCLU-SIVE, and (c) SWAP operators, as applied to align the dotted, smaller circle (l, m) to (l, m ′ ). The left hand side represents A (i) , while the right hand side represents a candidate for A (i+1) . The solid circles represent the new alignment points added to A (i+1) .</figDesc></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1">The subscript S → T denotes the projection direction from source to target. The subscript for the other direction is T → S.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="2">This heuristic is commonly used in learning phrase pairs from parallel text. The maximality ensures the uniqueness of L and R.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="3">We use subscripts to indicate the starting index, and superscripts the ending index.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="4">Using only the ALIGN operator, it is possible to explore the full alignment space; however, using all three operators increases mobility.</note>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Acknowledgements</head><p>This research was supported in part by the GALE program of the Defense Advanced Research Projects Agency, Contract No. HR0011-06-2-001. Any opinions, findings, conclusions or recommendations expressed in this paper are those of the authors and do not necessarily reflect the view of the sponsors.</p></div>
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">A gibbs sampler for phrasal synchronous grammar induction</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Phil</forename><surname>Blunsom</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Trevor</forename><surname>Cohn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ACL</title>
+		<meeting><address><addrLine>Singapore, August</addrLine></address></meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2009" />
+			<biblScope unit="page" from="782" to="790" />
+		</imprint>
+	</monogr>
+	<note>Chris Dyer, and Miles Osborne</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">The mathematics of statistical machine translation: Parameter estimation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Peter</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Stephen</forename><forename type="middle">A Della</forename><surname>Brown</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Vincent</forename><forename type="middle">J</forename><surname>Pietra</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Robert</forename><forename type="middle">L</forename><surname>Della Pietra</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Mercer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">19</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="263" to="311" />
+			<date type="published" when="1993-06" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Joint parsing and alignment with weakly synchronized grammars</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">David</forename><surname>Burkett</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">John</forename><surname>Blitzer</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Dan</forename><surname>Klein</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Los Angeles</title>
+		<meeting><address><addrLine>California</addrLine></address></meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2010-06" />
+			<biblScope unit="page" from="127" to="135" />
+		</imprint>
+	</monogr>
+	<note>HLT-NAACL</note>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Soft syntactic constraints for word alignment through discriminative training</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Colin</forename><surname>Cherry</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Dekang</forename><surname>Lin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Association for Computational Linguistics</title>
+		<meeting><address><addrLine>Sydney, Australia</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2006-07" />
+			<biblScope unit="page" from="105" to="112" />
+		</imprint>
+	</monogr>
+	<note>COLING/ACL</note>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">A hierarchical phrase-based model for statistical machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">David</forename><surname>Chiang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ACL</title>
+		<meeting><address><addrLine>Ann Arbor, Michigan, June</addrLine></address></meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2005" />
+			<biblScope unit="page" from="263" to="270" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Tailoring word alignments to syntactic machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">John</forename><surname>Denero</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Dan</forename><surname>Klein</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Association for Computational Linguistics</title>
+		<meeting><address><addrLine>Prague, Czech Republic</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2007-06" />
+			<biblScope unit="page" from="17" to="24" />
+		</imprint>
+	</monogr>
+	<note>ACL</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Accurate methods for the statistics of surprise and coincidence</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ted</forename><surname>Dunning</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">19</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="61" to="74" />
+			<date type="published" when="1993-03" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">cdec: A decoder, alignment, and learning framework for finitestate and context-free translation models</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Chris</forename><surname>Dyer</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Adam</forename><surname>Lopez</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Juri</forename><surname>Ganitkevitch</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Johnathan</forename><surname>Weese</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ferhan</forename><surname>Ture</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Phil</forename><surname>Blunsom</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hendra</forename><surname>Setiawan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Vladimir</forename><surname>Eidelman</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Philip</forename><surname>Resnik</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ACL, Uppsala</title>
+		<meeting><address><addrLine>Sweden</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2010" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Getting the structure right for word alignment: LEAF</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alexander</forename><surname>Fraser</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Daniel</forename><surname>Marcu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">EMNLP-CoNLL</title>
+		<meeting><address><addrLine>Prague, Czech Republic</addrLine></address></meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2007-06" />
+			<biblScope unit="page" from="51" to="60" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Measuring word alignment quality for statistical machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alexander</forename><surname>Fraser</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Daniel</forename><surname>Marcu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">33</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="293" to="303" />
+			<date type="published" when="2007" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Better word alignments with supervised itg models</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Aria</forename><surname>Haghighi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">John</forename><surname>Blitzer</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">John</forename><surname>Denero</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Dan</forename><surname>Klein</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ACL</title>
+		<meeting><address><addrLine>Suntec, Singapore</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2009-08" />
+			<biblScope unit="page" from="923" to="931" />
+		</imprint>
+	</monogr>
+	<note>Association for Computational Linguistics</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Improved word alignment with statistics and linguistic heuristics</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ulf</forename><surname>Hermjakob</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">EMNLP</title>
+		<meeting><address><addrLine>Singapore</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2009-08" />
+			<biblScope unit="page" from="229" to="237" />
+		</imprint>
+	</monogr>
+	<note>Association for Computational Linguistics</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<monogr>
+		<title level="m" type="main">A Student Handbook for Chinese Function Words</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jiaying</forename><surname>Howard</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2002" />
+			<publisher>The Chinese University Press</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Association for Computational Linguistics</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Philipp</forename><surname>Koehn</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Franz</forename><forename type="middle">J</forename><surname>Och</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Daniel</forename><surname>Marcu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">HTL-NAACL</title>
+		<meeting><address><addrLine>Edmonton, Alberta, Canada, May</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2003" />
+			<biblScope unit="page" from="127" to="133" />
+		</imprint>
+	</monogr>
+	<note>Statistical phrase-based translation</note>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">A phrase-based, joint probability model for statistical machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Daniel</forename><surname>Marcu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">William</forename><surname>Wong</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">EMNLP</title>
+		<imprint>
+			<date type="published" when="2002-07-23" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Improving ibm word alignment model 1</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Robert</forename><forename type="middle">C</forename><surname>Moore</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ACL</title>
+		<meeting><address><addrLine>Barcelona, Spain</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2004-07" />
+			<biblScope unit="page" from="518" to="525" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">A clustered global phrase reordering model for statistical machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Masaaki</forename><surname>Nagata</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kuniko</forename><surname>Saito</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kazuhide</forename><surname>Yamamoto</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kazuteru</forename><surname>Ohashi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ACL</title>
+		<meeting><address><addrLine>Sydney, Australia</addrLine></address></meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2006-07" />
+			<biblScope unit="page" from="713" to="720" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">The alignment template approach to statistical machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Josef</forename><surname>Franz</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hermann</forename><surname>Och</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Ney</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">30</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="417" to="449" />
+			<date type="published" when="2004" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Minimum error rate training in statistical machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Franz Josef</forename><surname>Och</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ACL</title>
+		<imprint>
+			<date type="published" when="2003" />
+			<biblScope unit="page" from="160" to="167" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<monogr>
+		<title level="m" type="main">Functional Categories and Parametric Variation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jamal</forename><surname>Ouhalla</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1991" />
+		</imprint>
+	</monogr>
+	<note>Routledge</note>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Unsupervised syntactic alignment with inversion transduction grammars</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Adam</forename><surname>Pauls</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Dan</forename><surname>Klein</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">David</forename><surname>Chiang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kevin</forename><surname>Knight</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">HLT-NAACL</title>
+		<meeting><address><addrLine>Los Angeles, California</addrLine></address></meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2010-06" />
+			<biblScope unit="page" from="118" to="126" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Ordering phrases with function words</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hendra</forename><surname>Setiawan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Min-Yen</forename><surname>Kan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Haizhou</forename><surname>Li</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ACL</title>
+		<meeting><address><addrLine>Prague, Czech Republic</addrLine></address></meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2007-06" />
+			<biblScope unit="page" from="712" to="719" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Topological ordering of function words in hierarchical phrase-based translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hendra</forename><surname>Setiawan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Min</forename><forename type="middle">Yen</forename><surname>Kan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Haizhou</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Philip</forename><surname>Resnik</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ACL</title>
+		<meeting><address><addrLine>Suntec, Singapore</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2009-08" />
+			<biblScope unit="page" from="324" to="332" />
+		</imprint>
+	</monogr>
+	<note>Association for Computational Linguistics</note>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">HMM-based word alignment in statistical translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Stephan</forename><surname>Vogel</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hermann</forename><surname>Ney</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Christoph</forename><surname>Tillmann</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">COLING</title>
+		<meeting><address><addrLine>Copenhagen</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="1996" />
+			<biblScope unit="page" from="836" to="841" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Stochastic inversion transduction grammars and bilingual parsing of parallel corpora</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Dekai</forename><surname>Wu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">23</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="377" to="404" />
+			<date type="published" when="1997-09" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Stochastic lexicalized inversion transduction grammar for alignment</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hao</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Daniel</forename><surname>Gildea</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ACL. The Association for Computer Linguistics</title>
+		<imprint>
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Inducing word alignments with bilexical synchronous trees</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hao</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Daniel</forename><surname>Gildea</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ACL. The Association for Computer Linguistics</title>
+		<imprint>
+			<date type="published" when="2006" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

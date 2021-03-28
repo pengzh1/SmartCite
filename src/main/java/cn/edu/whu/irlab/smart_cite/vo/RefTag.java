@@ -10,8 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.leishengwei.jutils.Strings.isNotEmpty;
-import static com.leishengwei.jutils.Strings.startCapital;
+import static com.leishengwei.jutils.Strings.*;
 
 /**
  * @author gcr19
@@ -57,6 +56,15 @@ public class RefTag implements ToJsonAble {
     }
 
     /**
+     * @param sentence 引文上下文句子对象
+     * @auther gcr19
+     * @desc 向 contextList 添加引文上下文句子对象
+     **/
+    public void addContext(Sentence sentence) {
+        contextList.add(sentence);
+    }
+
+    /**
      * 获取引文标记中包含的作者 todo 如果是数字的引文标记呢？该方法有待改进
      *
      * @return
@@ -71,7 +79,7 @@ public class RefTag implements ToJsonAble {
     private void collectAuthors() {
         String[] tr = WordTokenizer.split(this.text);
         //搜集作者信息
-        this.authors = Arrays.asList(tr).stream().filter((t) -> t.length() > 0 && t.charAt(0) >= 65 && t.charAt(0) <= 90).collect(Collectors.toList());//大写字母
+        this.authors = Arrays.stream(tr).filter((t) -> t.length() > 0 && t.charAt(0) >= 65 && t.charAt(0) <= 90).collect(Collectors.toList());//大写字母 todo 规则只适应部分情况
     }
 
     /**
@@ -92,9 +100,10 @@ public class RefTag implements ToJsonAble {
      * 规则：
      * 1. 首字母大写的词性为NN的词语
      * 2. 连续首字母大写的词语则构造首字母缩略词
-     * TODO  该方法有问题()
+     * TODO  该方法有问题() worditem可能为空
      */
     private void collectRefPhrases() {
+        if (wordItem==null) return;// todo 临时解决空指针问题
         //搜集指代词语，先进行分词，然后寻找引文标记前面的所有名词作为指代对象，如果是连续大写，加上首字母缩略词
         this.refPhrases = new ArrayList<>();
         List<WordItem> list = wordItem.nearWords(5, 0, (v) -> v.getType() == WordItem.WordType.Word || v.getType() == WordItem.WordType.WordRef || v.getType() == WordItem.WordType.Word_G_Ref);
@@ -137,14 +146,14 @@ public class RefTag implements ToJsonAble {
     }
 
     @Override
-    public JSONObject toJson(){
-        JSONObject jsonObject=new JSONObject();
-        jsonObject.put("id",id);
-        jsonObject.put("text",text);
-        if(reference!=null)
-        jsonObject.put("reference",reference.toJson());
-        jsonObject.put("contextList",TypeConverter.list2JsonArray(contextList));
-        jsonObject.put("sentence",sentence.toJson());
+    public JSONObject toJson() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", id);
+        jsonObject.put("text", text);
+        if (reference != null)
+            jsonObject.put("reference", reference.toJson());
+        jsonObject.put("contextList", TypeConverter.list2JsonArray(contextList));
+        jsonObject.put("sentence", sentence.toJson());
         return jsonObject;
     }
 

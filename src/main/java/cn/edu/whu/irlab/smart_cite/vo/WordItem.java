@@ -29,6 +29,11 @@ public class WordItem {
     public WordItem() {
     }
 
+    public WordItem(String word,String tag){
+        this.word=word;
+        this.tag=tag;
+    }
+
     public WordItem(WordType type, String word) {
         this.type = type;
         this.word = word;
@@ -55,21 +60,6 @@ public class WordItem {
 
     public static WordItem ref(String text, RefTag ref) {
         return new WordItem(WordType.Ref, text, ref);
-    }
-
-    public static List<WordItem> words(String... words) {
-        if (words == null || words.length == 0) {
-            return new ArrayList<>();
-        }
-        List<WordItem> wordItems = new ArrayList<>();
-        for (String word : words) {
-            wordItems.add(word(word));
-        }
-        return wordItems;
-    }
-
-    public static WordItem word(String word) {
-        return new WordItem(WordType.Word, word);
     }
 
     public void addRef(RefTag ref) {

@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T20:15+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">BIUTEE: A Modular Open-Source System for Recognizing Textual Entailment</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher>Association for Computational Linguistics</publisher>
+				<availability status="unknown"><p>Copyright Association for Computational Linguistics</p>
+				</availability>
+				<date type="published" when="2012-07">July 2012. 2012</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Asher</forename><surname>Stern</surname></persName>
+							<email>astern7@gmail.com</email>
+							<affiliation key="aff0">
+								<orgName type="department" key="dep1">Computer Science Department Bar</orgName>
+								<orgName type="department" key="dep2">Computer Science Department Bar</orgName>
+								<orgName type="institution">Ilan University Ramat-Gan 52900</orgName>
+								<address>
+									<country key="IL">Israel</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ido</forename><surname>Dagan</surname></persName>
+							<email>dagan@cs.biu.ac.il</email>
+							<affiliation key="aff1">
+								<orgName type="institution">Ilan University</orgName>
+								<address>
+									<addrLine>Ramat-Gan 52900</addrLine>
+									<country key="IL">Israel</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">BIUTEE: A Modular Open-Source System for Recognizing Textual Entailment</title>
+					</analytic>
+					<monogr>
+						<title level="m">Proceedings of the 50th Annual Meeting of the Association for Computational Linguistics</title>
+						<meeting>the 50th Annual Meeting of the Association for Computational Linguistics <address><addrLine>Jeju, Republic of Korea</addrLine></address>
+						</meeting>
+						<imprint>
+							<publisher>Association for Computational Linguistics</publisher>
+							<biblScope unit="page" from="8" to="14"/>
+							<date type="published" when="2012-07">July 2012. 2012</date>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>This paper introduces BIUTEE</head><p>1 , an opensource system for recognizing textual entailment. Its main advantages are its ability to utilize various types of knowledge resources, and its extensibility by which new knowledge resources and inference components can be easily integrated. These abilities make BIUTEE an appealing RTE system for two research communities: (1) researchers of end applications, that can benefit from generic textual inference, and (2) RTE researchers, who can integrate their novel algorithms and knowledge resources into our system, saving the time and effort of developing a complete RTE system from scratch. Notable assistance for these researchers is provided by a visual tracing tool, by which researchers can refine and "debug" their knowledge resources and inference components.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Recognizing Textual Entailment (RTE) is the task of identifying, given two text fragments, whether one of them can be inferred from the other <ref type="bibr" target="#b5">(Dagan et al., 2006)</ref>. This task generalizes a common problem that arises in many tasks at the semantic level of NLP. For example, in Information Extraction (IE), a system may be given a template with variables (e.g., "X is employed by Y") and has to find text fragments from which this template, with variables replaced by proper entities, can be inferred. In Summarization, a good summary should be inferred from the 1 www.cs.biu.ac.il/˜nlp/downloads/biutee given text, and, in addition, should not contain duplicated information, i.e., sentences which can be inferred from other sentences in the summary. Detecting these inferences can be performed by an RTE system.</p><p>Since first introduced, several approaches have been proposed for this task, ranging from shallow lexical similarity methods (e.g., <ref type="bibr" target="#b4">(Clark and Harrison, 2010;</ref><ref type="bibr" target="#b14">MacKinlay and Baldwin, 2009</ref>)), to complex linguistically-motivated methods, which incorporate extensive linguistic analysis (syntactic parsing, coreference resolution, semantic role labelling, etc.) and a rich inventory of linguistic and world-knowledge resources (e.g., <ref type="bibr" target="#b11">(Iftene, 2008;</ref><ref type="bibr" target="#b6">de Salvo Braz et al., 2005;</ref><ref type="bibr" target="#b0">Bar-Haim et al., 2007)</ref>). Building such complex systems requires substantial development efforts, which might become a barrier for new-comers to RTE research. Thus, flexible and extensible publicly available RTE systems are expected to significantly facilitate research in this field. More concretely, two major research communities would benefit from a publicly available RTE system: 1. Higher-level application developers, who would use an RTE system to solve inference tasks in their application. RTE systems for this type of researchers should be adaptable for the application specific data: they should be configurable, trainable, and extensible with inference knowledge that captures application-specific phenomena.</p><p>2. Researchers in the RTE community, that would not need to build a complete RTE system for their research. Rather, they may integrate their novel research components into an existing open-source system. Such research efforts might include developing knowledge resources, developing inference components for specific phenomena such as temporal inference, or extending RTE to different languages. A flexible and extensible RTE system is expected to encourage researchers to create and share their textual-inference components. A good example from another research area is the Moses system for Statistical Machine Translation (SMT) <ref type="bibr" target="#b12">(Koehn et al., 2007)</ref>, which provides the core SMT components while being extended with new research components by a large scientific community.</p><p>Yet, until now rather few and quite limited RTE systems were made publicly available. Moreover, these systems are restricted in the types of knowledge resources which they can utilize, and in the scope of their inference algorithms. For example, EDITS 2 <ref type="bibr" target="#b13">(Kouylekov and Negri, 2010</ref>) is a distancebased RTE system, which can exploit only lexical knowledge resources. NutCracker 3 <ref type="bibr" target="#b3">(Bos and Markert, 2005</ref>) is a system based on logical representation and automatic theorem proving, but utilizes only WordNet (Fellbaum, 1998) as a lexical knowledge resource.</p><p>Therefore, we provide our open-source textualentailment system, BIUTEE. Our system provides state-of-the-art linguistic analysis tools and exploits various types of manually built and automatically acquired knowledge resources, including lexical, lexical-syntactic and syntactic rewrite rules. Furthermore, the system components, including preprocessing utilities, knowledge resources, and even the steps of the inference algorithm, are modular, and can be replaced or extended easily with new components. Extensibility and flexibility are also supported by a plug-in mechanism, by which new inference components can be integrated without changing existing code.</p><p>Notable support for researchers is provided by a visual tracing tool, Tracer, which visualizes every step of the inference process as shown in <ref type="figure">Figures 2</ref> 2 System Description</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1">Inference algorithm</head><p>In this section we provide a high level description of the inference components. Further details of the algorithmic components appear in references provided throughout this section.</p><p>BIUTEE follows the transformation based paradigm, which recognizes textual entailment by converting the text into the hypothesis via a sequence of transformations. Such a sequence is often referred to as a proof, and is performed, in our system, over the syntactic representation of the text -the text's parse tree(s). A transformation modifies a given parse tree, resulting in a generation of a new parse tree, which can be further modified by subsequent transformations.</p><p>Consider, for example, the following texthypothesis pair: Text: ... Obasanjo invited him to step down as president ... and accept political asylum in Nigeria.</p><p>Hypothesis: Charles G. Taylor was offered asylum in</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Nigeria.</head><p>This text-hypothesis pair requires two major transformations: (1) substituting "him" by "Charles G. Taylor" via a coreference substitution to an earlier mention in the text, and (2) inferring that if "X accept Y" then "X was offered Y".</p><p>BIUTEE allows many types of transformations, by which any hypothesis can be proven from any text. Given a T-H pair, the system finds a proof which generates H from T, and estimates the proof validity. The system returns a score which indicates how likely it is that the obtained proof is valid, i.e., the transformations along the proof preserve entailment from the meaning of T.</p><p>The main type of transformations is application of entailment-rules <ref type="bibr" target="#b0">(Bar-Haim et al., 2007</ref>). An entailment rule is composed of two sub-trees, termed lefthand-side and right-hand-side, and is applied on a parse-tree fragment that matches its left-hand-side, by substituting the left-hand-side with the righthand-side. This formalism is simple yet powerful, and captures many types of knowledge. The simplest type of rules is lexical rules, like car → vehicle. More complicated rules capture the entailment relation between predicate-argument structures, like X accept Y → X was offered Y.</p><p>Entailment rules can also encode syntactic phenomena like the semantic equivalence of active and passive structures (X Verb[active] Y → Y is Verb[passive] by X). Various knowledge resources, represented as entailment rules, are freely available in BIUTEE's web-site. The complete formalism of entailment rules, adopted by our system, is described in <ref type="bibr" target="#b0">(Bar-Haim et al., 2007)</ref>.</p><p>Coreference relations are utilized via coreferencesubstitution transformations: one mention of an entity is replaced by another mention of the same entity, based on coreference relations. In the above example the system could apply such a transformation to substitute "him" with "Charles G. Taylor".</p><p>Since applications of entailment rules and coreference substitutions are yet, in most cases, insufficient in transforming T into H, our system allows on-the-fly transformations. These transformations include insertions of missing nodes, flipping partsof-speech, moving sub-trees, etc. (see <ref type="bibr" target="#b15">(Stern and Dagan, 2011)</ref> for a complete list of these transformations). Since these transformations are not justified by given knowledge resources, we use linguisticallymotivated features to estimate their validity. For example, for on-the-fly lexical insertions we consider as features the named-entity annotation of the inserted word, and its probability estimation according to a unigram language model, which yields lower costs for more frequent words. Given a (T,H) pair, the system applies a search algorithm <ref type="bibr" target="#b16">(Stern et al., 2012)</ref> to find a proof O = (o 1 , o 2 , . . . o n ) that transforms T into H. For each proof step o i the system calculates a cost c(o i ). This cost is defined as follows: the system uses a weightvector w, which is learned in the training phase. In addition, each transformation o i is represented by a feature vector f (o i ) which characterizes the transformation. The cost c(o i ) is defined as w · f (o i ). The proof cost is defined as the sum of the costs of the transformations from which it is composed, i.e.:</p><formula xml:id="formula_0">c(O) n i=1 c(o i ) = n i=1 w · f (o i ) = w · n i=1 f (o i )</formula><p>(1) If the proof cost is below a threshold b, then the system concludes that T entails H. The complete description of the cost model, as well as the method for learning the parameters w and b is described in <ref type="bibr" target="#b15">(Stern and Dagan, 2011)</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2">System flow</head><p>The BIUTEE system flow ( <ref type="figure">Figure 1</ref>) starts with preprocessing of the text and the hypothesis. BIUTEE provides state-of-the-art pre-processing utilities: Easy-First parser <ref type="bibr" target="#b9">(Goldberg and Elhadad, 2010)</ref>, Stanford named-entity-recognizer <ref type="bibr" target="#b8">(Finkel et al., 2005)</ref> and ArkRef coreference resolver <ref type="bibr" target="#b10">(Haghighi and Klein, 2009)</ref>, as well as utilities for sentencesplitting and numerical-normalizations. In addition, BIUTEE supports integration of users' own utilities by simply implementing the appropriate interfaces. Entailment recognition begins with a global processing phase in which inference related computations that are not part of the proof are performed. Annotating the negation indicators and their scope in the text and hypothesis is an example of such calculation. Next, the system constructs a proof which is a sequence of transformations that transform the text into the hypothesis. Finding such a proof is a sequential process, conducted by the search algorithm. In each step of the proof construction the system examines all possible transformations that can be applied, generates new trees by applying selected transformations, and calculates their costs by constructing appropriate feature-vectors for them.</p><p>New types of transformations can be added to BIUTEE by a plug-in mechanism, without the need to change the code. For example, imagine that a researcher applies BIUTEE on the medical domain. There might be some well-known domain knowledge and rules that every medical person knows. Integrating them is directly supported by the plug-in mechanism. A plug-in is a piece of code which implements a few interfaces that detect which transformations can be applied, apply them, and construct appropriate feature-vectors for each applied transformation. In addition, a plug-in can perform computations for the global processing phase.</p><p>Eventually, the search algorithm finds a (approximately) lowest cost proof. This cost is normalized as a score between 0 and 1, and returned as output.</p><p>Training the cost model parameters w and b (see subsection 2.1) is performed by a linear learn- ing algorithm, as described in <ref type="bibr" target="#b15">(Stern and Dagan, 2011)</ref>. We use a Logistic-Regression learning algorithm, but, similar to other components, alternative learning-algorithms can be integrated easily by implementing an appropriate interface.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.3">Experimental results</head><p>BIUTEE's performance on the last two RTE challenges <ref type="bibr" target="#b2">(Bentivogli et al., 2011;</ref><ref type="bibr" target="#b1">Bentivogli et al., 2010</ref>) is presented in <ref type="table">Table 1</ref>: BIUTEE is better than the median of all submitted results, and in RTE-6 it outperforms all other systems.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Visual Tracing Tool</head><p>As a complex system, the final score provided as output, as well as the system's detailed logging information, do not expose all the decisions and calculations performed by the system. In particular, they do not show all the potential transformations that could have been applied, but were rejected by the search algorithm. However, such information is crucial for researchers, who need to observe the usage and the potential impact of each component of the system. We address this need by providing an interactive visual tracing tool, Tracer, which presents detailed information on each proof step, including potential steps that were not included in the final proof. In the demo session, we will use the visual tracing tool to illustrate all of BIUTEE's components 4 .</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Modes</head><p>Tracer provides two modes for tracing proof construction: automatic mode and manual mode. In automatic mode, shown in <ref type="figure">Figure 2</ref>, the tool presents the complete process of inference, as conducted by the system's search: the parse trees, the proof steps, the cost of each step and the final score. For each transformation the tool presents the parse tree before and after applying the transformation, highlighting the impact of this transformation. In manual mode, the user can invoke specific transformations proactively, including transformations rejected by the search algorithm for the eventual proof. As shown in <ref type="figure" target="#fig_0">Figure 3</ref>, the tool provides a list of transformations that match the given parse-tree, from which the user chooses and applies a single transformation at each step. Similar to automatic mode, their impact on the parse tree is shown visually.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Use cases</head><p>Developers of knowledge resources, as well as other types of transformations, can be aided by Tracer as follows. Applying an entailment rule is a process of first matching the rule's left-hand-side to the text parse-tree (or to any tree along the proof), and then substituting it by the rule's right-hand-side. To test a <ref type="figure">Figure 2</ref>: Entailment Rule application visualized in tracing tool. The upper pane displays the parse-tree generated by applying the rule. The rule description is the first transformation (printed in bold) of the proof, shown in the lower pane. It is followed by transformations 2 and 3, which are syntactic rewrite rules.</p><p>rule, the user can provide a text for which it is supposed to match, examine the list of potential transformations that can be performed on the text's parse tree, as in <ref type="figure" target="#fig_0">Figure 3</ref>, and verify that the examined rule has been matched as expected. Next, the user can apply the rule, visually examine its impact on the parse-tree, as in <ref type="figure">Figure 2</ref>, and validate that it operates as intended with no side-effects.</p><p>The complete inference process depends on the parameters learned in the training phase, as well as on the search algorithm which looks for lowest-cost proof from T to H. Researchers investigating these algorithmic components can be assisted by the tracing tool as well. For a given (T,H) pair, the automatic mode provides the complete proof found by the system. Then, in the manual mode the researcher can try to construct alternative proofs. If a proof with lower cost can be constructed manually it implies a limitation of the search algorithm. On the other hand, if the user can manually construct a better linguistically motivated proof, but it turns out that this proof has higher cost than the one found by the system, it implies a limitation of the learning phase which may be caused either by a limitation of the learning method, or due to insufficient training data.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Conclusions</head><p>In this paper we described BIUTEE, an open-source textual-inference system, and suggested it as a research platform in this field. We highlighted key advantages of BIUTEE, which directly support researchers' work: (a) modularity and extensibility, (b) a plug-in mechanism, (c) utilization of entailment rules, which can capture diverse types of knowledge, and (d) a visual tracing tool, which visualizes all the details of the inference process. </p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: List of available transformations, provided by Tracer in the manual mode. The user can manually choose and apply each of these transformations, and observe their impact on the parse-tree.</figDesc></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="2">http://edits.fbk.eu/ 3 http://svn.ask.it.usyd.edu.au/trac/ candc/wiki/nutcracker and 3. We will use this tool to illustrate various inference components in the demonstration session.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="4">Our demonstration requirements are a large screen and Internet connection.</note>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Acknowledgments</head><p>This work was partially supported by the Israel Science Foundation grant 1112/08, the PASCAL-</p></div>
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Semantic inference at the lexicalsyntactic level</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Roy</forename><surname>Bar-Haim</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ido</forename><surname>Dagan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of AAAI</title>
+		<meeting>AAAI</meeting>
+		<imprint>
+			<date type="published" when="2007" />
+		</imprint>
+	</monogr>
+	<note>Iddo Greental, and Eyal Shnarch</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">The sixth pascal recognizing textual entailment challenge</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Luisa</forename><surname>Bentivogli</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Peter</forename><surname>Clark</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ido</forename><surname>Dagan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hoa</forename><surname>Dang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Danilo</forename><surname>Giampiccolo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of TAC</title>
+		<meeting>TAC</meeting>
+		<imprint>
+			<date type="published" when="2010" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">The seventh pascal recognizing textual entailment challenge</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Luisa</forename><surname>Bentivogli</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Peter</forename><surname>Clark</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ido</forename><surname>Dagan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hoa</forename><surname>Dang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Danilo</forename><surname>Giampiccolo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of TAC</title>
+		<meeting>TAC</meeting>
+		<imprint>
+			<date type="published" when="2011" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Recognising textual entailment with logical inference</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Johan</forename><surname>Bos</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Katja</forename><surname>Markert</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of EMNLP</title>
+		<meeting>EMNLP</meeting>
+		<imprint>
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Blue-lite: a knowledge-based lexical entailment system for rte6</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Peter</forename><surname>Clark</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Phil</forename><surname>Harrison</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of TAC</title>
+		<meeting>TAC</meeting>
+		<imprint>
+			<date type="published" when="2010" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">The pascal recognising textual entailment challenge</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Oren</forename><surname>Ido Dagan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Bernardo</forename><surname>Glickman</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Magnini</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Machine Learning Challenges</title>
+		<editor>Quionero-Candela, J.</editor>
+		<editor>Dagan, I.</editor>
+		<editor>Magnini, B.</editor>
+		<editor>d&apos;Alch-Buc, F.</editor>
+		<imprint>
+			<date type="published" when="2006" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">An inference model for semantic entailment in natural language</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Rodrigo</forename><surname>De Salvo</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Roxana</forename><surname>Braz</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Girju</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of AAAI</title>
+		<meeting>AAAI</meeting>
+		<imprint>
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+	<note>Vasin Punyakanok, Dan Roth, and Mark Sammons</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">WordNet An Electronic Lexical Database</title>
+		<editor>Christiane Fellbaum</editor>
+		<imprint>
+			<date type="published" when="1998-05" />
+			<publisher>The MIT Press</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Incorporating non-local information into information extraction systems by gibbs sampling</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jenny</forename><forename type="middle">Rose</forename><surname>Finkel</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Trond</forename><surname>Grenager</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Christopher</forename><surname>Manning</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of ACL</title>
+		<meeting>ACL</meeting>
+		<imprint>
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">An efficient algorithm for easy-first non-directional dependency parsing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Yoav</forename><surname>Goldberg</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Michael</forename><surname>Elhadad</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of NAACL</title>
+		<meeting>NAACL</meeting>
+		<imprint>
+			<date type="published" when="2010" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Simple coreference resolution with rich syntactic and semantic features</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Aria</forename><surname>Haghighi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Dan</forename><surname>Klein</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of EMNLP</title>
+		<meeting>EMNLP</meeting>
+		<imprint>
+			<date type="published" when="2009" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<monogr>
+		<title level="m" type="main">Uaic participation at rte4. In Proceedings of TAC</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Adrian</forename><surname>Iftene</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2008" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Moses: Open source toolkit for statistical machine translation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Philipp</forename><surname>Koehn</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hieu</forename><surname>Hoang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alexandra</forename><surname>Birch</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Chris</forename><surname>Callison-Burch</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Marcello</forename><surname>Federico</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Nicola</forename><surname>Bertoldi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Brooke</forename><surname>Cowan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Wade</forename><surname>Shen</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Christine</forename><surname>Moran</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Richard</forename><surname>Zens</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Chris</forename><surname>Dyer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of ACL</title>
+		<meeting>ACL</meeting>
+		<imprint>
+			<date type="published" when="2007" />
+		</imprint>
+	</monogr>
+	<note>Ondrej Bojar, Alexandra Constantin, and Evan Herbst</note>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">An opensource package for recognizing textual entailment</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Milen</forename><surname>Kouylekov</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Matteo</forename><surname>Negri</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of ACL Demo</title>
+		<meeting>ACL Demo</meeting>
+		<imprint>
+			<date type="published" when="2010" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">A baseline approach to the rte5 search pilot</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Andrew</forename><surname>Mackinlay</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Timothy</forename><surname>Baldwin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of TAC</title>
+		<meeting>TAC</meeting>
+		<imprint>
+			<date type="published" when="2009" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">A confidence model for syntactically-motivated entailment proofs</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Asher</forename><surname>Stern</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ido</forename><surname>Dagan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of RANLP</title>
+		<meeting>RANLP</meeting>
+		<imprint>
+			<date type="published" when="2011" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Efficient search for transformation-based inference</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Asher</forename><surname>Stern</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Roni</forename><surname>Stern</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ido</forename><surname>Dagan</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ariel</forename><surname>Felner</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of ACL</title>
+		<meeting>ACL</meeting>
+		<imprint>
+			<date type="published" when="2012" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>
