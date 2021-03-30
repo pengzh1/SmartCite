@@ -5,6 +5,7 @@
 
 <body>
 <div th:include="common::top"/>
+
 <div class="highlight-clean">
     <div class="container">
         <div class="intro" style="max-width: 900px;">
@@ -15,8 +16,10 @@
         </div>
         <div class="buttons">
             <div class="input-group mb-3">
-                <div class="custom-file border"><input class="border-dark custom-file-input" type="file"><label
-                        class="custom-file-label">Please select a file for citation context extraction<br></label></div>
+                <div class="custom-file border"><input id="fileInput" class="border-dark custom-file-input" type="file"
+                                                       onchange="showFilename(this.files[0])"><label id="filename_label"
+                                                                                                     class="custom-file-label">Please
+                    select a file for citation context extraction</label></div>
             </div>
             <div class="custom-control custom-radio custom-control-inline"><input type="radio" id="customRadioInline2"
                                                                                   class="custom-control-input"
@@ -24,17 +27,18 @@
                     class="custom-control-label" for="customRadioInline2">Use Pretrain Model</label></div>
             <div class="custom-control custom-radio custom-control-inline"><input type="radio" id="customRadioInline1"
                                                                                   class="custom-control-input"
-                                                                                  name="customRadioInline"><label
+                                                                                  name="customRadioInline"
+                                                                                  checked><label
                     class="custom-control-label" for="customRadioInline1">Use SVM model</label></div>
             <div style="margin-top: 50px;">
-                <button class="btn btn-outline-dark active" type="button">Upload</button>
-                <button class="btn btn-outline-dark active" type="button">upload zip</button>
+                <button id="upload" class="btn btn-outline-dark active" type="button">Upload</button>
+                <button id="upload_zip" class="btn btn-outline-dark active" type="button">upload zip</button>
             </div>
         </div>
     </div>
 </div>
 <div th:include="common::footer"/>
-<div th:include="include::script"/>
+<div th:include="common::script"/>
 </body>
 
 </html>

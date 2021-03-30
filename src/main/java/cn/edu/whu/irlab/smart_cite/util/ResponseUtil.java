@@ -28,7 +28,7 @@ public class ResponseUtil {
 
     public static ResponseVo success(Object object){
         ResponseVo responseVo = new ResponseVo();
-        responseVo.setCode(0);
+        responseVo.setCode(200);
         responseVo.setMsg("extract successfully");
         responseVo.setData(object);
         return responseVo;

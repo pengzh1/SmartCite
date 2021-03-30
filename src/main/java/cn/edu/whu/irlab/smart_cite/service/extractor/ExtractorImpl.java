@@ -267,6 +267,9 @@ public abstract class ExtractorImpl  {
      * @desc 保存上传的文件
      **/
     public File saveUploadedFile(MultipartFile file) throws IOException {
+        if (file.isEmpty()){
+            throw new IllegalArgumentException("没有获取到上传的文件");
+        }
         File upload = new File(FileLocation.UPLOAD_FILE + File.separator + file.getOriginalFilename());
         file.transferTo(upload);
         return upload;
