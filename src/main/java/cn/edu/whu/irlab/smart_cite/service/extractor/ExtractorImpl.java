@@ -2,14 +2,12 @@ package cn.edu.whu.irlab.smart_cite.service.extractor;
 
 import cn.edu.whu.irlab.smart_cite.enums.XMLTypeEnum;
 import cn.edu.whu.irlab.smart_cite.exception.FileTypeException;
-import cn.edu.whu.irlab.smart_cite.service.Classifier;
 import cn.edu.whu.irlab.smart_cite.service.grobid.GrobidService;
 import cn.edu.whu.irlab.smart_cite.service.paperXmlReader.PaperXmlReader;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.GrobidPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.JsonXmlPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.LeiPreprocessorImpl;
 import cn.edu.whu.irlab.smart_cite.service.preprocessor.PlosPreprocessorImpl;
-import cn.edu.whu.irlab.smart_cite.service.classifier.SvmClassifier;
 import cn.edu.whu.irlab.smart_cite.util.ReadUtil;
 import cn.edu.whu.irlab.smart_cite.util.TypeConverter;
 import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
@@ -35,7 +33,6 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.helpers.DefaultHandler;
-import weka.core.Instances;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -54,7 +51,7 @@ import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.*;
  * @desc 任务执行器 实现类
  **/
 @Slf4j
-public abstract class ExtractorImpl  {
+public abstract class ExtractorImpl {
 
     @Autowired
     private GrobidService grobidService;
@@ -145,11 +142,13 @@ public abstract class ExtractorImpl  {
         //分类
         results = classify(results, file);
 
-        JSONArray refTags = CombinedResult(results);
+        addContextList(results);
+
+//        JSONArray refTags = CombinedResult(results);
 
         JSONObject result = new JSONObject();
         result.put("fileName", file.getName());
-        result.put("refTags", refTags);
+        result.put("article", article.toJson());
 
 //        WriteUtil.writeList(OUTPUT + FilenameUtils.getBaseName(file.getName()) + ".txt", refTags);//todo 配置多样的输出
         WriteUtil.writeStr(OUTPUT + File.separator + file.getName() + ".json", result.toJSONString());
@@ -188,6 +187,16 @@ public abstract class ExtractorImpl  {
         return jsonObjectAsyncResult;
     }
 
+    private void addContextList(List<Result> results) {
+        for (Result r :
+                results) {
+            RefTag refTag = r.getRefTag();
+            if (r.isContext()) {
+                refTag.getContextList().add(r.getSentence());
+            }
+        }
+    }
+
     /**
      * @param results
      * @return
@@ -196,12 +205,10 @@ public abstract class ExtractorImpl  {
      **/
     private JSONArray CombinedResult(List<Result> results) {
         List<RefTag> refTags = new ArrayList<>();
+        addContextList(results);
         for (Result r :
                 results) {
             RefTag refTag = r.getRefTag();
-            if (r.isContext()) {
-                refTag.getContextList().add(r.getSentence());
-            }
             if (!refTags.contains(refTag)) {
                 refTags.add(refTag);
             }
@@ -267,7 +274,7 @@ public abstract class ExtractorImpl  {
      * @desc 保存上传的文件
      **/
     public File saveUploadedFile(MultipartFile file) throws IOException {
-        if (file.isEmpty()){
+        if (file.isEmpty()) {
             throw new IllegalArgumentException("没有获取到上传的文件");
         }
         File upload = new File(FileLocation.UPLOAD_FILE + File.separator + file.getOriginalFilename());

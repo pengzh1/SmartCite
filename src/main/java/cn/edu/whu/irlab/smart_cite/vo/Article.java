@@ -1,5 +1,8 @@
 package cn.edu.whu.irlab.smart_cite.vo;
 
+import cn.edu.whu.irlab.smart_cite.util.TypeConverter;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.leishengwei.jutils.Collections;
 import com.leishengwei.jutils.Files;
 import lombok.Data;
@@ -17,7 +20,7 @@ import static com.leishengwei.jutils.Strings.startCapital;
  * @desc 文章实体
  **/
 @Data
-public class Article {
+public class Article implements ToJsonAble {
 
     private int num = 0;//0:代表参与未批量处理的文件，参与批量处理的文件从1开始编号 todo 该参数如何初始化？
     //    private String pubInfo; //该参数暂无
@@ -298,6 +301,26 @@ public class Article {
         } else {
             return Optional.of(entry.getValue());
         }
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject jsonArticle = new JSONObject();
+        jsonArticle.put("title", title);
+        jsonArticle.put("authors", TypeConverter.list2JsonArray(authors));
+        JSONArray sentences = new JSONArray();
+        for (Map.Entry<Integer, Sentence> entry :
+                sentenceTreeMap.entrySet()) {
+            sentences.add(entry.getValue().toJson());
+        }
+        jsonArticle.put("sentences", sentences);
+        List<Reference> referencesList = new ArrayList<>();
+        for (Map.Entry<String, Reference> entry :
+                references.entrySet()) {
+            referencesList.add(entry.getValue());
+        }
+        jsonArticle.put("references", TypeConverter.list2JsonArray(referencesList));
+        return jsonArticle;
     }
 
     @Override
