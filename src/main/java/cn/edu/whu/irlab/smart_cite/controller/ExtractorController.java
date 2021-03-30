@@ -2,6 +2,7 @@ package cn.edu.whu.irlab.smart_cite.controller;
 
 import cn.edu.whu.irlab.smart_cite.enums.ResponseEnum;
 import cn.edu.whu.irlab.smart_cite.exception.FileTypeException;
+import cn.edu.whu.irlab.smart_cite.service.extractor.PretrainModelExtractor;
 import cn.edu.whu.irlab.smart_cite.service.extractor.SvmExtractor;
 import cn.edu.whu.irlab.smart_cite.util.ResponseUtil;
 import cn.edu.whu.irlab.smart_cite.util.UnPackeUtil;
@@ -33,13 +34,21 @@ public class ExtractorController {
     @Autowired
     private SvmExtractor svmExtractor;
 
+    @Autowired
+    private PretrainModelExtractor pretrainModelExtractor;
+
 
     @PostMapping("/extract")
     @ResponseBody
-    public ResponseVo extractController(MultipartFile file) {
+    public ResponseVo extractController(MultipartFile file, @RequestParam(name = "method", defaultValue = "pretrain") String method) {
 
         try {
-            JSONObject object = svmExtractor.extract(file);
+            JSONObject object = null;
+            if (method.equals("pretrain")) {
+                object = pretrainModelExtractor.extract(file);
+            } else if (method.equals("svm")) {
+                object = svmExtractor.extract(file);
+            }
             return ResponseUtil.success(object);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -117,7 +126,7 @@ public class ExtractorController {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             if (e instanceof FileTypeException) {
-                return ResponseUtil.error(ResponseEnum.FILE_ERROR);
+
             } else {
                 return ResponseUtil.error(ResponseEnum.SERVER_ERROR);
             }

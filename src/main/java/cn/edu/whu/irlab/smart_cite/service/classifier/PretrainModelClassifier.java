@@ -55,9 +55,7 @@ public class PretrainModelClassifier implements Classifier {
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, request, String.class);
         String response = responseEntity.getBody().replaceAll("\\n", "");
 
-        System.out.println(response);
 
-        //todo 待测试
         JSONArray jsonArray = JSONObject.parseObject(response).getJSONArray("predictions");
 
         for (int i = 0; i < results.size(); i++) {

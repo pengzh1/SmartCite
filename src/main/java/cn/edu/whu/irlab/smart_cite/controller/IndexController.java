@@ -14,4 +14,9 @@ public class IndexController {
         return "index";
     }
 
+    @RequestMapping(value = "/result.html")
+    public String result() {
+        return "result";
+    }
+
 }
