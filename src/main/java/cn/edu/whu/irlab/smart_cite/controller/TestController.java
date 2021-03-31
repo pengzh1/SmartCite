@@ -5,7 +5,6 @@ import cn.edu.whu.irlab.smart_cite.enums.ResponseEnum;
 import cn.edu.whu.irlab.smart_cite.service.extractor.SvmExtractor;
 import cn.edu.whu.irlab.smart_cite.service.unpack.AjaxList;
 import cn.edu.whu.irlab.smart_cite.service.unpack.FileUploadService;
-import cn.edu.whu.irlab.smart_cite.service.extractor.ExtractorImpl;
 import cn.edu.whu.irlab.smart_cite.util.ReadUtil;
 import cn.edu.whu.irlab.smart_cite.util.ResponseUtil;
 import cn.edu.whu.irlab.smart_cite.vo.PackParam;
@@ -33,7 +32,6 @@ public class TestController {
     @Autowired
     private SvmExtractor svmExtractor;
 
-
     @GetMapping("/connectTest")
     public String connectTest() {
         return "work";
@@ -48,14 +46,14 @@ public class TestController {
 
     @PostMapping("/upload/file")
     @ResponseBody
-    public ResponseVo uploadFile(@RequestParam("file") MultipartFile multipartFile)  {
-        if (multipartFile==null){
+    public ResponseVo uploadFile(@RequestParam("file") MultipartFile multipartFile) {
+        if (multipartFile == null) {
             return ResponseUtil.error(ResponseEnum.FILE_NOT_FOUND);
         }
         try {
-            File file=svmExtractor.saveUploadedFile(multipartFile);
-            String str= ReadUtil.read2Str(file);
-            JSONObject jsonObject=JSONObject.parseObject(str);
+            File file = svmExtractor.saveUploadedFile(multipartFile);
+            String str = ReadUtil.read2Str(file);
+            JSONObject jsonObject = JSONObject.parseObject(str);
             return ResponseUtil.success(jsonObject);
         } catch (IOException e) {
             e.printStackTrace();

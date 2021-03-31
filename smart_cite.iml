@@ -147,15 +147,7 @@
     <orderEntry type="library" name="Maven: edu.stanford.nlp:stanford-corenlp:models:3.9.2" level="project" />
     <orderEntry type="library" name="Maven: edu.stanford.nlp:stanford-parser:3.9.2" level="project" />
     <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.18.8" level="project" />
-    <orderEntry type="module-library">
-      <library name="Maven: com.leishengwei:jutils:0.0.1">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/src/main/resources/lib/JavaUtils.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
+    <orderEntry type="library" name="Maven: com.leishengwei:jutils:0.0.1" level="project" />
     <orderEntry type="library" name="Maven: nz.ac.waikato.cms.weka:weka-dev:3.9.4" level="project" />
     <orderEntry type="library" name="Maven: com.github.vbmacher:java-cup:11b-20160615" level="project" />
     <orderEntry type="library" name="Maven: com.github.vbmacher:java-cup-runtime:11b-20160615" level="project" />

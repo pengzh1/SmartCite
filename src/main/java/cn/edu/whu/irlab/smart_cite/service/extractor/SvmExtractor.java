@@ -22,13 +22,13 @@ public class SvmExtractor extends ExtractorImpl {
     @Autowired
     private SvmClassifier SVMClassifier;
 
+    @Autowired
+    private SvmFeatureExtractor svmFeatureExtractor;
+
     @Override
     List<Result> classify(List<Result> results, File file) {
         return SVMClassifier.classify(results, file);
     }
-
-    @Autowired
-    private SvmFeatureExtractor svmFeatureExtractor;
 
     @Override
     public List<Result> extractFeature(Article article, boolean isPutInTogether) {
