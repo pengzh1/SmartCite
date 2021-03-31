@@ -17,3 +17,8 @@ ref {
 .context {
     background-color: rgba(0, 123, 255, 0.25);
 }
+
+.table-responsive {
+    overflow-y: scroll;
+    max-height: 450px;
+}
