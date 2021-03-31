@@ -140,6 +140,7 @@ public class Sentence implements ISentence, ToJsonAble {
         jsonObject.put("id", id);
         jsonObject.put("text", text);
         jsonObject.put("section", sect);
+        jsonObject.put("pNum", pNum);
         jsonObject.put("refTags", TypeConverter.list2JsonArray(refList));
         return jsonObject;
     }

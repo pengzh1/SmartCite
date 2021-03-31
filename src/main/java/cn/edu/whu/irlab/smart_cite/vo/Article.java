@@ -303,23 +303,50 @@ public class Article implements ToJsonAble {
         }
     }
 
+
     @Override
     public JSONObject toJson() {
         JSONObject jsonArticle = new JSONObject();
         jsonArticle.put("title", title);
         jsonArticle.put("authors", TypeConverter.list2JsonArray(authors));
-        JSONArray sentences = new JSONArray();
+        TreeMap<Integer, List<Sentence>> paragraphsTreeMap = new TreeMap<>();
         for (Map.Entry<Integer, Sentence> entry :
                 sentenceTreeMap.entrySet()) {
-            sentences.add(entry.getValue().toJson());
+            int pNum = entry.getValue().getPNum();
+            if (paragraphsTreeMap.containsKey(pNum)) {
+                List<Sentence> sentences = paragraphsTreeMap.get(pNum);
+                sentences.add(entry.getValue());
+            } else {
+                List<Sentence> sentences = new ArrayList<>();
+                sentences.add(entry.getValue());
+                paragraphsTreeMap.put(pNum, sentences);
+            }
         }
-        jsonArticle.put("sentences", sentences);
-        List<Reference> referencesList = new ArrayList<>();
+        JSONArray paragraphs = new JSONArray();
+        for (Map.Entry<Integer, List<Sentence>> entry :
+                paragraphsTreeMap.entrySet()) {
+            JSONArray sentences = new JSONArray();
+            entry.getValue().forEach(sentence -> {
+                sentences.add(sentence.toJson());
+            });
+            paragraphs.add(sentences);
+        }
+
+        jsonArticle.put("paragraphs", paragraphs);
+//        List<Reference> referencesList = new ArrayList<>();
+//        for (Map.Entry<String, Reference> entry :
+//                references.entrySet()) {
+//            referencesList.add(entry.getValue());
+//        }
+//        jsonArticle.put("references", TypeConverter.list2JsonArray(referencesList));
+
+        JSONObject referencesJson=new JSONObject();
         for (Map.Entry<String, Reference> entry :
                 references.entrySet()) {
-            referencesList.add(entry.getValue());
+            referencesJson.put(entry.getKey(),entry.getValue().toJson());
         }
-        jsonArticle.put("references", TypeConverter.list2JsonArray(referencesList));
+        jsonArticle.put("references", referencesJson);
+
         return jsonArticle;
     }
 

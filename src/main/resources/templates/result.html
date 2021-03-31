@@ -9,8 +9,13 @@
     <div class="container" style="padding-top: 50px;max-height: 50%;">
         <div class="row">
             <div class="col-md-8">
-                <h1 class="text-center">Article Title</h1>
-                <div></div>
+                <div id="article" class="jumbotron">
+                    <h1 id="article_title">Heading text</h1>
+                    <div id="article_body"></div>
+                    <p>
+                        <button class="btn btn-dark active" type="button">Download</button>
+                    </p>
+                </div>
             </div>
             <div class="col-md-4">
                 <h1 class="text-center">Reference</h1>
@@ -22,45 +27,17 @@
                             <th>Value</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        <tr>
-                            <td>Title</td>
-                            <td>Cell 2</td>
-                        </tr>
-                        <tr>
-                            <td>Authors</td>
-                            <td>Cell 4</td>
-                        </tr>
-                        <tr>
-                            <td>Source</td>
-                            <td>Cell 2</td>
-                        </tr>
-                        <tr>
-                            <td>Year</td>
-                            <td>Cell 2</td>
-                        </tr>
-                        <tr>
-                            <td>Volume</td>
-                            <td>Cell 2</td>
-                        </tr>
-                        <tr>
-                            <td>Pages</td>
-                            <td>Cell 2</td>
-                        </tr>
+                        <tbody id="reference">
                         </tbody>
                     </table>
                 </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <button class="btn btn-dark active" type="button">Download</button>
             </div>
         </div>
     </div>
 </div>
 <div th:include="common::footer"/>
 <div th:include="common::script"/>
+<script type="text/javascript" th:src="@{/js/result.js}"></script>
 </body>
 
 </html>
