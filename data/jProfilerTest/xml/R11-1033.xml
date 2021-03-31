@@ -1,0 +1,630 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T22:20+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Investigating Advanced Techniques for Document Content Similarity Applied to External Plagiarism Analysis</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+				<date type="published" when="2011-09">September 2011</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Daniel</forename><surname>Micol</surname></persName>
+							<email>dmicol@dlsi.ua.esó</email>
+							<affiliation key="aff0">
+								<orgName type="department" key="dep1">Dept. of Software and Computing Systems</orgName>
+								<orgName type="department" key="dep2">Dept. of Biomedical Informatics</orgName>
+								<orgName type="institution">University of Alicante San Vicente del Raspeig</orgName>
+								<address>
+									<settlement>Alicante</settlement>
+									<country key="ES">Spain</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Rafael</forename><surname>Muñoz</surname></persName>
+							<email>rafael@dlsi.ua.esó</email>
+							<affiliation key="aff0">
+								<orgName type="department" key="dep1">Dept. of Software and Computing Systems</orgName>
+								<orgName type="department" key="dep2">Dept. of Biomedical Informatics</orgName>
+								<orgName type="institution">University of Alicante San Vicente del Raspeig</orgName>
+								<address>
+									<settlement>Alicante</settlement>
+									<country key="ES">Spain</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Scar Ferrández</surname></persName>
+							<email>oscar.ferrandez@utah.edu</email>
+							<affiliation key="aff1">
+								<orgName type="institution">University of Utah</orgName>
+								<address>
+									<addrLine>Salt Lake City</addrLine>
+									<settlement>Utah</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Investigating Advanced Techniques for Document Content Similarity Applied to External Plagiarism Analysis</title>
+					</analytic>
+					<monogr>
+						<title level="m">Proceedings of Recent Advances in Natural Language Processing</title>
+						<meeting>Recent Advances in Natural Language Processing <address><addrLine>Hissar, Bulgaria</addrLine></address>
+						</meeting>
+						<imprint>
+							<biblScope unit="page" from="12" to="14"/>
+							<date type="published" when="2011-09">September 2011</date>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>We present an approach to perform external plagiarism analysis by applying several similarity detection techniques, such as lexical measures and a textual entailment recognition system developed by our research group. Some of the least expensive features of this system are applied to all corpus documents to detect those that are likely to be plagiarized. After this is done, the whole system is applied over this subset of documents to extract the exact n-grams that have been plagiarized, given that we now have less data to process and therefore can use a more complex and costly function. Apart from the application of strictly lexical measures, we also experiment with a textual entailment recognition system to detect plagiarisms with a high level of obfuscation. In addition, we experiment with the application of a spell corrector and a machine translation system to handle misspellings and plagiarisms translated into different languages, respectively.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>We believe there are two main user scenarios where external plagiarism detection tools are applied, sharing both of them the fact that they have a large source documents corpus. The difference, however, is that the first scenario is based on a large number of suspicious documents being processed at the same time, so the detection approach needs to be highly efficient and scalable. An example of this scenario would be the 1st and 2nd International Competitions on Plagiarism Detection <ref type="bibr" target="#b17">(Potthast et al., 2009;</ref><ref type="bibr" target="#b18">Potthast et al., 2010)</ref>, where the corpora contain multiple source and suspicious documents. For this first use case we have developed a system to detect external document plagiarism that is highly efficient and scalable. It contains a first phase where a small subset of source documents are selected as possible candidates to be the origin of the plagiarism for a given suspicious document. Given that this phase processes the whole corpora, it uses a simple and lightweight function to select the subset of candidate source documents. After this is done, a more complex function is applied over this subset to extract which documents contain the plagiarism, and the exact position within these documents. This two-step approach is common among research systems, as described in <ref type="bibr" target="#b17">(Potthast et al., 2009)</ref>.</p><p>The second use case assumes that we only have to process one suspicious document at a time. Therefore, we can apply more complex techniques that are less efficient but highly accurate, as there is less data to process. An example of this use case could be an online system to detect if a scientific manuscript that an author wants to submit to a journal or conference is a plagiarism of a previously published paper. For this second use case we have experimented with more complex and accurate techniques, such as the usage of textual entailment recognition methods developed by our research group. In addition, we have also applied a spell corrector and a machine translation system to handle documents with misspellings and written in different languages.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">State of the art</head><p>Most of the research approaches on external plagiarism analysis contain a simple and efficient heuristic retrieval to reduce the number of source documents to compare against, and a more complex and costly detailed analysis that attempts to extract the exact position of the plagiarized fragment, if any <ref type="bibr" target="#b17">(Potthast et al., 2009)</ref>. The system that we have developed is in line with this archi-tecture.</p><p>With regards to the heuristic retrieval, <ref type="bibr" target="#b1">(Basile et al., 2008;</ref><ref type="bibr" target="#b7">Grozea et al., 2009)</ref> decided to apply a document similarity function that would be used as heuristic to determine if a given suspicious and source documents are similar enough to hold a plagiarism relation. <ref type="bibr" target="#b10">(Kasprzak et al., 2009</ref>) create an inverted index of the corpus document's contents in order to be able to retrieve efficiently a set of documents that contain a set of n-grams. <ref type="bibr" target="#b7">(Grozea et al., 2009;</ref><ref type="bibr" target="#b20">Stamatatos, 2009)</ref> implement a character-level n-gram comparison and apply a cosine similarity function based on term frequency weights. With this approach they extract the 51 most similar source documents to the suspicious one being analyzed. <ref type="bibr" target="#b2">(Basile et al., 2009;</ref><ref type="bibr" target="#b10">Kasprzak et al., 2009</ref>) decided to implement a word-level ngram comparison. Low granularity word n-grams, with a size of 1, have been explored by <ref type="bibr" target="#b15">(Muhr et al., 2009)</ref>, applying cosine similarity using frequency weights to extract the two most similar partitions for every sentence in a document, using the source document's sentences as centroid.</p><p>For the detailed analysis, <ref type="bibr" target="#b2">(Basile et al., 2009</ref>) perform a greedy match merging if the distance of the matches is not too high. A more strict approach has been presented by <ref type="bibr" target="#b15">(Muhr et al., 2009</ref>), requiring exact sentence matches, and afterwards applying a match merging approach by greedily joining consecutive sentences. In this method, gaps are allowed if the respective sentences are similar to the corresponding sentences in the other document. <ref type="bibr" target="#b7">(Grozea et al., 2009</ref>) perform a computation of the distances of adjacent matches, joining them based on a Monte Carlo optimization. Afterwards, they propose a refinement of the obtained section pairs. <ref type="bibr" target="#b10">(Kasprzak et al., 2009</ref>) extract matches of word n-grams of length 5, and apply a Match Merging Heuristic to get larger matches. Then they extract the maximum size that shares at least 20 matches, including the first and the last n-gram of the matching sections, and for which 2 adjacent matches are at most 49 not-matching ngrams apart.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Methods</head><p>We will first present a baseline system that is efficient and scalable, and designed to work for the first use case mentioned above. For this purpose, we will use corpora of thousands of suspicious and source documents, where every suspicious can contain none, one or more plagiarisms of any source documents. After this, we present certain optimizations built on top of our baseline system that will make it more accurate, although slower, and therefore will be applicable in the second use case.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Baseline system</head><p>Our baseline system , developed for our participation in the 2nd International Competition on Plagiarism Detection <ref type="bibr" target="#b18">(Potthast et al., 2010)</ref>, has two phases: document selection, using a heuristic retrieval, and passage matching, performing a more detailed analysis.</p><p>The first step is to select a subset of candidate source documents that will later on be compared against a given suspicious document. This should reduce by a large factor the number of document comparisons to perform. To generate this set we will have to loop through all source documents, and given that this set is large, this operation needs to be relatively simple and inexpensive. Our approach to solve this problem is to weight the words in every document and then compare the weights of those terms that appear in both the suspicious and the source documents being compared. Their similarity score will be the sum of the mentioned common term weights.</p><p>Once we have a small subset of source documents to compare against for every suspicious one, we can perform a more accurate and costly comparison between pairs of documents. We try to find the largest common substring between suspicious and source documents, requiring a minimum length which will be the n-gram size. Once the n-grams of the source document being compared against have been extracted, we will iterate through the contents of the suspicious document, extract n-grams starting at every given offset, look them up in the list of n-grams of the aforementioned source document, and seek directly to the positions where the given n-gram appears, avoiding unnecessary comparisons. From these offsets we will try to find the largest common substring to both documents.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">DLSITE: a textual entailment recognition system</head><p>The baseline system that we have detailed before is suitable for low levels of plagiarism obfuscation, given that it is based on lexical comparisons. If the person who performs the appropriation uses equivalent terms instead of the original ones, or swaps the word order considerably, our system will not perform well and won't recognize these plagiarisms. To be able to detect these sorts of appropriations, we add semantic and syntactic techniques, as well as more advanced lexical measures. Concretely, we decided to apply DLSITE <ref type="bibr" target="#b4">(Ferrández et al., 2007a)</ref>, a textual entailment recognition system developed by our research group that analyzes pairs of sentences, being one the text and the other the hypothesis, trying to determine if the hypothesis' meaning can be inferred from the text's. Therefore, with the use of this system, we could detect plagiarisms that are written in different manners, but still share their meaning. DLSITE contains the following modules:</p><p>Lexical analysis The lexical module of DLSITE <ref type="bibr" target="#b5">(Ferrández et al., 2007b)</ref> computes the extraction of several lexical feature values for a given texthypothesis pair. These measures are mainly based on word co-occurrences in both the hypothesis and the text, as well as the context where they appear.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Syntactic analysis</head><p>The syntactic module of DL-SITE <ref type="bibr" target="#b13">(Micol et al., 2007)</ref> compares the meaning of the text and the hypothesis by generating their corresponding syntactic dependency trees, and then analyzing the similarities of these two structures. It is composed of a pipeline of four submodules, which are syntactic dependency tree construction, filtering, embedded subtree search and graph node matching.</p><p>Semantic analysis The semantic module of DL-SITE analyzes a text-hypothesis pair from a meaning's perspective, using resources such as WordNet, VerbOcean and FrameNet. Similar research projects have already developed procedures using standard WordNet-based similarities <ref type="bibr" target="#b3">(Corley and Mihalcea, 2005;</ref><ref type="bibr" target="#b8">Hickl and Bensley, 2007)</ref>. However, in our case we also consider string-based similarities for the final similarity score. This allows us to positively consider entities that, while not appearing in WordNet, are very relevant, instead of penalizing their similarity score. We exploit WordNet relations in order to find semantic paths that connect two concepts through the WordNet taxonomy.</p><p>Since verbs have a strong contribution to the sentence's final meaning, we want to measure how the hypothesis' verbs are related to the text's. To achieve this, we exploit the VerbNet lexicon <ref type="bibr" target="#b11">(Kipper et al., 2006)</ref>, and the VerbOcean and WordNet relationships, trying to find correlations between the main verbs expressed in the hypothesis with those in the text. The underlying intuition about the VerbNet correspondence is that the verbs wrapped in the same VerbNet class or in one of their subclasses have a strong semantic relation since they share the same thematic roles and restrictions, as well as syntactic and semantic frames. Additionally, VerbOcean's relations are good indicators of semantic correspondence between verbs.</p><p>Another relevant issue to recognize entailment relations is to analyze the presence and absence of named entities. <ref type="bibr" target="#b19">(Rodrigo et al., 2008)</ref> successfully built their system mainly using the knowledge supplied by the recognition of named entities. Other works, such as <ref type="bibr" target="#b9">(Iftene and Moruz, 2009)</ref>  <ref type="bibr" target="#b0">Balahur et al., 2008)</ref>, have also proven that knowledge about named entities positively helps in modeling entailments. In our case, rather than constructing the system based on named entity inferences, we study the addition of this knowledge in our textual entailment recognition system. Therefore, similarly as we did for verbs, we explored ways to find out entity counterparts between the text and the hypothesis. The first step is to recognize named entities, and for this purpose we use our in-house named entity recognizer, called NERUA <ref type="bibr" target="#b12">(Kozareva et al., 2007)</ref>. Afterwards, we use two surface techniques to discover NE relations: partial entity matching and acronym correspondences between the NEs detected in the hypothesis and the ones in the text.</p><note type="other">and our participation in the Text Analysis Conference 2008 (</note></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3">Corpus pre-processing</head><p>We have identified some scenarios where it would be beneficial to perform additional corpus preprocessing. These are described as follows.</p><p>Handling misspellings Given that our method is heavily based on term frequencies, a misspelling in the processed documents could introduce a high level of noise, since they will have a lower document frequency, and therefore a higher idf . Also, if a misspelling appears in a suspicious and a source document, these will be heavily linked by this term, and their similarity score may not be fair when comparing it with other documents. There-fore, it would be beneficial to apply a spell corrector over the documents in our corpora, such as the one described in <ref type="bibr" target="#b6">(Gao et al., 2010)</ref>. To minimize the impact of false positives from the speller system, we would perform a two-pass algorithm. In the first pass we would not apply the spell corrector, and would try to retrieve all the plagiarisms that our system recognizes. In the second pass we would apply the spell corrector and attempt to extract additional appropriations. By doing this we ensure that we don't loose plagiarisms if the spell corrector system introduces some noise into the data.</p><p>Document translation When plagiarizing a document, an author can choose to translate it into a different language. This is the case, for instance, for some of the plagiarized documents of the PAN corpora, which have been translated into Spanish or German <ref type="bibr" target="#b17">(Potthast et al., 2009</ref>). These appropriations won't be detected by our system unless we translate them into English, as this is the language in which the source documents are written. As a pre-processing step, we propose to apply a language detector over the set of suspicious documents, and if this tool detects that they are not in English, we execute an automatic translator to transform the corresponding document into English. The detection step is performed using the API of a machine translation application. Given that this is a remote live production system and some of the documents in our corpus can be large, sending the whole text doesn't seem to be the best approach. For the user case where we have a large amount of suspicious documents to process, we send a fragment composed of the first few hundreds of words from a document in order to get a fast and scalable response. This is not completely accurate, as some times documents contain fragments written in different languages. If we only process one suspicious document, we perform a more complex and accurate process. To do this we first split the document content into sentences based on punctuation symbols. Then, we submit three random sentences from the text to the translation application. If all of them return the same language detected, this will be the one of the document. If this is not the case we take another set of three sentences. Similar to what we previously mentioned, we perform a two-pass algorithm in order to reduce the impact of false positives introduced by the translation software.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Experimentation and results</head><p>As mentioned before, the corpora that we have used to measure and evaluate our system have been provided by the 1st International Competition on Plagiarism Detection. These are composed thousands of source and suspicious documents, some of the latter containing automatically generated plagiarisms with different levels of obfuscation. In addition, some source documents are written in Spanish or German, but the corresponding plagiarized document has been translated into English.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Baseline system</head><p>To experiment with our system we used the external plagiarism corpora from the 1st International Competition on Plagiarism Detection. The first aspect we experimented with was trying to determine the optimal number of documents to be selected, given that a larger amount would lead to higher accuracy, but would affect performance negatively. The opposite applies to smaller selected document sets. <ref type="table" target="#tab_1">Table 1</ref> shows the results from this experiment using different set sizes, where column Captured represents the number of plagiarisms that are contained within the set of source documents, and Missed those that are not included in this set.  Given the values from <ref type="table" target="#tab_1">Table 1</ref>, we decided to use a number of documents of 10, since we believe it is the best trade-off between amount of texts and recall. After this step, we executed the passage detection, which produced an overall score of 0.3902. As we can see in these results, the strongest aspect of our baseline system is its precision, where it ranks the third among all participants. On the other hand, recall and granularity were not as good, but still within the top half. The reason why recall is lower is in part due to the fact that we chose 10 source documents per suspicious text to evaluate, giving a maximum coverage value of 77.81%. Apart from this, and since our method is purely lexical, we miss plagiarisms that are not written in similar ways. Finally, documents that are translated will also lower our recall. On the other hand, granularity would have been lower if we had been more aggressive at merging matches, although then precision might have suffered.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Applying a textual entailment recognition system</head><p>Due to the expensive computational cost of executing a textual entailment recognition system, we used the corpora provided for the Recognizing Textual Entailment challenges. To simulate that the text-hypothesis pairs in these corpora are documents, we combine the texts into a single document and the hypothesis into another one, and then perform a plagiarism detection using both documents. <ref type="table">Table 2</ref> shows the results using our baseline system and the textual entailment recognition method previously described. As we can see in this table, our baseline system doesn't recognize the cases where there is an entailment, given that the pairs are written in a very different way. Applying our textual entailment recognition method provides significant gains.</p><p>Corpora System Accuracy RTE-2 Baseline System 0.5000 Textual Entailment 0.6125</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>RTE-3</head><p>Baseline System 0.5125 Textual Entailment 0.6800</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>RTE-4</head><p>Baseline System 0.5000 Textual Entailment 0.6250</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>RTE-5</head><p>Baseline System 0.5000 Textual Entailment 0.6350 <ref type="table">Table 2</ref>: Results of our baseline and textual entailment systems using the RTE test corpora.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3">Handling misspellings</head><p>Given the nature of the corpora provided for the 1st International Competition on Plagiarism Detection, we cannot apply them to test a speller system given that the plagiarisms are automatically generated and therefore they do not contain misspellings <ref type="bibr" target="#b17">(Potthast et al., 2009)</ref>. Instead, we evaluate the addition of this module based on the results that spellers achieve in real-world applications. Typically, web spellers have an accuracy of around 90% assuming an 85% of correctly spelled queries and 15% of misspellings, as described in <ref type="bibr" target="#b6">(Gao et al., 2010)</ref>. This means that there is clearly a gain of applying these systems as, even though they introduce some noise, in general terms they produce significant benefits. In addition, they are deterministic systems, and given that we apply them to both the source and suspicious document, an incorrect behavior for a given word in a source document would also be applied to the same word in the suspicious, and vice versa. In our system we want to match terms that appear in the same manner, and therefore a false positive or negative produced by the speller system won't hurt the accuracy of our plagiarism detection software.</p><p>Assuming a highly misspelled document, the application of a speller could produce a net gain of about 5%, which is a very important increase. In addition, speller systems typically return a normalize score value depending on the confidence of a given candidate. Based on this they either produce a suggestion, when there is lower confidence, or an auto-correction, when there is higher. We could tune our system to use a more or less aggressive speller depending on the user's needs as well as the nature of the input corpora.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.4">Document translation</head><p>The corpora provided for the 1st International Competition on Plagiarism Detection contains source documents in languages other than English, although the suspicious ones have been translated. Concretely, there are 13, 559 source documents in English, and 870 in other languages. Given that the suspicious texts will be in English, our system won't find the plagiarisms associated to those 870 due to language mismatches. To overcome this issue we applied the translator previously described, using different configurations. The parameter we changed was the number of words from the document to submit to the translator, using the first 200, 500 and 1, 000 words.</p><p>The following table shows the results from applying the language detector over the source documents corpus.  <ref type="table">Table 3</ref>: Results from applying the language detector over the source documents corpus.</p><p>We define positives as the documents that have been translated, and negatives those that have been not. In this table we can see that there is a 5.77% increase in accuracy if we apply a language detector using the first 1, 000 words of a document. However, given that we use a two-pass algorithm, the number of FPs would be 0, which means that the final accuracy after applying a language detection software would be 0.9984, which is a 5.87% higher than the baseline. This means that, assuming a perfect translator and plagiarism detector, our system's score could increase in almost six points, which is a big improvement. The final gain will depend on the user's document translation software choice.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Conclusions and future work</head><p>In this paper we have presented a baseline system for external plagiarism analysis mainly based on lexical similarities, and a set of more advanced techniques that could be beneficial to external plagiarism analysis. While the baseline system is very efficient and produces reasonable results, the application of the aforementioned advanced techniques can have a very significant impact, depending on the corpus' nature. However, these latter methods decrease our overall system's performance considerably, so they are not applicable to large corpora.</p><p>We have also explained two scenarios where we believe that plagiarism detection tools are applied. In the first of them, where we would have a large suspicious documents corpus, the application of advanced techniques would not be feasible given their low efficiency. Therefore, in this case we would have to use our baseline system which is mainly based on lexical measures. On the other hand, in the second user scenario, where we only have one suspicious document to analyze, the application of the aforementioned advanced techniques is suitable given the smaller amount of data to process. In this case we will be able to achieve higher accuracy rates and support a larger number of obfuscation cases. Therefore, there is a tradeoff between accuracy and response time, which will be in large determined by the size of the corpus to process.</p><p>As future work we would like to apply a word alignment algorithm to detect plagiarisms, such as the one described in <ref type="bibr" target="#b16">(Och, 2002)</ref>. This would be a more flexible and accurate approach, rather than forcing the words to appear in the same position in both documents being analyzed, although its computational cost would also be considerably higher. This should allow our system to recognize higher levels of obfuscation than our current approach. In addition, it would be very beneficial for multilingual plagiarism analysis. This kind of task presents the challenge that words might not appear in the same order, not even after a machine translation tool has been applied. Hence, applying the aforementioned word alignment algorithm would allow us to handle better multilingual plagiarism.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1" validated="false"><head>Table 1 :</head><label>1</label><figDesc>Metrics using different selected docu- ment set sizes.</figDesc><table></table></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Acknowledgements</head><p>This research has been partially funded by the Spanish Ministry of Science and Innovation (grant TIN2009-13391-C04-01) and the Conselleria d'Educació of the Spanish Generalitat Valenciana (grants PROMETEO/2009/119 and ACOMP/2010/286). Furthermore, we would like to thank Dario Bigongiari and Michael Schueppert for their help and support.</p></div>
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">The DLSIUAES Team&apos;s Participation in the TAC 2008 Tracks</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alexandra</forename><surname>Balahur</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Elena</forename><surname>Lloret</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Óscar</forename><surname>Ferrández</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Andrés</forename><surname>Montoyo</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Manuel</forename><surname>Palomar</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Rafael</forename><surname>Muñoz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Notebook Papers of the Text Analysis Conference, TAC 2008 Workshop</title>
+		<meeting><address><addrLine>Gaithersburg, Maryland, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2008-11" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">An example of mathematical authorship attribution</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Chiara</forename><surname>Basile</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Dario</forename><surname>Benedetto</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Emanuele</forename><surname>Caglioti</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Mirko Degli</forename><surname>Esposti</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Mathematical Physics</title>
+		<imprint>
+			<biblScope unit="volume">49</biblScope>
+			<biblScope unit="page" from="125211" to="125230" />
+			<date type="published" when="2008" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">A Plagiarism Detection Procedure in Three Steps: Selection, Matches and &quot;Squares</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Chiara</forename><surname>Basile</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Dario</forename><surname>Benedetto</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Emanuele</forename><surname>Caglioti</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Giampaolo</forename><surname>Cristadoro</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Mirko Degli</forename><surname>Esposti</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the SEPLN&apos;09 Workshop on Uncovering Plagiarism, Authorship and Social Software Misuse</title>
+		<meeting>the SEPLN&apos;09 Workshop on Uncovering Plagiarism, Authorship and Social Software Misuse<address><addrLine>San Sebastián; Donostia; Spain</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2009-09" />
+			<biblScope unit="page" from="19" to="23" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Measuring the Semantic Similarity of Texts</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Courtney</forename><surname>Corley</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Rada</forename><surname>Mihalcea</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the ACL Workshop on Empirical Modeling of Semantic Equivalence and Entailment</title>
+		<meeting>the ACL Workshop on Empirical Modeling of Semantic Equivalence and Entailment<address><addrLine>Ann Arbor, Michigan, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2005-06" />
+			<biblScope unit="page" from="13" to="18" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">A Perspective-Based Approach for Solving Textual Entailment Recognition</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Oscar</forename><surname>Ferrández</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Daniel</forename><surname>Micol</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Rafael</forename><surname>Muñoz</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Manuel</forename><surname>Palomar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the ACL-PASCAL Workshop on Textual Entailment and Paraphrasing</title>
+		<meeting>the ACL-PASCAL Workshop on Textual Entailment and Paraphrasing<address><addrLine>Prague, Czech Republic</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2007-06" />
+			<biblScope unit="page" from="66" to="71" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">DLSITE-1: Lexical Analysis for Solving Textual Entailment Recognition</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Oscar</forename><surname>Ferrández</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Daniel</forename><surname>Micol</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Rafael</forename><surname>Muñoz</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Manuel</forename><surname>Palomar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Natural Language Processing and Information Systems</title>
+		<imprint>
+			<date type="published" when="2007" />
+			<biblScope unit="volume">4592</biblScope>
+			<biblScope unit="page" from="284" to="294" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">A Large Scale RankerBased System for Search Query Spelling Correction</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jianfeng</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Xiaolong</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Daniel</forename><surname>Micol</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Chris</forename><surname>Quirck</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Xu</forename><surname>Sun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 23rd International Conference on Computational Linguistics</title>
+		<meeting>the 23rd International Conference on Computational Linguistics<address><addrLine>China</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2010-08" />
+			<biblScope unit="page" from="358" to="366" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">ENCOPLOT: Pairwise Sequence Matching in Linear Time Applied to Plagiarism Detection</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Cristian</forename><surname>Grozea</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Christian</forename><surname>Gehl</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Marius</forename><surname>Popescu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the SEPLN&apos;09 Workshop on Uncovering Plagiarism, Authorship and Social Software Misuse</title>
+		<meeting>the SEPLN&apos;09 Workshop on Uncovering Plagiarism, Authorship and Social Software Misuse<address><addrLine>San Sebastián; Spain</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2009-09" />
+			<biblScope unit="page" from="10" to="18" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">A Discourse Commitment-Based Framework for Recognizing Textual Entailment</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Andrew</forename><surname>Hickl</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jeremy</forename><surname>Bensley</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the ACL-PASCAL Workshop on Textual Entailment and Paraphrasing</title>
+		<meeting>the ACL-PASCAL Workshop on Textual Entailment and Paraphrasing<address><addrLine>Prague, Czech Republic</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2007-06" />
+			<biblScope unit="page" from="171" to="176" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">UAIC Participation at RTE5</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Adrian</forename><surname>Iftene</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Mihai-Alex</forename><surname>Moruz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Notebook Papers of the Text Analysis Conference, TAC 2009 Workshop</title>
+		<meeting><address><addrLine>Gaithersburg, Maryland, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2009-11" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Finding Plagiarism by Evaluating Document Similarities</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jan</forename><surname>Kasprzak</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Michal</forename><surname>Brandejs</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Miroslav</forename><surname>Křipač</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the SEPLN&apos;09 Workshop on Uncovering Plagiarism, Authorship and Social Software Misuse</title>
+		<meeting>the SEPLN&apos;09 Workshop on Uncovering Plagiarism, Authorship and Social Software Misuse<address><addrLine>San Sebastián; Donostia; Spain</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2009-09" />
+			<biblScope unit="page" from="24" to="28" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Extending Verbnet with Novel Verb Classes</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Karin</forename><surname>Kipper</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Anna</forename><surname>Korhonen</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Neville</forename><surname>Ryant</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Martha</forename><surname>Palmer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Fifth International Conference on Language Resources and Evaluation</title>
+		<meeting>the Fifth International Conference on Language Resources and Evaluation<address><addrLine>Genova, Italy</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2006-06" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Combining data-driven systems for improving Named Entity Recognition</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Z</forename><surname>Kozareva</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ó</forename><surname>Ferrández</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Montoyo</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Muñoz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Data and Knowledge Engineering</title>
+		<imprint>
+			<biblScope unit="volume">61</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="449" to="466" />
+			<date type="published" when="2007" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">DLSITE-2: Semantic Similarity Based on Syntactic Dependency Trees Applied to Textual Entailment</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Daniel</forename><surname>Micol</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Óscar</forename><surname>Ferrández</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Rafael</forename><surname>Muñoz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the TextGraphs-2 Workshop</title>
+		<meeting>the TextGraphs-2 Workshop<address><addrLine>Rochester, New York, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2007-04" />
+			<biblScope unit="page" from="73" to="80" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">A Lexical Similarity Approach for Efficient and Scalable External Plagiarism Detection</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Daniel</forename><surname>Micol</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Óscar</forename><surname>Ferrández</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Fernando</forename><surname>Llopis</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Rafael</forename><surname>Muñoz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the SEPLN&apos;10 Workshop on Uncovering Plagiarism, Authorship and Social Software Misuse</title>
+		<meeting>the SEPLN&apos;10 Workshop on Uncovering Plagiarism, Authorship and Social Software Misuse<address><addrLine>Padua, Italy</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2010" />
+		</imprint>
+	</monogr>
+	<note>September</note>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">External and Intrinsic Plagiarism Detection Using Vector Space Models</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Markus</forename><surname>Muhr</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Mario</forename><surname>Zechner</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Roman</forename><surname>Kern</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Michael</forename><surname>Granitzer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the SEPLN&apos;09 Workshop on Uncovering Plagiarism, Authorship and Social Software Misuse</title>
+		<meeting>the SEPLN&apos;09 Workshop on Uncovering Plagiarism, Authorship and Social Software Misuse<address><addrLine>San Sebastián; Spain</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2009-09" />
+			<biblScope unit="page" from="47" to="55" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<title level="m" type="main">Statistical machine translation: from single-word models to alignment templates</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Franz Josef</forename><surname>Och</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2002" />
+		</imprint>
+		<respStmt>
+			<orgName>RWTH Aachen</orgName>
+		</respStmt>
+	</monogr>
+	<note>Ph.D. thesis</note>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Overview of the 1st international competition on plagiarism detection</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Martin</forename><surname>Potthast</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Benno</forename><surname>Stein</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Andreas</forename><surname>Eiselt</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alberto</forename><forename type="middle">Barrón</forename><surname>Cedeño</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Paolo</forename><surname>Rosso</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the SE-PLN&apos;09 Workshop on Uncovering Plagiarism</title>
+		<meeting>the SE-PLN&apos;09 Workshop on Uncovering Plagiarism<address><addrLine>San Sebastián; Donostia; Spain</addrLine></address></meeting>
+		<imprint>
+			<publisher>Authorship and Social Software Misuse</publisher>
+			<date type="published" when="2009-09" />
+			<biblScope unit="page" from="1" to="9" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Overview of the 2nd international competition on plagiarism detection</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Martin</forename><surname>Potthast</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Benno</forename><surname>Stein</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Andreas</forename><surname>Eiselt</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alberto</forename><forename type="middle">Barrón</forename><surname>Cedeño</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Paolo</forename><forename type="middle">Rosso</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the SE-PLN&apos;10 Workshop on Uncovering Plagiarism</title>
+		<meeting>the SE-PLN&apos;10 Workshop on Uncovering Plagiarism<address><addrLine>Padua, Italy</addrLine></address></meeting>
+		<imprint>
+			<publisher>Authorship and Social Software Misuse</publisher>
+			<date type="published" when="2010-09" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Towards an Entity-based recognition of Textual Entailment</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alvaro</forename><surname>Rodrigo</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Anselmo</forename><surname>Peñas</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Felisa</forename><surname>Verdejo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Notebook Papers of the Text Analysis Conference, TAC 2008 Workshop</title>
+		<meeting><address><addrLine>Gaithersburg, Maryland, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2008-11" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Intrinsic Plagiarism Detection Using Character n-gram Profiles</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Efstathios</forename><surname>Stamatatos</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the SEPLN&apos;09 Workshop on Uncovering Plagiarism, Authorship and Social Software Misuse</title>
+		<meeting>the SEPLN&apos;09 Workshop on Uncovering Plagiarism, Authorship and Social Software Misuse<address><addrLine>San Sebastián; Donostia), Spain</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2009-09" />
+			<biblScope unit="page" from="36" to="37" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

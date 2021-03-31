@@ -1,0 +1,877 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T12:59+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Tree Representations in Probabilistic Models for Extended Named Entities Detection</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher>Association for Computational Linguistics</publisher>
+				<availability status="unknown"><p>Copyright Association for Computational Linguistics</p>
+				</availability>
+				<date>April 23 -27 2012. 2012</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Marco</forename><surname>Dinarelli</surname></persName>
+							<email>marcod@limsi.fr</email>
+							<affiliation key="aff0">
+								<orgName type="institution">LIMSI-CNRS</orgName>
+								<address>
+									<settlement>Orsay</settlement>
+									<country key="FR">France</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sophie</forename><surname>Rosset</surname></persName>
+							<email>rosset@limsi.fr</email>
+							<affiliation key="aff1">
+								<orgName type="institution">LIMSI-CNRS</orgName>
+								<address>
+									<settlement>Orsay</settlement>
+									<country key="FR">France</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Tree Representations in Probabilistic Models for Extended Named Entities Detection</title>
+					</analytic>
+					<monogr>
+						<title level="m">Proceedings of the 13th Conference of the European Chapter of the Association for Computational Linguistics</title>
+						<meeting>the 13th Conference of the European Chapter of the Association for Computational Linguistics <address><addrLine>Avignon, France</addrLine></address>
+						</meeting>
+						<imprint>
+							<publisher>Association for Computational Linguistics</publisher>
+							<biblScope unit="page" from="174" to="184"/>
+							<date type="published">April 23 -27 2012. 2012</date>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>In this paper we deal with Named Entity Recognition (NER) on transcriptions of French broadcast data. Two aspects make the task more difficult with respect to previous NER tasks: i) named entities annotated used in this work have a tree structure, thus the task cannot be tackled as a sequence labelling task; ii) the data used are more noisy than data used for previous NER tasks. We approach the task in two steps, involving Conditional Random Fields and Probabilistic Context-Free Grammars, integrated in a single parsing algorithm. We analyse the effect of using several tree representations. Our system outperforms the best system of the evaluation campaign by a significant margin.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Named Entity Recognition is a traditinal task of the Natural Language Processing domain. The task aims at mapping words in a text into semantic classes, such like persons, organizations or localizations. While at first the NER task was quite simple, involving a limited number of classes <ref type="bibr" target="#b0">(Grishman and Sundheim, 1996)</ref>, along the years the task complexity increased as more complex class taxonomies were defined <ref type="bibr" target="#b1">(Sekine and Nobata, 2004)</ref>. The interest in the task is related to its use in complex frameworks for (semantic) content extraction, such like Relation Extraction applications <ref type="bibr" target="#b2">(Doddington et al., 2004)</ref>.</p><p>This work presents research on a Named Entity Recognition task defined with a new set of named entities. The characteristic of such set is in that named entities have a tree structure. As concequence the task cannot be tackled as a sequence labelling approach. Additionally, the use of noisy data like transcriptions of French broadcast data, makes the task very challenging for traditional NLP solutions. To deal with such problems, we adopt a two-steps approach, the first being realized with Conditional Random Fields (CRF) <ref type="bibr" target="#b4">(Lafferty et al., 2001)</ref>, the second with a Probabilistic Context-Free Grammar (PCFG) <ref type="bibr" target="#b5">(Johnson, 1998)</ref>. The motivations behind that are:</p><p>• Since the named entities have a tree structure, it is reasonable to use a solution coming from syntactic parsing. However preliminary experiments using such approaches gave poor results.</p><p>• Despite the tree-structure of the entities, trees are not as complex as syntactic trees, thus, before designing an ad-hoc solution for the task, which require a remarkable effort and yet it doesn't guarantee better performances, we designed a solution providing good results and which required a limited development effort.</p><p>• Conditional Random Fields are models robust to noisy data, like automatic transcriptions of ASR systems <ref type="bibr" target="#b6">(Hahn et al., 2010)</ref>, thus it is the best choice to deal with transcriptions of broadcast data. Once words have been annotated with basic entity constituents, the tree structure of named entities is simple enough to be reconstructed with relatively simple model like PCFG <ref type="bibr" target="#b5">(Johnson, 1998)</ref>.</p><p>The two models are integrated in a single parsing algorithm. We analyze the effect of the use of several tree representations, which result in different parsing models with different performances. We provide a detailed evaluation of our models. Results can be compared with those obtained in the evaluation campaign where the same data were used. Our system outperforms the best system of the evaluation campaign by a significant margin.</p><p>The rest of the paper is structured as follows: in the next section we introduce the extended named entities used in this work, in section 3 we describe our two-steps algorithm for parsing entity trees, in section 4 we detail the second step of our approach based on syntactic parsing approaches, in particular we describe the different tree representations used in this work to encode entity trees in parsing models. In section 6 we describe and comment experiments, and finally, in section 7, we draw some conclusions.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Extended Named Entities</head><p>The most important aspect of the NER task we investigated is provided by the tree structure of named entities. Examples of such entities are given in <ref type="figure" target="#fig_0">figure 1</ref> and 2, where words have been remove for readability issues and are: ("90 persons are still present at Atambua. It's there that 3 employees of the High Conseil of United Nations for refugees have been killed yesterday morning"):</p><p>90 personnes toujours présentesà Atambua c' est là qu' hier matin ont eté tués 3 employés du haut commissariat des Nations unies aux réfugiés , le HCR Words realizing entities in figure 2 are in bold, and they correspond to the tree leaves in the picture. As we see in the figures, entities can have complex structures. Beyond the use of subtypes, like individual in person (to give pers.ind), or administrative in organization (to give org.adm), entities with more specific content can be constituents of more general entities to form tree structures, like name.first and  name.last for pers.ind or val (for value) and object for amount. These named entities have been annotated on transcriptions of French broadcast news coming from several radio channels. The transcriptions constitute a corpus that has been split into training, development and evaluation sets.The evaluation set, in particular, is composed of two set of data, Broadcast News (BN in the table) and Broadcast Conversations (BC in the table). The evaluation of the models presented in this work is performed on the merge of the two data types. Some statistics of the corpus are reported in table 1 and 2. This set of named entities has been defined in order to provide more fine semantic information for entities found in the data, e.g. a person is better specified by first and last name, and is fully described in <ref type="bibr" target="#b3">(Grouin, 2011)</ref> . In order to avoid confusion, entities that can be associated directly to words, like name.first, name.last, val and object, are called entity constituents, components or entity pre-terminals (as they are preterminals nodes in the trees). The other entities, like pers.ind or amount, are called entities or nonterminal entities, depending on the context.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Models Cascade for Extended Named Entities</head><p>Since the task of Named Entity Recognition presented here cannot be modeled as sequence labelling and, as mentioned previously, an approach  coming from syntactic parsing to perform named entity annotation in "one-shot" is not robust on the data used in this work, we adopt a two-steps. The first is designed to be robust to noisy data and is used to annotate entity components, while the second is used to parse complete entity trees and is based on a relatively simple model. Since we are dealing with noisy data, the hardest part of the task is indeed to annotate components on words.</p><p>On the other hand, since entity trees are relatively simple, at least much simpler than syntactic trees, once entity components have been annotated in a first step, for the second step, a complex model is not required, which would also make the processing slower. Taking all these issues into account, the two steps of our system for tree-structured named entity recognition are performed as follows:</p><p>1. A CRF model <ref type="bibr" target="#b4">(Lafferty et al., 2001</ref>) is used to annotate components on words.</p><p>2. A PCFG model <ref type="bibr" target="#b5">(Johnson, 1998</ref>) is used to parse complete entity trees upon components, i.e. using components annotated by CRF as starting point.</p><p>This processing schema is depicted in <ref type="figure">figure 3</ref>. Conditional Random Fields are described shortly in the next subsection. PCFG models, constituting the main part of this work together with the analysis over tree representations, is described more in details in the next sections.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Conditional Random Fields</head><p>CRFs are particularly suitable for sequence labelling tasks <ref type="bibr" target="#b4">(Lafferty et al., 2001)</ref>. Beyond the possibility to include a huge number of features using the same framework as Maximum Entropy models <ref type="bibr" target="#b7">(Berger et al., 1996)</ref>, CRF models encode global conditional probabilities normalized at sentence level. Given a sequence of N words W N 1 = w 1 , ..., w N and its corresponding components sequence E N 1 = e 1 , ..., e N , CRF trains the conditional probabilities</p><formula xml:id="formula_0">P (E N 1 |W N 1 ) = 1 Z N Y n=1 exp M X m=1 λm · hm(e n−1 , en, w n+2 n−2 ) !<label>(1)</label></formula><p>where λ m are the training parameters. h m (e n−1 , e n , w n+2 n−2 ) are the feature functions capturing dependencies of entities and words. Z is the partition function:</p><formula xml:id="formula_1">Z = X e N 1 N Y n=1 H(ẽ n−1 ,ẽn, w n+2 n−2 )<label>(2)</label></formula><p>which ensures that probabilities sum up to one. e n−1 andẽ n are components for previous and current words, H(ẽ n−1 ,ẽ n , w n+2 n−2 ) is an abbreviation for M m=1 λ m · h m (e n−1 , e n , w n+2 n−2 ), i.e. the set of active feature functions at current position in the sequence.</p><p>In the last few years different CRF implementations have been realized. The implementation we refer in this work is the one described in <ref type="bibr" target="#b8">(Lavergne et al., 2010)</ref>, which optimize the following objective function:</p><formula xml:id="formula_2">−log(P (E N 1 |W N 1 )) + ρ 1 λ 1 + ρ 2 2 λ 2 2<label>(3)</label></formula><p>λ 1 and λ 2 2 are the l1 and l2 regularizers <ref type="bibr" target="#b9">(Riezler and Vasserman, 2004)</ref>, and together in a linear combination implement the elastic net regularizer <ref type="bibr" target="#b10">(Zou and Hastie, 2005)</ref>. As mentioned in <ref type="bibr" target="#b8">(Lavergne et al., 2010)</ref>, this kind of regularizers are very effective for feature selection at training time, which is a very good point when dealing with noisy data and big set of features.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Models for Parsing Trees</head><p>The models used in this work for parsing entity trees refer to the models described in <ref type="bibr" target="#b5">(Johnson, 1998)</ref>, in <ref type="bibr" target="#b11">(Charniak, 1997;</ref><ref type="bibr" target="#b13">Caraballo and Charniak, 1997)</ref> and <ref type="bibr" target="#b15">(Charniak et al., 1998)</ref>, and which constitutes the basis of the maximum entropy model for parsing described in <ref type="bibr" target="#b12">(Charniak, 2000)</ref>. A similar lexicalized model has been proposed also by Collins <ref type="bibr" target="#b14">(Collins, 1997)</ref>. All these models are based on a PCFG trained from data and used in a chart parsing algorithm to find the best parse for the given input. The PCFG model of <ref type="bibr" target="#b5">(Johnson, 1998</ref>) is made of rules of the form:</p><formula xml:id="formula_3">• X i ⇒ X j X k • X i ⇒ w</formula><p>where X are non-terminal entities and w are terminal symbols (words in our case). <ref type="bibr">1</ref> The probability associated to these rules are:</p><formula xml:id="formula_4">p i→j,k = P (X i ⇒ X j , X k ) P (X i )<label>(4)</label></formula><formula xml:id="formula_5">p i→w = P (X i ⇒ w) P (X i )<label>(5)</label></formula><p>The models described in <ref type="bibr" target="#b11">(Charniak, 1997;</ref><ref type="bibr" target="#b13">Caraballo and Charniak, 1997)</ref> encode probabilities involving more information, such as head words. In order to have a PCFG model made of rules with their associated probabilities, we extract rules from the entity trees of our corpus. This processing is straightforward, for example from the tree depicted in figure 2, the following rules are extracted:</p><p>S ⇒ amount loc.adm.town time.dat.rel amount amount ⇒ val object time.date.rel ⇒ name time-modifier object ⇒ func.coll func.coll ⇒ kind org.adm org.adm ⇒ name</p><p>Using counts of these rules we then compute maximum likelihood probabilities of the Right Hand Side (RHS) of the rule given its Left Hand Side (LHS). Also binarization of rules, applied to have all rules in the form of 4 and 5, is straightforward and can be done with simple algorithms not discussed here.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Tree Representations for Extended Named Entities</head><p>As discussed in <ref type="bibr" target="#b5">(Johnson, 1998)</ref>, an important point for a parsing algorithm is the representation of trees being parsed. Changing the tree representation can change significantly the performances of the parser. Since there is a large difference between entity trees used in this work and syntactic trees, from both meaning and structure point of view, it is worth performing an analysis with the aim of finding the most suitable representation for our task. In order to perform this analysis, we start from a named entity annotated on the words de notre president , M. Nicolas Sarkozy(of our president, Mr. Nicolas Sarkozy). The corresponding named entity is shown in <ref type="figure">figure 4</ref>. As decided in the annotation guidelines, fillers can be part of a named entity. This can happen for complex named entities involving several words. The representation shown in <ref type="figure">figure 4</ref> is the default representation and will be referred to as baseline. A problem created by this representation is the fact that fillers are present also outside entities. Fillers of named entities should be, in principle, distinguished from any other filler, since they may be informative to discriminate entities. Following this intuition, we designed two different representations where entity fillers are con- textualized so that to be distinguished from the other fillers. In the first representation we give to the filler the same label of the parent node, while in the second representation we use a concatenation of the filler and the label of the parent node. These two representations are shown in <ref type="figure">figure 5</ref> and 6, respectively. The first one will be referred to as filler-parent, while the second will be referred as parent-context. A problem that may be introduced by the first representation is that some entities that originally were used only for nonterminal entities will appear also as components, i.e. entities annotated on words. This may introduce some ambiguity.</p><p>Another possible contextualization can be to annotate each node with the label of the parent node. This representation is shown in <ref type="figure">figure 7</ref> and will be referred to as parent-node. Intuitively, this representation is effective since entities annotated directly on words provide also the entity of the parent node. However this representation increases drastically the number of entities, in particular the number of components, which in our case are the set of labels to be learned by the CRF model. For the same reason this representation produces more rigid models, since label sequences vary widely and thus is not likely to match sequences not seen in the training data.</p><p>Finally, another interesting tree representation is a variation of the parent-node tree, where entity fillers are only distinguished from fillers not in an entity, using the label ne-filler, but they are not contextualized with entity information. This representation is shown in <ref type="figure" target="#fig_3">figure 8</ref> and it will be referred to as parent-node-filler. This representation is a good trade-off between contextual information and rigidity, by still representing entities as concatenation of labels, while using a common special label for entity fillers. This allows to keep lower the number of entities annotated on words, i.e. components.</p><p>Using different tree representations affects both the structure and the performance of the parsing model. The structure is described in the next section, the performance in the evaluation section.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Structure of the Model</head><p>Lexicalized models for syntactic parsing described in <ref type="bibr" target="#b12">(Charniak, 2000;</ref><ref type="bibr" target="#b15">Charniak et al., 1998)</ref> and <ref type="bibr" target="#b14">(Collins, 1997)</ref>, integrate more information than what is used in equations 4 and 5. Considering a particular node in the entity tree, not including terminals, the information used is:</p><p>• s: the head word of the node, i.e. the most important word of the chunk covered by the current node</p><p>• h: the head word of the parent node</p><p>• t: the entity tag of the current node</p><p>• l: the entity tag of the parent node</p><p>The head word of the parent node is defined percolating head words from children nodes to parent nodes, giving the priority to verbs. They can be found using automatic approaches based on words and entity tag co-occurrence or mutual information. Using this information, the model described in <ref type="bibr" target="#b15">(Charniak et al., 1998)</ref> is P (s|h, t, l). This model being conditioned on several pieces of information, it can be affected by data sparsity problems. Thus, the model is actually approximated as an interpolation of probabilities:</p><formula xml:id="formula_6">P (s|h, t, l) = λ 1 P (s|h, t, l) + λ 2 P (s|c h , t, l)+ λ 3 P (s|t, l) + λ 4 P (s|t)<label>(6)</label></formula><p>where λ i , i = 1, ..., 4, are parameters of the model to be tuned, and c h is the cluster of head words for a given entity tag t. With such model, when not all pieces of information are available to estimate reliably the probability with more conditioning, the model can still provide a probability with terms conditioned with less information. The use of head words and their percolation over the tree is called lexicalization. The goal of tree lexicalization is to add lexical information all over the tree. This way the probability of all rules can be conditioned also on lexical information, allowing to define the probabilities P (s|h, t, l) and P (s|c h , t, l). Tree lexicalization reflects the characteristics of syntactic parsing, for which the models described in <ref type="bibr" target="#b12">(Charniak, 2000;</ref><ref type="bibr" target="#b15">Charniak et al., 1998)</ref> and <ref type="bibr" target="#b14">(Collins, 1997)</ref> were defined. Head words are very informative since they constitute keywords instantiating labels, regardless if they are syntactic constituents or named entities. However, for named entity recognition it doesn't make sense to give priority to verbs when percolating head words over the tree, even more because head words of named entities are most of the time nouns. Moreover, it doesn't make sense to give priority to the head word of a particular entity with respect to the others, all entities in a sentence have the same importance. Intuitively, lexicalization of entity trees is not straightforward as lexicalization of syntactic trees. At the same time, using not lexicalized trees doesn't make sense with models like 6, since all the terms involve lexical information. Instead, we can use the model of <ref type="bibr" target="#b5">(Johnson, 1998)</ref>, which define the probability of a tree τ as:</p><formula xml:id="formula_7">P (τ ) = Y X→α P (X → α) Cτ (X→α)<label>(7)</label></formula><p>here the RHS of rules has been generalized with α, representing RHS of both unary and binary rules 4 and 5. C τ (X → α) is the number of times the rule X → α appears in the tree τ . The model 7 is instantiated when using tree representations shown in <ref type="figure">Fig. 4</ref>, 5 and 6. When using representations given in <ref type="figure">Fig. 7</ref> and 8, the model is:</p><formula xml:id="formula_8">P (τ |l)<label>(8)</label></formula><p>where l is the entity label of the parent node. Although non-lexicalized models like 7 and 8 have shown less effective for syntactic parsing than their lexicalized couter-parts, there are evidences showing that they can be effective in our task. With reference to figure 4, considering the entity pers.ind instantiated by Nicolas Sarkozy, our algorithm detects first name.first for Nicolas and name.last for Sarkozy using the CRF model. As mentioned earlier, once the CRF model has detected components, since entity trees have not a complex structure with respect to syntactic trees, even a simple model like the one in equation 7 or 8 is effective for entity tree parsing. For example, once name.first and name.last have been detected by CRF, pers.ind is the only entity having name.first and name.last as children. Ambiguities, like for example for kind or qualifier, which can appear in many entities, can affect the model 7, but they are overcome by the model 8, taking the entity tag of the parent node into account. Moreover, the use of CRF allows to include in the model much more features than the lexicalized model in equation 6. Using features like word prefixes (P), suffixes (S), capitalization (C), morpho-syntactic features (MS) and other features indicated as F 2 , the CRF model encodes the conditional probability:</p><formula xml:id="formula_9">P (t|w, P, S, C, M S, F )<label>(9)</label></formula><p>where w is an input word and t is the corresponding component.</p><p>The probability of the CRF model, used in the first step to tag input words with components, is combined with the probability of the PCFG model, used to parse entity trees starting from components. Thus the structure of our model is:</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Related Work</head><p>While the models used for named entity detection and the set of named entities defined along the years have been discussed in the introduction and in section 2, since CRFs and models for parsing constitute the main issue in our work, we discuss some important models here.</p><p>Beyond the models for parsing discussed in section 4, together with motivations for using or not in our work, another important model for syntactic parsing has been proposed in <ref type="bibr" target="#b20">(Ratnaparkhi, 1999)</ref>. Such model is made of four Maximum Entropy models used in cascade for parsing at different stages. Also this model makes use of head words, like those described in section 4, thus the same considerations hold, moreover it seems quite complex for real applications, as it involves the use of four different models together. The models described in <ref type="bibr" target="#b5">(Johnson, 1998)</ref>, <ref type="bibr" target="#b11">(Charniak, 1997;</ref><ref type="bibr" target="#b13">Caraballo and Charniak, 1997)</ref>, <ref type="bibr" target="#b15">(Charniak et al., 1998)</ref>, <ref type="bibr" target="#b12">(Charniak, 2000)</ref>, <ref type="bibr" target="#b14">(Collins, 1997)</ref> and <ref type="bibr" target="#b20">(Ratnaparkhi, 1999)</ref>, constitute the main individual models proposed for constituent-based syntactic parsing. Later other approaches based on models combination have been proposed, like e.g. the reranking approach described in <ref type="bibr" target="#b21">(Collins and Koo, 2005)</ref>, among many, and also evolutions or improvements of these models.</p><p>More recently, approaches based on log-linear models have been proposed <ref type="bibr" target="#b22">(Clark and Curran, 2007;</ref><ref type="bibr" target="#b23">Finkel et al., 2008)</ref> for parsing, called also "Tree CRF", using also different training criteria <ref type="bibr" target="#b24">(Auli and Lopez, 2011)</ref>. Using such models in our work has basically two problems: one related to scaling issues, since our data present a large number of labels, which makes CRF training problematic, even more when using "Tree CRF"; another problem is related to the difference between syntactic parsing and named entity detection tasks, as mentioned in sub-section 4.2. Adapting "Tree CRF" to our task is thus a quite complex work, it constitutes an entire work by itself, we leave it as feature work.</p><p>Concerning linear-chain CRF models, the one we use is a state-of-the-art implementation <ref type="bibr" target="#b8">(Lavergne et al., 2010)</ref>, as it implements the most effective optimization algorithms as well as state-of-the-art regularizers (see sub-section 3.1). Some improvement of linear-chain CRF have been proposed, trying to integrate higher order target-side features <ref type="bibr" target="#b25">(Tang et al., 2006</ref>). An integration of the same kind of features has been tried also in the model used in this work, without giving significant improvements, but making model training much harder. Thus, this direction has not been further investigated.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Evaluation</head><p>In this section we describe experiments performed to evaluate our models. We first describe the settings used for the two models involved in the entity tree parsing, and then describe and comment the results obtained on the test corpus.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.1">Settings</head><p>The CRF implementation used in this work is described in <ref type="bibr" target="#b8">(Lavergne et al., 2010)</ref>, named wapiti. <ref type="bibr">3</ref> We didn't optimize parameters ρ 1 and ρ 2 of the elastic net (see section 3.1), although this improves significantly the performances and leads to more compact models, default values lead in most cases to very accurate models. We used a wide set of features in CRF models, in a window of [−2, +2] around the target word:</p><p>• A set of standard features like word prefixes and suffixes of length from 1 to 6, plus some Yes/No features like Does the word start with capital letter?, etc.</p><p>• Morpho-syntactic features extracted from the output of the tool tagger <ref type="bibr" target="#b16">(Allauzen and Bonneau-Maynard, 2008)</ref> • Features extracted from the output of the semantic analyzer <ref type="bibr" target="#b18">(Rosset et al., (2009)</ref>) provided by the tool WMatch <ref type="bibr" target="#b17">(Galibert, 2009</ref>).</p><p>This analysis morpho-syntactic information as well as semantic information at the same level of named entities. Using two different sets of morpho-syntactic features results in more effective models, as they create a kind of agreement for a given word in case of match. Concerning the PCFG model, grammars, tree binarization and the different tree representations are created with our own scripts, while entity tree parsing is performed with the chart parsing algorithm described in <ref type="bibr" target="#b5">(Johnson, 1998</ref>  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.2">Evaluation Metrics</head><p>All results are expressed in terms of Slot Error Rate (SER) <ref type="bibr" target="#b19">(Makhoul et al., 1999)</ref> which has a similar definition of word error rate for ASR systems, with the difference that substitution errors are split in three types: i) correct entity type with wrong segmentation; ii) wrong entity type with correct segmentation; iii) wrong entity type with wrong segmentation; here, i) and ii) are given half points, while iii), as well as insertion and deletion errors, are given full points. Moreover, results are given using the well known F 1 measure, defined as a function of precision and recall.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.3">Results</head><p>In this section we provide evaluations of the models described in this work, based on combination of CRF and PCFG and using different tree representations of named entity trees.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.3.1">Model Statistics</head><p>As a first evaluation, we describe some statistics computed from the CRF and PCFG models using the tree representations. Such statistics provide interesting clues of how difficult is learning the task and which performance we can expect from the model. Statistics for this evaluation are presented in table 3. Rows corresponds to the different tree representations described in this work, while in the columns we show the number of features and labels for the CRF models (# features and # labels), and the number of rules for PCFG models (# rules).</p><p>As we can see from the table, the number of rules is the same for the tree representations baseline, filler-parent and parent-context, and for the representations parent-node and parentnode-filler. This is the consequence of the contextualization applied by the latter representations, i.e. parent-node and parent-node-filler create several different labels depending from the context, thus the corresponding grammar    <ref type="figure" target="#fig_3">figure 8</ref>. In contrast the other tree representations modify only fillers, thus the number of rules is not affected. Concerning CRF models, as shown in table 3, the use of the different tree representations results in an increasing number of labels to be learned by CRF. This aspect is quite critical in CRF learning, as training time is exponential in the number of labels. Indeed, the most complex models, obtained with parent-node and parent-node-filler tree representations, took roughly 8 days for training. Additionally, increasing the number of labels can create data sparseness problems, however this problem doesn't seem to arise in our case since, apart the baseline model which has quite less features, all the others have approximately the same number of features, meaning that there are actually enough data to learn the models, regardless the number of labels.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.3.2">Evaluations of Tree Representations</head><p>In this section we evaluate the models in terms of the evaluation metrics described in previous section, Slot Error Rate (SER) and F1 measure.</p><p>In order to evaluate PCFG models alone, we performed entity tree parsing using as input reference transcriptions, i.e. manual transcriptions and reference component annotations taken from development and test sets. This can be considered a kind of oracle evaluations and provides us an upper bound of the performance of the PCFG models. Results for this evaluation are reported in  As it can be intuitively expected, adding more contextualization in the trees results in more accurate models, the simplest model, baseline, has the worst oracle performance, filler-parent and parent-context models, adding similar contextualization information, have very similar oracle performances. Same line of reasoning applies to models parent-node and parent-node-filler, which also add similar contextualization and have very similar oracle predictions. These last two models have also the best absolute oracle performances. However, adding more contextualization in the trees results also in more rigid models, the fact that models are robust on reference transcriptions and based on reference component annotations, doesn't imply a proportional robustness on component sequences generated by CRF models. This intuition is confirmed from results reported in table 5, where a real evaluation of our models is reported, using this time CRF output components as input to PCFG models, to parse entity trees. The results reported in table 5 show in particular that models using baseline, filler-parent and parent-context tree representations have similar performances, especially on test set. Models characterized by parent-node and parent-node-filler tree representations have indeed the best performances, although the gain with respect to the other models is not as much as it could be expected given the difference in the oracle performances discussed above. In particular the best absolute performance is obtained with the model parent-node-filler. As we mentioned in subsection 4.1, this model represents the best trade-off between rigidity and accuracy using the same label for all entity fillers, but still distinguishing between fillers found in entity structures and other fillers found in words not instantiating any entity.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.3.3">Comparison with Official Results</head><p>As a final evaluation of our models, we provide a comparison of official results obtained at the 2011 evaluation campaign of extended named entity recognition <ref type="bibr" target="#b3">(Galibert et al., 2011</ref>; 2) Results are reported in table 6, where the other two participants to the campaign are indicated as P 1 and P 2. These two participants P1 and P2, used a system based on CRF, and rules for deep syntactic analysis, respectively. In particular, P 2 obtained superior performances in previous evaluation campaign on named entity recognition. The system we proposed at the evaluation campaign used a parent-context tree representation. The results obtained at the evaluation campaign are in the first three lines of <ref type="table" target="#tab_10">Table 6</ref>. We compare such results with those obtained with the parentnode and parent-node-filler tree representations, reported in the last two rows of the same table. As we can see, the new tree representations described in this work allow to achieve the best absolute performances.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7">Conclusions</head><p>In this paper we have presented a Named Entity Recognition system dealing with extended named entities with a tree structure. Given such representation of named entities, the task cannot be modeled as a sequence labelling approach. We thus proposed a two-steps system based on CRF and PCFG. CRF annotate entity components directly on words, while PCFG apply parsing techniques to predict the whole entity tree. We motivated our choice by showing that it is not effective to apply techniques used widely for syntactic parsing, like for example tree lexicalization. We presented an analysis of different tree representations for PCFG, which affect significantly parsing performances.</p><p>We provided and discussed a detailed evaluation of all the models obtained by combining CRF and PCFG with the different tree representation proposed. Our combined models result in better performances with respect to other models proposed at the official evaluation campaign, as well as our previous model used also at the evaluation campaign.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 :</head><label>1</label><figDesc>Figure 1: Examples of structured named entities annotated on the data used in this work</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 4 :Figure 5 :</head><label>45</label><figDesc>Figure 4: Baseline tree representations used in the PCFG parsing model</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 6 :Figure 7 :</head><label>67</label><figDesc>Figure 6: Parent-context tree representations used in the PCFG parsing model</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 8 :</head><label>8</label><figDesc>Figure 8: Parent-node-filler tree representations used in the PCFG parsing model</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0" validated="false"><head></head><label></label><figDesc>Figure 2: An example of named entity tree corresponding to en- tities of a whole sentence. Tree leaves, corresponding to sentence words have been removed to keep readability</figDesc><table>val object 
+
+amount 
+
+loc.adm.town name time-modifier 
+
+time.date.rel 
+
+val kind name 
+
+org.adm 
+
+func.coll 
+
+object 
+
+amount 
+
+S 
+
+Quaero 
+training 
+dev 
+# sentences 
+43,251 
+112 
+
+words 
+entities 
+words entities 
+# tokens 
+1,251,432 245,880 
+2,659 
+570 
+# vocabulary 
+39,631 
+134 
+891 
+30 
+# components 
+-
+133662 
+-
+971 
+# components dict. 
+-
+28 
+-
+18 
+# OOV rate [%] 
+-
+-
+17.15 
+0 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1" validated="false"><head>Table 1 :</head><label>1</label><figDesc>Statistics on the training and development sets of the</figDesc><table>Quaero corpus 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3" validated="true"><head>Table 2 :</head><label>2</label><figDesc>Statistics on the test set of the Quaero corpus, divided in</figDesc><table>Broadcast News (BN) and Broadcast Conversations (BC) 
+
+Figure 3: Processing schema of the two-steps approach proposed 
+
+in this work: CRF plus PCFG 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5" validated="false"><head>Table 3 :</head><label>3</label><figDesc>Statistics showing the characteristics of the different</figDesc><table>models used in this work 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_7" validated="true"><head>Table 4 :</head><label>4</label><figDesc>Results computed from oracle predictions obtained with</figDesc><table>the different models presented in this work 
+
+DEV 
+TEST 
+Model 
+SER 
+F1 
+SER 
+F1 
+baseline 
+33.5% 72.5% 
+33.4% 72.8% 
+filler-parent 
+31.3% 74.4% 
+33.4% 72.7% 
+parent-context 
+30.9% 74.6% 
+33.3% 72.8% 
+parent-node 
+31.2% 77.8% 
+31.4% 79.5% 
+parent-node-filler 
+28.7% 78.9% 
+30.2% 80.3% 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_8" validated="true"><head>Table 5 :</head><label>5</label><figDesc>Results obtained with our combined algorithm based on</figDesc><table>CRF and PCFG 
+
+will have more rules. For example, the rule 
+pers.ind ⇒ name.first name.last can 
+appear as it is or contextualized with func.ind, 
+like in </table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_10" validated="false"><head>Table 6 :</head><label>6</label><figDesc>Results obtained with our combined algorithm based on</figDesc><table>CRF and PCFG 
+
+table 4. </table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1">These rules are actually in Chomsky Normal Form, i.e. unary or binary rules only. A PCFG, in general, can have any rule, however, the algorithm we are discussing convert the PCFG rules into Chomsky Normal Form, thus for simplicity we provide directly such formulation.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot">P (t|w, P, S, C, M S, F ) · P (τ ) (10) or P (t|w, P, S, C, M S, F ) · P (τ |l) (11) depending if we are using the tree representation given in figure 4, 5 and 6 or in figure 7 and 8, respectively. A scale factor could be used to combine the two scores, but this is optional as CRFs can provide normalized posterior probabilities. 2 The set of features used in the CRF model will be described in more details in the evaluation section.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="3">available at http://wapiti.limsi.fr 4 available at http://web.science.mq.edu.au/ mjohnson/Software.htm</note>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Acknowledgments</head><p>This work has been funded by the project Quaero, under the program Oseo, French State agency for innovation.</p></div>
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Message Understanding Conference-6: a brief history</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ralph</forename><surname>Grishman</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Beth</forename><surname>Sundheim</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 16th conference on Computational linguistics</title>
+		<meeting>the 16th conference on Computational linguistics<address><addrLine>Stroudsburg, PA, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="1996" />
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="466" to="471" />
+		</imprint>
+	</monogr>
+	<note>Association for Computational Linguistics</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Definition, Dictionaries and Tagger for Extended Named Entity Hierarchy</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Satoshi</forename><surname>Sekine</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Chikashi</forename><surname>Nobata</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of LREC</title>
+		<meeting>LREC</meeting>
+		<imprint>
+			<date type="published" when="2004" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">The Automatic Content Extraction (ACE) Program-Tasks, Data, and Evaluation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Doddington</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Mitchell</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Przybocki</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">L</forename><surname>Ramshaw</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Strassel</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Weischedel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of LREC 2004</title>
+		<meeting>LREC 2004</meeting>
+		<imprint>
+			<date type="published" when="2004" />
+			<biblScope unit="page" from="837" to="840" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Proposal for an extension or traditional named entities: From guidelines to evaluation, an overview</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Cyril</forename><surname>Grouin</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sophie</forename><surname>Rosset</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Pierre</forename><surname>Zweigenbaum</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Karn</forename><surname>Fort</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Olivier</forename><surname>Galibert</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ludovic</forename><surname>Quintard</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Linguistic Annotation Workshop</title>
+		<meeting>the Linguistic Annotation Workshop</meeting>
+		<imprint>
+			<publisher>LAW</publisher>
+			<date type="published" when="2011" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Conditional random fields: Probabilistic models for segmenting and labeling sequence data</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Lafferty</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Mccallum</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">F</forename><surname>Pereira</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Eighteenth International Conference on Machine Learning (ICML)</title>
+		<meeting>the Eighteenth International Conference on Machine Learning (ICML)<address><addrLine>Williamstown, MA, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2001-06" />
+			<biblScope unit="page" from="282" to="289" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Pcfg models of linguistic tree representations</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Mark</forename><surname>Johnson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">24</biblScope>
+			<biblScope unit="page" from="613" to="632" />
+			<date type="published" when="1998" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Comparing stochastic approaches to spoken language understanding in multiple languages</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Stefan</forename><surname>Hahn</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Marco</forename><surname>Dinarelli</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Christian</forename><surname>Raymond</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Fabrice</forename><surname>Lefèvre</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Patrick</forename><surname>Lehen</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Renato</forename><forename type="middle">De</forename><surname>Mori</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alessandro</forename><surname>Moschitti</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hermann</forename><surname>Ney</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Giuseppe</forename><forename type="middle">Riccardi</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Audio, Speech and Language Processing</title>
+		<imprint>
+			<biblScope unit="page">99</biblScope>
+			<date type="published" when="2010" />
+			<publisher>TASLP</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">A maximum entropy approach to natural language processing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Adam</forename><forename type="middle">L</forename><surname>Berger</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Stephen</forename><forename type="middle">A</forename><surname>Della Pietra</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Vincent</forename><forename type="middle">J Della</forename><surname>Pietra</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1996" />
+			<biblScope unit="volume">22</biblScope>
+			<biblScope unit="page" from="39" to="71" />
+		</imprint>
+		<respStmt>
+			<orgName>COMPU-TATIONAL LINGUISTICS</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Practical very large scale CRFs</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Thomas</forename><surname>Lavergne</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Olivier</forename><surname>Cappé</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">François</forename><surname>Yvon</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings the 48th Annual Meeting of the Association for Computational Linguistics (ACL)</title>
+		<meeting>the 48th Annual Meeting of the Association for Computational Linguistics (ACL)</meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2010-07" />
+			<biblScope unit="page" from="504" to="513" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Incremental feature selection and l1 regularization for relaxed maximum-entropy modeling</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Stefan</forename><surname>Riezler</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alexander</forename><surname>Vasserman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the International Conference on Empirical Methods for Natural Language Processing (EMNLP)</title>
+		<meeting>the International Conference on Empirical Methods for Natural Language Processing (EMNLP)</meeting>
+		<imprint>
+			<date type="published" when="2004" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Regularization and variable selection via the Elastic Net</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hui</forename><surname>Zou</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Trevor</forename><surname>Hastie</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of the Royal Statistical Society B</title>
+		<imprint>
+			<biblScope unit="volume">67</biblScope>
+			<biblScope unit="page" from="301" to="320" />
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Statistical parsing with a context-free grammar and word statistics</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Eugene</forename><surname>Charniak</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the fourteenth national conference on artificial intelligence and ninth conference on Innovative applications of artificial intelligence, AAAI&apos;97/IAAI&apos;97</title>
+		<meeting>the fourteenth national conference on artificial intelligence and ninth conference on Innovative applications of artificial intelligence, AAAI&apos;97/IAAI&apos;97</meeting>
+		<imprint>
+			<publisher>AAAI Press</publisher>
+			<date type="published" when="1997" />
+			<biblScope unit="page" from="598" to="603" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">A maximum-entropyinspired parser</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Eugene</forename><surname>Charniak</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 1st North American chapter of the Association for Computational Linguistics conference</title>
+		<meeting>the 1st North American chapter of the Association for Computational Linguistics conference<address><addrLine>San Francisco, CA, USA</addrLine></address></meeting>
+		<imprint>
+			<publisher>Morgan Kaufmann Publishers Inc</publisher>
+			<date type="published" when="2000" />
+			<biblScope unit="page" from="132" to="139" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">New figures of merit for best-first probabilistic chart parsing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sharon</forename><forename type="middle">A</forename><surname>Caraballo</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Eugene</forename><surname>Charniak</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">24</biblScope>
+			<biblScope unit="page" from="275" to="298" />
+			<date type="published" when="1997" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Three generative, lexicalised models for statistical parsing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Michael</forename><surname>Collins</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 35th Annual Meeting of the Association for Computational Linguistics and Eighth Conference of the European Chapter of the Association for Computational Linguistics, ACL &apos;98</title>
+		<meeting>the 35th Annual Meeting of the Association for Computational Linguistics and Eighth Conference of the European Chapter of the Association for Computational Linguistics, ACL &apos;98<address><addrLine>Stroudsburg, PA, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="1997" />
+			<biblScope unit="page" from="16" to="23" />
+		</imprint>
+	</monogr>
+	<note>Association for Computational Linguistics</note>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Edge-based best-first chart parsing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Eugene</forename><surname>Charniak</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sharon</forename><surname>Goldwater</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Mark</forename><surname>Johnson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Sixth Workshop on Very Large Corpora</title>
+		<meeting>the Sixth Workshop on Very Large Corpora</meeting>
+		<imprint>
+			<publisher>Morgan Kaufmann</publisher>
+			<date type="published" when="1998" />
+			<biblScope unit="page" from="127" to="133" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Training and evaluation of pos taggers on the french multitag corpus</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alexandre</forename><surname>Allauzen</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Héléne</forename><surname>Bonneau-Maynard</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Sixth International Language Resources and Evaluation (LREC&apos;08)</title>
+		<meeting>the Sixth International Language Resources and Evaluation (LREC&apos;08)<address><addrLine>Marrakech, Morocco</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2008-05" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<monogr>
+		<title level="m" type="main">Approches et méthodologies pour la réponse automatiqueà des questions adaptéesà un cadre interactif en domaine ouvert</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Olivier</forename><surname>Galibert</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2009" />
+			<pubPlace>Orsay</pubPlace>
+		</imprint>
+		<respStmt>
+			<orgName>Université Paris Sud</orgName>
+		</respStmt>
+	</monogr>
+<note type="report_type">Ph.D. thesis</note>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">The LIMSI multilingual, multitask QAst system</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Rosset</forename><surname>Sophie</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Galibert</forename><surname>Olivier</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Bernard</forename><surname>Guillaume</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Bilinski</forename><surname>Eric</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Adda</forename><surname>Gilles</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 9th Cross-language evaluation forum conference on Evaluating systems for multilingual and multimodal information access, CLEF&apos;08</title>
+		<meeting>the 9th Cross-language evaluation forum conference on Evaluating systems for multilingual and multimodal information access, CLEF&apos;08<address><addrLine>Berlin, Heidelberg</addrLine></address></meeting>
+		<imprint>
+			<publisher>SpringerVerlag</publisher>
+			<date type="published" when="2009" />
+			<biblScope unit="page" from="480" to="487" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Efficient combined approach for named entity recognition in spoken language</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Azeddine</forename><surname>Zidouni</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sophie</forename><surname>Rosset</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hervé</forename><surname>Glotin</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">.</forename><forename type="middle">;</forename><surname>Makuhari</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Japan</forename><forename type="middle">John</forename><surname>Makhoul</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Francis</forename><surname>Kubala</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Richard</forename><surname>Schwartz</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ralph</forename><surname>Weischedel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the International Conference of the Speech Communication Assosiation (Interspeech)</title>
+		<meeting>the International Conference of the Speech Communication Assosiation (Interspeech)</meeting>
+		<imprint>
+			<date type="published" when="1999" />
+			<biblScope unit="page" from="249" to="252" />
+		</imprint>
+	</monogr>
+	<note>Proceedings of DARPA Broadcast News Workshop</note>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Learning to Parse Natural Language with Maximum Entropy Models</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Adwait</forename><surname>Ratnaparkhi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Machine Learning</title>
+		<imprint>
+			<biblScope unit="volume">34</biblScope>
+			<biblScope unit="page" from="151" to="175" />
+			<date type="published" when="1999" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Discriminative Re-ranking for Natural Language Parsing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Michael</forename><surname>Collins</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Terry</forename><surname>Koo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Machine Learning</title>
+		<imprint>
+			<biblScope unit="volume">31</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="25" to="70" />
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">WideCoverage Efficient Statistical Parsing with CCG and Log-Linear Models</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Stephen</forename><surname>Clark</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">James</forename><forename type="middle">R</forename><surname>Curran</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">33</biblScope>
+			<biblScope unit="page" from="493" to="552" />
+			<date type="published" when="2007" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Efficient, Feature-based</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jenny</forename><forename type="middle">R</forename><surname>Finkel</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alex</forename><surname>Kleeman</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Christopher</forename><forename type="middle">D</forename><surname>Manning</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conditional Random Field Parsing. Proceedings of the Association for Computational Linguistics</title>
+		<meeting><address><addrLine>Columbus, Ohio</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2008" />
+			<biblScope unit="page" from="959" to="967" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Training a LogLinear Parser with Loss Functions via SoftmaxMargin</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Michael</forename><surname>Auli</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Adam</forename><surname>Lopez</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of Empirical Methods for Natural Language Processing</title>
+		<meeting>Empirical Methods for Natural Language Processing<address><addrLine>Edinburgh, U.K</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2011" />
+			<biblScope unit="page" from="333" to="343" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Tree-Structured Conditional Random Fields for Semantic Annotation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jie</forename><surname>Tang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Mingcai</forename><surname>Hong</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Juan-Zi</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Bangyong</forename><surname>Liang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedgins of the International Semantic Web Conference</title>
+		<meeting>eedgins of the International Semantic Web Conference</meeting>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2006" />
+			<biblScope unit="page" from="640" to="653" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<monogr>
+		<title/>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Olivier</forename><surname>Galibert</surname></persName>
+		</author>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<monogr>
+		<title/>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sophie</forename><surname>Rosset</surname></persName>
+		</author>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title/>
+	</analytic>
+	<monogr>
+		<title level="j">Cyril Grouin</title>
+		<imprint/>
+	</monogr>
+	<note>Pierre Zweigenbaum</note>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Structured and Extended Named Entity Evaluation in Automatic Speech Transcriptions</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ludovic</forename><surname>Quintard</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IJCNLP</title>
+		<imprint>
+			<date type="published" when="2011" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<monogr>
+		<title level="m" type="main">Models Cascade for Tree-Structured Named Entity Detection IJCNLP</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Marco</forename><surname>Dinarelli</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sophie</forename><surname>Rosset</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2011" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

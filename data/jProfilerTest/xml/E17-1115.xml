@@ -1,0 +1,802 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T13:13+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">A Data-Oriented Model of Literary Language</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher>Association for Computational Linguistics</publisher>
+				<availability status="unknown"><p>Copyright Association for Computational Linguistics</p>
+				</availability>
+				<date>April 3-7, 2017. 2017</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author role="corresp">
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Andreas</forename><surname>Van Cranenburgh</surname></persName>
+							<email>cranenburgh@phil.hhu.de</email>
+							<affiliation key="aff0">
+								<orgName type="department">Institut für Sprache und Information</orgName>
+								<orgName type="laboratory">Rens Bod Institute for Logic, Language and Computation</orgName>
+								<orgName type="institution" key="instit1">Heinrich Heine University Düsseldorf</orgName>
+								<orgName type="institution" key="instit2">University of Amsterdam</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">A Data-Oriented Model of Literary Language</title>
+					</analytic>
+					<monogr>
+						<title level="j" type="main">the Association for Computational Linguistics</title>
+						<meeting>the 15th Conference of the European Chapter <address><addrLine>Valencia, Spain</addrLine></address>
+						</meeting>
+						<imprint>
+							<publisher>Association for Computational Linguistics</publisher>
+							<biblScope unit="volume">1</biblScope>
+							<biblScope unit="page" from="1228" to="1238"/>
+							<date type="published">April 3-7, 2017. 2017</date>
+						</imprint>
+					</monogr>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>We consider the task of predicting how literary a text is, with a gold standard from human ratings. Aside from a standard bigram baseline, we apply rich syntactic tree fragments, mined from the training set, and a series of hand-picked features. Our model is the first to distinguish degrees of highly and less literary novels using a variety of lexical and syntactic features, and explains 76.0 % of the variation in literary ratings.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>What makes a literary novel literary? This seems first of all to be a value judgment; but to what extent is this judgment arbitrary, determined by social factors, or predictable as a function of the text? The last explanation is associated with the concept of literariness, the hypothesized linguistic and formal properties that distinguish literary language from other language <ref type="bibr" target="#b1">(Baldick, 2008)</ref>. Although the definition and demarcation of literature is fundamental to the field of literary studies, it has received surprisingly little empirical study. Common wisdom has it that literary distinction is attributed in social communication about novels and that it lies mostly outside of the text itself <ref type="bibr" target="#b6">(Bourdieu, 1996)</ref>, but an increasing number of studies argue that in addition to social and historical explanations, textual features of various complexity may also contribute to the perception of literature by readers (cf. <ref type="bibr" target="#b11">Harris, 1995;</ref><ref type="bibr" target="#b17">McDonald, 2007)</ref>. The current paper shows that not only lexical features but also hierarchical syntactic features and other textual characteristics contribute to explaining judgments of literature.</p><p>Our main goal in this project is to answer the following question: are there particular textual conventions in literary novels that contribute to readers judging them to be literary? We address this question by building a model of literary evaluation to estimate the contribution of textual factors. This task has been considered before with a smaller set of novels (restricted to thrillers and literary novels), using bigrams <ref type="bibr" target="#b27">(van Cranenburgh and Koolen, 2015)</ref>. We extend this work by testing on a larger, more diverse corpus, and by applying rich syntactic features and several hand-picked features to the task. This task is first of all relevant to literary studies-to reveal to what extent literature is empirically associated with textual characteristics. However, practical applications are also possible; e.g., an automated model could help a literary publisher decide whether the work of a new author fits its audience; or it could be used as part of a recommender system for readers.</p><p>Literary language is arguably a subjective notion. A gold standard could be based on the expert opinions of critics and literary prizes, but we can also consider the reader directly, which, in the form of a crowdsourced survey, more easily provides a statistically adequate number of responses. We therefore base our gold standard on a large online survey of readers with ratings of novels.</p><p>Literature comprises some of the most rich and sophisticated language, yet stylometry typically does not exploit linguistic information beyond part-of-speech (POS) tags or grammar productions, when syntax is involved at all (cf. e.g., <ref type="bibr" target="#b23">Stamatatos et al., 2009;</ref><ref type="bibr" target="#b0">Ashok et al., 2013)</ref>. While our results confirm that simple features are highly effective, we also employ full syntactic analyses and argue for their usefulness. We consider tree fragments: arbitrarily-sized connected subgraphs of parse trees <ref type="bibr" target="#b24">(Swanson and Charniak, 2012;</ref><ref type="bibr" target="#b2">Bergsma et al., 2012;</ref><ref type="bibr" target="#b28">van Cranenburgh, 2012)</ref>. Such features are central to the Data-Oriented Parsing framework <ref type="bibr" target="#b21">(Scha, 1990;</ref><ref type="bibr" target="#b4">Bod, 1992)</ref>, which postulates that language use derives from arbitrary chunks (e.g., syntactic tree fragments) of previous lan- HYPOTHESIS 1: Literary authors employ a distinctive inventory of lexico-syntactic constructions (e.g., a register) that marks literary language.</p><p>Next we provide an analysis of these constructions which supports our second hypothesis.</p><p>HYPOTHESIS 2: Literary language invokes a larger set of syntactic constructions when compared to the language of non-literary novels, and therefore more variety is observed in the parse tree fragments whose occurrence frequencies are correlated with literary ratings.</p><p>The support provided for these hypotheses suggests that the notion of literature can be explained, to a substantial extent, from textual factors, which contradicts the belief that external, social factors are more dominant than internal, textual factors.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Task, experimental setup</head><p>We consider a regression problem of a set of novels and their literary ratings. These ratings have been obtained in a large reader survey (about 14k participants), 1 in which 401 recent, bestselling Dutch novels (as well as works translated into Dutch) where rated on a 7-point Likert scale from definitely not to highly literary. The participants were presented with the author and title of each novel, and provided ratings for novels they had read. The ratings may have been influenced by well known authors or titles, but this does not affect the results of this paper because the machine learning models are not given such information. The task we consider is to predict the mean 2 rating for each novel. We ex- <ref type="bibr">1</ref> The survey was part of The Riddle of Literary Quality, cf. http://literaryquality.huygens.knaw.nl 2 Strictly speaking the Likert scale is ordinal and calls for the median, but the symmetric 7-point scale and the number of ratings arguably makes using the mean permissible; the latter provides more granularity and sensitivity to minority ratings.</p><p>clude 16 novels that have been rated by less than 50 participants. 91 % of the remaining novels have a t-distributed 95 % confidence interval ă 0.5; e.g., given a mean of 3, the confidence interval typically ranges from 2.75 to 3.25. Therefore for our purposes the ratings form a reliable consensus. Novels rated as highly literary have smaller confidence intervals, i.e., show a stronger consensus. Where a binary distinction is needed, we call a rating of 5 or higher 'literary. <ref type="bibr">'</ref> Since we aim to extract relevant features from the texts themselves and the number of novels is relatively small, we apply cross-validation, so as to exploit the data to the fullest extent while maintaining an out-of-sample approach. We divide the corpus in 5 folds of roughly equal size, with the following constraints: (a) novels by the same author must be in the same fold, since we want to rule out any influence of author style on feature selection or model validation; (b) the distribution of literary ratings in each fold should be similar to the overall distribution (stratification).</p><p>We control for length and potential particularities of the start of novels by considering sentences 1000-2000 of each novel. 18 novels with fewer than 2000 sentences are excluded. Together with the constraint of at least 50 ratings, this brings the total number of novels we consider to 369.</p><p>We evaluate the effectiveness of the features using a ridge regression model, with 5-fold crossvalidation; we do not tune the regularization. The results are presented incrementally, to illustrate the contribution of each feature relative to the features before it. This makes it possible to gauge the effective contribution of each feature while taking any overlap into account.</p><p>We use R 2 as the evaluation metric, expressing the percentage of variance explained (perfect score 100); this shows the improvement of the predictions over a baseline model that always predicts the mean value (4.2, in this dataset). A mean baseline model is therefore defined to have an R 2 of 0. Other baseline models, e.g., always predicting 3.5 or 7, attain negative R 2 scores, since they perform worse than the mean baseline. Similarly, a random baseline will yield a negative expected R 2 .</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Basic features</head><p>Sentence length, direct speech, vocabulary richness, and compressibility are simple yet effective stylometric features. We count direct speech sentences by matching on specific punctuation; this provides a measure of the amount of dialogue versus narrative text in the novel. Vocabulary richness is defined as the proportion of words in a text that appear in the top 3000 most common words of a large reference corpus (Sonar 500; <ref type="bibr" target="#b19">Oostdijk et al., 2013)</ref>; this shows the proportion of difficult or unusual words. Compressibility is defined as the bzip2 compression ratio of the texts; the intuition is that a repetitive and predictable text will be highly compressible. CLICHES is the number of cliché expressions in the texts based on an external dataset of 6641 clichés <ref type="bibr" target="#b30">(van Wingerden and Hendriks, 2015)</ref>; clichés, being marked as informal and unoriginal, are expected to be more prevalent in non-literary texts. <ref type="table">Table 1</ref> shows the results of these features. Several other features were also evaluated but were either not effective or did not achieve appreciable improvements when these basic features are taken into account; notably Flesch readability <ref type="bibr" target="#b9">(Flesch, 1948)</ref>, average dependency length <ref type="bibr" target="#b10">(Gibson, 2000)</ref>, and D-level <ref type="bibr" target="#b8">(Covington et al., 2006</ref> </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Automatically induced features</head><p>In this section we consider extracting syntactic features, as well as three (sub)lexical baselines. TOPICS is a set of 50 topic weights induced with Latent Dirichlet Allocation (LDA; <ref type="bibr" target="#b3">Blei et al., 2003)</ref> from the corpus (for details, cf. <ref type="bibr" target="#b12">Jautze et al., 2016)</ref>.</p><p>Furthermore, we use character and word n-gram features. For words, bigrams present a good trade off in terms of informativeness (a bigram frequency is more specific than the frequency of an individual word) and sparsity (three or more consecutive words results in a large number of n-gram types with low frequencies). For character n-grams, n " 4 achieved good performance in previous work (e.g., <ref type="bibr" target="#b22">Stamatatos, 2006)</ref>.</p><p>We note three limitations of n-grams. First, the fixed n: larger or discontiguous chunks are not extracted. Combining n-grams does not help since a linear model cannot capture feature interactions, nor is the consecutive occurrence of two features captured in the bag-of-words representation. Second, larger n imply a combinatorial explosion of possible features, which makes it desirable to select the most relevant features. Finally, word and character n-grams are surface features without linguistic abstraction. One way to overcome these limitations is to turn to syntactic parse trees and mine them for relevant features unrestricted in size.</p><p>Specifically, we consider tree fragments as features, which are arbitrarily-sized fragments of parse trees. If a parse tree is seen as consisting of a sequence of grammar productions, a tree fragment is a connected subsequence thereof. Compared to bag-of-word representations, tree fragments can capture both syntactic and lexical elements; and these combine to represent constructions with open slots (e.g., to take NP into account), or sentence templates (e.g., "Yes, but . . . ", he said). Tree fragments are thus a very rich source of features, and larger or more abstract features may prove to be more linguistically interpretable.</p><p>We present a data-driven method for extracting and selecting tree fragments. Due to combinatorics, there are an exponential number of possible fragments given a parse tree. For this reason it is not feasible to extract all fragments and select the relevant ones later; we therefore use a strategy to directly select fragments for which there is evidence of re-use by considering commonalities in pairs of trees. This is done by extracting the largest common syntactic fragments from pairs of trees <ref type="bibr" target="#b20">(Sangati et al., 2010;</ref><ref type="bibr">van Cranenburgh, 2014)</ref>. This method is related to tree-kernel methods <ref type="bibr" target="#b7">(Collins and Duffy, 2002;</ref><ref type="bibr" target="#b18">Moschitti, 2006)</ref>, with the difference that it extracts an explicit set of fragments. The feature selection approach is based on relevance and redundancy <ref type="bibr" target="#b31">(Yu and Liu, 2004)</ref>, similar to <ref type="bibr" target="#b25">Swanson and Charniak (2013)</ref>. <ref type="bibr" target="#b14">Kim et al. (2011)</ref> also use tree fragments, for authorship attribution, but with a frequent tree mining approach; the difference with our approach is that we extract the largest fragments attested in each tree pair, which are not necessarily the most frequent.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Preprocessing</head><p>We parse the 369 novels with Alpino <ref type="bibr" target="#b5">(Bouma et al., 2001</ref>). The parse trees include discontinuous constituents, non-terminal labels consist of both syntactic categories and function tags, selected morphological features, 3 and constituents are bina-rized head-outward with a markovization of h=1, v=1 <ref type="bibr" target="#b15">(Klein and Manning, 2003)</ref>.</p><p>For a fragment to be attested in a pair of parse trees, its labels need to match exactly, including the aforementioned categories, tags, and features. The h " 1 binarization implies that fragments may contain partial constituents; i.e., a contiguous sequence of children from an n-ary constituent. <ref type="figure">Figure 1</ref> shows an example parse tree; for brevity, this tree is rendered without binarization. The non-terminal labels consist of a syntactic category (shown in red), followed by a function tag (green). The part-of-speech tags additionally have morphological features (black) in square brackets. Some labels contain percolated morphological features, prefixed by a colon.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Mining syntactic tree fragments</head><p>The procedure is divided in two parts. The first part concerns fragment extraction:</p><p>1. Given texts divided in folds F 1 . . . F n , each C i is the set of parse trees obtained from parsing all texts in F i . Extract the largest common fragments of the parse trees in all pairs of folds xC i , C j y with i ă j. A common fragment f of parse trees t 1 , t 2 is a connected subgraph of t 1 and t 2 . The result is a set of initial candidates that occur in at least two different texts, stored separately for each pair of folds xC i , C j y.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">Count occurrences of all fragments in all texts.</head><p>Fragment selection is done separately w.r.t. each test fold. Given test fold i, we consider the fragments found in training folds t1..nu z i; e.g., given n " 5, for test fold 1 we select only from the fragments and their counts as observed in training folds 2-5. Given a set of fragments from training folds, selection proceeds as follows:</p><p>1. Zero count threshold: remove fragments that occur in less than 5 % of texts (too specific to particular novels); frequency threshold: remove fragments that occur less than 50 times across the corpus (too rare to reliably detect a correlation with the ratings). 2. Relevance threshold: select fragments by considering the correlation of their counts with the literary ratings of the novels in the training folds. Apply a simple linear regression as infinite verbs, auxiliary verbs, proper nouns, subordinating conjunctions, personal pronouns, and postpositions.</p><p>based on the Pearson correlation coefficient, and use an F-test to filter out fragments whose p-value 4 ą 0.05. The F-test determines significance based on the number of datapoints N , and the correlation r; the effective threshold is approximately |r| ą 0.11. 3. Redundancy removal: greedily select the most relevant fragment and remove other fragments that are too similar to it. Similarity is measured by computing the correlation coefficient between the feature vectors of two fragments, with a cutoff of |r| ą 0.5. Experiments where this step was not applied indicated that it improves performance.</p><p>Note that there is some risk of overfitting since fragments are both extracted and selected from the training set. However, this is mitigated by the fact that fragments are extracted from pairs of folds, while selection is constrained to fragments that are attested and significantly correlated across the whole training set.</p><p>The values for the thresholds were chosen manually and not tuned, since the limited number of novels is not enough to provide a proper tuning set. <ref type="table">Table 2</ref> lists the number of fragments extracted from folds 2-5 after each of these steps.  <ref type="table">Table 2</ref>: The number of fragments in folds 2-5 after each filtering step.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3">Evaluation</head><p>Due to the large number of induced features, Support Vector Regression (SVR) is more effective than ridge regression. We therefore train a linear SVR model with the same cross-validation setup, and feed its predictions to the ridge regression model (i.e., stacking). Feature counts are turned into relative frequencies. The model has two hyperparameters: C determines the regularization, and is a threshold beyond which predictions are considered good enough during training. Instead of   <ref type="table">Table 4</ref>: Automatically induced features; incremental scores.</p><p>tuning these parameters we pick fixed values of C=100 and =0, reducing regularization compared to the default of C=1 and disabling the threshold. Cf. <ref type="table" target="#tab_4">Table 3</ref> for the scores. The syntactic fragments perform best, followed by char. 4-grams and word bigrams. We report scores for each of the 5 folds separately because the variance between folds is high. However, the differences between the feature types are relatively consistent. The variance is not caused by the distribution of ratings, since the folds were stratified on this. Nor can it be explained by the agreement in ratings per novel, since the 95 % confidence intervals of the individual ratings for each novel were of comparable width across the folds. Lastly, author gender, genre, and whether the novel was translated do not differ markedly across the folds. It seems most likely that the novels simply differ in how predictable their ratings are from textual features.</p><p>In order to gauge to what extent these automatically induced features are complementary, we combine them in a single model together with the basic features; cf. the scores in <ref type="table">Table 4</ref>. Both character 4-grams and syntactic fragments still provide a relatively large improvement over the previous features, taking into account the inherent diminishing returns of adding more features. <ref type="figure" target="#fig_0">Figure 2</ref> shows a bar plot of the ten novels with the largest prediction error with the fragment and word bigram models. Of these novels, 9 are highly literary and underestimated by the model. For the other novel (Smeets, Afrekening) the literary rating is overestimated by the model. Since this top 10 is based on the mean prediction from both models, the error is large for both models. This does not The ten novels with the largest prediction error (using both fragments and bigrams).  change when the top 10 errors using only fragments or bigrams is inspected; i.e., the hardest novels to predict are hard with both feature types. What could explain these errors? At first sight, there is no obvious commonality between the literary novels that are predicted well, or between the ones with a large error; e.g., whether the novels have been translated or not does not explain the error. A possible explanation is that the successfully predicted literary novels share a particular (e.g., rich) writing style that sets them apart from other novels, while the literary novels that are underestimated by the model are not marked by such a writing style. It is difficult to confirm this directly by inspecting the model, since each prediction is the sum of several thousand features, and the contributions of these features form a long tail. If we define the contribution of a feature as the absolute value of its weight times its relative frequency in the document, then in case of Barnes, The sense of an ending, the top 100 features contribute only 34 % of the total prediction. <ref type="table" target="#tab_6">Table 5</ref> gives the basic features for the top 4 literary novels with the largest error and contrasts them with 4 literary novels which are well predicted. The most striking difference is sentence length: the underestimated literary novels have markedly shorter sentences. Voskuil and Franzen have a higher proportion of direct speech (they are in fact the only literary novels in the top 10 novels with the most direct speech). Lastly, the underestimated novels have a higher proportion of common words (lower vocabulary richness). These observations are compatible with the explanation suggested above, that a subset of the literary novels share a simple, readable writing style with nonliterary novels. Such a style may be more difficult to detect than a literary style with long and complex sentences, or rich vocabulary and phraseology, because a simple, well-crafted sentence may not offer overt surface markers of stylization. Book reviews appear to support this notion for The sense of an ending: "A slow burn, measured but suspenseful, this compact novel makes every slyly crafted sentence count" (Tonkin, 2011); and "polished phrasings, elegant verbal exactness and epigrammatic perceptions" <ref type="bibr" target="#b13">(Kemp, 2011)</ref>.</p><p>In order to test whether the amount of data is sufficient to learn to predict the ratings, we construct a learning curve for different training set sizes; cf. <ref type="figure" target="#fig_1">Figure 3</ref>. The set of novels is shuffled once, so that initial segments of different size represent random samples. The novels are sampled in 5 % increments (i.e., 20 models are trained). The graphs show the cross-validated scores.</p><p>The graphs show that increasing the number of novels has a large effect on performance. The curve is steep up to 30 % of the training set, and the performance keeps improving steadily but more slowly up to the last data point. Since the performance is relatively flat starting from 85 %, we can conclude that the k-fold cross-validation with k " 5 provides an adequate estimate of the model's performance if  <ref type="table">(TABLE 1)</ref> 30.0 + AUTO. INDUCED FEAT. <ref type="table">(TABLE 4)</ref> 61.2 + GENRE 74.3 + TRANSLATED 74.0 + AUTHOR GENDER 76.0 <ref type="table">Table 6</ref>: Metadata features; incremental scores.</p><p>it were trained on the full dataset; if the model was still gaining performance significantly with more training data, the cross-validation score would underestimate the true prediction performance. A similar experiment was performed varying the number of features. Here the performance plateaus quickly and reaches an R 2 of 53.0 % at 40 %, and grows only slightly from that point.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Metadata features</head><p>In addition to textual features, we also include three (categorical) metadata features not extracted from the text, but still an inherent feature of the novel in question: GENRE, TRANSLATED, and AUTHOR GENDER; cf. <ref type="table">Table 6</ref> for the results. <ref type="figure" target="#fig_3">Figure 4</ref> shows a visualization of the predictions in a scatter plot.</p><p>GENRE is the coarse genre classification Fiction, Suspense, Romantic, Other, derived from the publisher's categorization. Genre alone is already a strong predictor, with an R 2 of 58.3 on its own. However, this score is arguably misleading, because the predictions are very coarse due to the discrete nature of the feature.</p><p>A striking result is that the variables AUTHOR GENDER and TRANSLATED increase the score, but only when they are both present. Inspecting the mean ratings shows that translated novels by female authors have an average rating of 3.8, while originally Dutch male authors are rated 5.0 on average; the ratings of the other combinations lie in between these extremes. This explains why the combination works better than either feature on its own, but due to possible biases inherent in the makeup of the corpus, such as which female or translated authors are published and selected for the corpus, no conclusions on the influence of gender or translation should be drawn from these datapoints.</p><p>6 Previous work <ref type="table">Table 7</ref> shows an overview of previous work on the task of predicting the (literary) quality of novels. Note that the datasets and targets differ, therefore none of the results are directly comparable. For example, regression is a more difficult task than binary classification, and recognizing the difference between an average and highly literary novel is more difficult than distinguishing either from a different domain or genre (e.g., newswire). <ref type="bibr" target="#b16">Louwerse et al. (2008)</ref> discriminate literature from other texts using Latent Semantic Analysis. <ref type="bibr" target="#b0">Ashok et al. (2013)</ref> use bigrams, POS tags, and grammar productions to predict the popularity of Gutenberg texts. van <ref type="bibr" target="#b27">Cranenburgh and Koolen (2015)</ref> predict the literary ratings of texts, as in the present paper, but only using bigrams, and on a smaller, less diverse corpus. Compared to previous work, this paper gives a more precise estimate of how well shades of literariness can be predicted from a diverse range of features, including larger and more abstract syntactic constructions.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7">Analysis of selected tree fragments</head><p>An advantage of parse tree fragments is that they offer opportunities for interpretation in terms of linguistic aspects as well as basic distributional aspects such as shape and size. <ref type="figure" target="#fig_4">Figure 5</ref> shows three fragments ranked highly  <ref type="table">Table 7</ref>: Overview of previous work on modeling (literary) quality of novels.</p><p>by the correlation metric, as extracted from the first fold. The first fragment shows an incomplete constituent, indicated by the ellipses as first and last leaves. Such incomplete fragments are made possible by the binarization scheme (cf. Sec. 4.1). <ref type="table" target="#tab_9">Table 8</ref> shows a breakdown of fragment types in the first fold. In contrast with n-grams, we also see   a large proportion of purely syntactic fragments, and fragments mixing both lexical elements and substitution sites. In the case of discontinuous fragments, it turns out that the majority has a positive correlation; this might be due to being associated with more complex constructions. <ref type="figure" target="#fig_6">Figure 6</ref> shows a breakdown by fragment size (defined as number of non-terminals), distinguishing fragments that are positively versus negatively correlated with the literary ratings.</p><p>Note that 1 and 3 are special cases corresponding to lexical (e.g., DT Ñ the) and binary grammar productions (e.g., NP Ñ DT N), respectively. The fragments with 2, 4, and 6 non-terminals are not as common because an even number implies the presence of unary nodes. Except for fragments of size 1, the frontier of fragments can consist of either substitution sites or terminals (since we distinguish only the number of non-terminals). On the one hand smaller fragments corresponding to one or two grammar productions are most common, and are predominantly positively correlated with the  literary ratings. On the other hand there is a significant negative correlation between fragment size and literary ratings (r "´0.2, p ă 0.001); i.e., smaller fragments tend to be positively correlated with the literary ratings. It is striking that there are more positively than negatively correlated fragments, while literary novels are a minority in the corpus (88 out of 369 novels are rated 5 or higher). Additionally, the breakdown by size shows that the larger number of positively correlated fragments is due to a large number of small fragments of size 3 and 5; however, combinatorially, the number of possible fragment types grows exponentially with size (as reflected in the initial set of recurring fragments), so larger fragment types would be expected to be more numerous. In effect, the selected negatively correlated fragments ignore this distribution by being relatively uniform with respect to size, while the  literary fragments actually show the opposite distribution. What could explain the peak of positively correlated, small fragments? In order to investigate the peak of small fragments, we inspect the 40 fragments of size 3 with the highest correlations. These fragments contain indicators of unusual or more complex sentence structure:</p><p>• DU, dp: discourse phenomena for which no specific relation can be assigned (e.g., discourse relations beyond the sentence level).</p><p>• appositive NPs, e.g., 'John the artist.' • a complex NP, e.g., containing punctuation, nested NPs, or PPs.</p><p>• an NP containing an adjective used nominally or an infinitive verb.</p><p>On the other hand, most non-literary fragments are top-level productions containing ROOT or clauselevel labels, for example to introduce direct speech. Another way of analyzing the selected fragments is by frequency. When we consider the total frequencies of selected fragments across the corpus, there is a range of 50 to 107,270. The bulk of fragments have a low frequency (before fragment selection 2 is by far the most dominant frequency), but the tail is very long. Except for the fact that there is a larger number of positively correlated fragments, the histograms have a very similar shape.</p><p>Lastly, <ref type="figure" target="#fig_8">Figure 7</ref> shows a breakdown by the syntactic categories and function tags of the root node of the fragments. The positively correlated fragments are spread over a larger variety of both syntactic categories and function tags. This means that for most labels, the number of positively correlated fragments is higher; the exceptions are ROOT, SV1 (a verb-initial phrase, not part of the top 15), and the absence of a function tag (indicative of a nonterminal directly under the root node). All of these exceptions point to a tendency for negatively correlated fragments to represent templates of complete sentences.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8">Conclusion</head><p>The answer to the main research question is that literary judgments are non-arbitrary and can be explained to a large extent from the text itself: there is an intrinsic literariness to literary texts. Our model employs an ensemble of textual features that show a cumulative improvement on predictions, achieving a total score of 76.0 % variation explained. This result is remarkably robust: not just broad genre distinctions, but also finer distinctions in the ratings are predicted.</p><p>The experiments showed one clear pattern: literary language tends to use a larger set of syntactic constructions than the language of non-literary novels. This also provides evidence for the hypothesis that literature employs a specific inventory of constructions. All evidence points to a notion of literature which to a substantial extent can be explained purely from internal, textual factors, rather than being determined by external, social factors.</p><p>Code and details of the experimental setup are available at https://github.com/ andreasvc/literariness</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: The ten novels with the largest prediction error (using both fragments and bigrams).</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: Learning curve when varying training set size. The error bars show the standard error.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 4 :</head><label>4</label><figDesc>Figure 4: A scatter plot of regression predictions and actual literary ratings. Original/translated titles. Note the histograms beside the axes showing the distribution of ratings (top) and predictions (right).</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 5 :</head><label>5</label><figDesc>Figure 5: Three fragments whose frequencies in the first fold have a high correlation with the literary ratings. Note the different scales on the y-axis. From left to right; Blue: complex NP with comma; Green: quoted speech; Red: Adjunct PP with indefinite article.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Figure 6 :</head><label>6</label><figDesc>Figure 6: Breakdown by fragment size (number of non-terminals).</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head>Figure 7 :</head><label>7</label><figDesc>Figure 7: Breakdown by category (above) and function tag (below) of fragment root (top 15 labels).</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0" validated="false"><head></head><label></label><figDesc>Figure 1: A parse tree fragment from Franzen, The Corrections. Original sentence: something terrible was going to happen. guage experience. In our case, this suggests the following hypothesis.</figDesc><table>SMAIN-
+sat:inf:pv 
+
+INF-vc:inf 
+
+NP-su 
+NP-mod 
+
+VNW-hd 
+
+er 
+there 
+
+WW[pv]-hd 
+
+ging 
+going 
+
+VNW 
+[pron]-hd 
+
+iets 
+something 
+
+ADJ-mod 
+
+verschrikkelijks 
+terrible 
+
+WW 
+[inf,vrij]-hd 
+
+gebeuren 
+to happen 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1" validated="false"><head></head><label></label><figDesc>).MEAN SENT. LEN.</figDesc><table>R 
+
+2 
+
+16.4 
++ % DIRECT SPEECH SENTENCES 
+23.1 
++ TOP 3000 VOCAB. 
+23.5 
++ BZIP2 RATIO 
+24.4 
++ CLICHES 
+30.0 
+
+Table 1: Basic features, incremental scores. 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4" validated="true"><head>Table 3 :</head><label>3</label><figDesc>Regression evaluation. R 2 scores on the 5 cross-validation folds.</figDesc><table>R 
+
+2 
+
+BASIC FEATURES (TABLE 1) 
+30.0 
++ TOPICS 
+52.2 
++ BIGRAMS 
+59.5 
++ CHAR. 4-GRAMS 
+59.9 
++ FRAGMENTS 
+61.2 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_6" validated="false"><head>Table 5 :</head><label>5</label><figDesc></figDesc><table>Comparison of baseline features for novels 
+with good (1-4) and bad (5-8) predictions. 
+
+</table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_9" validated="false"><head>Table 8 :</head><label>8</label><figDesc>Breakdown of fragment types selected in the first fold.</figDesc><table></table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="3">The DCOI tag set (van Eynde, 2005) is fine grained; we restrict the set to distinguish the 7 coarse POS tags, as well</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="4">If we were actually testing hypotheses we would need to apply Bonferroni correction to avoid the Family-Wise Error due to multiple comparisons; however, since the regression here is only a means to an end, we leave the p-values uncorrected.</note>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Acknowledgments</head><p>We are grateful to David Hoover, Patrick Juola, Corina Koolen, Laura Kallmeyer, and the reviewers for feedback. This work is part of The Riddle of Literary Quality, a project supported by the Royal Netherlands Academy of Arts and Sciences through the Computational Humanities Program. In addition, part of the work on this paper was funded by the German Research Foundation DFG (Deutsche Forschungsgemeinschaft).</p></div>
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Success with style: using writing style to predict the success of novels</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Vikas</forename><surname>Ashok</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Song</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Yejin</forename><surname>Choi</surname></persName>
+		</author>
+		<ptr target="http://aclweb.org/anthology/D13-1181" />
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of EMNLP</title>
+		<meeting>EMNLP</meeting>
+		<imprint>
+			<date type="published" when="2013" />
+			<biblScope unit="page" from="1753" to="1764" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Literariness</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Chris</forename><surname>Baldick</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">The Oxford Dictionary of Literary Terms</title>
+		<meeting><address><addrLine>USA</addrLine></address></meeting>
+		<imprint>
+			<publisher>Oxford University Press</publisher>
+			<date type="published" when="2008" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Stylometric analysis of scientific articles</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Shane</forename><surname>Bergsma</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Matt</forename><surname>Post</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">David</forename><surname>Yarowsky</surname></persName>
+		</author>
+		<ptr target="http://aclweb.org/anthology/N12-1033" />
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of NAACL</title>
+		<meeting>NAACL</meeting>
+		<imprint>
+			<date type="published" when="2012" />
+			<biblScope unit="page" from="327" to="337" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title/>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">David</forename><forename type="middle">M</forename><surname>Blei</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Andrew</forename><forename type="middle">Y</forename><surname>Ng</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Michael</forename><forename type="middle">I</forename><surname>Jordan</surname></persName>
+		</author>
+		<ptr target="http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf" />
+	</analytic>
+	<monogr>
+		<title level="j">Latent Dirichlet allocation. the Journal of machine Learning research</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="page" from="993" to="1022" />
+			<date type="published" when="2003" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">A computational model of language performance: Data-oriented parsing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Rens</forename><surname>Bod</surname></persName>
+		</author>
+		<ptr target="http://aclweb.org/anthology/C92-3126" />
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings COLING</title>
+		<meeting>COLING</meeting>
+		<imprint>
+			<date type="published" when="1992" />
+			<biblScope unit="page" from="855" to="859" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<title level="m" type="main">Alpino: Wide-coverage computational analysis of Dutch. Language and Computers</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Gosse</forename><surname>Bouma</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Robert</forename><surname>Gertjan Van Noord</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Malouf</surname></persName>
+		</author>
+		<ptr target="http://www.let.rug.nl/vannoord/papers/alpino.pdf" />
+		<imprint>
+			<date type="published" when="2001" />
+			<biblScope unit="volume">37</biblScope>
+			<biblScope unit="page" from="45" to="59" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title level="m" type="main">The rules of art: Genesis and structure of the literary field</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Pierre</forename><surname>Bourdieu</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1996" />
+			<publisher>Stanford University Press</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">New ranking algorithms for parsing and tagging: Kernels over discrete structures, and the voted perceptron</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Michael</forename><surname>Collins</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Nigel</forename><surname>Duffy</surname></persName>
+		</author>
+		<ptr target="http://aclweb.org/anthology/P02-1034" />
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of ACL</title>
+		<meeting>ACL</meeting>
+		<imprint>
+			<date type="published" when="2002" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">How complex is that sentence? A proposed revision of the Rosenberg and Abbeduto D-Level scale. CASPR Research Report</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Michael</forename><forename type="middle">A</forename><surname>Covington</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Congzhou</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Cati</forename><surname>Brown</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Lorina</forename><surname>Naci</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">John</forename><surname>Brown</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Artificial Intelligence Center</title>
+		<imprint>
+			<date type="published" when="2006-01" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">A new readability yardstick</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Rudolph</forename><surname>Flesch</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of applied psychology</title>
+		<imprint>
+			<biblScope unit="volume">32</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page">221</biblScope>
+			<date type="published" when="1948" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<title level="m" type="main">The dependency locality theory: A distance-based theory of linguistic complexity. Image, language, brain</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Edward</forename><surname>Gibson</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2000" />
+			<biblScope unit="page" from="95" to="126" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<monogr>
+		<title level="m" type="main">Literary meaning. Reclaiming the study of literature</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">V</forename><surname>Wendell</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Harris</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1995" />
+			<publisher>Palgrave Macmillan</publisher>
+			<pubPlace>London</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Topic modeling literary quality</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Kim</forename><surname>Jautze</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Andreas</forename><surname>Van Cranenburgh</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Corina</forename><surname>Koolen</surname></persName>
+		</author>
+		<ptr target="http://dh2016.adho.org/abstracts/95" />
+	</analytic>
+	<monogr>
+		<title level="m">Digital Humanities 2016: Conference Abstracts</title>
+		<meeting><address><addrLine>Krákow, Poland</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2016" />
+			<biblScope unit="page" from="233" to="237" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<monogr>
+		<title level="m" type="main">The sense of an ending by Julian Barnes. Book review, The Sunday Times</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Peter</forename><surname>Kemp</surname></persName>
+		</author>
+		<ptr target="http://www.thesundaytimes" />
+		<imprint>
+			<date type="published" when="2011-07-24" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Authorship classification: A syntactic tree mining approach</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sangkyum</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hyungsul</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Tim</forename><surname>Weninger</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jiawei</forename><surname>Han</surname></persName>
+		</author>
+		<idno type="doi">10.1145/2009916.2009979</idno>
+		<ptr target="http://dx.doi.org/10.1145/2009916.2009979" />
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of SIGIR</title>
+		<meeting>SIGIR</meeting>
+		<imprint>
+			<publisher>ACM</publisher>
+			<date type="published" when="2011" />
+			<biblScope unit="page" from="455" to="464" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Accurate unlexicalized parsing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Dan</forename><surname>Klein</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Christopher</forename><forename type="middle">D</forename><surname>Manning</surname></persName>
+		</author>
+		<ptr target="http://aclweb.org/anthology/P03-1054" />
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of ACL</title>
+		<meeting>ACL</meeting>
+		<imprint>
+			<date type="published" when="2003" />
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="423" to="430" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Computationally discriminating literary from nonliterary texts</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Max</forename><surname>Louwerse</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Nick</forename><surname>Benesh</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Bin</forename><surname>Zhang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Directions in empirical literary studies: In honor of Willie Van Peer</title>
+		<editor>S. Zyngier, M. Bortolussi, A. Chesnokova, and J. Auracher</editor>
+		<meeting><address><addrLine>Amsterdam</addrLine></address></meeting>
+		<imprint>
+			<publisher>John Benjamins Publishing Company</publisher>
+			<date type="published" when="2008" />
+			<biblScope unit="page" from="175" to="191" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<monogr>
+		<title level="m" type="main">The death of the critic. Continuum</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ronan</forename><surname>Mcdonald</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2007" />
+			<pubPlace>London</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Making tree kernels practical for natural language learning</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alessandro</forename><surname>Moschitti</surname></persName>
+		</author>
+		<ptr target="http://aclweb.org/anthology/E06-1015" />
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of EACL</title>
+		<meeting>EACL</meeting>
+		<imprint>
+			<date type="published" when="2006" />
+			<biblScope unit="page" from="113" to="120" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">The construction of a 500-million-word reference corpus of contemporary written dutch</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Nelleke</forename><surname>Oostdijk</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Martin</forename><surname>Reynaert</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Véronique</forename><surname>Hoste</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ineke</forename><surname>Schuurman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Essential speech and language technology for Dutch</title>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2013" />
+			<biblScope unit="page" from="219" to="247" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Efficiently extract recurring tree fragments from large treebanks</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Federico</forename><surname>Sangati</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Willem</forename><surname>Zuidema</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Rens</forename><surname>Bod</surname></persName>
+		</author>
+		<ptr target="http://dare.uva.nl/record/371504" />
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of LREC</title>
+		<meeting>LREC</meeting>
+		<imprint>
+			<date type="published" when="2010" />
+			<biblScope unit="page" from="219" to="226" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Original title: Taaltheorie en taaltechnologie; competence en performance</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Remko</forename><surname>Scha</surname></persName>
+		</author>
+		<ptr target="http://iaaa.nl/rs/LeerdamE.html" />
+	</analytic>
+	<monogr>
+		<title level="m">de Neerlandistiek</title>
+		<editor>Q.A.M. de Kort and G.L.J. Leerdam</editor>
+		<meeting><address><addrLine>Almere, the Netherlands</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="1990" />
+			<biblScope unit="page" from="7" to="22" />
+		</imprint>
+	</monogr>
+	<note>Language theory and language technology; competence and performance</note>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Ensemble-based author identification using character n-grams</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Efstathios</forename><surname>Stamatatos</surname></persName>
+		</author>
+		<ptr target="http://ceur-ws.org/Vol-205/paper8.pdf" />
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 3rd International Workshop on Textbased Information Retrieval</title>
+		<meeting>the 3rd International Workshop on Textbased Information Retrieval</meeting>
+		<imprint>
+			<date type="published" when="2006" />
+			<biblScope unit="page" from="41" to="46" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">A survey of modern authorship attribution methods</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Efstathios</forename><surname>Stamatatos</surname></persName>
+		</author>
+		<idno type="doi">10.1002/asi.21001</idno>
+		<ptr target="http://dx.doi.org/10.1002/asi.21001" />
+	</analytic>
+	<monogr>
+		<title level="j">Journal of the American Society for Information Science and Technology</title>
+		<imprint>
+			<biblScope unit="volume">60</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="538" to="556" />
+			<date type="published" when="2009" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Native language detection with tree substitution grammars</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Benjamin</forename><surname>Swanson</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Eugene</forename><surname>Charniak</surname></persName>
+		</author>
+		<ptr target="http://aclweb.org/anthology/P12-2038" />
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of ACL</title>
+		<meeting>ACL</meeting>
+		<imprint>
+			<date type="published" when="2012" />
+			<biblScope unit="page" from="193" to="197" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Extracting the native language signal for second language acquisition</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ben</forename><surname>Swanson</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Eugene</forename><surname>Charniak</surname></persName>
+		</author>
+		<ptr target="http://aclweb.org/anthology/N13-1009" />
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of NAACL-HLT</title>
+		<meeting>NAACL-HLT</meeting>
+		<imprint>
+			<date type="published" when="2013" />
+			<biblScope unit="page" from="85" to="94" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<monogr>
+		<title level="m" type="main">The sense of an ending, by Julian Barnes. Book review, The Independent</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Boyd Tonkin</surname></persName>
+		</author>
+		<ptr target="http://www.independent.co.uk/arts-entertainment/books/reviews/the-sense-of-an-ending-by-julian-barnes-2331767.html" />
+		<imprint>
+			<date type="published" when="2011-08-05" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Identifying literary texts with bigrams</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Andreas</forename><surname>Van Cranenburgh</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Corina</forename><surname>Koolen</surname></persName>
+		</author>
+		<ptr target="http://aclweb.org/anthology/W15-0707" />
+	</analytic>
+	<monogr>
+		<title level="m">Proc. of workshop Computational Linguistics for Literature</title>
+		<meeting>of workshop Computational Linguistics for Literature</meeting>
+		<imprint>
+			<date type="published" when="2015" />
+			<biblScope unit="page" from="58" to="67" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Literary authorship attribution with phrase-structure fragments</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Andreas</forename><surname>Van Cranenburgh</surname></persName>
+		</author>
+		<ptr target="http://www.clinjournal.org/sites/default/files/01-Cranenburgh-CLIN2014.pdf" />
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of CLFL</title>
+		<meeting>CLFL</meeting>
+		<imprint>
+			<date type="published" when="2012" />
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="page" from="3" to="16" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<monogr>
+		<title level="m" type="main">Part of speech tagging en lemmatisering van het D-COI corpus. Transl.: POS tagging and lemmatization of the D-COI corpus, tech report</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Frank Van Eynde</surname></persName>
+		</author>
+		<ptr target="http://www.ccl.kuleuven.ac.be/Papers/DCOIpos.pdf" />
+		<imprint>
+			<date type="published" when="2005-07" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<monogr>
+		<title level="m" type="main">You didn&apos;t hear me say that: The very best linguistic clichés</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Pepijn</forename><surname>Wouter Van Wingerden</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Hendriks</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2015" />
+			<pubPlace>Thomas Rap, Amsterdam. Transl</pubPlace>
+		</imprint>
+	</monogr>
+	<note>Dat Hoor Je Mij Niet Zeggen: De allerbeste taalclichés</note>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Efficient feature selection via analysis of relevance and redundancy</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Lei</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Huan</forename><surname>Liu</surname></persName>
+		</author>
+		<ptr target="http://jmlr.org/papers/" />
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Machine Learning Research</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="page" from="1205" to="1224" />
+			<date type="published" when="2004" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

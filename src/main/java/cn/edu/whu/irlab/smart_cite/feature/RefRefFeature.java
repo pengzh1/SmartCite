@@ -20,7 +20,9 @@ public class RefRefFeature extends SVWordCorpusFeature<String, Integer> {
 
     @Override
     public Integer match(Collection<String> refPhrases, RefTag target, Sentence data) {
+        if (refPhrases==null) return 0;//todo 临时解决空指针问题
         List<String> sl = Arrays.asList(data.toTextArr());
+
         for (String refRef : refPhrases) {
             if (sl.contains(refRef)) {
                 return 1;

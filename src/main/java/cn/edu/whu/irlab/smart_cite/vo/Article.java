@@ -1,5 +1,8 @@
 package cn.edu.whu.irlab.smart_cite.vo;
 
+import cn.edu.whu.irlab.smart_cite.util.TypeConverter;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.leishengwei.jutils.Collections;
 import com.leishengwei.jutils.Files;
 import lombok.Data;
@@ -17,7 +20,7 @@ import static com.leishengwei.jutils.Strings.startCapital;
  * @desc 文章实体
  **/
 @Data
-public class Article {
+public class Article implements ToJsonAble {
 
     private int num = 0;//0:代表参与未批量处理的文件，参与批量处理的文件从1开始编号 todo 该参数如何初始化？
     //    private String pubInfo; //该参数暂无
@@ -51,17 +54,17 @@ public class Article {
         this.name = name;
     }
 
+    private int index = 0;  //句子索引，temp data
+    private int sectionIndex = 0; //章节索引，temp data
+    private int paraIndex = 0;    //段落索引，temp data
+    private Sentence last = null; //上一个句子
+
     /**
      * 将句子添加到当前文章，按顺序添加
      *
      * @param s
      * @return
      */
-    private int index = 0;  //句子索引，temp data
-    private int sectionIndex = 0; //章节索引，temp data
-    private int paraIndex = 0;    //段落索引，temp data
-    private Sentence last = null; //上一个句子
-
     public void append(Sentence s) {
         if (s == null) {
             throw new IllegalArgumentException("不能添加空句子.");
@@ -75,11 +78,13 @@ public class Article {
             System.out.println("last [article]" + last.getArticle().getName() + "[sentence]" + last.getId());
             System.out.println("this [article]" + s.getArticle().getName() + "[sentence]" + s.getId());
         }//todo 这里可能有错误
+
         if (last != null && !last.getSect().equals(s.getSect())) {
             sectionIndex = 0;
         }
         s.setPIndex(++paraIndex);
         s.setSectionIndex(++sectionIndex);
+
         sentenceTreeMap.put(s.getId(), s);
         last = s;
     }
@@ -157,7 +162,7 @@ public class Article {
                 if (w.getIndex() > 0) { //不是第一个单词
                     if (w.getType() == WordItem.WordType.Word || w.getType() == WordItem.WordType.WordRef || w.getType() == WordItem.WordType.Word_G_Ref) {
                         //去掉句首word，去掉不是NN的，去掉停用词中的
-                        if (startCapital(w.getWord()) && w.getTag().startsWith("NN") && !lexicalHookStopword.contains(w.getWord())) { //首字母大写的名词
+                        if (startCapital(w.getWord()) && w.getTag() != null && w.getTag().startsWith("NN") && !lexicalHookStopword.contains(w.getWord())) { //首字母大写的名词
                             lexicalHookMap.putIfAbsent(w.getWord(), 1);
                             lexicalHookMap.computeIfPresent(w.getWord(), (s, c) -> c + 1);
                         }   //TODO 很多引文标记加进去了，不是应该已经去掉了吗？
@@ -296,6 +301,53 @@ public class Article {
         } else {
             return Optional.of(entry.getValue());
         }
+    }
+
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject jsonArticle = new JSONObject();
+        jsonArticle.put("title", title);
+        jsonArticle.put("authors", TypeConverter.list2JsonArray(authors));
+        TreeMap<Integer, List<Sentence>> paragraphsTreeMap = new TreeMap<>();
+        for (Map.Entry<Integer, Sentence> entry :
+                sentenceTreeMap.entrySet()) {
+            int pNum = entry.getValue().getPNum();
+            if (paragraphsTreeMap.containsKey(pNum)) {
+                List<Sentence> sentences = paragraphsTreeMap.get(pNum);
+                sentences.add(entry.getValue());
+            } else {
+                List<Sentence> sentences = new ArrayList<>();
+                sentences.add(entry.getValue());
+                paragraphsTreeMap.put(pNum, sentences);
+            }
+        }
+        JSONArray paragraphs = new JSONArray();
+        for (Map.Entry<Integer, List<Sentence>> entry :
+                paragraphsTreeMap.entrySet()) {
+            JSONArray sentences = new JSONArray();
+            entry.getValue().forEach(sentence -> {
+                sentences.add(sentence.toJson());
+            });
+            paragraphs.add(sentences);
+        }
+
+        jsonArticle.put("paragraphs", paragraphs);
+//        List<Reference> referencesList = new ArrayList<>();
+//        for (Map.Entry<String, Reference> entry :
+//                references.entrySet()) {
+//            referencesList.add(entry.getValue());
+//        }
+//        jsonArticle.put("references", TypeConverter.list2JsonArray(referencesList));
+
+        JSONObject referencesJson=new JSONObject();
+        for (Map.Entry<String, Reference> entry :
+                references.entrySet()) {
+            referencesJson.put(entry.getKey(),entry.getValue().toJson());
+        }
+        jsonArticle.put("references", referencesJson);
+
+        return jsonArticle;
     }
 
     @Override

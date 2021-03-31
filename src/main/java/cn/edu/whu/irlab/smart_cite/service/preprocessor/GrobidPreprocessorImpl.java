@@ -171,10 +171,10 @@ public class GrobidPreprocessorImpl extends PreprocessorImpl {
                 //设置作者
                 Element person_group = new Element("person-group", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));;
                 person_group.setAttribute("person-group-type","author");
-                List<Element> authorScopelist = analytic.getChildren("author", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
-                if(authorScopelist.size()>0){
+                List<Element> authorScopeList = analytic.getChildren("author", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
+                if(authorScopeList.size()>0){
                     for(Element e:
-                            authorScopelist){
+                            authorScopeList){
                         Element persName = e.getChild("persName", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
                         List<Element> surn1 = persName.getChildren("surname", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));;
                         List<Element> fore1 = persName.getChildren("forename", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));;

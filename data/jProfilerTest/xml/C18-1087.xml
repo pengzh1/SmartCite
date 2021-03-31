@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 D:\Work\grobid-master\grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-07-07T10:28+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Towards a Language for Natural Language Treebank Transductions</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+				<date>August 20-26, 2018</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author role="corresp">
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Carlos</forename><forename type="middle">A</forename><surname>Prolo</surname></persName>
+							<email>prolo@dimap.ufrn.br</email>
+							<affiliation key="aff0">
+								<orgName type="department">Department of Informatics and Applied Mathematics</orgName>
+								<orgName type="institution">DIMAp Federal University of Rio Grande do Norte -UFRN Natal</orgName>
+								<address>
+									<postCode>59078-970</postCode>
+									<region>RN</region>
+									<country key="BR">Brazil</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Towards a Language for Natural Language Treebank Transductions</title>
+					</analytic>
+					<monogr>
+						<title level="m">Proceedings of the 27th International Conference on Computational Linguistics</title>
+						<meeting>the 27th International Conference on Computational Linguistics <address><addrLine>Santa Fe, New Mexico, USA</addrLine></address>
+						</meeting>
+						<imprint>
+							<biblScope unit="page" from="1022" to="1032"/>
+							<date type="published">August 20-26, 2018</date>
+						</imprint>
+					</monogr>
+					<note>1022</note>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abstract</head><p>This paper describes a transduction language suitable for natural language treebank transformations and motivates its application to tasks that have been used and described in the literature. The language, which is the basis for a tree transduction tool allows for clean, precise and concise description of what has been very confusingly, ambiguously, and incompletely textually described in the literature also allowing easy non-hard-coded implementation. We also aim at getting feedback from the NLP community to eventually converge to a de facto standard for such transduction language.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Linguists have always liked to use trees to theorize about the structure of natural language sentences <ref type="bibr" target="#b10">(Marcus et al., 1983)</ref>. In the 1990's, computer scientists also started to grow excited with the possibility of getting those proposed structures reasonably accurately from a computer. The advent of large corpora with annotated syntactic structures, the treebanks, among which the Penn Treebank (PTB) <ref type="bibr" target="#b11">(Marcus et al., 1993;</ref><ref type="bibr" target="#b12">Marcus et al., 1994</ref>) is a notable representative, made it possible to build statistical parsers with an accuracy that was not feasible before. From the early work of <ref type="bibr" target="#b8">(Magerman, 1994;</ref><ref type="bibr" target="#b9">Magerman, 1995;</ref><ref type="bibr" target="#b3">Charniak, 1997;</ref><ref type="bibr" target="#b5">Collins, 1997)</ref>, state-of-the-art accuracy has been progressively raising, achieving now scores above 92% in the English Penn Treebank, as reported, for instance, in <ref type="bibr" target="#b17">(Shindo et al., 2012)</ref>.</p><p>As for dependency representations <ref type="bibr" target="#b14">(Nivre et al., 2016;</ref><ref type="bibr" target="#b13">Nivre and Fang, 2017)</ref>, although they capture syntactic structure in a different way, they are still generally represented as trees, even if not necessarily caring for the order among the children of a node.</p><p>Of course, not everybody is expected to agree on any given tree-structure style. On the linguistic side, each practitioner has their own theoretical conceptions on what is an adequate syntactic structure for a sentence, which may in turn differ from that of a specific treebank. Often all the information that is needed to promote the intended change is already present in the tree, either with some structure different than the desired, or "latent" in the annotation <ref type="bibr" target="#b4">(Chiang and Bikel, 2002)</ref>, in the form of secondary attributes on the nodes. When the change to the desired structure can be mechanically accomplished by applying to the trees a precisely defined rule, we call it a transduction. In order to perform more complex transformations we may instead define sequences of simpler transductions to be applied as a pipeline.</p><p>A few tree transducers have been proposed in the literature, among them the ones described in <ref type="bibr" target="#b4">(Chiang and Bikel, 2002)</ref>, based on context-free style rules, <ref type="bibr" target="#b2">(Blahetta, 2003)</ref>, based on Richard Pitto's TGrep (see <ref type="bibr" target="#b16">(Rohde, 2005)</ref>), Tsurgeon <ref type="bibr" target="#b7">(Levy and Andrew, 2006)</ref> and TTT <ref type="bibr" target="#b15">(Purtee and Schubert, 2012)</ref>. There are also transducers for other purposes, perhaps the currently most well known of them being W3C's XPath (World Wide Web Consortium, 2017), but those do not meet the needs of natural language and computational linguists practitioners (see for instance <ref type="bibr" target="#b15">(Purtee and Schubert, 2012)</ref> for an initial discussion.) Although also built from Pitto-Rohde TGrep tools, the transduction language we propose in this paper is substantially diverse from that described in Blahetta's thesis (which, according to <ref type="bibr" target="#b7">(Levy and Andrew, 2006)</ref> is no longer available).</p><p>This work is licensed under a Creative Commons Attribution 4.0 International License. License details: http: //creativecommons.org/licenses/by/4.0/ Our main, initial motivation for designing the language and the tool we describe here came from perceiving the impact tree transduction can have in natural language parsing technology. There has been many really interesting proposals for parsers over these past 20 to 30 years, but what is even more striking is that they arose side by side with an intensive practice of what is often referred to as hacking the trees, which is now known to have played an important role in their success. For example, since his early work, Collins realized that it would be important, as a statistical parameter for deciding the correct tree structure of a sentence, to learn about the boundaries of non-recursive noun phrases, or base NPs, in the sentence. 1 However, his statistical parsing models would not be able to learn that particular parameter directly from the treebank, because base NPs were not explicitly marked as constituents in the tree, even if all necessary information was there: a human or a computer can easily follow some definition rules for base NPs, with no other external knowledge, and tell where they are in the annotated sentences. So, given a Penn Treebank tree like in <ref type="figure" target="#fig_0">Figure 1</ref> the base non-recursive NPs, according to Collins, would be the following spans:</p><formula xml:id="formula_0">• (NP (DT A) (NNP SEC) (NN proposal) (S ...) ) • (NP (NN reporting) (NNS requirements) ) • (NP (DT some) (NN company) (NNS executives)) • (NP (DT the) (NN usefulness) ) • (NP (NN information) ) • (NP (NN insider) (NNS trades) ) • (NP (DT a) (JJ stock-picking) (NN tool) )</formula><p>Collins realized that, inserting a node with a new label he called NPB to delimit the span, those constituents would help his training process so as to increase by a statistically significant amount his parser accuracy. After the transductions, the trees would be as following. Notice that whenever the entire NP span is itself immediately under some other NP, instead of adding a fresh NPB, the lower NP that dominates the spam is replaced with an NPB. That is the case in the first, third and the last two NPs below.</p><p>• (NP (NPB (DT A) (NNP SEC) (NN proposal) (S ...) ) ) • (NPB (NN reporting) (NNS requirements) ) • (NP (NPB (DT some) (NN company) (NNS executives))) • (NPB (DT the) (NN usefulness) )</p><formula xml:id="formula_1">• (NPB (NN information) ) • (NP (NPB (NN insider) (NNS trades) ) ) • (NP (NPB (DT a) (JJ stock-picking) (NN tool) ) )</formula><p>The particular tricks used by Collins were reported in <ref type="bibr" target="#b1">(Bikel, 2004)</ref>. In fact, what once could have been perceived by some as a trick, is increasingly being acknowledged as an opportunity to recover relevant latent information, in principled ways, and making it available to the parser's training model.</p><p>Having this in mind we designed a general transduction language, based on Richard Pitto's TGrep. 2 We named it tsed after Unix sed, the string transduction tool counterpart to grep.</p><p>The obvious test suite was the set of Collins transformations as very precisely described (although in plain English, not in a formal language) in <ref type="bibr" target="#b1">(Bikel, 2004)</ref>, and also in Section 3.</p><p>Most tree transformations used in parsing have been hard-coded into the training and parsing algorithms. In particular, that was the case in the Collins implementation and even in Bikel's version. Although the latter claims to be highly parameterizable, which is indeed true to a great extent, one still has to hard-code in a programming language all the tree transformation processes.</p><p>In the following sections we describe the transduction language, and validate its expressive power replicating Collins's transformations as a test case. Of course the tool can be used for many other purposes as already mentioned. We conclude and discuss what is still planned for the future.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">The Language</head><p>We describe here the transduction language. Appendix A contains a concise grammar for the language. (NP (DT a)(JJ stock-picking)(NN tool)))))) (. .) ) </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1">Overview</head><p>A transduction is a pair (s, r) (or s ==&gt; r in the syntax of the language) where s is a search expression and r is a replacement expression. Together they define how to transform a treebank input tree into a new one. <ref type="bibr">3</ref> The search expression describes what we look for in the input trees, and the replacement expression defines how to build the output tree based on the patterns found during the search phase.</p><p>The search expression is based on restrictions to be met by the input tree in order for a match to succeed. There are two kinds of patterns in the search expression: the node specifications, intended to match with nodes of the input tree that comply with the pattern; and the operators that relate the node patterns defining a layer of restrictions that has to be respected by the nodes. So, a search expression such as N P &lt; P P will look for a node with label "NP", that immediately dominates another node, labeled "PP". This syntax is strongly based on Tgrep2.</p><p>However, while Tgrep is designed only to find patterns, tsed has to handle transformations, so we added the concept of placeholders, in a somewhat similar way as Unix grep was extended into sed. When a transduction is applied to an input tree, if the search is successful we say that there is a match, and as a byproduct each placeholder will be assigned a subtree of the input. Of course, there can generally be several ways a match can succeed, leading to different assignments of placeholders into subtrees. For instance, in the tree of <ref type="figure" target="#fig_0">Figure 1</ref> we can find three NPs that immediately dominate a PP and also the second of this NPs dominates the third one. Indeed it is a very important issue the precise semantics that govern the specifics of search order and disambiguation. This is the subject of a later section of this paper.</p><p>The main placeholder, marked by enclosing the node specifier with square brackets, also defines the point where the transformation will take place. So a transduction such as [N P ] &lt; P P ==&gt; dog will succeed in a tree that has an NP immediately dominating a PP. The match will assign to the main placeholder [] the subtree for the NP found. And the transformation phase will replace the whole subtree of the NP, by the single node "dog". We will see ahead how to express more complex replacement patterns. For now, we just want to note that if the pattern was N P &lt; [P P ] ==&gt; dog, then the substitution would take place at the PP subtree and the NP would be preserved in the tree as well as all other trees sibling to the PP.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2">Search Expression</head><p>The search expression is in fact a primary node specification and an optional Boolean layer of restrictions. This is very much imported from TGrep2, with minor changes. So, in the search expression [N P ](&lt; N N | &lt; N N P )&amp;$.P P , "|" means disjunction (logical "or"), "&amp;" means conjunction (logical "and"), "&lt;" stands for immediate domination, and "$." stands for the first node having as an immediate sibling the node to the right. Then the expression instantiates the placeholder [] to a subtree labeled NP that either immediately dominates (&lt;) an N N or that immediately dominates an N N P , and, additionally, the NP has to have as an immediate sibling of its parent a node labeled PP.</p><p>The search expression allows embedded restrictions, so</p><formula xml:id="formula_2">[N P ](&lt; N N | &lt; N N P )&amp;$.(P P &lt; (IN &lt; of ))</formula><p>, forces that additionally to the restrictions above, the PP (not the NP) should immediately dominate a node labeled IN (the preposition in the English Treebank), and that preposition has to be "of". The reader familiar with TGrep2 might notice that we used the parenthesis both to disambiguate precedence among the restrictions and for embedded restrictions. 4</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.3">Place Holders</head><p>There are two types of placeholder: cut and copy. Cut placeholders are marked by enclosing the node specifier with square brackets in the search expression. Once they match and are assigned to a certain subtree, that subtree will be excised from its parent during the transformation, and will not be at its original place anymore in the output tree, unless explicitly reinserted according to the replacement expression. The copy placeholder uses curly brackets ({}) instead of square brackets. The subtree assigned to it can be copied elsewhere in the output tree, as specified by the replacement expression, but will not be removed from its original place. Copy and cut placeholders are numbered. The main or primary placeholder presented in the previous sections is assigned number 0 by default.</p><p>Currently tsed is centered in the replacement of the hole which is left in the original tree when the the subtree assigned to the main placeholder is excised. The other cut placeholders are not replaced. An example is given right below.</p><p>Advancing a little in the details of the replacement expression, the transduction [N P ] &lt; [1 :</p><formula xml:id="formula_3">P U N CT ] ⇒ (N P [N P ] [1 : P U N CT ])</formula><p>helps us exemplify the concept of the cut placeholder. It assigns to [] (same as [0 :], the default). a subtree labeled NP that dominates a node PUNCT. This node PUNCT is assigned to the the other cut placeholder, with number 1 <ref type="figure" target="#fig_0">([1 :]</ref>). The output tree will be formed replacing the whole NP tree (placeholder [] or [0 :]), by a new tree defined by the pattern in the replacement expression as a fresh NP, that has two children: the NP subtree matched to [N P ], and the subtree matched to [1 : P U N CT ]. Moreover, the PUNCT subtree will be removed from below the old NP. The reader may have recognized this as a very simple mechanism for raising a node in the tree. If the expression were [N P ] &lt; {1 : P U N CT } ⇒ (N P [N P ] {1 : P U N CT ]}, then the PUNCT subtree would not be excised from its original place and the effect would be to have two copies of it in the output tree.</p><p>At this point the reader should be wondering that the reference to the placeholders could be shorted, and indeed the above expressions are equivalent to</p><formula xml:id="formula_4">[N P ] &lt; [1 : P U N CT ] ⇒ (N P [] [1 :]) and [N P ] &lt; {1 : P U N CT } ⇒ (N P [] {1 :}).</formula><p>We call this shortened representations such as [], {1 :} back references.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.4">Replacement Expression</head><p>The replacement expression is a sequence of trees. Each tree has the same syntax as the PTB representation of a tree, except that we can use the placeholders instead of labels. In this representation, a leaf node is represented just by its label, such as "NN". A subtree which is not a leaf is represented, recursively by the sequence, enclosed in parenthesis, formed by the label of the subtree root followed by the representation of the subtrees of the root node from left to right. Thus a replacement expression such as (P P (IN f rom) (N P (N N P Santa)(N N P F e))) represents the usual English PTB representation for the prepositional phrase "from Santa Fe." Now, the reader can go back to the transductions of the previous subsection to recognize that this interpretation has been applied there, for instance to (N P [] [1 :]) as a subtree rooted at an NP, with two children subtrees. That is the main application for the placeholders and the back references.</p><p>The possibility of having a sequence of trees instead of just one, fits nicely the rest of the language. So if one wants to flatten a little more the English Penn Treebank, transductions such as [N P ] &lt; ({1 : N P } $. {2 : P P }) ⇒ {1 :} {2 :} replaces the NP subtrees that stand for an NP modified by a PP (the lower NP has an immediate right sibling PP) by a flattened one with the higher NP eliminated. 5 6</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.5">Restrictions</head><p>We have imported exactly the same very rich set of restriction operators defined in TGrep2. These are called "links"in the Tgrep2 documentation. As for Boolean operators, we took the hard decision of only allowing negation as part of the restriction operators. So ! &lt; means "do not immediately dominate, as in TGrep2. But using the negation higher in the search expression would be pretty confusing and non-intuitive to interpret in the transduction. 7</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.6">Node Specification</head><p>Node specification in the transduction was one of the hardest issues in the design of tsed. Due the characteristics of treebank labels, we felt it would be desirable to have both pattern matching internal to the node label and some amount of editing capability.</p><p>In the examples so far we defined a node in the search expression as a constant string possibly enclosed in brackets or braces. This is very limited in many senses and we now extend the syntax in a few ways.</p><p>First, the part inside the brackets/braces is allowed to be edited in the replacement expression. Moreover fixed context patterns can be provided outside the brackets/braces, both to the left and to the right.</p><p>A node specification is then a triple (l, m, r) where m stands for middle and is the part enclosed in the brackets or braces; l is the left context and r is the right context. So the transduction. [N P ] − T M P ⇒ [N P T ] looks for a node with label NP-TMP, and changes the NP portion of the label to <ref type="bibr">[NPT]</ref>, keeping the left and right context, therefore resulting in a label N P T − T M P . Notice that the left context in the example is empty, so the match will only occur for labels that start with the NP sequence of characters. Moreover, the matched label for the example can not have anything beyond the TMP suffix. In this sense, up to this point, label matching has to be exact given the pattern.</p><p>In each of the three parts a "*" matches with any character sequence and "?" is a wild card, like in file specifications in Linux. This is a pretty easy and powerful resource. Then [N P ] * −T M P * ⇒ [N P T ] will replace all NPs that contain the feature TMP to NPT (maintaining the context). So an N P − SBJ − T M P would be replaced to N P T − SBJ − T M P .</p><p>Escaped characters are allowed as well as substrings enclosed either in single or double quotes. Finally, POSIX regular expressions are allowed protected by "//" as in sed. This provides a very great flexibility to node specification for the experienced user. We only should enforce as we said in the last paragraph, that that behavior is not like in grep or TGrep2, that looks for the pattern anywhere in the node. Instead it requires full match. So, a node specifier to match any node with the TMP feature should be expressed as something like * / − T M P/ * or using only POSIX regular expression syntax /. * −T M P. * /, but not just / − T M P/. The interesting point is that all the node-specifier expressions is ultimately converted to a POSIX regular expression, the semantics of which is widely known and very well documented. In the conversion, the separation of the left, middle and right part of the labels are provided by inserting parenthesis, supported by POSIX regex functions that then automatically locate them in the labels of the input tree.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.7">A Precise Semantics for the Transduction Driver</head><p>Avoiding non-deterministic behavior is a crucial issue in the project of artificial languages, often overlooked in its importance by people unfamiliar with language design and implementation. Indeed, it is an essential part of a language definition to provide clear rules specifying exactly what will be the output given any context of application of a valid transduction specification to a valid input tree.</p><p>For transduction languages based on patter matching it is essential to state clearly how the driver that executes the transformation works. For instance if we ask to eliminate a subtree labeled A that dominates a B, suppose that there happens to be in the corpus a tree with a path where an A immediately dominates a lower A, and the lower A immediately dominates a B. The question is whether the lower or higher subtree labeled A will be removed. Another issue is that of what to do after a match is performed: should it move on to the next tree, or should it try to reapply the transduction again to the same tree? And in the latter case, should it start it at the beginning of the output tree of the previous application? This issues could be treated as reasonable divergence among designers with regards to preference of behavior. However, it turns out that different behaviors are required depending on each particular situation. This section is intended to make precise the possible behaviors of the driver made available to the user by setting some execution options in the tool.</p><p>First, the search expression is seen as if parsed into an abstract, syntax tree like structure (see for example <ref type="bibr" target="#b0">(Aho and Ullman, 1972)</ref>) in which operators are internal nodes and operands are their children. The leftmost leaf is the primary node specifier. Then the search is applied against input trees as if reading the syntax tree in an in-order traversal, that is, looking for a node, then looking for the restriction operator, and then to the subexpression to the right of the operator.</p><p>The Boolean layer is interpreted as in modern implementation of programming languages where the "OR" is a "conditional or" and the "AND" is a "conditional and". This is essential to understand how the placeholders are assigned to subtrees. For instance once a full match succeeds on a tree, through a certain branch of an "OR", it will not try other paths. Then it will proceed according to the following algorithm:</p><p>1. Let start be the root of the input tree.</p><p>2. Assign start to current node 3. Search the input tree from the current node in a preorder left-to-right traversal order looking for a node that matches the primary node of the search expression (leftmost leaf of the syntax tree).</p><p>4. Proceed according to the syntax tree operators. Each operator dictates its one intuitive behavior. In a nutshell it searches from the current node "outwards"in the tree. For example: "dominates"search the next node in the same way as the primary node; "is dominated"searches upwards till a match is found or it tries to move above the root; search for siblings move from the current node to the endpoints (left or right) In fact each operator has its own semantics which we cannot exhaust here, but the principles stated so far should be enough to understand most if not all of the behavior.</p><p>5. Whenever a restriction fails, backtrack. Failing branches in an OR layer remove internal assignments made to placeholders on this branch.</p><p>6. If the match fails, output the tree as it is at that moment.</p><p>7. If the match succeeds, (a) Apply the replacement expression, modifying the current tree.</p><p>(b) Assign to current node the node that would follow, in a preorder left-to-right traversal, the one that replaced the primary placeholder after the transformation just concluded. Usually this is the leftmost child of the root of the subtree inserted there, unless these subtree is just a leaf. (c) Resume at step 3</p><p>The way we defined at 7.(b) the reentrant behavior to resume the process after a successful match transformation seems to be the most desirable from our modeling experience so far. It is a compromise to an alternative behavior of restarting over again from the root, which causes many non-termination problems and unpredictable behavior.</p><p>However two alternatives still being considered as options at the command line are: to resume from the leftmost child of the node matching the primary node specifier (which usually is the primary placeholder, though not always); and also resuming from the node which would be the next, in a preorder left-to-right traversal, after the whole subtree substituted at primary placeholder was visited. This latter behavior is extremely safe in that it would completely prevent non-termination. And it is certainly faster. But it generally does not correspond to the user's desired behavior.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.8">Back references</head><p>Back references are essential at the replacement expression, but they also have an important use in the search expression. Because we require back references to be previously declared and have strict rules of scope of visibility enforcing the well-formedness of the search expression we do not experience the strange behaviors reported in <ref type="bibr" target="#b16">(Rohde, 2005)</ref> by the expression "crossing link".</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.9">Ranges of subtrees and endmarkers</head><p>There are situations where being able to express tree-range fillers may be very useful. Tree-range fillers are represented by "..." enclosed as placeholders. Thus, the transduction [N P ] &lt; ({1 : N P }($, {3 : ...}&amp;$.({2 : P P }$.{4 : ...}))) ⇒ {3 :}{1 :}{2 :}{4 :} is a more robust version of the flattening example above. {3 :} matches with the sequence of siblings to the left of the lower NP, and {4 :} matches with the sequence of siblings to the right of the PP, thus the extra material below the higher NP is preserved. Of course there are other ways of doing this. However this greatly simplifies the transductions that have to eliminate intermediate nodes.</p><p>Another feature is the endmarker which stands for the lack of nodes. So # &lt; SBAR means an SBAR at the root of the tree. Similarly the endmarker can be used to capture the notions of leaf node and rightand leftmost child.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.10">"Semantic"consistency of the Boolean layer with respect to placeholders</head><p>Every artificial language has those issues related to allowing only well-formed expressions. For instance in tsed, we enforce that a placeholder cannot be defined twice in the search expression, and that a back reference can only appear if the corresponding full placeholder has been defined earlier in the expression. We are not going to exhaust these aspects here. However it is important to notice that the definition and use of placeholders interact very dangerously with the logical operators. For instance, a back reference in a restriction in a branch of a logical OR cannot refer to a placeholder defined in an earlier branch. This is not a problem if the restrictions are in the branches of an AND operator. Natural language semanticists will quickly perceive this asymmetry which is generally not an issue in programming language implementation. Another issue is that a placeholder is visible outside of an OR layer of restrictions only if it has been declared in all branches. We have considered very intuitive and indeed interesting rules of scope and visibility for the placeholders but will refrain from entering in a morass of detail that would be required to explain them here.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">A Case Study</head><p>We present in this section examples of transductions that implement Collins pre-processing steps as described in in <ref type="bibr" target="#b1">(Bikel, 2004)</ref>. All the quotations in this section are from his article, with references to figures removed to avoid confusion.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Base NP node insertion</head><p>This transformation was exemplified earlier in the previous section. Bikel describes it as follows:</p><p>An NP is basal when it does not itself dominate an NP; such NP nodes are relabeled NPB. More accurately, an NP is basal when it dominates no other NPs except possessive NPs, where a possessive NP is an NP that dominates POS, the preterminal possessive marker for the Penn Treebank. These possessive NPs are almost always themselves base NPs and are therefore (almost always) relabeled NPB. For consistency's sake, when an NP has been relabeled as NPB, a normal NP node is often inserted as a parent nonterminal. This insertion ensures that NPB nodes are always dominated by NP nodes. The conditions for inserting this "extra" NP level are slightly more detailed than is described in Collins' thesis, however. The extra NP level is added if one of the following conditions holds:</p><p>• The parent of the NPB is not an NP.</p><p>• The parent of the NPB is an NP but constitutes a coordinated phrase.</p><p>• The parent of the NPB is an NP but -the parent's head-child is not the NPB, and -the parent has not already been relabeled as an NPB.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Conclusion and Future Work</head><p>Of course the appeal of tree transductions is not only its use for parsing pre-and post-processing tasks. We used this application in this paper to show that tsed language is sufficiently powerful so that it can be used to replace transformations originally made by programming language code pieces, that were never subject to a restriction in power of expression. That is, Collins defined and coded the transformations that he thought as useful and that he could mechanically express having all the Turing machine power of a general programming language at his disposition. Those transformations can be elegantly and succinctly captured by a special purpose transducer language, stripping them out of the main learning algorithm. By inspection, we extensively observed that the application of all the transductions generated the new trees as we think they should. In fact there is no easy way to directly check against what Collins would generate, because the latter are never explicitly realized. They are internal to the parsing process. We have considered instead, comparing the parsing accuracy of the original parser with that of the parser with the transformations made by tsed. Unfortunately this requires removing the corresponding pieces of code in either Collins' or Bikel's implementation, and we have not done it yet.</p><p>The examples in the test case have been successfully implemented in an existing implementation that have some limitations in expressive power. Still it could model the rules described in <ref type="bibr" target="#b1">(Bikel, 2004)</ref>.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 :</head><label>1</label><figDesc>Figure 1: A Penn Treebank tree</figDesc></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1">See, for instance, (Collins, 2003) for his particular precise definition of the term. 2 TGrep stands for Tree Grep, for the fact that it searches trees in a away which is parallel to the way Unix grep searches strings, and is currently available through Douglas Rohde's improved TGrep2 version (Rohde, 2005).</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="3">The transducer tool assumes boot input and output trees in the Penn Treebank format -label bracketed, constituent trees representation format, -and this format is used in the examples throughout the paper, though, of course, this format is not a relevant conceptual issue.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="4">In TGrep2 embedded restrictions use square brackets instead. This change makes things more uniform, preserves the brackets for placeholders, and does not lead to ambiguity in interpretation. We also force explicit inclusion of &amp; for conjunction which makes the search expression more readable, though, well, for the sake of compatibility with TGrep we allow dropping &amp;.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="5">In fact a slight more complex expression should be used since this one is ignoring that extra material on the right of the PP or on the left of the lower NP would be lost. 6 It is just an example, we are not advocating flattening the PTB! 7 This was one of the few points where we found important to restrict the language in favor of usability and avoiding unpredictable behavior.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="8">Only applicable if relabeling of NPs is performed using a preorder traversal.</note>
+		</body>
+		<back>
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>8</head><p>The transformation is accomplished by the following tsed transduction sequence. We well apply the sequence to the following PTB annotated sentence:</p><p>(S (NP-SBJ (NP (NP (DT The) (NNP SEC)) (POS 's)) (NNP Mr.) (NNP Lane)) (VP (ADVP-MNR (RB vehemently)) (VF disputed) (NP (DT those) (NN estimates))) (. .))</p><p>1. We first replace NP labels that dominate some POS with a new fresh label POSNP: We find some NP nodes which dominates (operator &lt;&lt;, not necessarily immediate domination) a POS node as stated in the search string. The * means that the labels, either POS or NP, may be followed by any character sequence, so it can match, say, an NP-SBJ. The brackets [] are used as placeholders once a match is found. That means that (1) the subtree rooted at the NP node is the one going to be replaced; (2) the brackets have been matched to that subtree in case we want to refer to that tree in the replacement string; and (3) we have the chance to replace the part of the string inside the brackets in case we want to use it. In this case it selects only the NP part of the label, not the additional suffix. That is because the "*"is outside the brackets. The replacement string tells us then that the same subtree will be kept there (because it puts the brackets back there). But the NP part of the label is replaced with POSNP, so, if that was an NP-SBJ, it will become POSNP-SBJ.</p><p>The search is made in a preorder traversal and finds all matching occurrences, each one being subject to the replacement.</p><p>2. In this rule we replace with NPB the labels of NPs that do not dominate another NP (those are the base NPs). The exclamation mark means negation as in Tgrep. Notice that we have already preclude the possibility of targeting NPs dominating POS, since we changed their names to POSNP. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>The reverse transformation is described by Bikel as:</head><p>In post-processing, when an NPB is an only child of an NP node, the extra NP level is removed by merging the two nodes into a single NP node, and all remaining NPB nodes are relabeled NP. We have implemented also other transductions from <ref type="bibr" target="#b1">(Bikel, 2004</ref>) and the reverse versions whenever well defined. Some of them depend on location the head node on a constituent. That could be accomplished through a pre-processing tool that could mark the head nodes with a "-HEAD"tag. We have considered replicating the head finding rules but we have not done it yet.</p><p>Tsed will be used in projects to experiment on parsing accuracy enhancement through sound corpora transformations.</p><p>We hope to get feedback from the NLP community joining efforts to eventually converge to a de facto standard for a transduction language.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Appendix A. A reference grammar for tsed language</head><p>A concise Yacc-style grammar can be very helpful as a reference to the language even without any semantic restriction or explanation (a grammar is worth a thousand words!) Also shown are the main lexical items in Lex-style. </p></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<title level="m" type="main">The Theory of Parsing, Translation, and Compiling, volume I: Parsing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Alfred</forename><forename type="middle">V</forename><surname>Aho</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jeffrey</forename><forename type="middle">D</forename><surname>Ullman</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1972" />
+			<publisher>Prentice-Hall</publisher>
+			<pubPlace>Englewood Cliffs, NJ, USA</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Intricacies of Collins&apos; parsing model</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Daniel</forename><surname>Bikel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">30</biblScope>
+			<biblScope unit="page" from="479" to="511" />
+			<date type="published" when="2004" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title level="m" type="main">Function Tagging</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Don</forename><surname>Blahetta</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2003" />
+		</imprint>
+		<respStmt>
+			<orgName>Brown University</orgName>
+		</respStmt>
+	</monogr>
+<note type="report_type">Ph.D. thesis</note>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Statistical parsing with a context-free grammar and word statistics</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Eugene</forename><surname>Charniak</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Fourteenth National Conference on Artificial Intelligence</title>
+		<meeting>the Fourteenth National Conference on Artificial Intelligence<address><addrLine>Menlo Park, CA, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="1997" />
+			<biblScope unit="page" from="598" to="603" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Recovering latent information in treebanks</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">David</forename><surname>Chiang</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Daniel</forename><forename type="middle">M</forename><surname>Bikel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 19th International Conference on Computational Linguistics (COLING&apos;2002)</title>
+		<meeting>the 19th International Conference on Computational Linguistics (COLING&apos;2002)<address><addrLine>Taipei, Taiwan</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2002" />
+			<biblScope unit="page" from="183" to="189" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Three generative, lexicalised models for statistical parsing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Michael</forename><surname>Collins</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 35th Annual Meeting of the Association for Computational Linguistics</title>
+		<meeting>the 35th Annual Meeting of the Association for Computational Linguistics<address><addrLine>Madrid, Spain</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="1997" />
+			<biblScope unit="page" from="16" to="23" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Head-driven statiscal models for natural language processing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Michael</forename><surname>Collins</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">29</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="589" to="637" />
+			<date type="published" when="2003" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Tregex and tsurgeon: tools for querying and manipulating tree data structures</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Roger</forename><surname>Levy</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Galen</forename><surname>Andrew</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Fifth International Conference on Language Resources and Evaluation (LREC)</title>
+		<meeting>the Fifth International Conference on Language Resources and Evaluation (LREC)<address><addrLine>Genoa, Italy</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2006" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<monogr>
+				<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">David</forename><forename type="middle">M</forename><surname>Magerman</surname></persName>
+		</author>
+		<title level="m">Natural Language Parsing as Statistical Pattern Recognition</title>
+		<imprint>
+			<date type="published" when="1994" />
+		</imprint>
+		<respStmt>
+			<orgName>Stanford University</orgName>
+		</respStmt>
+	</monogr>
+<note type="report_type">Ph.D. thesis</note>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Statistical decision-tree models for parsing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">David</forename><forename type="middle">M</forename><surname>Magerman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 33rd Annual Meeting of the Association for Computational Linguistics</title>
+		<meeting>the 33rd Annual Meeting of the Association for Computational Linguistics<address><addrLine>Cambridge, MA, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="1995" />
+			<biblScope unit="page" from="276" to="283" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">D-theory: Talking about talking about trees</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Mitchell</forename><forename type="middle">P</forename><surname>Marcus</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Donald</forename><surname>Hindle</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Margaret</forename><forename type="middle">M</forename><surname>Flack</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 21st Annual Meeting of the Association for Computational Linguistics</title>
+		<meeting>the 21st Annual Meeting of the Association for Computational Linguistics<address><addrLine>Cambridge, Massachusetts, USA</addrLine></address></meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="1983-06" />
+			<biblScope unit="page" from="129" to="136" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Building a large annotated corpus of English: The Penn Treebank</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Mitchell</forename><forename type="middle">P</forename><surname>Marcus</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Beatrice</forename><surname>Santorini</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Mary</forename><forename type="middle">Ann</forename><surname>Marcinkiewicz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">19</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="313" to="330" />
+			<date type="published" when="1993" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">The Penn Treebank: Annotating predicate argument structure</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Mitchell</forename><surname>Marcus</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Grace</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Mary</forename><forename type="middle">Ann</forename><surname>Marcinkiewicz</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Robert</forename><surname>Macintyre</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ann</forename><surname>Bies</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Mark</forename><surname>Ferguson</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Karen</forename><surname>Katz</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Britta</forename><surname>Schasberger</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 1994 Human Language Technology Workshop</title>
+		<meeting>the 1994 Human Language Technology Workshop</meeting>
+		<imprint>
+			<date type="published" when="1994" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Universal dependency evaluation</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Joakim</forename><surname>Nivre</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Chiao-Ting</forename><surname>Fang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the NoDaLiDa Workshop on Universal Dependencies</title>
+		<meeting>the NoDaLiDa Workshop on Universal Dependencies<address><addrLine>Gothenburg, Sweden</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2017-05-22" />
+			<biblScope unit="page" from="86" to="95" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Universal dependencies v1: A multilingual treebank collection</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Joakim</forename><surname>Nivre</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Marie-Catherine</forename><surname>De Marneffe</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Filip</forename><surname>Ginter</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Yoav</forename><surname>Goldberg</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jan</forename><surname>Hajic</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Christopher</forename><forename type="middle">D</forename><surname>Manning</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Ryan</forename><forename type="middle">T</forename><surname>Mcdonald</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Slav</forename><surname>Petrov</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Sampo</forename><surname>Pyysalo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Tenth International Conference on Language Resources and Evaluation LREC 2016</title>
+		<meeting>the Tenth International Conference on Language Resources and Evaluation LREC 2016<address><addrLine>Natalia Silveira, Reut Tsarfaty, and Daniel Zeman; Portorož, Slovenia</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2016-05-23" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Ttt: A tree transduction language for syntactic and semantic processing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Adam</forename><surname>Purtee</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Lenhart</forename><surname>Schubert</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the EACL 2012 Workshop on Tree Automata Techniques in Natural Language Processing</title>
+		<meeting>the EACL 2012 Workshop on Tree Automata Techniques in Natural Language Processing<address><addrLine>Avignon, France</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2012" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<title/>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">L</forename><forename type="middle">T</forename><surname>Douglas</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Rohde</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2005" />
+			<publisher>TGrep2 User Manual</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Bayesian symbol-refined tree substitution grammars for syntactic parsing</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Hiroyuki</forename><surname>Shindo</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Yusuke</forename><surname>Miyao</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Akinori</forename><surname>Fujino</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Masaaki</forename><surname>Nagata</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 50th Annual Meeting of the Association for Computational Linguistics</title>
+		<meeting>the 50th Annual Meeting of the Association for Computational Linguistics<address><addrLine>Jeju, Korea</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2012" />
+			<biblScope unit="page" from="440" to="448" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<monogr>
+		<title level="m" type="main">World Wide Web Consortium</title>
+		<ptr target="http://www.w3.org/TR/xpath-31/" />
+		<imprint>
+			<date type="published" when="2017-03" />
+		</imprint>
+	</monogr>
+	<note>Xml path language (xpath)</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

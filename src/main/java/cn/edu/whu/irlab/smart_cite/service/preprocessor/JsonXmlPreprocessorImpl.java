@@ -42,7 +42,7 @@ public class JsonXmlPreprocessorImpl extends PreprocessorImpl {
             try {
                 sentences = lingPipeSplitter.splitSentences(p.getChild("text"));
             } catch (Exception e) {
-                log.error("分句异常 in article [" + file.getName() + "] in text : " + p.getChild("text"));
+                log.error("分句异常 in article [" + file.getName() + "] in text : " + p.getChildText("text"));
                 continue;
             }
 
