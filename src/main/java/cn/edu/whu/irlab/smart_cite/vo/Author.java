@@ -29,9 +29,10 @@ public class Author implements ToJsonAble {
 
     @Override
     public JSONObject toJson() {
-        JSONObject jsonObject=new JSONObject();
-        jsonObject.put("surName",surName);
-        jsonObject.put("givenName",givenName);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("surName", surName);
+        jsonObject.put("givenName", givenName);
         return jsonObject;
     }
+
 }

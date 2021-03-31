@@ -2,7 +2,8 @@ package cn.edu.whu.irlab.smart_cite.controller;
 
 import cn.edu.whu.irlab.smart_cite.enums.ResponseEnum;
 import cn.edu.whu.irlab.smart_cite.exception.FileTypeException;
-import cn.edu.whu.irlab.smart_cite.service.extractor.Impl.ExtractorImpl;
+import cn.edu.whu.irlab.smart_cite.service.extractor.PretrainModelExtractor;
+import cn.edu.whu.irlab.smart_cite.service.extractor.SvmExtractor;
 import cn.edu.whu.irlab.smart_cite.util.ResponseUtil;
 import cn.edu.whu.irlab.smart_cite.util.UnPackeUtil;
 import cn.edu.whu.irlab.smart_cite.vo.ResponseVo;
@@ -18,8 +19,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 /**
  * @author gcr19
@@ -33,15 +32,23 @@ public class ExtractorController {
     private static final Logger logger = LoggerFactory.getLogger(ExtractorController.class);
 
     @Autowired
-    private ExtractorImpl extractor;
+    private SvmExtractor svmExtractor;
+
+    @Autowired
+    private PretrainModelExtractor pretrainModelExtractor;
 
 
     @PostMapping("/extract")
     @ResponseBody
-    public ResponseVo extractController(MultipartFile file) {
+    public ResponseVo extractController(MultipartFile file, @RequestParam(name = "method", defaultValue = "pretrain") String method) {
 
         try {
-            JSONObject object = extractor.extract(file);
+            JSONObject object = null;
+            if (method.equals("pretrain")) {
+                object = pretrainModelExtractor.extract(file);
+            } else if (method.equals("svm")) {
+                object = svmExtractor.extract(file);
+            }
             return ResponseUtil.success(object);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -58,8 +65,8 @@ public class ExtractorController {
     public ResponseVo batchController(MultipartFile file) {
         List<JSONObject> array = new ArrayList<>();
         try {
-            File uploaded = extractor.saveUploadedFile(file);
-            String mimeType = extractor.identifyMimeType(uploaded);
+            File uploaded = svmExtractor.saveUploadedFile(file);
+            String mimeType = svmExtractor.identifyMimeType(uploaded);
             File folder;
             switch (mimeType) {
                 case "application/zip":
@@ -78,7 +85,7 @@ public class ExtractorController {
             CountDownLatch countDownLatch = new CountDownLatch(files.length);
             List<ListenableFuture<JSONObject>> listenableFutureList = new ArrayList<>();
             for (File f : files) {
-                ListenableFuture<JSONObject> jsonObjectListenableFuture = extractor.asyncExtract(f, countDownLatch);
+                ListenableFuture<JSONObject> jsonObjectListenableFuture = svmExtractor.asyncExtract(f, countDownLatch);
                 listenableFutureList.add(jsonObjectListenableFuture);
             }
             countDownLatch.await();
@@ -113,13 +120,13 @@ public class ExtractorController {
             }
             CountDownLatch countDownLatch = new CountDownLatch(files.length);
             for (File f : files) {
-                extractor.asyncExtract(f, countDownLatch);
+                svmExtractor.asyncExtract(f, countDownLatch);
             }
             countDownLatch.await();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             if (e instanceof FileTypeException) {
-                return ResponseUtil.error(ResponseEnum.FILE_ERROR);
+
             } else {
                 return ResponseUtil.error(ResponseEnum.SERVER_ERROR);
             }

@@ -1,5 +1,6 @@
 package cn.edu.whu.irlab.smart_cite.vo;
 
+import cn.edu.whu.irlab.smart_cite.util.TypeConverter;
 import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 
@@ -16,10 +17,11 @@ import static com.leishengwei.jutils.Collections.isEmpty;
  * @desc 句子实体
  **/
 @Data
-public class Sentence implements ISentence,ToJsonAble {
+public class Sentence implements ISentence, ToJsonAble {
 
     private int id;   //句子编号，从1开始(lei:number)
     private String text;    //句子内容
+    private String text1;   //句子内容，引文标记被[#]替换
     private Article article; //所在文章对象
 
     /**
@@ -33,7 +35,7 @@ public class Sentence implements ISentence,ToJsonAble {
      */
     private int pNum;   //段落Id
     private int level;    //1,2,3，对应section的层次级别
-    private List<WordItem> wordList = new ArrayList<>();    //词项列表，不对外开放结构，否则可能会出错
+    private List<WordItem> wordList = new ArrayList<>(); //词项列表，不对外开放结构，否则可能会出错
     private String section;    //一级章节编号
     private String subSection;  //二级章节编号
     private String subSubSection;   //三级章节编号
@@ -137,11 +139,108 @@ public class Sentence implements ISentence,ToJsonAble {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", id);
         jsonObject.put("text", text);
+        jsonObject.put("section", sect);
+        jsonObject.put("pNum", pNum);
+        jsonObject.put("refTags", TypeConverter.list2JsonArray(refList));
         return jsonObject;
     }
 
     public String plain() {
         return text(wordList);
+    }
+
+    /**
+     * 仅输出句子句法结构部分
+     *
+     * @param list
+     * @param type 1:仅保留句法成分，删除非句法成分的引文标记内容，包含引文当前句
+     *             2:未作任何处理的原始句子，包含引文当前句
+     *             3:句法成分引文标记后增加[#]，非句法成分引文标记使用[#]替换
+     * @return
+     */
+    public static String standardText(List<WordItem> list, int type) {
+        StringBuilder text = new StringBuilder();
+        if (isEmpty(list)) {
+            return text.toString();
+        }
+        switch (type) {
+            case 1:
+                list.forEach(wordItem -> {
+                    switch (wordItem.getType()) {
+                        case Word:
+                        case WordRef:
+                        case Word_G_Ref:
+                            text.append(wordItem.getWord()).append(" ");
+                            break;
+                        case Ref:
+                            text.append(wordItem.getRef().getText()).append(" ");
+                            break;
+                        case G_REF:
+                            wordItem.getRefs().forEach(refTag -> {
+                                text.append(refTag.getText()).append(" ");
+                            });
+                            break;
+                        default:
+                            break;
+                    }
+                });
+                break;
+            case 2:
+                list.forEach(wordItem -> {
+                    switch (wordItem.getType()) {
+                        case Word:
+                            text.append(wordItem.getWord()).append(" ");
+                            break;
+                        case WordRef:
+                            text.append(wordItem.getWord()).append(" (").append(wordItem.getRef().getText()).append(") ");
+                            break;
+                        case Word_G_Ref:
+                            text.append(wordItem.getWord()).append("(");
+                            wordItem.getRefs().forEach(refTag -> {
+                                text.append(refTag.getText()).append("; ");
+                            });
+                            text.append(") ");
+                            break;
+                        case Ref:
+                            text.append(wordItem.getRef().getText()).append(" ");
+                            break;
+                        case G_REF:
+                            wordItem.getRefs().forEach(refTag -> {
+                                text.append(refTag.getText()).append("; ");
+                            });
+                            break;
+                        default:
+                            break;
+                    }
+                });
+                break;
+            case 3:
+                list.forEach(wordItem -> {
+                    switch (wordItem.getType()) {
+                        case Word:
+                            text.append(wordItem.getWord()).append(" ");
+                            break;
+                        case WordRef:
+                        case Word_G_Ref:
+                            text.append(wordItem.getWord()).append(" [#] ");
+                            break;
+                        case Ref:
+                            text.append(wordItem.getRef().getText()).append(" [#] ");
+                            break;
+                        case G_REF:
+                            wordItem.getRefs().forEach(refTag -> {
+                                text.append(refTag.getText()).append("; ");
+                            });
+                            text.append(" [#] ");
+                            break;
+                        default:
+                            break;
+                    }
+                });
+                break;
+        }
+
+        return text.toString().replaceAll("-LRB-", "(").replaceAll("-RRB-", ")").trim();
     }
 
     public static String text(List<WordItem> list) {

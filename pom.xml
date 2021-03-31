@@ -10,7 +10,7 @@
     </parent>
     <groupId>cn.edu.whu.irlab</groupId>
     <artifactId>smart_cite</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
     <name>smart_cite</name>
     <description>Demo project for Spring Boot</description>
 
@@ -27,7 +27,17 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
@@ -128,6 +138,8 @@
             <groupId>com.leishengwei</groupId>
             <artifactId>jutils</artifactId>
             <version>0.0.1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/lib/JavaUtils.jar</systemPath>
         </dependency>
         <!--雷声伟设计的工具 end-->
 

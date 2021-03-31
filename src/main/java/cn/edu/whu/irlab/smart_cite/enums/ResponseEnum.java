@@ -8,9 +8,9 @@ package cn.edu.whu.irlab.smart_cite.enums;
  **/
 public enum ResponseEnum {
 
-    SUCCESS(0,"success"),
+    SUCCESS(200,"success"),
     UNKNOWN_ERROR(-1,"unknown error"),
-    FILE_ERROR(100,"file error, please upload right file"),
+    FILE_ERROR(100,"File type error, please upload the right file"),
     FILE_NOT_FOUND(101,"upload fail,file can no be found"),
     SERVER_ERROR(500,"server error"),
     ;

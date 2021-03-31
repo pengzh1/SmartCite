@@ -1,14 +1,11 @@
 package cn.edu.whu.irlab.smart_cite.service.preprocessor;
 
 import cn.edu.whu.irlab.smart_cite.util.ElementUtil;
-import org.jdom2.Content;
 import org.jdom2.Element;
-import org.jdom2.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +24,7 @@ public class PlosPreprocessorImpl extends PreprocessorImpl {
     //需要删除的节点名列表
     private static final String[] filterTag = {"journal-meta", "article-categories", "aff", "author-notes",
             "author-notes", "pub-date", "issue", "elocation-id", "history", "permissions", "funding-group", "counts", "fig",
-            "supplementary-material", "ack","table-wrap","disp-quote","list","def-list"};
+            "supplementary-material", "ack", "table-wrap", "disp-quote", "list", "def-list", "boxed-text"};
     private static final List<String> filterTagList = Arrays.asList(filterTag);
 
     private static final String XREF_LABEL_NAME = "xref";
@@ -55,9 +52,9 @@ public class PlosPreprocessorImpl extends PreprocessorImpl {
         header.addContent(root.getChild("front").getChild("article-meta").getChild("abstract").detach());
 
         //设置作者
-        List<Element> authors=new ArrayList<>();
-        ElementUtil.extractElements(root.getChild("front").getChild("article-meta"),"name",authors);
-        Element author_group=new Element("author-group");
+        List<Element> authors = new ArrayList<>();
+        ElementUtil.extractElements(root.getChild("front").getChild("article-meta"), "name", authors);
+        Element author_group = new Element("author-group");
         for (Element e :
                 authors) {
             author_group.addContent(e.detach());
