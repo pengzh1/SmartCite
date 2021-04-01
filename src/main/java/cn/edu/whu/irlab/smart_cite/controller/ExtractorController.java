@@ -15,10 +15,14 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+
+import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.OUTPUT;
 
 /**
  * @author gcr19
@@ -59,6 +63,37 @@ public class ExtractorController {
             }
         }
     }
+
+    @PostMapping("/downloadFile")
+    @ResponseBody
+    public ResponseVo downloadFileController(HttpServletResponse response, @RequestParam(name = "file_name") String file_name) throws UnsupportedEncodingException {
+        if (file_name != null) {
+            File file = new File(OUTPUT + File.separator + file_name + ".json");
+            System.out.println(file.getName());
+            if (file.exists()) {
+                response.setHeader("content-Type", "application/vnd.ms-excel");
+                response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(file.getName(), "utf-8"));
+                byte[] buffer = new byte[1024];
+                FileInputStream fileInputStream = null;
+                BufferedInputStream bufferedInputStream = null;
+                try {
+                    fileInputStream = new FileInputStream(file);
+                    bufferedInputStream = new BufferedInputStream(fileInputStream);
+                    OutputStream outputStream = response.getOutputStream();
+                    int i = bufferedInputStream.read(buffer);
+                    while (i != -1) {
+                        outputStream.write(buffer, 0, i);
+                        i = bufferedInputStream.read(buffer);
+                    }
+                    return ResponseUtil.success();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return ResponseUtil.error(ResponseEnum.SERVER_ERROR);
+    }
+
 
     @PostMapping("/batchExtract")
     @ResponseBody

@@ -1,11 +1,13 @@
 let storage = window.localStorage;
 
 function showFilename(file) {
+    storage.file_name = file.name;
     $("#filename_label").html(file.name);
 }
 
 // 处理单个文档
 $("#upload").click(function () {
+    var index = layer.load(2);
     let fileInput = $("#fileInput").val();
     let method = $("input[name='method']:checked").val();
     if (fileInput === "") {
@@ -22,6 +24,7 @@ $("#upload").click(function () {
             contentType: false,
             processData: false,
             success: function (res) {
+                layer.close(index);
                 if (res.code !== 200) {
                     alert(res.msg)
                 } else {
@@ -29,6 +32,9 @@ $("#upload").click(function () {
                     storage.data = JSON.stringify(res.data);
                     $(location).attr("href", "../result.html");
                 }
+            },
+            complete: function () {
+                layer.close(index);
             }
         })
     }

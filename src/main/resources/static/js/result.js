@@ -1,4 +1,5 @@
 let data = JSON.parse(storage.data);
+let file_name = storage.file_name
 $(document).ready(function () {
     $("#article_title").text(data.article.title.title)
     let $article = $("#article_body")
@@ -39,4 +40,11 @@ $(function () {
         $("#reference").append(text);
 
     })
+})
+
+$("#download_json").click(function () {
+    let $downloadForm = $("#downloadForm");
+    $downloadForm.attr("action", "/downloadFile");
+    $("#file_name").val(file_name)
+    $downloadForm.submit();
 })
