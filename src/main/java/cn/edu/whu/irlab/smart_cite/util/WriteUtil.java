@@ -79,7 +79,7 @@ public class WriteUtil {
                 record[4] = String.valueOf(result.getSentence().getId());
                 record[5] = String.valueOf(result.getRefTag().getSentence().getId());
                 record[6] = result.getRefTag().getSentence().plain();
-                record[7] = Sentence.standardText(result.getRefTag().getSentence().getWordList(), 1);
+                record[7] =result.getRefTag().getSentence().standardText(1);
 //                record[7] = result.getRefTag().getSentence().plain().replaceAll("-LRB- -RRB- ", "[#]").replaceAll("-LRB-", "(").replaceAll("-RRB-", ")");
                 csvWriter.writeRecord(record, false);
             }
@@ -113,15 +113,15 @@ public class WriteUtil {
                     Sentence aroundSentence = result.getSentence();
                     Sentence refSentence = result.getRefTag().getSentence();
                     if (aroundSentence.getId() > refSentence.getId()) {
-                        record[0] = Sentence.standardText(refSentence.getWordList(), outputType);
-                        record[1] = Sentence.standardText(aroundSentence.getWordList(), outputType);
+                        record[0] = refSentence.standardText(outputType);
+                        record[1] = aroundSentence.standardText(outputType);
                     }else {
-                        record[0] = Sentence.standardText(aroundSentence.getWordList(), outputType);
-                        record[1] = Sentence.standardText(refSentence.getWordList(), outputType);
+                        record[0] =aroundSentence.standardText(outputType);
+                        record[1] =refSentence.standardText(outputType);
                     }
                 } else {
-                    record[0] = Sentence.standardText(result.getSentence().getWordList(), outputType);
-                    record[1] = Sentence.standardText(result.getRefTag().getSentence().getWordList(), outputType);
+                    record[0] =result.getSentence().standardText(outputType);
+                    record[1] =result.getRefTag().getSentence().standardText(outputType);
                 }
                 record[2] = String.valueOf(result.isContext() ? 1 : 0);
                 csvWriter.writeRecord(record, false);

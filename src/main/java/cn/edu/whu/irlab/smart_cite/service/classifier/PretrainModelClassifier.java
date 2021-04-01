@@ -39,8 +39,8 @@ public class PretrainModelClassifier implements Classifier {
         JSONArray sentence_pairs = new JSONArray();
         results.forEach(result -> {
             JSONArray pair = new JSONArray();
-            pair.add(Sentence.standardText(result.getSentence().getWordList(), outputType));
-            pair.add(Sentence.standardText(result.getRefTag().getSentence().getWordList(), outputType));
+            pair.add(result.getSentence().standardText(outputType));
+            pair.add(result.getRefTag().getSentence().standardText(outputType));
             sentence_pairs.add(pair);
         });
 

@@ -15,7 +15,6 @@ import cn.edu.whu.irlab.smart_cite.vo.Article;
 import cn.edu.whu.irlab.smart_cite.vo.FileLocation;
 import cn.edu.whu.irlab.smart_cite.vo.RefTag;
 import cn.edu.whu.irlab.smart_cite.vo.Result;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.metadata.HttpHeaders;
@@ -38,7 +37,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -142,13 +140,14 @@ public abstract class ExtractorImpl {
         //分类
         results = classify(results, file);
 
-        addContextList(results);
+//        addContextList(results);
 
-//        JSONArray refTags = CombinedResult(results);
+        JSONObject refTags = CombinedResult(results);
 
         JSONObject result = new JSONObject();
         result.put("fileName", file.getName());
         result.put("article", article.toJson());
+        result.put("refTags", refTags);
 
 //        WriteUtil.writeList(OUTPUT + FilenameUtils.getBaseName(file.getName()) + ".txt", refTags);//todo 配置多样的输出
         WriteUtil.writeStr(OUTPUT + File.separator + file.getName() + ".json", result.toJSONString());
@@ -203,24 +202,15 @@ public abstract class ExtractorImpl {
      * @auther gcr19
      * @desc 聚合分析结果
      **/
-    private JSONArray CombinedResult(List<Result> results) {
-        List<RefTag> refTags = new ArrayList<>();
+    private JSONObject CombinedResult(List<Result> results) {
         addContextList(results);
-        for (Result r :
-                results) {
-            RefTag refTag = r.getRefTag();
-            if (!refTags.contains(refTag)) {
-                refTags.add(refTag);
-            }
-        }
+        JSONObject jsonObject = new JSONObject();
+        results.forEach(result -> {
+            RefTag refTag = result.getRefTag();
+            jsonObject.put(String.valueOf(refTag.getId()), refTag.toJson());
+        });
 
-        JSONArray array = new JSONArray();
-        for (RefTag r :
-                refTags) {
-            JSONObject json = r.toJson();
-            array.add(json);
-        }
-        return array;
+        return jsonObject;
     }
 
     /**

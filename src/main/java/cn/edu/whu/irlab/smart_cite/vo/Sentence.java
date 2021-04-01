@@ -139,6 +139,7 @@ public class Sentence implements ISentence, ToJsonAble {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", id);
         jsonObject.put("text", text);
+        jsonObject.put("textHasRefLabel", standardText(4));
         jsonObject.put("section", sect);
         jsonObject.put("pNum", pNum);
         jsonObject.put("refTags", TypeConverter.list2JsonArray(refList));
@@ -152,20 +153,20 @@ public class Sentence implements ISentence, ToJsonAble {
     /**
      * 仅输出句子句法结构部分
      *
-     * @param list
      * @param type 1:仅保留句法成分，删除非句法成分的引文标记内容，包含引文当前句
      *             2:未作任何处理的原始句子，包含引文当前句
      *             3:句法成分引文标记后增加[#]，非句法成分引文标记使用[#]替换
+     *             4:为引文标记添加ref标签和id，前端展示用
      * @return
      */
-    public static String standardText(List<WordItem> list, int type) {
+    public String standardText(int type) {
         StringBuilder text = new StringBuilder();
-        if (isEmpty(list)) {
+        if (isEmpty(wordList)) {
             return text.toString();
         }
         switch (type) {
             case 1:
-                list.forEach(wordItem -> {
+                wordList.forEach(wordItem -> {
                     switch (wordItem.getType()) {
                         case Word:
                         case WordRef:
@@ -186,7 +187,7 @@ public class Sentence implements ISentence, ToJsonAble {
                 });
                 break;
             case 2:
-                list.forEach(wordItem -> {
+                wordList.forEach(wordItem -> {
                     switch (wordItem.getType()) {
                         case Word:
                             text.append(wordItem.getWord()).append(" ");
@@ -215,7 +216,7 @@ public class Sentence implements ISentence, ToJsonAble {
                 });
                 break;
             case 3:
-                list.forEach(wordItem -> {
+                wordList.forEach(wordItem -> {
                     switch (wordItem.getType()) {
                         case Word:
                             text.append(wordItem.getWord()).append(" ");
@@ -238,6 +239,36 @@ public class Sentence implements ISentence, ToJsonAble {
                     }
                 });
                 break;
+            case 4:
+                wordList.forEach(wordItem -> {
+                    switch (wordItem.getType()) {
+                        case Word:
+                            text.append(wordItem.getWord()).append(" ");
+                            break;
+                        case WordRef:
+                            text.append(wordItem.getWord()).append(" (<ref ref_id=\"").append(wordItem.getRef().getId()).append("\">").append(wordItem.getRef().getText()).append("</ref>) ");
+                            break;
+                        case Word_G_Ref:
+                            text.append(wordItem.getWord()).append("(");
+                            wordItem.getRefs().forEach(refTag -> {
+                                text.append("<ref ref_id=\"").append(refTag.getId()).append("\">").append(refTag.getText()).append("</ref>; ");
+                            });
+                            text.append(") ");
+                            break;
+                        case Ref:
+                            text.append("<ref ref_id=\"").append(wordItem.getRef().getId()).append("\">").append(wordItem.getRef().getText()).append("</ref> ");
+                            break;
+                        case G_REF:
+                            wordItem.getRefs().forEach(refTag -> {
+                                text.append("<ref ref_id=\"").append(refTag.getId()).append("\">").append(refTag.getText()).append("</ref>; ");
+                            });
+                            break;
+                        default:
+                            break;
+                    }
+                });
+                break;
+
         }
 
         return text.toString().replaceAll("-LRB-", "(").replaceAll("-RRB-", ")").trim();
