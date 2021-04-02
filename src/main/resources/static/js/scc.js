@@ -1,10 +1,6 @@
 storage = window.localStorage;
 file_name = storage.file_name
 
-function showFilename(file) {
-    storage.file_name = file.name;
-    $("#filename_label").html(file.name);
-}
 
 $("#fileInput").change(function () {
     let file_name = this.files[0].name;
@@ -47,7 +43,7 @@ $("#upload").click(function () {
     }
 })
 
-// 处理多个文档
+// 处理多个文档并下载处理结果
 $("#upload_zip").click(function () {
     var index = layer.load(2);
     let fileInput = $("#fileInput").val();
@@ -88,7 +84,6 @@ $("#upload_zip").click(function () {
         })
     }
 })
-
 
 
 

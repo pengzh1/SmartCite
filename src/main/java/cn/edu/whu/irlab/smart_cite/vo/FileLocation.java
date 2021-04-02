@@ -31,7 +31,7 @@ public class FileLocation {
     //存放art文件
     public final static String ART = "temp/art";
 
-    //存放输出问题
+    //存放输出文件
     public final static String OUTPUT = "output";
 
 }

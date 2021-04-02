@@ -14,6 +14,7 @@ $(document).ready(function () {
     })
     $article.append(text)
 })
+
 $(function () {
     let references = data.article.references;
     let refTags = data.refTags;
@@ -42,6 +43,7 @@ $(function () {
     })
 })
 
+//下载处理结果
 $("#download_json").click(function () {
     let $downloadForm = $("#downloadForm");
     $downloadForm.attr("action", "/downloadFile");

@@ -15,16 +15,19 @@
 <body class="body1">
 <div th:fragment="top">
     <nav class="navbar navbar-light navbar-expand-md bg-dark">
-        <div class="container-fluid"><a class="navbar-brand text-light" href="/index.html">SmartCiteCon</a>
-            <button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span
-                    class="navbar-toggler-icon"></span></button>
+        <div class="container-fluid">
+            <a class="navbar-brand text-light" href="/index.html">SmartCiteCon</a>
+            <button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="navbar-toggler-icon"></span>
+            </button>
             <div class="collapse navbar-collapse" id="navcol-1">
                 <ul class="nav navbar-nav">
                     <li class="nav-item" role="presentation">
-                        <a class="nav-link active text-light" href="#">Download Test Case</a></li>
+                        <a id="downloadTestCase" class="nav-link active text-light" href="/downLoadTestCase">Download Test Case</a>
+                    </li>
                     <li class="nav-item" role="presentation">
-                        <a class="nav-link text-light"
-                           href="https://gitee.com/Lan_Tianchen/smart-cite-con">Tutorials</a>
+                        <a class="nav-link text-light" href="#">Tutorials</a>
                     </li>
                     <li class="nav-item" role="presentation">
                         <a class="nav-link text-light"

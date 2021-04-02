@@ -72,26 +72,9 @@ public class ExtractorController {
     public ResponseVo downloadFileController(HttpServletResponse response, @RequestParam(name = "file_name") String file_name) throws UnsupportedEncodingException {
         if (file_name != null) {
             File file = new File(OUTPUT + File.separator + file_name + ".json");
-            System.out.println(file.getName());
-            if (file.exists()) {
-                response.setHeader("content-Type", "application/vnd.ms-excel");
-                response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(file.getName(), "utf-8"));
-                byte[] buffer = new byte[1024];
-                FileInputStream fileInputStream = null;
-                BufferedInputStream bufferedInputStream = null;
-                try {
-                    fileInputStream = new FileInputStream(file);
-                    bufferedInputStream = new BufferedInputStream(fileInputStream);
-                    OutputStream outputStream = response.getOutputStream();
-                    int i = bufferedInputStream.read(buffer);
-                    while (i != -1) {
-                        outputStream.write(buffer, 0, i);
-                        i = bufferedInputStream.read(buffer);
-                    }
-                    return ResponseUtil.success();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            boolean state = writeFileToResponse(file, response);
+            if (state) {
+                return ResponseUtil.success();
             }
         }
         return ResponseUtil.error(ResponseEnum.SERVER_ERROR);
@@ -173,5 +156,47 @@ public class ExtractorController {
         return ResponseUtil.success("finished! 用时：" + (end - start) + " ms");
     }
 
+    @GetMapping("/downLoadTestCase")
+    @ResponseBody
+    public ResponseVo downLoadTestCaseController(HttpServletResponse response) throws UnsupportedEncodingException {
+        File file = new File("data/test_data.zip");
+        boolean state = writeFileToResponse(file, response);
+        if (state) {
+            return ResponseUtil.success();
+
+        }
+        return ResponseUtil.error(ResponseEnum.SERVER_ERROR);
+    }
+
+    /**
+     * 向响应输出流中写入文件
+     *
+     * @param file
+     * @param response
+     */
+    private boolean writeFileToResponse(File file, HttpServletResponse response) throws UnsupportedEncodingException {
+        if (file.exists()) {
+            response.setHeader("content-Type", "application/vnd.ms-excel");
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(file.getName(), "utf-8"));
+            byte[] buffer = new byte[1024];
+            FileInputStream fileInputStream = null;
+            BufferedInputStream bufferedInputStream = null;
+            try {
+                fileInputStream = new FileInputStream(file);
+                bufferedInputStream = new BufferedInputStream(fileInputStream);
+                OutputStream outputStream = response.getOutputStream();
+                int i = bufferedInputStream.read(buffer);
+                while (i != -1) {
+                    outputStream.write(buffer, 0, i);
+                    i = bufferedInputStream.read(buffer);
+                }
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+
+    }
 
 }
