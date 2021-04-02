@@ -1,5 +1,5 @@
-let data = JSON.parse(storage.data);
-let file_name = storage.file_name
+data = JSON.parse(storage.data);
+
 $(document).ready(function () {
     $("#article_title").text(data.article.title.title)
     let $article = $("#article_body")

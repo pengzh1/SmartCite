@@ -16,10 +16,11 @@
         </div>
         <div class="buttons">
             <div class="input-group mb-3">
-                <div class="custom-file border"><input id="fileInput" class="border-dark custom-file-input" type="file"
-                                                       onchange="showFilename(this.files[0])"><label id="filename_label"
-                                                                                                     class="custom-file-label">Please
-                    select a file for citation context extraction</label></div>
+                <div class="custom-file border">
+                    <input id="fileInput" class="border-dark custom-file-input" type="file">
+                    <label id="filename_label" class="custom-file-label">Please select a file for citation context
+                        extraction</label>
+                </div>
             </div>
             <div class="mt-5">
                 <div class="custom-control custom-radio custom-control-inline mr-5">
@@ -39,6 +40,9 @@
                 <button id="upload_zip" class="btn btn-outline-dark active" type="button">upload zip</button>
             </div>
         </div>
+        <form id="downloadForm" method="post">
+            <input type="hidden" id="file_name" name="file_name"/>
+        </form>
     </div>
 </div>
 <div th:include="common::footer"/>

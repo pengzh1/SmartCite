@@ -20,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 
+import static cn.edu.whu.irlab.smart_cite.util.FileUtil.saveUploadedFile;
+
 
 @Controller
 @RequestMapping("/test")
@@ -51,7 +53,7 @@ public class TestController {
             return ResponseUtil.error(ResponseEnum.FILE_NOT_FOUND);
         }
         try {
-            File file = svmExtractor.saveUploadedFile(multipartFile);
+            File file = saveUploadedFile(multipartFile);
             String str = ReadUtil.read2Str(file);
             JSONObject jsonObject = JSONObject.parseObject(str);
             return ResponseUtil.success(jsonObject);

@@ -22,3 +22,8 @@ ref {
     overflow-y: scroll;
     max-height: 450px;
 }
+
+body .layui-layer .layui-layer-btn .layui-layer-btn0 {
+    background-color: black;
+    border-color: black;
+}

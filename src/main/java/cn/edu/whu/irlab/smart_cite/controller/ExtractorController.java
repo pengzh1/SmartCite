@@ -6,6 +6,7 @@ import cn.edu.whu.irlab.smart_cite.service.extractor.PretrainModelExtractor;
 import cn.edu.whu.irlab.smart_cite.service.extractor.SvmExtractor;
 import cn.edu.whu.irlab.smart_cite.util.ResponseUtil;
 import cn.edu.whu.irlab.smart_cite.util.UnPackeUtil;
+import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
 import cn.edu.whu.irlab.smart_cite.vo.ResponseVo;
 import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
@@ -22,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import static cn.edu.whu.irlab.smart_cite.util.FileUtil.identifyMimeType;
+import static cn.edu.whu.irlab.smart_cite.util.FileUtil.saveUploadedFile;
 import static cn.edu.whu.irlab.smart_cite.vo.FileLocation.OUTPUT;
 
 /**
@@ -100,8 +103,8 @@ public class ExtractorController {
     public ResponseVo batchController(MultipartFile file) {
         List<JSONObject> array = new ArrayList<>();
         try {
-            File uploaded = svmExtractor.saveUploadedFile(file);
-            String mimeType = svmExtractor.identifyMimeType(uploaded);
+            File uploaded = saveUploadedFile(file);
+            String mimeType = identifyMimeType(uploaded);
             File folder;
             switch (mimeType) {
                 case "application/zip":
@@ -129,7 +132,6 @@ public class ExtractorController {
                 JSONObject jsonObject = jsonObjectListenableFuture.get();
                 array.add(jsonObject);
             }
-
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             if (e instanceof FileTypeException) {
@@ -138,6 +140,7 @@ public class ExtractorController {
                 return ResponseUtil.error(ResponseEnum.SERVER_ERROR);
             }
         }
+        WriteUtil.writeStr(OUTPUT + File.separator + file.getName() + ".json", JSONObject.toJSONString(array));
         return ResponseUtil.success(array);
     }
 
