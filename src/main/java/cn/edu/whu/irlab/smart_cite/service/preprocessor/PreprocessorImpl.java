@@ -4,6 +4,7 @@ import cn.edu.whu.irlab.smart_cite.service.splitter.LingPipeSplitterImpl;
 import cn.edu.whu.irlab.smart_cite.util.ElementUtil;
 import cn.edu.whu.irlab.smart_cite.util.WriteUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.jdom2.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -47,7 +48,7 @@ public abstract class PreprocessorImpl {
         filterTags(root);
 
         //段落抽取
-        extractParagraphs(root);
+        extractParagraphs2(root);
         removeElementNotXref();
         //写出到新文件
 //        writeFile(root, FILTERED, file);
@@ -151,6 +152,48 @@ public abstract class PreprocessorImpl {
         ElementUtil.extractElements(root.getChild("body"), "p", paragraphs.get());
     }
 
+    void extractParagraphs2(Element root) {
+//        List<Element> abstact = new ArrayList<>();
+//        ElementUtil.extractElements(root.getChild("teiHeader", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")), "abstract", abstact);
+//        if (!abstact.isEmpty()) {
+//            ElementUtil.extractElements(abstact.get(0), "p", paragraphs.get());
+//            List<Element> pList = paragraphs.get();
+//            for (Element p : pList) {
+//                p.setAttribute("pHead", "abstract");
+//            }
+//        }
+        try {
+            Element absEle = root.getChild("teiHeader", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).getChild("profileDesc", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"))
+                    .getChild("abstract", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"))
+                    .getChild("div", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).clone();
+            Element eh = new Element("head");
+            eh.setAttribute("n", "0");
+            eh.setText("abstract");
+            absEle.addContent(0, eh);
+            root.getChild("text", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).
+                    getChild("body", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).addContent(0, absEle);
+        } catch (Exception e) {
+            log.error("errAddAbstract", e);
+        }
+        extractParagraphs(root);
+        paragraphs.get();
+        List<Element> pList = paragraphs.get();
+        String preText = "pre";
+        for (Element p : pList) {
+            if (p.getAttribute("pHead") == null) {
+                for (Element e : p.getParentElement().getChildren()) {
+                    if (e.getName().equals("head")) {
+                        if (StringUtils.isNumeric(e.getAttributeValue("n"))) {
+                            preText = e.getText();
+                        }
+                        p.setAttribute("pHead", preText);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     void extractSentence(Element root) {
         ElementUtil.extractElements(root.getChild("body"), "s", sentences.get());
     }
@@ -160,6 +203,9 @@ public abstract class PreprocessorImpl {
                 paragraphs.get()) {
             try {
                 List<Element> contents = lingPipeSplitter.splitSentences(p);
+                for (Element e : contents) {
+                    e.setAttribute("pHead", p.getAttributeValue("pHead"));
+                }
                 p.removeContent();
                 p.addContent(contents);
             } catch (Exception e) {

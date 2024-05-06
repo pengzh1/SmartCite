@@ -129,6 +129,51 @@ public class PaperXmlReader {
         return article;
     }
 
+    /**
+     * @param file 文件
+     * @param root 根节点
+     * @return Article对象
+     * @auther gcr19
+     * @desc 将预处理后的xml文档转换为Article对象
+     **/
+    public Article splitFile(File file, Element root) {
+        Element header = root.getChild("header");
+
+        Article article = new Article(file.getName());
+        this.article.set(article);
+        //初始化article 设置摘要
+        article.setAbsText(header.getChild("abstract").getValue());//todo plos数据中有的摘要有多个段落
+        //设置标题
+        article.setTitle(new Title(header.getChild("title-group").getChildText("article-title"), header.
+                getChild("title-group").getChildText("alt-title")));
+
+        //references
+        Element ref_list = root.getChild("back").getChild("ref-list");
+        if (ref_list != null) {
+            List<Element> refs = ref_list.getChildren("ref");
+            for (Element ref : refs) {
+                article.putRef(ref.getAttributeValue("id"), parseReference(ref));// lei保存的是string
+            }
+        }
+
+        //设置并解析句子
+        List<Element> sentenceElements = ElementUtil.extractElements(root, "s");
+        Sentence sentence;
+        for (Element e :
+                sentenceElements) {
+            sentence = new Sentence(Integer.parseInt(e.getAttributeValue("id").split(",")[0]),
+                    e.getValue().replaceAll("\\s", " ").replaceAll(" {2,}", " ").replaceAll("\u00AD", ""), article);//todo 1.lei的数据个别句子存在一个句子含2各以上id的情况,按照lei的做法只取了第一个.
+//            logger.info("analyze [article] " + sentence.getArticle().getName() + " [sentence] " + sentence.getId());
+            setSecInfo(e, sentence);
+            sentence.setText1(sentence.plain());
+            sentence.setPHead(e.getAttributeValue("pHead"));
+            article.append(sentence);   //append中设置一些索引位置信息
+            sentence = null;//释放内存
+//            logs.info(s.toText());
+        }
+        return article;
+    }
+
     private Reference parseReference(Element ref) {
         Reference reference = new Reference();
         reference.setId(ref.getAttributeValue("id"));
@@ -166,13 +211,24 @@ public class PaperXmlReader {
         sentence.setCType(e.getAttributeValue("c_type"));
 
         //设置pNum
-        sentence.setPNum(Integer.parseInt(e.getAttributeValue("p")));
+        if (e.getAttributeValue("p") == null) {
+            sentence.setPNum(-1);
+        } else {
+            sentence.setPNum(Integer.parseInt(e.getAttributeValue("p")));
+        }
 
         //设置level
-        int level = Integer.parseInt(e.getAttributeValue("level"));
-        sentence.setLevel(level);
-
-        sentence.setSect(e.getAttributeValue("sec"));
+        if (e.getAttributeValue("level") == null) {
+            sentence.setLevel(-1);
+        } else {
+            int level = Integer.parseInt(e.getAttributeValue("level"));
+            sentence.setLevel(level);
+        }
+        if (e.getAttributeValue("sec") == null) {
+            sentence.setSect("-1");
+        } else {
+            sentence.setSect(e.getAttributeValue("sec"));
+        }
         wordItem(e, sentence);
     }
 
@@ -224,7 +280,7 @@ public class PaperXmlReader {
 
             Element element = (Element) content;
             if (!element.getName().equals("xref")) {
-                throw new IllegalArgumentException("This element's name is "+element.getName()+" not xref");
+                throw new IllegalArgumentException("This element's name is " + element.getName() + " not xref");
             }
             RefTag xref = new RefTag(sentence, element.getText().trim().replaceAll("\\s", " ").replaceAll(" {2,}", " "),
                     Integer.parseInt((element.getAttributeValue("id"))));

@@ -1,5 +1,6 @@
 package cn.edu.whu.irlab.smart_cite.service.splitter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Content;
 import org.jdom2.Element;
 
@@ -28,6 +29,7 @@ public abstract class SplitterImpl {
         List<Element> sentenceElements = new ArrayList<>();
         //句子位置指针
         int positionCoordinate = 0;
+        String lastR = "";
         for (String sentence :
                 sentences) {
             Element sentenceElement = new Element("s");
@@ -38,11 +40,16 @@ public abstract class SplitterImpl {
                 //残余句子
                 String residualSentence = sentence;
 
+
                 try {
-                    while (residualSentence.contains(elements.get(0).getAttributeValue("localizer"))) {
+                    while (residualSentence.contains(elements.get(0).getAttributeValue("localizer"))
+                            || (lastR.length() > 0 && (lastR + residualSentence).replaceAll(" ", "").
+                            contains(elements.get(0).getAttributeValue("localizer").replaceAll(" ", "")))) {
+                        lastR = "";
                         //     System.out.println(elements.get(0).getAttributeValue("localizer"));
                         Element sub = elements.remove(0).detach();
                         int end = Integer.parseInt(sub.getAttributeValue("coordinate")) - positionCoordinate;
+                        end = Math.min(end, residualSentence.length());
                         sentenceElement.addContent(residualSentence.substring(0, end));
                         //  System.out.println(residualSentence+"  "+(end+sub.getValue().length())+"  "+residualSentence.length());
                         sub.removeAttribute("coordinate");
@@ -66,6 +73,7 @@ public abstract class SplitterImpl {
 
                 positionCoordinate += residualSentence.length() + 1;
             }
+            lastR = StringUtils.substring(sentence, sentence.length() - 6);
             sentenceElements.add(sentenceElement);
         }
         return sentenceElements;

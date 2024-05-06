@@ -159,6 +159,21 @@ public abstract class ExtractorImpl {
         return result;
     }
 
+    public JSONObject split(File file) {
+        if (!file.exists()) {
+            throw new IllegalArgumentException("文件不存在");
+        }
+        Element root = ReadUtil.read2xml(file);
+        root = grobidPreprocessor.parseXML(root, file);
+        //解析XML文件
+        Article article = paperXmlReader.splitFile(file, root);
+        //        WriteUtil.writeList(OUTPUT + FilenameUtils.getBaseName(file.getName()) + ".txt", refTags);//todo 配置多样的输出
+        WriteUtil.writeStr(OUTPUT + File.separator + file.getName() + ".json", article.toJson().toJSONString());
+        log.info("extract context of article [" + file.getName() + "] successfully");
+        removeTempFile(file);
+        return article.toJson();
+    }
+
     abstract List<Result> classify(List<Result> results, File file);
 
     private void removeTempFile(File file) {
@@ -182,6 +197,20 @@ public abstract class ExtractorImpl {
         try {
             JSONObject object = extract(file);
             jsonObjectAsyncResult = new AsyncResult<>(object);
+        } finally {
+            countDownLatch.countDown();
+        }
+        return jsonObjectAsyncResult;
+    }
+
+    @Async
+    public ListenableFuture<JSONObject> asyncSplit(File file, CountDownLatch countDownLatch) {
+        AsyncResult<JSONObject> jsonObjectAsyncResult = null;
+        try {
+            JSONObject object = split(file);
+            jsonObjectAsyncResult = new AsyncResult<>(object);
+        } catch (Exception e) {
+            log.error("extract error", e);
         } finally {
             countDownLatch.countDown();
         }

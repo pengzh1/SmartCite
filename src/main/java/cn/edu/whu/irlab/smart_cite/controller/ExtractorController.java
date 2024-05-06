@@ -156,6 +156,35 @@ public class ExtractorController {
         return ResponseUtil.success("finished! 用时：" + (end - start) + " ms");
     }
 
+    @GetMapping("/localSplit")
+    @ResponseBody
+    public ResponseVo splitController(@RequestParam("path") String path) {
+        long start = System.currentTimeMillis();
+
+        try {
+            File folder = new File(path);
+            File[] files = folder.listFiles();
+            if (files == null || files.length == 0) {
+                logger.error("待抽取的文件个数非法");
+                return ResponseUtil.error(ResponseEnum.FILE_ERROR);
+            }
+            CountDownLatch countDownLatch = new CountDownLatch(files.length);
+            for (File f : files) {
+                svmExtractor.asyncSplit(f, countDownLatch);
+            }
+            countDownLatch.await();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            if (e instanceof FileTypeException) {
+
+            } else {
+                return ResponseUtil.error(ResponseEnum.SERVER_ERROR);
+            }
+        }
+        long end = System.currentTimeMillis();
+        return ResponseUtil.success("finished! 用时：" + (end - start) + " ms");
+    }
+
     @GetMapping("/downLoadTestCase")
     @ResponseBody
     public ResponseVo downLoadTestCaseController(HttpServletResponse response) throws UnsupportedEncodingException {

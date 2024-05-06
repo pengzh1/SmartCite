@@ -44,7 +44,7 @@ public class GrobidPreprocessorImpl extends PreprocessorImpl {
         //设置标题
         Element title_group = root.getChild("teiHeader", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"))
                 .getChild("fileDesc", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).
-                        getChild("titleStmt", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
+                getChild("titleStmt", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
         if (title_group.getChildren().size() == 1) {
             header.addContent(new Element("title-group").addContent(new Element("article-title").
                     addContent(title_group.getChild("title", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"))
@@ -59,22 +59,21 @@ public class GrobidPreprocessorImpl extends PreprocessorImpl {
                 getChild("abstract", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
         Element newAbstract = new Element("abstract");
         List<Element> ablist = abstract_.getChildren();
-        for (int i=0;i<ablist.size();i++) {
-            Element e=ablist.get(i);
+        for (int i = 0; i < ablist.size(); i++) {
+            Element e = ablist.get(i);
             Element ww = e.setName("sec").detach();
             newAbstract.addContent(ww);
         }
         header.addContent(newAbstract);
 
-       /** if(abstract_.getChildren().size()>0){
-        for (Element e :
-                abstract_.getChildren()) {
-            System.out.println(e.getContent());
-            //todo 需要测试有些特殊文章摘要中由title的情况
-            newAbstract.addContent(e.setName("sec").detach());
-        }}
-        header.addContent(newAbstract);**/
-
+        /** if(abstract_.getChildren().size()>0){
+         for (Element e :
+         abstract_.getChildren()) {
+         System.out.println(e.getContent());
+         //todo 需要测试有些特殊文章摘要中由title的情况
+         newAbstract.addContent(e.setName("sec").detach());
+         }}
+         header.addContent(newAbstract);**/
 
 
         //设置作者
@@ -82,25 +81,27 @@ public class GrobidPreprocessorImpl extends PreprocessorImpl {
         ElementUtil.extractElements(root.getChild("teiHeader", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")),
                 "persName", persNames);
         Element author_group = new Element("author-group");
-        if(persNames.size()>0){
+        if (persNames.size() > 0) {
 
             for (Element e :
                     persNames) {
-                List<Element> surn = e.getChildren("surname",Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));;
-                List<Element> fore = e.getChildren("forename",Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));;
+                List<Element> surn = e.getChildren("surname", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
+                ;
+                List<Element> fore = e.getChildren("forename", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
+                ;
 
-             if(surn.size()==0 || fore.size()==0){
-                 continue;
-             }
+                if (surn.size() == 0 || fore.size() == 0) {
+                    continue;
+                }
 
-             Element name = new Element("name");
-             name.addContent(new Element("surname").addContent(e.getChild("surname",
-                    Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).getValue()));
-             name.addContent(new Element("given-names").addContent(e.getChild("forename",
-                    Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).getValue()));
+                Element name = new Element("name");
+                name.addContent(new Element("surname").addContent(e.getChild("surname",
+                        Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).getValue()));
+                name.addContent(new Element("given-names").addContent(e.getChild("forename",
+                        Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).getValue()));
                 author_group.addContent(name);
 
-         }
+            }
         }
         header.addContent(author_group);
     }
@@ -136,7 +137,7 @@ public class GrobidPreprocessorImpl extends PreprocessorImpl {
                 getChild("back", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
         List<Element> backrenList = old_back.getChildren();
         int childrennum = backrenList.size();
-        for(int i=0;i<childrennum;i++){
+        for (int i = 0; i < childrennum; i++) {
             Element div = backrenList.get(i);
             if (!div.getName().equals("div") || !div.getAttributeValue("type").equals("references"))
                 old_back.removeContent(div);
@@ -145,11 +146,11 @@ public class GrobidPreprocessorImpl extends PreprocessorImpl {
         }
 
         /**
-        for (Element div :
-                old_back.getChildren()) {
-            if (!div.getName().equals("div") || !div.getAttributeValue("type").equals("references"))
-                old_back.removeContent(div);
-        }**/
+         for (Element div :
+         old_back.getChildren()) {
+         if (!div.getName().equals("div") || !div.getAttributeValue("type").equals("references"))
+         old_back.removeContent(div);
+         }**/
         Element listBibl = old_back.getChild("div", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).
                 getChild("listBibl", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
         for (Element biblStruct :
@@ -169,16 +170,19 @@ public class GrobidPreprocessorImpl extends PreprocessorImpl {
                     element_citation.addContent(new Element("article-title").addContent(title.getValue()));
                 }
                 //设置作者
-                Element person_group = new Element("person-group", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));;
-                person_group.setAttribute("person-group-type","author");
+                Element person_group = new Element("person-group", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
+                ;
+                person_group.setAttribute("person-group-type", "author");
                 List<Element> authorScopeList = analytic.getChildren("author", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
-                if(authorScopeList.size()>0){
-                    for(Element e:
-                            authorScopeList){
+                if (authorScopeList.size() > 0) {
+                    for (Element e :
+                            authorScopeList) {
                         Element persName = e.getChild("persName", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
-                        List<Element> surn1 = persName.getChildren("surname", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));;
-                        List<Element> fore1 = persName.getChildren("forename", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));;
-                        if(surn1.size()==0 || fore1.size()==0){
+                        List<Element> surn1 = persName.getChildren("surname", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
+                        ;
+                        List<Element> fore1 = persName.getChildren("forename", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
+                        ;
+                        if (surn1.size() == 0 || fore1.size() == 0) {
                             continue;
                         }
 
@@ -188,37 +192,47 @@ public class GrobidPreprocessorImpl extends PreprocessorImpl {
                         name.addContent(new Element("given-names").addContent(persName.getChild("forename",
                                 Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).getValue()));
                         person_group.addContent(name);
-                        
+
                     }
-                    }
-                element_citation.addContent(person_group);
                 }
+                element_citation.addContent(person_group);
+            }
 
             //设置其他
             Element monogr = biblStruct.getChild("monogr", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
-            if(monogr != null){
+            if (monogr != null) {
                 Element source = monogr.getChild("title", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
-                if (source != null) {
-                    element_citation.addContent(new Element("source", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).addContent(source.getValue()));
+                if (source != null && analytic == null && source.getAttributeValue("type").equals("main")) {
+                    element_citation.addContent(new Element("article-title").addContent(source.getValue()));
+
+                    Element editor = monogr.getChild("editor", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
+                    if (editor != null) {
+                        element_citation.addContent(new Element("source", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).addContent(editor.getValue()));
+                    }
+
+                } else {
+                    if (source != null) {
+                        element_citation.addContent(new Element("source", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).addContent(source.getValue()));
+                    }
                 }
                 Element imprint = monogr.getChild("imprint", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
                 if (imprint != null) {
                     Element date = imprint.getChild("date", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
-                    if (date != null){
+                    if (date != null) {
                         element_citation.addContent(new Element("year", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).addContent(date.getAttributeValue("when")));
                     }
 
                     List<Element> biblScopelist = imprint.getChildren("biblScope", Namespace.getNamespace("http://www.tei-c.org/ns/1.0"));
-                    if(biblScopelist.size()>0){
+                    if (biblScopelist.size() > 0) {
                         for (Element e :
-                             biblScopelist){
-                            if(e.getAttributeValue("unit").equals("volume")){
+                                biblScopelist) {
+                            if (e.getAttributeValue("unit").equals("volume")) {
                                 element_citation.addContent(new Element("volume", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).addContent(e.getValue()));
                             }
-                            if(e.getAttributeValue("unit").equals("issue")){
+                            if (e.getAttributeValue("unit").equals("issue")) {
                                 element_citation.addContent(new Element("issue", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).addContent(e.getValue()));
                             }
-                            if(e.getAttributeValue("unit").equals("page")){
+                            if (e.getAttributeValue("unit").equals("page")) {
                                 element_citation.addContent(new Element("fpage", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).addContent(e.getAttributeValue("from")));
                                 element_citation.addContent(new Element("lpage", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).addContent(e.getAttributeValue("to")));
                             }
@@ -231,7 +245,7 @@ public class GrobidPreprocessorImpl extends PreprocessorImpl {
 
             ref.addContent(element_citation);
             ref_list.addContent(ref);
-          //  System.out.println("这是"+ref.getChildren().get(1).getValue()+"这是"+ref.getAttributeValue("id"));
+            //  System.out.println("这是"+ref.getChildren().get(1).getValue()+"这是"+ref.getAttributeValue("id"));
         }
         back.addContent(ref_list);
     }

@@ -7,6 +7,8 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.leishengwei.jutils.Collections.isEmpty;
 
@@ -43,6 +45,7 @@ public class Sentence implements ISentence, ToJsonAble {
     private int index = 0;    //句子索引，从1开始连续编号
     private int pIndex; //当前段落的句子索引，从1开始，值由Article代理
     private int sectionIndex;   //当前章节的索引，从1开始，值由Article代理
+    private String pHead;
 
     public Sentence(int id, String text, Article article) {
         this.id = id;
@@ -135,14 +138,23 @@ public class Sentence implements ISentence, ToJsonAble {
                 '}';
     }
 
+
     public JSONObject toJson() {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", id);
         jsonObject.put("text", text);
-        jsonObject.put("textHasRefLabel", standardText(4));
+//        jsonObject.put("textHasRefLabel", standardText(4));
+//        Pattern multiRefPattern = Pattern.compile("\\[\\d+\\]([, ]{1,}\\[\\d+\\]){1,}");
+//        Pattern oneRefPattern = Pattern.compile("\\[\\d+\\]");
+//        Matcher matcher = multiRefPattern.matcher(text);
+//        String result = matcher.replaceAll("some papers");
+//        matcher = oneRefPattern.matcher(result);
+//        result = matcher.replaceAll("the paper");
+//        jsonObject.put("textWithProc", result);
         jsonObject.put("section", sect);
         jsonObject.put("pNum", pNum);
         jsonObject.put("refTags", TypeConverter.list2JsonArray(refList));
+        jsonObject.put("pHead", pHead);
         return jsonObject;
     }
 
