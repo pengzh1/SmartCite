@@ -48,8 +48,14 @@ public abstract class SplitterImpl {
                         sub.removeAttribute("coordinate");
                         sub.removeAttribute("localizer");
                         sentenceElement.addContent(sub);
-                        residualSentence = residualSentence.substring(end + sub.getValue().length());
-                        positionCoordinate += end + sub.getValue().length();
+                        if (end + sub.getValue().length() >= residualSentence.length()) {
+                            positionCoordinate += residualSentence.length();
+                            residualSentence = "";
+                        } else {
+                            residualSentence = residualSentence.substring(end + sub.getValue().length());
+                            positionCoordinate += end + sub.getValue().length();
+                        }
+
                         //    System.out.println(residualSentence);
                         if (elements.isEmpty()) break;
                     }

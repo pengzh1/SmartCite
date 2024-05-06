@@ -17,9 +17,9 @@ server:
     uri-encoding: utf-8
 thread-pool-factory:
   #IO密集型应用，线程数为2N+1
-  corePoolSize: 4
-  maxPoolSize: 8
-  queueCapacity: 100
+  corePoolSize: 1
+  maxPoolSize: 1
+  queueCapacity: 10000
   keepAliveSeconds: 120
 test:
   location: internal_profile
