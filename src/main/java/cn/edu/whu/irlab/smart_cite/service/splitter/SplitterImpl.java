@@ -49,7 +49,7 @@ public abstract class SplitterImpl {
                         //     System.out.println(elements.get(0).getAttributeValue("localizer"));
                         Element sub = elements.remove(0).detach();
                         int end = Integer.parseInt(sub.getAttributeValue("coordinate")) - positionCoordinate;
-                        end = Math.min(end, residualSentence.length());
+                        end = Math.max(Math.min(end, residualSentence.length()),0);
                         sentenceElement.addContent(residualSentence.substring(0, end));
                         //  System.out.println(residualSentence+"  "+(end+sub.getValue().length())+"  "+residualSentence.length());
                         sub.removeAttribute("coordinate");

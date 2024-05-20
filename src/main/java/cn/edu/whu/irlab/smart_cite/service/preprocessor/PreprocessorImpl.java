@@ -173,22 +173,42 @@ public abstract class PreprocessorImpl {
             root.getChild("text", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).
                     getChild("body", Namespace.getNamespace("http://www.tei-c.org/ns/1.0")).addContent(0, absEle);
         } catch (Exception e) {
-            log.error("errAddAbstract", e);
+            log.warn("errAddAbstract");
         }
         extractParagraphs(root);
         paragraphs.get();
         List<Element> pList = paragraphs.get();
-        String preText = "pre";
+        String preText = "abstract";
+        boolean flag = false;
         for (Element p : pList) {
             if (p.getAttribute("pHead") == null) {
                 for (Element e : p.getParentElement().getChildren()) {
                     if (e.getName().equals("head")) {
                         if (StringUtils.isNumeric(e.getAttributeValue("n"))) {
+                            flag = true;
                             preText = e.getText();
                         }
                         p.setAttribute("pHead", preText);
                         break;
                     }
+                }
+                p.setAttribute("pHead", preText);
+            }
+        }
+        if (!flag) {
+            preText = "nan";
+            for (Element p : pList) {
+                if (p.getAttribute("pHead") == null) {
+                    for (Element e : p.getParentElement().getChildren()) {
+                        if (e.getName().equals("head")) {
+                            if (StringUtils.isNumeric(e.getAttributeValue("n"))) {
+                                preText = e.getText();
+                            }
+                            p.setAttribute("pHead", preText);
+                            break;
+                        }
+                    }
+                    p.setAttribute("pHead", preText);
                 }
             }
         }
